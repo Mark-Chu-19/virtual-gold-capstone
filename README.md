@@ -25,8 +25,8 @@ The single source of truth is the architecture document. Same content in four fo
 |---|---|---|
 | [`docs/architecture-v0.2-en.md`](docs/architecture-v0.2-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
 | [`docs/architecture-v0.2-en.html`](docs/architecture-v0.2-en.html) | English | HTML with SVG diagrams, open in a browser |
-| [`docs/architecture-v0.2-zh.md`](docs/architecture-v0.2-zh.md) | 繁體中文 | Markdown, Mermaid |
-| [`docs/architecture-v0.2.html`](docs/architecture-v0.2.html) | 繁體中文 | HTML with SVG |
+| [`docs/architecture-v0.2-zh.md`](docs/architecture-v0.2-zh.md) | Traditional Chinese | Markdown, Mermaid diagrams |
+| [`docs/architecture-v0.2.html`](docs/architecture-v0.2.html) | Traditional Chinese | HTML with SVG |
 
 Sections in the document:
 
@@ -55,7 +55,7 @@ Sections in the document:
 │   └── architecture-v0.2.html     same, HTML
 ├── todo/                          team to-do: open decisions, pending actions, decision log
 │   ├── TODO.md                    English
-│   └── TODO-zh.md                 Chinese
+│   └── TODO-zh.md                 Traditional Chinese
 ├── reference/                     inputs we did NOT write; read-only
 │   ├── client/                    from Virtual Gold and the course
 │   │   ├── Virtual Gold Inc - AI Assistant.pdf    original capstone brief
@@ -80,12 +80,12 @@ Rule of thumb: `docs/` is what we hand to the client, `reference/` is what we we
 
 ## Open decisions
 
-Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Chinese): this week's decisions, pending actions, corrections to the teammate proposal, items waiting on the client, and a decision log. Section 11 of the architecture doc mirrors the decision items.
+Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): this week's decisions, pending actions, corrections to the teammate proposal, items waiting on the client, and a decision log. Section 11 of the architecture doc mirrors the decision items.
 
 ## How to contribute
 
 - Edit the **Markdown** files for content changes; the HTML versions are the presentation copies and get regenerated from the same content.
-- Keep English and Chinese versions in sync, or note in the PR which one is ahead.
+- Documents in `docs/` and `todo/` exist in English and Traditional Chinese; keep both in sync, or note in the PR which one is ahead. The README is English only.
 - When you decide something, tick it in `todo/` and add a row to the decision log there; update `docs/` in the same PR if the architecture changes.
 - Version bumps: v0.2 → v0.3 when the section 11 decisions are made and the client confirms section 10.
 - Put anything a teammate or the client sends us under `reference/`; put anything we author under `docs/`. Datasets and code go in `data/` and `src/` once the MVP starts in week 4.
@@ -93,13 +93,3 @@ Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo
 ## Notes on data
 
 The client provides **public data only**, no PII. All evaluation uses public datasets plus LLM-generated synthetic enterprise data. Do not commit any real customer or third-party data to this repository.
-
----
-
-## 中文摘要
-
-這是 CMU MISM Capstone 專案,客戶是 Virtual Gold Inc。目標是設計並評估一套本地優先的混合式企業 AI 助理:本地開源模型為主,量測回覆信心,只有在信心低且資料敏感度允許時才升級到雲端模型。
-
-目前進度在第 3 週:架構文件 v0.2 已完成,合併了組員的工具、資料集與預設方案提案。本週要在團隊會議上決定第十一節的待討論事項(工具選型、RAG 去留、敏感度分級、雲端供應商),然後把第十節的預設方案送客戶確認,第 4 週開工建 MVP。
-
-資料夾分四類:`docs/` 是我們自己寫的交付文件,`reference/` 是客戶與組員給的參考資料(唯讀),`todo/` 是待決事項與決策紀錄,之後的程式與資料放 `src/` 與 `data/`。架構文件請看 `docs/architecture-v0.2-zh.md`,英文版是 `docs/architecture-v0.2-en.md`,內容相同。
