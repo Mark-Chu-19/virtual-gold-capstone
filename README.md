@@ -23,10 +23,10 @@ The single source of truth is the architecture document. Same content in four fo
 
 | File | Language | Format |
 |---|---|---|
-| [`architecture-v0.2-en.md`](architecture-v0.2-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
-| [`architecture-v0.2-en.html`](architecture-v0.2-en.html) | English | HTML with SVG diagrams, open in a browser |
-| [`architecture-v0.2-zh.md`](architecture-v0.2-zh.md) | 繁體中文 | Markdown, Mermaid |
-| [`architecture-v0.2.html`](architecture-v0.2.html) | 繁體中文 | HTML with SVG |
+| [`docs/architecture-v0.2-en.md`](docs/architecture-v0.2-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
+| [`docs/architecture-v0.2-en.html`](docs/architecture-v0.2-en.html) | English | HTML with SVG diagrams, open in a browser |
+| [`docs/architecture-v0.2-zh.md`](docs/architecture-v0.2-zh.md) | 繁體中文 | Markdown, Mermaid |
+| [`docs/architecture-v0.2.html`](docs/architecture-v0.2.html) | 繁體中文 | HTML with SVG |
 
 Sections in the document:
 
@@ -47,14 +47,24 @@ Sections in the document:
 
 ```
 .
-├── README.md
-├── architecture-v0.2-en.md / .html      current architecture doc (English)
-├── architecture-v0.2-zh.md / .html      current architecture doc (Chinese)
-├── Virtual_Gold_Data_Architecture_Proposal_1.docx   teammate's Data & Architecture proposal (source for v0.2 merge)
-├── Virtual Gold Inc - AI Assistant.pdf  client's original capstone brief
-├── Proposed Weekly Structure.pdf        15-week course structure
-└── archive/                             v0.1 drafts, kept for history
+├── README.md                      start here: progress, open decisions, layout
+├── docs/                          documents WE write (the deliverables in progress)
+│   ├── architecture-v0.2-en.md    current architecture doc, English (Markdown, renders on GitHub)
+│   ├── architecture-v0.2-en.html  same, HTML with SVG diagrams
+│   ├── architecture-v0.2-zh.md    current architecture doc, Chinese
+│   ├── architecture-v0.2.html     same, HTML
+│   └── archive/                   superseded versions (v0.1), kept for history, do not edit
+├── reference/                     inputs we did NOT write; read-only
+│   ├── client/                    from Virtual Gold and the course
+│   │   ├── Virtual Gold Inc - AI Assistant.pdf    original capstone brief
+│   │   └── Proposed Weekly Structure.pdf          15-week course structure
+│   └── team/                      individual teammates' proposals and notes
+│       └── Virtual_Gold_Data_Architecture_Proposal_1.docx   Data & Architecture proposal (merged into v0.2)
+├── src/                           (from week 4) prototype code: router, confidence scoring, PII gate, eval harness
+└── data/                          (from week 4) synthetic datasets and benchmark subsets; never real data
 ```
+
+Rule of thumb: `docs/` is what we hand to the client, `reference/` is what we were handed, `src/` and `data/` are the prototype.
 
 ## Timeline (follows the course structure, not negotiable)
 
@@ -83,7 +93,7 @@ Sections in the document:
 - Edit the **Markdown** files for content changes; the HTML versions are the presentation copies and get regenerated from the same content.
 - Keep English and Chinese versions in sync, or note in the PR which one is ahead.
 - Version bumps: v0.2 → v0.3 when the section 11 decisions are made and the client confirms section 10.
-- Datasets and code will live in `data/` and `src/` once the MVP starts in week 4.
+- Put anything a teammate or the client sends us under `reference/`; put anything we author under `docs/`. Datasets and code go in `data/` and `src/` once the MVP starts in week 4.
 
 ## Notes on data
 
@@ -97,4 +107,4 @@ The client provides **public data only**, no PII. All evaluation uses public dat
 
 目前進度在第 3 週:架構文件 v0.2 已完成,合併了組員的工具、資料集與預設方案提案。本週要在團隊會議上決定第十一節的待討論事項(工具選型、RAG 去留、敏感度分級、雲端供應商),然後把第十節的預設方案送客戶確認,第 4 週開工建 MVP。
 
-架構文件請看 `architecture-v0.2-zh.md`,英文版是 `architecture-v0.2-en.md`,內容相同。
+資料夾分三類:`docs/` 是我們自己寫的交付文件,`reference/` 是客戶與組員給的參考資料(唯讀),之後的程式與資料放 `src/` 與 `data/`。架構文件請看 `docs/architecture-v0.2-zh.md`,英文版是 `docs/architecture-v0.2-en.md`,內容相同。
