@@ -1,0 +1,475 @@
+<title>Hybrid AI Assistant 架構草案</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F151B; --surface:#171F27; --ink:#E4E9EE; --muted:#98A5B3; --line:#2C3742;
+    --local:#5FB3AA; --local-soft:#16302D; --cloud:#8FA9D6; --cloud-soft:#1B2536;
+    --gold:#D2AB4E; --gold-soft:#2E2715; --warn:#E08A5E;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F151B; --surface:#171F27; --ink:#E4E9EE; --muted:#98A5B3; --line:#2C3742;
+  --local:#5FB3AA; --local-soft:#16302D; --cloud:#8FA9D6; --cloud-soft:#1B2536;
+  --gold:#D2AB4E; --gold-soft:#2E2715; --warn:#E08A5E;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.8;margin:0}
+.page{max-width:920px;margin:0 auto;padding:40px 24px 80px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.3;margin:0}
+h1{font-size:34px;font-weight:700;letter-spacing:.01em}
+h2{font-size:22px;font-weight:700;margin-top:56px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+h3{font-size:17px;font-weight:600;margin-top:28px}
+p{max-width:68ch;margin:12px 0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.sub{color:var(--muted);font-size:16px;max-width:60ch;margin-top:12px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;margin-top:28px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.meta div{padding:12px 14px 12px 0;border-right:1px solid var(--line);margin-right:14px}
+.meta div:last-child{border-right:0}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:2px 0 0;font-weight:500}
+ol,ul{max-width:70ch;padding-left:1.4em}
+li{margin:6px 0}
+li strong{font-weight:700}
+figure{margin:28px 0;padding:20px;background:var(--surface);border:1px solid var(--line)}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor}
+figcaption{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.6}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:16px 0}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--ink)}
+td:first-child{font-weight:500;white-space:nowrap}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:1px 8px;border:1px solid currentColor;border-radius:999px;white-space:nowrap}
+.lo{color:var(--local)} .mid{color:var(--gold)} .hi{color:var(--warn)}
+.principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
+.principles div{background:var(--surface);padding:16px 18px}
+.principles b{display:block;font-family:var(--serif);font-size:16px;margin-bottom:4px}
+.principles span{font-size:13.5px;color:var(--muted);line-height:1.6;display:block}
+.timeline{display:grid;grid-template-columns:repeat(15,1fr);gap:3px;margin:20px 0 8px;font-family:var(--mono);font-size:11px}
+.timeline .wk{padding:6px 0;text-align:center;border-top:4px solid var(--line);color:var(--muted)}
+.timeline .p1{border-top-color:var(--local)}
+.timeline .p2{border-top-color:var(--cloud)}
+.timeline .p3{border-top-color:var(--gold)}
+.timeline .brk{border-top-style:dotted}
+.timeline .mile{color:var(--ink);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:13px;color:var(--muted);margin-bottom:8px}
+.legend i{display:inline-block;width:18px;height:4px;vertical-align:middle;margin-right:6px}
+.questions li{padding:10px 0;border-bottom:1px dashed var(--line)}
+.questions em{font-style:normal;color:var(--muted);display:block;font-size:13.5px}
+.note{border-left:3px solid var(--gold);background:var(--gold-soft);padding:12px 16px;margin:20px 0;max-width:70ch;font-size:14px}
+.next{counter-reset:s;list-style:none;padding:0}
+.next li{position:relative;padding-left:2.2em}
+.next li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:.35em;width:1.5em;height:1.5em;border:1px solid var(--ink);border-radius:50%;font-family:var(--mono);font-size:11px;line-height:1.5em;text-align:center}
+.todo{list-style:none;padding:0;max-width:76ch}.todo li{padding:10px 0 10px 2.1em;border-bottom:1px dashed var(--line);position:relative}.todo li::before{content:"";position:absolute;left:.3em;top:1.05em;width:.85em;height:.85em;border:1.5px solid var(--gold);border-radius:2px}.todo em{font-style:normal;color:var(--muted);display:block;font-size:13.5px}
+footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+@media (max-width:600px){h1{font-size:28px}.meta div{border-right:0}}
+@media (prefers-reduced-motion:no-preference){a{transition:color .15s}}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">Capstone · Virtual Gold Inc · Week 3 · Scope &amp; Project Charter</div>
+  <h1>Hybrid AI Assistant 架構草案</h1>
+  <p class="sub">本地優先的混合式企業 AI 助理:以開源模型為主要智慧層,依信心分數與資料敏感度,選擇性升級到雲端模型。</p>
+  <dl class="meta">
+    <div><dt>版本</dt><dd>v0.2 團隊合併版</dd></div>
+    <div><dt>日期</dt><dd>2026-09-08</dd></div>
+    <div><dt>狀態</dt><dd>團隊討論中</dd></div>
+    <div><dt>團隊</dt><dd>CMU MISM · 5 人</dd></div>
+    <div><dt>客戶窗口</dt><dd>Urte Jesina</dd></div>
+  </dl>
+</header>
+
+<h2>一、問題與目標</h2>
+<p>企業想部署 AI 助理,但在資料隱私、安全、成本、模型可靠度與供應商依賴之間難以取捨。開源模型可控且隱私佳,但複雜任務的表現不一定夠;雲端模型能力強,卻帶來合規、安全與成本的疑慮。</p>
+<p>本專案要設計並評估一套混合架構:<strong>本地開源模型作為主要智慧層</strong>,對每個回覆<strong>量測信心分數</strong>,只有在必要時才<strong>把請求升級到雲端模型</strong>,同時讓敏感資料盡可能留在本地。</p>
+
+<h2>二、設計原則</h2>
+<div class="principles">
+  <div><b>本地優先</b><span>所有請求預設由本地模型處理。雲端是升級路徑,不是預設路徑。</span></div>
+  <div><b>資料分級決定走向</b><span>機密資料永遠不出本地,不論本地模型信心多低。</span></div>
+  <div><b>升級要有依據</b><span>每次升級都要能說出原因:分數、任務類型、預算,並留下紀錄。</span></div>
+  <div><b>元件可替換</b><span>模型、向量庫、雲端供應商都經由抽象介面接入,避免廠商鎖定。</span></div>
+</div>
+
+<h2>三、系統分層</h2>
+<p>整個系統只有一個地方會跨越信任邊界:路由層把已遮罩、最小化的內容送到雲端。其餘所有層都在企業內部網路內運作。</p>
+
+<figure>
+<svg viewBox="0 0 840 470" role="img" aria-label="系統分層圖:使用者介面、閘道、路由、本地推論、信心評分、知識層與治理層都在本地環境內;只有路由層透過單一通道把已遮罩的內容送到外部雲端模型並接收回覆。">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+    <marker id="arc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cloud)"/></marker>
+  </defs>
+  <!-- local region -->
+  <rect x="16" y="28" width="548" height="426" rx="6" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="32" y="50" font-size="12" font-weight="700" fill="var(--local)">本地環境 · 企業內部網路</text>
+
+  <!-- rows -->
+  <g font-size="12.5">
+    <rect x="40" y="66" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="85" font-weight="700">1 使用者介面層</text>
+    <text x="52" y="102" fill="var(--muted)" font-size="11.5">Web Chat UI · CLI · REST API</text>
+
+    <rect x="40" y="130" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="149" font-weight="700">2 閘道與政策層</text>
+    <text x="52" y="166" fill="var(--muted)" font-size="11.5">認證授權 · PII 偵測與遮罩 · 資料敏感度分級 · Prompt Injection 過濾 · 速率限制</text>
+
+    <rect x="40" y="194" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="52" y="213" font-weight="700">3 路由與編排層</text>
+    <text x="52" y="230" fill="var(--muted)" font-size="11.5">任務分類 · 政策檢查 · 升級決策 · 合併回覆</text>
+
+    <rect x="40" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="277" font-weight="700">4 本地推論層</text>
+    <text x="52" y="294" fill="var(--muted)" font-size="11.5">Ollama / vLLM · Llama 3.x, Qwen, Mistral</text>
+
+    <rect x="298" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="310" y="277" font-weight="700">5 信心評分模組</text>
+    <text x="310" y="294" fill="var(--muted)" font-size="11.5">logprob · 自我一致性 · 驗證模型 · 接地度</text>
+
+    <rect x="40" y="322" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="341" font-weight="700">6 知識層(RAG)</text>
+    <text x="52" y="358" fill="var(--muted)" font-size="11.5">本地 Embedding · Chroma / Qdrant / pgvector</text>
+
+    <rect x="298" y="322" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="310" y="341" font-weight="700">7 治理與觀測層</text>
+    <text x="310" y="358" fill="var(--muted)" font-size="11.5">稽核日誌 · 成本追蹤 · Benchmark · 模型來源管理</text>
+
+    <rect x="40" y="386" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="405" font-weight="700">8 安全基礎</text>
+    <text x="52" y="422" fill="var(--muted)" font-size="11.5">出站網路白名單 · 沙盒 · 祕密管理 · 模型 hash 與授權檢查</text>
+  </g>
+
+  <!-- vertical arrows -->
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)">
+    <line x1="290" y1="110" x2="290" y2="128"/>
+    <line x1="290" y1="174" x2="290" y2="192"/>
+    <line x1="160" y1="238" x2="160" y2="256"/>
+    <line x1="160" y1="302" x2="160" y2="320"/>
+  </g>
+  <!-- router <-> confidence -->
+  <line x1="419" y1="238" x2="419" y2="256" stroke="var(--gold)" stroke-width="1.2" marker-end="url(#ar)" marker-start="url(#ar)"/>
+  <text x="428" y="251" font-size="10.5" fill="var(--gold)">評分回傳</text>
+  <text x="168" y="251" font-size="10.5" fill="var(--muted)">生成</text>
+  <text x="168" y="315" font-size="10.5" fill="var(--muted)">檢索</text>
+  <!-- governance collects everything -->
+  <text x="52" y="446" font-size="10.5" fill="var(--muted)">層 7 記錄每一層的決策、延遲與成本</text>
+
+  <!-- cloud -->
+  <text x="608" y="50" font-size="12" font-weight="700" fill="var(--cloud)">外部 · 雲端供應商</text>
+  <rect x="608" y="194" width="212" height="44" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+  <text x="620" y="213" font-size="12.5" font-weight="700" fill="var(--cloud)">雲端升級層</text>
+  <text x="620" y="230" font-size="11.5" fill="var(--muted)">Claude / GPT / Gemini API</text>
+
+  <!-- boundary crossing -->
+  <line x1="540" y1="206" x2="606" y2="206" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#arc)"/>
+  <line x1="606" y1="226" x2="542" y2="226" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#arc)"/>
+  <text x="573" y="184" font-size="10.5" text-anchor="middle" fill="var(--cloud)">已遮罩、最小化</text>
+  <text x="573" y="252" font-size="10.5" text-anchor="middle" fill="var(--cloud)">回覆</text>
+  <text x="573" y="140" font-size="11" text-anchor="middle" fill="var(--local)" font-weight="700">信任邊界</text>
+  <line x1="573" y1="146" x2="573" y2="176" stroke="var(--local)" stroke-width="1" stroke-dasharray="3 3"/>
+</svg>
+<figcaption>圖一:系統分層。虛線框內全部在企業本地環境運作;唯一跨越信任邊界的通道,是路由層送往雲端的已遮罩內容與回傳的回覆。信心評分模組以金色標示,它是本專案的研究核心。這條通道的細節見圖三。</figcaption>
+</figure>
+
+<h2>四、核心請求流程</h2>
+<p>一個請求從進入到回覆,會經過三個決策點:敏感度分級、信心門檻、以及是否允許外送。三個決策的結果都寫入稽核日誌。</p>
+
+<figure class="scroll">
+<svg viewBox="0 0 960 340" role="img" aria-label="請求流程圖:請求經過閘道遮罩與分級,由本地模型生成並評分;信心達門檻即回覆;未達門檻時若敏感度允許外送,則遮罩後送雲端模型再回覆;若不允許外送,則回覆本地無法確定或轉人工。">
+  <defs>
+    <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+  </defs>
+  <g font-size="12.5">
+    <!-- row 1 -->
+    <rect x="16" y="40" width="96" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="64" y="70" text-anchor="middle" font-weight="700">使用者請求</text>
+
+    <rect x="150" y="40" width="160" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="230" y="60" text-anchor="middle" font-weight="700">閘道</text>
+    <text x="230" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">PII 遮罩 · 敏感度分級</text>
+
+    <rect x="348" y="40" width="160" height="50" rx="3" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5"/>
+    <text x="428" y="60" text-anchor="middle" font-weight="700" fill="var(--local)">本地模型生成</text>
+    <text x="428" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">含 RAG 檢索</text>
+
+    <rect x="546" y="40" width="110" height="50" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="601" y="70" text-anchor="middle" font-weight="700">信心評分</text>
+
+    <polygon points="694,65 760,32 826,65 760,98" fill="var(--surface)" stroke="currentColor"/>
+    <text x="760" y="61" text-anchor="middle" font-size="11.5">分數 ≥ 門檻?</text>
+    <text x="760" y="77" text-anchor="middle" font-size="10.5" fill="var(--muted)">門檻可依任務調整</text>
+
+    <rect x="856" y="40" width="90" height="50" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="901" y="70" text-anchor="middle" font-weight="700">回覆使用者</text>
+
+    <!-- row 2 -->
+    <polygon points="686,180 760,146 834,180 760,214" fill="var(--surface)" stroke="currentColor"/>
+    <text x="760" y="176" text-anchor="middle" font-size="11.5">敏感度允許外送?</text>
+    <text x="760" y="192" text-anchor="middle" font-size="10.5" fill="var(--muted)">公開 / 內部 可,機密 否</text>
+
+    <rect x="856" y="155" width="90" height="50" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+    <text x="901" y="175" text-anchor="middle" font-weight="700" fill="var(--cloud)">雲端模型</text>
+    <text x="901" y="193" text-anchor="middle" font-size="10.5" fill="var(--muted)">再遮罩、最小化</text>
+
+    <!-- row 3 -->
+    <rect x="660" y="262" width="200" height="50" rx="3" fill="var(--surface)" stroke="var(--warn)" stroke-width="1.5"/>
+    <text x="760" y="282" text-anchor="middle" font-weight="700" fill="var(--warn)">回覆「本地無法確定」</text>
+    <text x="760" y="300" text-anchor="middle" font-size="11" fill="var(--muted)">或轉人工處理</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#fa)">
+    <line x1="112" y1="65" x2="148" y2="65"/>
+    <line x1="310" y1="65" x2="346" y2="65"/>
+    <line x1="508" y1="65" x2="544" y2="65"/>
+    <line x1="656" y1="65" x2="692" y2="65"/>
+    <line x1="826" y1="65" x2="854" y2="65"/>
+    <line x1="760" y1="98" x2="760" y2="144"/>
+    <line x1="834" y1="180" x2="854" y2="180"/>
+    <line x1="901" y1="155" x2="901" y2="92"/>
+    <line x1="760" y1="214" x2="760" y2="260"/>
+  </g>
+  <g font-size="11" font-weight="700">
+    <text x="838" y="58" fill="var(--local)">是</text>
+    <text x="768" y="124" fill="var(--warn)">否</text>
+    <text x="838" y="173" fill="var(--cloud)">是</text>
+    <text x="768" y="240" fill="var(--warn)">否</text>
+  </g>
+  <text x="912" y="130" font-size="10.5" fill="var(--cloud)" text-anchor="middle">回覆</text>
+</svg>
+<figcaption>圖二:核心請求流程。信心評分決定是否需要升級;敏感度分級決定升級是否被允許。兩者都不通過時,系統寧可承認不確定,也不把機密資料送出。</figcaption>
+</figure>
+
+<h2>五、信心評分:本專案的研究核心</h2>
+<p>客戶提案中「量測回覆的信心」是整個題目的技術亮點。建議把它做成獨立模組,同時支援多種策略,並在 Benchmark 中互相比較。期中簡報可以用「升級率、回答品質、成本」三個維度呈現不同策略的取捨。</p>
+
+<div class="scroll">
+<table>
+  <thead><tr><th>策略</th><th>原理</th><th>額外成本</th><th>準確度傾向</th><th>適合場景</th></tr></thead>
+  <tbody>
+    <tr><td>Token 機率</td><td>平均 logprob 或 entropy,直接由模型輸出取得</td><td><span class="pill lo">幾乎為零</span></td><td>普通,容易過度自信</td><td>第一版 MVP 的基準線</td></tr>
+    <tr><td>自我一致性</td><td>同一問題採樣 N 次,比較答案是否一致</td><td><span class="pill hi">延遲 × N</span></td><td>較好</td><td>有明確答案的問答、計算</td></tr>
+    <tr><td>驗證模型</td><td>用一個小型本地模型當 judge,替回覆評分</td><td><span class="pill mid">多一次小模型推論</span></td><td>好,但依賴 judge 品質</td><td>開放式生成、摘要</td></tr>
+    <tr><td>檢索接地度</td><td>回覆內容是否被 RAG 文件支持</td><td><span class="pill lo">低</span></td><td>對知識問答很好</td><td>企業內部知識庫問答</td></tr>
+    <tr><td>任務啟發式</td><td>依任務類型直接決定,例如多步推理預設升級</td><td><span class="pill lo">零</span></td><td>粗糙,但可預測</td><td>與其他策略疊加使用</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="note">建議 MVP 先做 Token 機率加任務啟發式,因為成本最低、最快能跑出第一批數據。之後再逐一加入其他策略做比較。</div>
+
+<h2>六、去識別化與還原管線 <span class="pill mid">待討論</span></h2>
+<p>圖一那條「已遮罩、最小化」的箭頭,展開後是一條有去有回的管線。真的要往雲走時,這條管線本身就是設計特點,而且「回來之後還原」這一步最常被漏掉。</p>
+<ol>
+  <li><strong>偵測:</strong>在請求和檢索到的文件片段裡找出敏感實體,例如人名、公司名、金額、帳號、日期。用 NER 模型加正則規則,例如 Presidio 這類工具。</li>
+  <li><strong>替換成佔位符:</strong>不是塗黑,而是換成編號,例如「王大明」變成 PERSON_1。同一個實體在整段對話中要一直對應同一個編號。</li>
+  <li><strong>對照表只存本地:</strong>PERSON_1 對應王大明的這張表,永遠不離開本地環境。</li>
+  <li><strong>最小化後送雲端:</strong>只送這個問題需要的片段,不送整份文件或整段對話歷史。</li>
+  <li><strong>還原:</strong>雲端回覆裡的佔位符,在本地依對照表換回真名,再回給使用者。</li>
+</ol>
+<p>雲端供應商即使把請求存下來,拿到的也是無法對應到真實個體的內容。這一點可以直接寫進安全評估,回應客戶對合規與國際模型的疑慮。</p>
+<figure class="scroll">
+<svg viewBox="0 0 850 330" role="img" aria-label="去識別化與還原管線:原始請求在本地偵測敏感實體、替換成佔位符並最小化後才送雲端;對照表只存本地;雲端回覆經對照表還原後回給使用者。">
+  <defs>
+    <marker id="da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+    <marker id="dc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--cloud)"/></marker>
+    <marker id="dg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--gold)"/></marker>
+  </defs>
+  <rect x="16" y="28" width="600" height="290" rx="6" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="32" y="50" font-size="12" font-weight="700" fill="var(--local)">本地環境 · 企業內部網路</text>
+  <text x="638" y="50" font-size="11" font-weight="700" text-anchor="middle" fill="var(--local)">信任邊界</text>
+  <line x1="638" y1="58" x2="638" y2="300" stroke="var(--local)" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="660" y="50" font-size="12" font-weight="700" fill="var(--cloud)">外部</text>
+
+  <g font-size="12.5">
+    <rect x="36" y="70" width="100" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="86" y="100" text-anchor="middle" font-weight="700">原始請求</text>
+
+    <rect x="166" y="70" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="231" y="90" text-anchor="middle" font-weight="700">偵測敏感實體</text>
+    <text x="231" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">NER + 正則規則</text>
+
+    <rect x="326" y="70" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="391" y="90" text-anchor="middle" font-weight="700">替換佔位符</text>
+    <text x="391" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">PERSON_1 · ORG_1</text>
+
+    <rect x="486" y="70" width="110" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="541" y="90" text-anchor="middle" font-weight="700">最小化</text>
+    <text x="541" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">只送必要片段</text>
+
+    <rect x="400" y="142" width="180" height="46" rx="3" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="490" y="161" text-anchor="middle" font-weight="700" fill="var(--gold)">對照表</text>
+    <text x="490" y="178" text-anchor="middle" font-size="11" fill="var(--muted)">PERSON_1 = 王大明 · 永不離開本地</text>
+
+    <rect x="486" y="210" width="110" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="541" y="230" text-anchor="middle" font-weight="700">還原</text>
+    <text x="541" y="248" text-anchor="middle" font-size="11" fill="var(--muted)">佔位符換回真名</text>
+
+    <rect x="326" y="210" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="391" y="240" text-anchor="middle" font-weight="700">回覆使用者</text>
+
+    <rect x="660" y="70" width="170" height="50" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+    <text x="745" y="90" text-anchor="middle" font-weight="700" fill="var(--cloud)">雲端模型</text>
+    <text x="745" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">只看得到 PERSON_1、ORG_1</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#da)">
+    <line x1="136" y1="95" x2="164" y2="95"/>
+    <line x1="296" y1="95" x2="324" y2="95"/>
+    <line x1="456" y1="95" x2="484" y2="95"/>
+    <line x1="484" y1="235" x2="458" y2="235"/>
+  </g>
+  <g stroke="var(--gold)" stroke-width="1.2" fill="none">
+    <polyline points="391,120 391,165 398,165" marker-end="url(#dg)"/>
+    <line x1="541" y1="188" x2="541" y2="208" marker-end="url(#dg)"/>
+  </g>
+  <text x="360" y="150" font-size="10.5" fill="var(--gold)">寫入</text>
+  <text x="548" y="202" font-size="10.5" fill="var(--gold)">查表</text>
+
+  <line x1="596" y1="95" x2="658" y2="95" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#dc)"/>
+  <text x="627" y="62" font-size="10.5" text-anchor="middle" fill="var(--cloud)">只有佔位符</text>
+  <polyline points="745,120 745,235 598,235" fill="none" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#dc)"/>
+  <text x="752" y="185" font-size="10.5" fill="var(--cloud)">含佔位符的回覆</text>
+
+  <text x="32" y="300" font-size="10.5" fill="var(--muted)">治理層指標:送出 token 數 · 替換實體數 · 還原成功率 · 漏檢率</text>
+</svg>
+<figcaption>圖三:去識別化與還原管線。敏感實體在本地換成佔位符,對照表留在本地,雲端只看到佔位符;回覆進來後再依對照表換回真名。這條管線是「敏感資料留在本地」的實際證據。</figcaption>
+</figure>
+
+<h3>四個待討論的設計難點</h3>
+<div class="scroll">
+<table>
+  <thead><tr><th>難點</th><th>說明</th><th>候選做法</th></tr></thead>
+  <tbody>
+    <tr><td>佔位符破壞推理</td><td>「這筆金額比上季高多少」,金額換成 AMOUNT_1 雲端就算不出來。</td><td>分級處理:身分類換編號;數值類用保留格式的假值,算完再按比例還原;或只保留計算所需的數字。</td></tr>
+    <tr><td>偵測漏網率</td><td>NER 抓不到的實體會直接漏出去。</td><td>用合成資料故意埋入各種格式的敏感資訊,量測管線抓到幾成。這本身是很好的實驗題目。</td></tr>
+    <tr><td>語意洩漏</td><td>名字換掉了,但「布魯克林那家 1997 年成立的顧問公司」仍可推斷身分。</td><td>無法完全防止。由敏感度分級把這類內容判為不可外送,並評估風險等級。</td></tr>
+    <tr><td>還原正確性</td><td>雲端模型可能把 PERSON_1 改寫成「Person 1」或「那位人士」,還原時對不上。</td><td>容錯比對;對不上時標記給使用者,不要靜默略過。</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>在架構中的位置:</strong>偵測與替換屬於第 2 層閘道;對照表、最小化與還原屬於第 3 層路由。<strong>可量化指標</strong>放進第 7 層治理儀表板:每個請求送出的 token 數、被替換的實體數、還原成功率、漏檢率。這些數字把「隱私」變成看得到的指標。</p>
+
+<h2>七、評測設計與資料集</h2>
+<p>同一批測試題跑三種配置,才能回答客戶真正的問題:混合架構省了多少成本、犧牲了多少品質、洩漏了多少資料。這是期中與期末簡報的主要實驗設計。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>配置</th><th>說明</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td>純本地</td><td>所有請求只由本地模型回答,不升級</td><td>品質下限、成本下限、隱私上限</td></tr>
+    <tr><td>混合</td><td>本地優先,依信心分數與敏感度決定升級</td><td>本專案的提案,量測它落在兩端之間的哪裡</td></tr>
+    <tr><td>純雲端</td><td>所有請求直接送雲端模型</td><td>品質上限、成本上限、隱私下限</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>每個配置都記錄六個指標:</strong>準確率、延遲、每題成本、升級率、PII 洩漏率、Prompt Injection 抵抗力。混合配置另外畫出第五節提到的升級率對正確率曲線、AUROC 與校準誤差。</p>
+<h3>資料集與基準</h3>
+<p>客戶只提供公開資料,所以每個評測面向都用既有的公開資料集,不從零標註。所有項目皆公開、授權允許、不含個資。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>用途</th><th>資料集 / 工具</th><th>來源</th><th>為什麼適合</th></tr></thead>
+  <tbody>
+    <tr><td>一般能力落差</td><td>MMLU(子集)</td><td>Hugging Face cais/mmlu</td><td>量測小型本地模型與雲端模型在各知識領域的品質差距</td></tr>
+    <tr><td>推理與升級驗證</td><td>GSM8K</td><td>Hugging Face openai/gsm8k</td><td>本地模型常答不好的數學推理題,用來驗證路由有沒有正確升級</td></tr>
+    <tr><td>企業 / SMB 情境</td><td>客服工單、B2B SaaS 樣本</td><td>Hugging Face Tobi-Bueck/customer-support-tickets、Kaludi/Customer-Support-Responses;Kaggle sarahdaily/b2b-saas-hubspot</td><td>只當樣式與結構參考,團隊用 LLM 生成合成的工單、郵件、備忘錄,全程不用真實資料</td></tr>
+    <tr><td>路由基準</td><td>RouterBench</td><td>arXiv:2403.12031</td><td>專為多模型路由的成本、品質、延遲取捨設計的基準與評測方法</td></tr>
+    <tr><td>信心校準 / 幻覺偵測</td><td>TruthfulQA、HaluEval</td><td>Hugging Face;GitHub EdinburghNLP/awesome-hallucination-detection</td><td>測信心分數是否真的追蹤事實正確性,對應提案中的信心評分目標</td></tr>
+    <tr><td>安全:PII 遮罩</td><td>Presidio 評測模組</td><td>GitHub microsoft/presidio</td><td>內建評測方法,不必自建標註語料;也可用來量測第六節的漏檢率</td></tr>
+    <tr><td>安全:Prompt Injection</td><td>Prompt Injection &amp; Benign Prompt Dataset</td><td>Kaggle cyberprince</td><td>注入與正常提示的標註集,用來紅隊測試安全閘道</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="note">第 7 週期中簡報前,至少要有「純本地 vs 混合」在 MMLU 子集與 GSM8K 上的準確率與升級率。三配置完整跑完放在第 9 到 11 週。</div>
+
+<h2>八、安全與治理重點</h2>
+<ul>
+  <li><strong>出站網路白名單:</strong>本地推論服務只能連指定的雲端 API,防止模型或套件在背景外傳資料。</li>
+  <li><strong>模型供應鏈檢查:</strong>記錄每個模型的來源、hash 與授權條款。這直接回應客戶對「國際 AI 模型」風險的關注,可把 Qwen、DeepSeek 等模型的評估納入範圍。</li>
+  <li><strong>雙向 Guardrail:</strong>輸入端擋 Prompt Injection,輸出端擋敏感資訊外洩。</li>
+  <li><strong>完整稽核軌跡:</strong>每次升級都能回答「送了什麼、為什麼送、花了多少」。</li>
+  <li><strong>沙盒環境:</strong>學生在自己的電腦上以公開或合成資料作業,不接觸企業內部系統。</li>
+</ul>
+
+<h2>九、範圍與時程</h2>
+<p>時程依課程 15 週結構安排,不變。工作切成三段,第 7 週期中簡報前要跑出第一批數據。</p>
+<div class="legend">
+  <span><i style="background:var(--local)"></i>MVP:本地模型 + 基本信心策略 + 路由 + PII 閘道 + 評測 harness</span>
+  <span><i style="background:var(--cloud)"></i>擴充:三配置完整評測、多策略比較、去識別化與還原、紅隊測試</span>
+  <span><i style="background:var(--gold)"></i>收斂:Benchmark 報告、治理建議、最終簡報</span>
+</div>
+<div class="timeline">
+  <div class="wk">W1</div><div class="wk">W2</div><div class="wk mile">W3</div>
+  <div class="wk p1">W4</div><div class="wk p1">W5</div><div class="wk p1">W6</div><div class="wk p1 mile">W7</div>
+  <div class="wk brk">W8</div>
+  <div class="wk p2">W9</div><div class="wk p2">W10</div><div class="wk p2">W11</div>
+  <div class="wk p3">W12</div><div class="wk p3">W13</div><div class="wk p3 brk">W14</div><div class="wk p3 mile">W15</div>
+</div>
+<p style="font-size:13px;color:var(--muted)">W3 本週,架構定案。W7 期中簡報。W8 秋假,W14 感恩節。W15 最終交付。</p>
+
+<h3>MVP:團隊承諾交付</h3>
+<p>五個人都是全職研究生並修滿課程,這個專案約占一學期三分之一的學分。因此目標是「可運作的原型加嚴謹的評測」,不是產品級平台。盡量用現成的開源元件,把力氣放在整合、評測與安全治理分析。</p>
+<ul>
+  <li><strong>路由與編排:</strong>團隊撰寫路由政策;閘道工具待定(見第十一節第 1 項)。</li>
+  <li><strong>本地推論:</strong>Llama 3.1 8B 為主力,Qwen3 8B 為程式與多語言題目的備選;透過 Ollama 在團隊筆電上跑。</li>
+  <li><strong>信心評分:</strong>自我一致性或 token logprob 作為基準線訊號。</li>
+  <li><strong>PII 遮罩閘道:</strong>位於路由與任何雲端呼叫之間,直接落實「敏感資料留在本地」。</li>
+  <li><strong>雲端升級:</strong>一家主流企業級 API,只在低信心時呼叫。</li>
+  <li><strong>評測與日誌 harness:</strong>第七節的三配置與六指標。</li>
+  <li><strong>待定:</strong>最簡版 RAG 知識層、資料敏感度分級(見第十一節第 2、3 項)。</li>
+</ul>
+<h3>Stretch goals:MVP 提早完成才做</h3>
+<ul>
+  <li>任務感知路由:依問題類型與複雜度路由,而非只看信心分數,以 RouterBench 方法評估。</li>
+  <li>第二個本地模型 A/B 比較,或用訓練式路由器取代門檻規則。</li>
+  <li>去識別化管線的數值類假值處理與還原容錯。</li>
+  <li>更多 Prompt Injection 與 jailbreak 類別的紅隊測試。</li>
+  <li>給高階主管的摘要簡報,把發現轉成治理建議。</li>
+</ul>
+
+<h2>十、預設方案與待客戶確認的假設</h2>
+<p>客戶希望團隊直接提出預設方案,而不是把問題丟回去。以下每一項都給了一個預設,團隊會照此進行,除非客戶在第 4 週開工前另有指示。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>項目</th><th>預設方案</th><th>理由</th><th>客戶可調整處</th></tr></thead>
+  <tbody>
+    <tr><td>敏感資料分級</td><td>三級:公開、內部、機密。由團隊依常見企業分級定義,機密永不外送。</td><td>客戶尚未提供分級標準,先給一個可運作的預設。</td><td>提供自家分級標準即替換。</td></tr>
+    <tr><td>升級核准</td><td>全自動,每次升級寫入稽核日誌;人工核准列為 stretch。</td><td>一學期內可實作,且符合「升級要有依據」原則。</td><td>若要求人工核准,在流程第二決策點加審核。</td></tr>
+    <tr><td>雲端供應商</td><td>MVP 只接一家:OpenAI 或 Anthropic,兩家都公開企業級資料保留承諾。</td><td>減少變數;多供應商比較列為 stretch。</td><td>指定供應商、地區或合規限制。</td></tr>
+    <tr><td>國際開源模型</td><td>Qwen3 8B 作為備選並納入供應鏈檢查(來源、hash、授權)。</td><td>客戶提案明確關切國際模型風險,納入評估才能給結論。</td><td>可要求排除。</td></tr>
+    <tr><td>硬體與模型大小</td><td>8B 級模型 4-bit 量化,約 6GB 記憶體,在團隊筆電上跑。</td><td>五台筆電可行的上限。</td><td>提供 GPU 則可測 14B 級。</td></tr>
+    <tr><td>數值類敏感資料</td><td>MVP 一律換成佔位符;保留格式的假值列為 stretch。</td><td>先確保不外洩,再追求可計算。</td><td>見第十一節第 4 項。</td></tr>
+    <tr><td>治理框架</td><td>NIST AI RMF(Govern、Map、Measure、Manage),標註 ISO/IEC 42001 可延伸之處。</td><td>免費、自我評估、適合一學期的實務風險評估。</td><td>需認證等級則改以 ISO 42001 為主。</td></tr>
+    <tr><td>資料來源</td><td>全部使用第七節的公開資料集加 LLM 生成的合成資料,不用任何真實資料。</td><td>客戶只提供公開資料。</td><td>提供範例文件或格式可作為額外種子。</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>十一、團隊待討論事項 <span class="pill mid">代辦</span></h2>
+<ul class="todo">
+  <li><strong>工具選型,尚未定案。</strong>組員提案:LiteLLM 當路由閘道、Ollama 跑本地模型、Presidio 做 PII 偵測、RouteLLM 的方法做路由訊號。<em>要確認:LiteLLM 能否掛自訂路由政策與去識別化鉤子;RouteLLM 是「看問題」的事前路由,和「看回答」的事後信心評分是兩回事,要分開評估;Ollama 取 logprobs 是否方便,還是改用 vLLM。</em></li>
+  <li><strong>RAG 知識層留不留。</strong>組員版沒有,本草案有。<em>影響:企業文件問答的示範價值、檢索接地度這個信心策略、去識別化是否要處理文件片段。傾向保留最簡版,時間不夠再砍並告知客戶。</em></li>
+  <li><strong>資料敏感度分級是否納入 MVP。</strong>組員版只有 PII 遮罩,沒有「機密永不外送」的規則。<em>實作上只是路由層多一條規則,成本低,建議納入。</em></li>
+  <li><strong>去識別化與還原管線放 MVP 還是 stretch。</strong><em>還原這一步組員版沒有;數值類用佔位符還是假值也要一起定。</em></li>
+  <li><strong>本地模型與硬體。</strong>Llama 3.1 8B 主力、Qwen3 8B 備選。<em>確認五台筆電的記憶體與 GPU,決定量化位元。</em></li>
+  <li><strong>雲端供應商二選一。</strong>OpenAI 或 Anthropic。<em>比較企業資料保留條款與價格後決定。</em></li>
+  <li><strong>W7 期中要展示哪些數據。</strong><em>建議至少:純本地 vs 混合在 MMLU 子集與 GSM8K 上的準確率與升級率。</em></li>
+  <li><strong>組員提案文件待修正。</strong><em>Llama 3.3 8B 應為 Llama 3.1 8B(3.3 只有 70B);Qwen3 7B 應為 Qwen3 8B(7B 是 Qwen2.5);圖中「高信心直接回覆」的箭頭不應經過 PII 閘道;模型數據改引 Meta 與 Qwen 官方 model card,框架改引 NIST 原文;時程對齊課程的 W7 期中與 W8 秋假。</em></li>
+  <li><strong>分工。</strong><em>路由、模型與推論、評測 harness、安全與去識別化、文件與簡報,五個人各認領一塊。</em></li>
+</ul>
+
+<h2>十二、下一步</h2>
+<ol class="next">
+  <li>本週團隊會議走完第十一節的待討論清單,先定工具選型與 RAG 去留。</li>
+  <li>把第十節的預設方案送客戶確認;客戶不反對即照預設進行。</li>
+  <li>第 4 週開工:確定本地模型與推論框架,搭起評測 harness 骨架,目標 W7 前跑出純本地 vs 混合的第一批數據。</li>
+</ol>
+
+<footer>Hybrid AI Assistant 架構草案 v0.2 團隊合併版 · Capstone for Virtual Gold Inc · 2026-09-08</footer>
+</div>

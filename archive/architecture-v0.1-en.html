@@ -1,0 +1,389 @@
+<title>Hybrid AI Assistant Architecture Draft</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F151B; --surface:#171F27; --ink:#E4E9EE; --muted:#98A5B3; --line:#2C3742;
+    --local:#5FB3AA; --local-soft:#16302D; --cloud:#8FA9D6; --cloud-soft:#1B2536;
+    --gold:#D2AB4E; --gold-soft:#2E2715; --warn:#E08A5E;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F151B; --surface:#171F27; --ink:#E4E9EE; --muted:#98A5B3; --line:#2C3742;
+  --local:#5FB3AA; --local-soft:#16302D; --cloud:#8FA9D6; --cloud-soft:#1B2536;
+  --gold:#D2AB4E; --gold-soft:#2E2715; --warn:#E08A5E;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0}
+.page{max-width:920px;margin:0 auto;padding:40px 24px 80px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.25;margin:0}
+h1{font-size:36px;font-weight:700}
+h2{font-size:23px;font-weight:700;margin-top:56px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+h3{font-size:18px;font-weight:600;margin-top:28px}
+p{max-width:68ch;margin:12px 0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.sub{color:var(--muted);font-size:18px;max-width:60ch;margin-top:12px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;margin-top:28px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.meta div{padding:12px 14px 12px 0;border-right:1px solid var(--line);margin-right:14px}
+.meta div:last-child{border-right:0}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:2px 0 0;font-weight:500}
+ol,ul{max-width:70ch;padding-left:1.4em}
+li{margin:6px 0}
+figure{margin:28px 0;padding:20px;background:var(--surface);border:1px solid var(--line)}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor}
+figcaption{font-size:14px;color:var(--muted);margin-top:14px;line-height:1.55}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:16px 0}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--ink)}
+td:first-child{font-weight:500;white-space:nowrap}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:1px 8px;border:1px solid currentColor;border-radius:999px;white-space:nowrap}
+.lo{color:var(--local)} .mid{color:var(--gold)} .hi{color:var(--warn)}
+.principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
+.principles div{background:var(--surface);padding:16px 18px}
+.principles b{display:block;font-family:var(--serif);font-size:17px;margin-bottom:4px}
+.principles span{font-size:14px;color:var(--muted);line-height:1.5;display:block}
+.timeline{display:grid;grid-template-columns:repeat(15,1fr);gap:3px;margin:20px 0 8px;font-family:var(--mono);font-size:11px}
+.timeline .wk{padding:6px 0;text-align:center;border-top:4px solid var(--line);color:var(--muted)}
+.timeline .p1{border-top-color:var(--local)}
+.timeline .p2{border-top-color:var(--cloud)}
+.timeline .p3{border-top-color:var(--gold)}
+.timeline .brk{border-top-style:dotted}
+.timeline .mile{color:var(--ink);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:14px;color:var(--muted);margin-bottom:8px}
+.legend i{display:inline-block;width:18px;height:4px;vertical-align:middle;margin-right:6px}
+.questions li{padding:10px 0;border-bottom:1px dashed var(--line)}
+.questions em{font-style:normal;color:var(--muted);display:block;font-size:14px}
+.note{border-left:3px solid var(--gold);background:var(--gold-soft);padding:12px 16px;margin:20px 0;max-width:70ch;font-size:15px}
+.next{counter-reset:s;list-style:none;padding:0}
+.next li{position:relative;padding-left:2.2em}
+.next li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:.3em;width:1.5em;height:1.5em;border:1px solid var(--ink);border-radius:50%;font-family:var(--mono);font-size:11px;line-height:1.5em;text-align:center}
+footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+@media (max-width:600px){h1{font-size:28px}.meta div{border-right:0}}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">Capstone · Virtual Gold Inc · Week 3 · Scope &amp; Project Charter</div>
+  <h1>Hybrid AI Assistant Architecture Draft</h1>
+  <p class="sub">A local-first enterprise AI assistant: open-source models are the primary intelligence layer, and requests escalate to cloud models only when confidence scores and data sensitivity allow.</p>
+  <dl class="meta">
+    <div><dt>Version</dt><dd>v0.1 draft</dd></div>
+    <div><dt>Date</dt><dd>2026-09-07</dd></div>
+    <div><dt>Status</dt><dd>For client review</dd></div>
+    <div><dt>Client contact</dt><dd>Urte Jesina</dd></div>
+  </dl>
+</header>
+
+<h2>1. Problem and objective</h2>
+<p>Organizations want to deploy AI assistants but struggle to balance data privacy, security, cost, model reliability, and vendor dependence. Open-source models offer control and privacy but may fall short on complex tasks. Cloud models are more capable but raise compliance, security, and cost concerns.</p>
+<p>This project designs and evaluates a hybrid architecture: <strong>local open-source models act as the primary intelligence layer</strong>, every response gets a <strong>measured confidence score</strong>, and requests are <strong>escalated to cloud models only when necessary</strong>, keeping sensitive data local whenever possible.</p>
+
+<h2>2. Design principles</h2>
+<div class="principles">
+  <div><b>Local first</b><span>Every request is handled by a local model by default. The cloud is an escalation path, not the default path.</span></div>
+  <div><b>Data classification decides routing</b><span>Confidential data never leaves the local environment, regardless of how low local confidence is.</span></div>
+  <div><b>Escalation must be justified</b><span>Every escalation can state its reason: score, task type, budget. All of it is logged.</span></div>
+  <div><b>Replaceable components</b><span>Models, vector stores, and cloud providers plug in through abstract interfaces to avoid vendor lock-in.</span></div>
+</div>
+
+<h2>3. System layers</h2>
+<p>There is exactly one place where the system crosses the trust boundary: the routing layer sends redacted, minimized content to the cloud. Every other layer runs inside the enterprise network.</p>
+
+<figure>
+<svg viewBox="0 0 840 470" role="img" aria-label="Layered system diagram: the user interface, gateway, router, local inference, confidence scoring, knowledge and governance layers all sit inside the local environment; only the router sends redacted content to an external cloud model over a single channel and receives the reply.">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+    <marker id="arc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cloud)"/></marker>
+  </defs>
+  <rect x="16" y="28" width="548" height="426" rx="6" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="32" y="50" font-size="12" font-weight="700" fill="var(--local)">LOCAL ENVIRONMENT · ENTERPRISE NETWORK</text>
+
+  <g font-size="12.5">
+    <rect x="40" y="66" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="85" font-weight="700">1 User interface</text>
+    <text x="52" y="102" fill="var(--muted)" font-size="11.5">Web chat UI · CLI · REST API</text>
+
+    <rect x="40" y="130" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="149" font-weight="700">2 Gateway &amp; policy</text>
+    <text x="52" y="166" fill="var(--muted)" font-size="11.5">Auth · PII detection &amp; redaction · sensitivity classification · prompt-injection filter · rate limiting</text>
+
+    <rect x="40" y="194" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="52" y="213" font-weight="700">3 Router &amp; orchestration</text>
+    <text x="52" y="230" fill="var(--muted)" font-size="11.5">Task classification · policy check · escalation decision · response assembly</text>
+
+    <rect x="40" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="277" font-weight="700">4 Local inference</text>
+    <text x="52" y="294" fill="var(--muted)" font-size="11.5">Ollama / vLLM · Llama 3.x, Qwen, Mistral</text>
+
+    <rect x="298" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="310" y="277" font-weight="700">5 Confidence scoring</text>
+    <text x="310" y="294" fill="var(--muted)" font-size="11.5">logprob · self-consistency · verifier · grounding</text>
+
+    <rect x="40" y="322" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="341" font-weight="700">6 Knowledge (RAG)</text>
+    <text x="52" y="358" fill="var(--muted)" font-size="11.5">Local embeddings · Chroma / Qdrant / pgvector</text>
+
+    <rect x="298" y="322" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="310" y="341" font-weight="700">7 Governance &amp; observability</text>
+    <text x="310" y="358" fill="var(--muted)" font-size="11.5">Audit log · cost tracking · benchmarks · model provenance</text>
+
+    <rect x="40" y="386" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="405" font-weight="700">8 Security foundation</text>
+    <text x="52" y="422" fill="var(--muted)" font-size="11.5">Egress allow-list · sandbox · secrets management · model hash &amp; license checks</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)">
+    <line x1="290" y1="110" x2="290" y2="128"/>
+    <line x1="290" y1="174" x2="290" y2="192"/>
+    <line x1="160" y1="238" x2="160" y2="256"/>
+    <line x1="160" y1="302" x2="160" y2="320"/>
+  </g>
+  <line x1="419" y1="238" x2="419" y2="256" stroke="var(--gold)" stroke-width="1.2" marker-end="url(#ar)" marker-start="url(#ar)"/>
+  <text x="428" y="251" font-size="10.5" fill="var(--gold)">score</text>
+  <text x="168" y="251" font-size="10.5" fill="var(--muted)">generate</text>
+  <text x="168" y="315" font-size="10.5" fill="var(--muted)">retrieve</text>
+  <text x="52" y="446" font-size="10.5" fill="var(--muted)">Layer 7 records every layer's decisions, latency and cost</text>
+
+  <text x="608" y="50" font-size="12" font-weight="700" fill="var(--cloud)">EXTERNAL · CLOUD PROVIDERS</text>
+  <rect x="608" y="194" width="212" height="44" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+  <text x="620" y="213" font-size="12.5" font-weight="700" fill="var(--cloud)">Cloud escalation</text>
+  <text x="620" y="230" font-size="11.5" fill="var(--muted)">Claude / GPT / Gemini API</text>
+
+  <line x1="540" y1="206" x2="606" y2="206" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#arc)"/>
+  <line x1="606" y1="226" x2="542" y2="226" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#arc)"/>
+  <text x="573" y="184" font-size="10.5" text-anchor="middle" fill="var(--cloud)">redacted, minimized</text>
+  <text x="573" y="252" font-size="10.5" text-anchor="middle" fill="var(--cloud)">reply</text>
+  <text x="573" y="140" font-size="11" text-anchor="middle" fill="var(--local)" font-weight="700">trust boundary</text>
+  <line x1="573" y1="146" x2="573" y2="176" stroke="var(--local)" stroke-width="1" stroke-dasharray="3 3"/>
+</svg>
+<figcaption>Figure 1. System layers. Everything inside the dashed box runs in the enterprise's local environment. The only channel crossing the trust boundary carries redacted content from the router to the cloud and the reply back. The confidence scoring module, in gold, is the research core of this project. See Figure 3 for the detail of this channel.</figcaption>
+</figure>
+
+<h2>4. Core request flow</h2>
+<p>A request passes three decision points on its way to a reply: sensitivity classification, the confidence threshold, and whether escalation is permitted. All three outcomes are written to the audit log.</p>
+
+<figure class="scroll">
+<svg viewBox="0 0 960 340" role="img" aria-label="Request flow: the gateway redacts and classifies the request, the local model generates and is scored; if confidence meets the threshold the reply is returned; otherwise, if sensitivity permits, the redacted request goes to a cloud model; if not, the system replies that it cannot answer locally or hands off to a human.">
+  <defs>
+    <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+  </defs>
+  <g font-size="12.5">
+    <rect x="16" y="40" width="96" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="64" y="70" text-anchor="middle" font-weight="700">User request</text>
+
+    <rect x="150" y="40" width="160" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="230" y="60" text-anchor="middle" font-weight="700">Gateway</text>
+    <text x="230" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">PII redaction · classify</text>
+
+    <rect x="348" y="40" width="160" height="50" rx="3" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5"/>
+    <text x="428" y="60" text-anchor="middle" font-weight="700" fill="var(--local)">Local model</text>
+    <text x="428" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">generate with RAG</text>
+
+    <rect x="546" y="40" width="110" height="50" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="601" y="70" text-anchor="middle" font-weight="700">Confidence</text>
+
+    <polygon points="694,65 760,32 826,65 760,98" fill="var(--surface)" stroke="currentColor"/>
+    <text x="760" y="61" text-anchor="middle" font-size="11.5">Score ≥ threshold?</text>
+    <text x="760" y="77" text-anchor="middle" font-size="10.5" fill="var(--muted)">threshold per task</text>
+
+    <rect x="856" y="40" width="90" height="50" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="901" y="70" text-anchor="middle" font-weight="700">Reply</text>
+
+    <polygon points="686,180 760,146 834,180 760,214" fill="var(--surface)" stroke="currentColor"/>
+    <text x="760" y="176" text-anchor="middle" font-size="11.5">Sensitivity allows?</text>
+    <text x="760" y="192" text-anchor="middle" font-size="10.5" fill="var(--muted)">public / internal yes · confidential no</text>
+
+    <rect x="856" y="155" width="90" height="50" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+    <text x="901" y="175" text-anchor="middle" font-weight="700" fill="var(--cloud)">Cloud model</text>
+    <text x="901" y="193" text-anchor="middle" font-size="10.5" fill="var(--muted)">redact, minimize</text>
+
+    <rect x="660" y="262" width="200" height="50" rx="3" fill="var(--surface)" stroke="var(--warn)" stroke-width="1.5"/>
+    <text x="760" y="282" text-anchor="middle" font-weight="700" fill="var(--warn)">"Cannot answer locally"</text>
+    <text x="760" y="300" text-anchor="middle" font-size="11" fill="var(--muted)">or hand off to a human</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#fa)">
+    <line x1="112" y1="65" x2="148" y2="65"/>
+    <line x1="310" y1="65" x2="346" y2="65"/>
+    <line x1="508" y1="65" x2="544" y2="65"/>
+    <line x1="656" y1="65" x2="692" y2="65"/>
+    <line x1="826" y1="65" x2="854" y2="65"/>
+    <line x1="760" y1="98" x2="760" y2="144"/>
+    <line x1="834" y1="180" x2="854" y2="180"/>
+    <line x1="901" y1="155" x2="901" y2="92"/>
+    <line x1="760" y1="214" x2="760" y2="260"/>
+  </g>
+  <g font-size="11" font-weight="700">
+    <text x="836" y="58" fill="var(--local)">yes</text>
+    <text x="768" y="124" fill="var(--warn)">no</text>
+    <text x="836" y="173" fill="var(--cloud)">yes</text>
+    <text x="768" y="240" fill="var(--warn)">no</text>
+  </g>
+  <text x="912" y="130" font-size="10.5" fill="var(--cloud)" text-anchor="middle">reply</text>
+</svg>
+<figcaption>Figure 2. Core request flow. The confidence score decides whether escalation is needed; the sensitivity class decides whether escalation is allowed. When both fail, the system admits uncertainty rather than sending confidential data out.</figcaption>
+</figure>
+
+<h2>5. Confidence scoring: the research core</h2>
+<p>The client proposal's "measure confidence in generated responses" is the technical highlight of this project. We recommend building it as a standalone module that supports several strategies, then comparing them in the benchmark. The midpoint presentation can show the trade-offs across three dimensions: escalation rate, answer quality, and cost.</p>
+
+<div class="scroll">
+<table>
+  <thead><tr><th>Strategy</th><th>How it works</th><th>Extra cost</th><th>Accuracy tendency</th><th>Best for</th></tr></thead>
+  <tbody>
+    <tr><td>Token probability</td><td>Mean logprob or entropy, taken directly from model output</td><td><span class="pill lo">near zero</span></td><td>Moderate; prone to overconfidence</td><td>Baseline for the MVP</td></tr>
+    <tr><td>Self-consistency</td><td>Sample the same question N times and check agreement</td><td><span class="pill hi">latency × N</span></td><td>Better</td><td>Q&amp;A and calculations with a definite answer</td></tr>
+    <tr><td>Verifier model</td><td>A small local model acts as judge and grades the response</td><td><span class="pill mid">one extra small inference</span></td><td>Good, but depends on judge quality</td><td>Open-ended generation, summaries</td></tr>
+    <tr><td>Retrieval grounding</td><td>Whether the response is supported by retrieved RAG documents</td><td><span class="pill lo">low</span></td><td>Very good for knowledge Q&amp;A</td><td>Internal knowledge-base questions</td></tr>
+    <tr><td>Task heuristics</td><td>Decide by task type, e.g. multi-step reasoning escalates by default</td><td><span class="pill lo">zero</span></td><td>Coarse but predictable</td><td>Stacked on top of other strategies</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="note">Recommendation: start the MVP with token probability plus task heuristics. They cost the least and produce the first batch of data fastest. Add the other strategies one at a time for comparison.</div>
+
+<h2>6. De-identification and re-identification pipeline <span class="pill mid">for discussion</span></h2>
+<p>The "redacted, minimized" arrow in Figure 1 unfolds into a round-trip pipeline. When a request really has to go to the cloud, this pipeline is itself a design feature, and the "map it back on return" step is the one most often forgotten.</p>
+<ol>
+  <li><strong>Detect:</strong> find sensitive entities in the request and the retrieved document chunks: names, organizations, amounts, account numbers, dates. Use an NER model plus regex rules, for example a tool like Presidio.</li>
+  <li><strong>Replace with placeholders:</strong> not blacked out, but swapped for an identifier, e.g. "Jane Doe" becomes PERSON_1. The same entity keeps the same identifier for the whole conversation.</li>
+  <li><strong>Keep the mapping table local:</strong> the table that says PERSON_1 = Jane Doe never leaves the local environment.</li>
+  <li><strong>Minimize, then send:</strong> send only the chunks this question needs, never the whole document or conversation history.</li>
+  <li><strong>Re-identify:</strong> placeholders in the cloud reply are mapped back to real names locally before the reply reaches the user.</li>
+</ol>
+<p>Even if a cloud provider stores the request, what it holds cannot be linked to a real individual. This goes straight into the security assessment and answers the client's compliance and international-model concerns.</p>
+<figure class="scroll">
+<svg viewBox="0 0 850 330" role="img" aria-label="De-identification and re-identification pipeline: the request is scanned for sensitive entities locally, entities are replaced with placeholders and the content minimized before it goes to the cloud; the mapping table stays local; the cloud reply is re-identified through the table before reaching the user.">
+  <defs>
+    <marker id="da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+    <marker id="dc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--cloud)"/></marker>
+    <marker id="dg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--gold)"/></marker>
+  </defs>
+  <rect x="16" y="28" width="600" height="290" rx="6" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="32" y="50" font-size="12" font-weight="700" fill="var(--local)">LOCAL ENVIRONMENT · ENTERPRISE NETWORK</text>
+  <text x="638" y="50" font-size="11" font-weight="700" text-anchor="middle" fill="var(--local)">trust boundary</text>
+  <line x1="638" y1="58" x2="638" y2="300" stroke="var(--local)" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="660" y="50" font-size="12" font-weight="700" fill="var(--cloud)">EXTERNAL</text>
+
+  <g font-size="12.5">
+    <rect x="36" y="70" width="100" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="86" y="100" text-anchor="middle" font-weight="700">Raw request</text>
+
+    <rect x="166" y="70" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="231" y="90" text-anchor="middle" font-weight="700">Detect entities</text>
+    <text x="231" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">NER + regex rules</text>
+
+    <rect x="326" y="70" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="391" y="90" text-anchor="middle" font-weight="700">Replace</text>
+    <text x="391" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">PERSON_1 · ORG_1</text>
+
+    <rect x="486" y="70" width="110" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="541" y="90" text-anchor="middle" font-weight="700">Minimize</text>
+    <text x="541" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">only needed chunks</text>
+
+    <rect x="400" y="142" width="180" height="46" rx="3" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="490" y="161" text-anchor="middle" font-weight="700" fill="var(--gold)">Mapping table</text>
+    <text x="490" y="178" text-anchor="middle" font-size="11" fill="var(--muted)">PERSON_1 = Jane Doe · never leaves local</text>
+
+    <rect x="486" y="210" width="110" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="541" y="230" text-anchor="middle" font-weight="700">Re-identify</text>
+    <text x="541" y="248" text-anchor="middle" font-size="11" fill="var(--muted)">placeholders back to names</text>
+
+    <rect x="326" y="210" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="391" y="240" text-anchor="middle" font-weight="700">Reply to user</text>
+
+    <rect x="660" y="70" width="170" height="50" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+    <text x="745" y="90" text-anchor="middle" font-weight="700" fill="var(--cloud)">Cloud model</text>
+    <text x="745" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">sees only PERSON_1, ORG_1</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#da)">
+    <line x1="136" y1="95" x2="164" y2="95"/>
+    <line x1="296" y1="95" x2="324" y2="95"/>
+    <line x1="456" y1="95" x2="484" y2="95"/>
+    <line x1="484" y1="235" x2="458" y2="235"/>
+  </g>
+  <g stroke="var(--gold)" stroke-width="1.2" fill="none">
+    <polyline points="391,120 391,165 398,165" marker-end="url(#dg)"/>
+    <line x1="541" y1="188" x2="541" y2="208" marker-end="url(#dg)"/>
+  </g>
+  <text x="360" y="150" font-size="10.5" fill="var(--gold)">write</text>
+  <text x="548" y="202" font-size="10.5" fill="var(--gold)">look up</text>
+
+  <line x1="596" y1="95" x2="658" y2="95" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#dc)"/>
+  <text x="627" y="62" font-size="10.5" text-anchor="middle" fill="var(--cloud)">placeholders only</text>
+  <polyline points="745,120 745,235 598,235" fill="none" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#dc)"/>
+  <text x="752" y="185" font-size="10.5" fill="var(--cloud)">reply with placeholders</text>
+
+  <text x="32" y="300" font-size="10.5" fill="var(--muted)">Governance metrics: tokens sent · entities replaced · re-identification success rate · miss rate</text>
+</svg>
+<figcaption>Figure 3. De-identification and re-identification pipeline. Sensitive entities are swapped for placeholders locally, the mapping table stays local, and the cloud sees only placeholders; the reply is mapped back to real names on the way in. This pipeline is the concrete evidence behind "sensitive data stays local."</figcaption>
+</figure>
+
+<h3>Four design challenges for discussion</h3>
+<div class="scroll">
+<table>
+  <thead><tr><th>Challenge</th><th>What goes wrong</th><th>Candidate approaches</th></tr></thead>
+  <tbody>
+    <tr><td>Placeholders break reasoning</td><td>"How much higher is this amount than last quarter?" cannot be computed once the amount is AMOUNT_1.</td><td>Tiered handling: identity fields become identifiers; numeric fields get format-preserving fake values that are scaled back afterwards; or keep only the numbers the calculation needs.</td></tr>
+    <tr><td>Detection miss rate</td><td>Any entity the NER model misses leaks straight through.</td><td>Plant sensitive data in many formats into synthetic datasets and measure how much the pipeline catches. A good experiment in its own right.</td></tr>
+    <tr><td>Semantic leakage</td><td>The name is gone, but "the consulting firm in Brooklyn founded in 1997" still identifies it.</td><td>Cannot be fully prevented. Let sensitivity classification mark such content as non-exportable and rate the residual risk.</td></tr>
+    <tr><td>Re-identification accuracy</td><td>The cloud model may rewrite PERSON_1 as "Person 1" or "that individual", so the lookup fails.</td><td>Fuzzy matching; flag unmatched placeholders to the user instead of silently dropping them.</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>Where it sits in the architecture:</strong> detection and replacement belong to layer 2, the gateway; the mapping table, minimization, and re-identification belong to layer 3, the router. <strong>Measurable metrics</strong> go on the layer 7 governance dashboard: tokens sent per request, entities replaced, re-identification success rate, miss rate. These numbers turn "privacy" into something visible.</p>
+
+<h2>7. Security and governance</h2>
+<ul>
+  <li><strong>Egress allow-list:</strong> local inference services can only reach the approved cloud APIs, preventing models or packages from leaking data in the background.</li>
+  <li><strong>Model supply-chain checks:</strong> record every model's source, hash, and license. This directly addresses the client's concern about international AI models and lets us include Qwen, DeepSeek, and similar models in the evaluation.</li>
+  <li><strong>Two-way guardrails:</strong> block prompt injection on input and sensitive-data leakage on output.</li>
+  <li><strong>Complete audit trail:</strong> every escalation can answer "what was sent, why, and at what cost."</li>
+  <li><strong>Sandboxed environment:</strong> students work on their own machines with public or synthetic data and never touch enterprise systems.</li>
+</ul>
+
+<h2>8. Scope and timeline</h2>
+<p>Mapped onto the 15-week course structure, the work splits into three phases. Before the week 7 midpoint, the goal is a first set of escalation-rate and quality numbers.</p>
+<div class="legend">
+  <span><i style="background:var(--local)"></i>MVP: local model + RAG + basic confidence strategy + rule-based router</span>
+  <span><i style="background:var(--cloud)"></i>Extend: strategy comparison, cloud escalation, de-identification pipeline, security assessment</span>
+  <span><i style="background:var(--gold)"></i>Converge: benchmark report, deployment recommendations, final presentation</span>
+</div>
+<div class="timeline">
+  <div class="wk">W1</div><div class="wk">W2</div><div class="wk mile">W3</div>
+  <div class="wk p1">W4</div><div class="wk p1">W5</div><div class="wk p1">W6</div><div class="wk p1 mile">W7</div>
+  <div class="wk brk">W8</div>
+  <div class="wk p2">W9</div><div class="wk p2">W10</div><div class="wk p2">W11</div>
+  <div class="wk p3">W12</div><div class="wk p3">W13</div><div class="wk p3 brk">W14</div><div class="wk p3 mile">W15</div>
+</div>
+<p style="font-size:14px;color:var(--muted)">W3 is this week: architecture sign-off. W7 midpoint presentation. W8 fall break, W14 Thanksgiving. W15 final delivery.</p>
+
+<h2>9. Decisions to confirm with the client</h2>
+<ol class="questions">
+  <li>Who defines "sensitive data" and its classification levels?<em>Drives the gateway's classification rules and the whole routing policy.</em></li>
+  <li>Is cloud escalation fully automatic, or does it require human approval?<em>Shapes the second decision point in the flow and the user experience.</em></li>
+  <li>Which cloud providers are permitted? Any regional or compliance constraints?<em>Affects cloud-layer integration and data-residency requirements.</em></li>
+  <li>Should international open-source models (e.g. from China) be included in the evaluation?<em>Sets the scope of the security assessment and the depth of supply-chain checks.</em></li>
+  <li>Hardware limits: how large a model can the team's machines run?<em>Determines local model selection; 7B to 14B is realistic.</em></li>
+  <li>When numeric sensitive data (amounts, dates) must go to the cloud, should it become a placeholder or a format-preserving fake value?<em>Shapes the de-identification pipeline and what the cloud model can compute.</em></li>
+</ol>
+
+<h2>10. Next steps</h2>
+<ol class="next">
+  <li>Discuss this draft with the client this week and collect answers to the six questions in section 9.</li>
+  <li>Revise to v0.2 and fold the scope and assumptions into the Project Charter.</li>
+  <li>Start the MVP in week 4: pick the local model and inference framework first, then wire in RAG and the basic confidence strategy.</li>
+</ol>
+
+<footer>Hybrid AI Assistant Architecture Draft v0.1 · Capstone for Virtual Gold Inc · 2026-09-07</footer>
+</div>
