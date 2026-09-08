@@ -52,8 +52,10 @@ Sections in the document:
 │   ├── architecture-v0.2-en.md    current architecture doc, English (Markdown, renders on GitHub)
 │   ├── architecture-v0.2-en.html  same, HTML with SVG diagrams
 │   ├── architecture-v0.2-zh.md    current architecture doc, Chinese
-│   ├── architecture-v0.2.html     same, HTML
-│   └── archive/                   superseded versions (v0.1), kept for history, do not edit
+│   └── architecture-v0.2.html     same, HTML
+├── todo/                          team to-do: open decisions, pending actions, decision log
+│   ├── TODO.md                    English
+│   └── TODO-zh.md                 Chinese
 ├── reference/                     inputs we did NOT write; read-only
 │   ├── client/                    from Virtual Gold and the course
 │   │   ├── Virtual Gold Inc - AI Assistant.pdf    original capstone brief
@@ -64,7 +66,7 @@ Sections in the document:
 └── data/                          (from week 4) synthetic datasets and benchmark subsets; never real data
 ```
 
-Rule of thumb: `docs/` is what we hand to the client, `reference/` is what we were handed, `src/` and `data/` are the prototype.
+Rule of thumb: `docs/` is what we hand to the client, `reference/` is what we were handed, `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
 
 ## Timeline (follows the course structure, not negotiable)
 
@@ -76,22 +78,15 @@ Rule of thumb: `docs/` is what we hand to the client, `reference/` is what we we
 | W9–W11 | Full three-configuration evaluation, red-teaming, de-identification round trip |
 | W12–W15 | Analysis, report, client feedback. **W15 final presentation** (W14 Thanksgiving) |
 
-## Open decisions (see section 11 of the architecture doc)
+## Open decisions
 
-- [ ] Tool selection: LiteLLM / Ollama / Presidio / RouteLLM approach — proposed, **not yet decided**
-- [ ] Keep a minimal RAG knowledge layer or drop it
-- [ ] Include data sensitivity classification (confidential never leaves local) in the MVP
-- [ ] De-identification round trip: MVP or stretch; placeholders vs format-preserving fake values for numbers
-- [ ] Local models and hardware: Llama 3.1 8B primary, Qwen3 8B secondary; confirm laptop specs
-- [ ] Cloud provider: OpenAI or Anthropic
-- [ ] What to show at the W7 midpoint
-- [ ] Corrections to the teammate proposal (model names, diagram arrow, citations, timeline)
-- [ ] Work split across the five of us
+Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Chinese): this week's decisions, pending actions, corrections to the teammate proposal, items waiting on the client, and a decision log. Section 11 of the architecture doc mirrors the decision items.
 
 ## How to contribute
 
 - Edit the **Markdown** files for content changes; the HTML versions are the presentation copies and get regenerated from the same content.
 - Keep English and Chinese versions in sync, or note in the PR which one is ahead.
+- When you decide something, tick it in `todo/` and add a row to the decision log there; update `docs/` in the same PR if the architecture changes.
 - Version bumps: v0.2 → v0.3 when the section 11 decisions are made and the client confirms section 10.
 - Put anything a teammate or the client sends us under `reference/`; put anything we author under `docs/`. Datasets and code go in `data/` and `src/` once the MVP starts in week 4.
 
@@ -107,4 +102,4 @@ The client provides **public data only**, no PII. All evaluation uses public dat
 
 目前進度在第 3 週:架構文件 v0.2 已完成,合併了組員的工具、資料集與預設方案提案。本週要在團隊會議上決定第十一節的待討論事項(工具選型、RAG 去留、敏感度分級、雲端供應商),然後把第十節的預設方案送客戶確認,第 4 週開工建 MVP。
 
-資料夾分三類:`docs/` 是我們自己寫的交付文件,`reference/` 是客戶與組員給的參考資料(唯讀),之後的程式與資料放 `src/` 與 `data/`。架構文件請看 `docs/architecture-v0.2-zh.md`,英文版是 `docs/architecture-v0.2-en.md`,內容相同。
+資料夾分四類:`docs/` 是我們自己寫的交付文件,`reference/` 是客戶與組員給的參考資料(唯讀),`todo/` 是待決事項與決策紀錄,之後的程式與資料放 `src/` 與 `data/`。架構文件請看 `docs/architecture-v0.2-zh.md`,英文版是 `docs/architecture-v0.2-en.md`,內容相同。
