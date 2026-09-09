@@ -91,6 +91,8 @@ Three rules:
 2. **One branch, one topic.** Small PRs get reviewed fast; big ones sit.
 3. **Every change goes through a pull request.** Mark reviews and merges. Nobody merges their own PR.
 
+**Owner exception:** Mark, as repository owner and the person who reviews everything, may push to `main` directly. Everyone else opens a PR.
+
 There is no technical lock on `main` right now, so this works only if all of us follow it. If we later turn on branch protection, the steps below stay exactly the same.
 
 ### Branch names
