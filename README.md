@@ -14,6 +14,7 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Teammate proposal (tooling, datasets, defaults, MVP vs stretch) reviewed and merged into **v0.2** | Done, 2026-09-08 |
 | Team decisions on the section 11 to-do list (tool selection, RAG, sensitivity classification, cloud provider) | **Open, this week** |
 | Send section 10 defaults to the client for confirmation | Pending |
+| PR workflow set up (branch → PR → Mark reviews and merges) | Done, 2026-09-08 |
 | Week 4: start MVP build, evaluation harness skeleton | Not started |
 | Week 7: midpoint presentation with first local-only vs hybrid numbers | Target |
 
@@ -82,13 +83,87 @@ Rule of thumb: `docs/` is what we hand to the client, `reference/` is what we we
 
 Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): this week's decisions, pending actions, corrections to the teammate proposal, items waiting on the client, and a decision log. Section 11 of the architecture doc mirrors the decision items.
 
-## How to contribute
+## Contributing workflow
 
-- Edit the **Markdown** files for content changes; the HTML versions are the presentation copies and get regenerated from the same content.
-- Documents in `docs/` and `todo/` exist in English and Traditional Chinese; keep both in sync, or note in the PR which one is ahead. The README is English only.
-- When you decide something, tick it in `todo/` and add a row to the decision log there; update `docs/` in the same PR if the architecture changes.
-- Version bumps: v0.2 → v0.3 when the section 11 decisions are made and the client confirms section 10.
-- Put anything a teammate or the client sends us under `reference/`; put anything we author under `docs/`. Datasets and code go in `data/` and `src/` once the MVP starts in week 4.
+Three rules:
+
+1. **Never push to `main` directly.** Not even for a one-line fix.
+2. **One branch, one topic.** Small PRs get reviewed fast; big ones sit.
+3. **Every change goes through a pull request.** Mark reviews and merges. Nobody merges their own PR.
+
+There is no technical lock on `main` right now, so this works only if all of us follow it. If we later turn on branch protection, the steps below stay exactly the same.
+
+### Branch names
+
+| Prefix | Use for | Example |
+|---|---|---|
+| `docs/` | architecture document, README | `docs/v0.3-rag-decision` |
+| `feat/` | new code in `src/` | `feat/router-threshold` |
+| `fix/` | bug fixes | `fix/logprob-parsing` |
+| `eval/` | datasets, benchmark runs, results | `eval/gsm8k-subset` |
+| `todo/` | decisions and the decision log | `todo/week3-decisions` |
+
+### Step by step
+
+**1. Start from the latest `main`.** Do this every time before you begin, otherwise your PR will conflict.
+
+```bash
+git checkout main
+git pull origin main
+```
+
+**2. Create a branch.**
+
+```bash
+git checkout -b feat/router-threshold
+```
+
+**3. Make your changes and commit.** Commit message: one line, starts with a verb, says what changed.
+
+```bash
+git add src/router.py
+git commit -m "Add confidence threshold to rule-based router"
+```
+
+**4. Push the branch to GitHub.**
+
+```bash
+git push -u origin feat/router-threshold
+```
+
+**5. Open the pull request.** GitHub shows a **Compare & pull request** button after the push. Click it, fill in the template (What, Why, Type, Checklist), and click **Create pull request**. Mark is added as reviewer automatically.
+
+**6. Wait for review.** Mark replies within two working days. If he asks for changes, commit again on the same branch and push; the PR updates by itself:
+
+```bash
+git add .
+git commit -m "Read threshold from config instead of hardcoding"
+git push
+```
+
+**7. Merge.** When Mark approves, he clicks **Squash and merge**. Your PR becomes one commit on `main` and the branch is deleted automatically.
+
+**8. Next task:** go back to step 1.
+
+### If your PR has conflicts
+
+GitHub will say "This branch has conflicts that must be resolved". Bring `main` into your branch, fix the conflicting files, then push:
+
+```bash
+git fetch origin
+git merge origin/main
+# open the files GitHub lists, resolve the <<<<<<< ======= >>>>>>> blocks
+git add .
+git commit -m "Merge main into feat/router-threshold"
+git push
+```
+
+### Where files go
+
+- Anything we author goes in `docs/`; anything a teammate or the client sends us goes in `reference/`.
+- Decisions go in `todo/`: tick the item and add a row to the decision log. If a decision changes the architecture, update `docs/` in the same PR.
+- `docs/` and `todo/` exist in English and Traditional Chinese; keep both in sync, or say in the PR which one is ahead. The README is English only.
+- Datasets and code go in `data/` and `src/` once the MVP starts in week 4.
 
 ## Notes on data
 
