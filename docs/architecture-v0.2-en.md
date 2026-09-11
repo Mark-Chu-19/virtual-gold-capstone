@@ -209,7 +209,7 @@ The timeline follows the 15-week course structure and does not change. The work 
 | W9–W11 | **Extend** | Full three-configuration run, strategy comparison, de-identification round trip, red-teaming |
 | W12–W15 | **Converge** | Benchmark report, governance recommendations, draft deliverable, client feedback, **W15 final presentation** (W14 Thanksgiving) |
 
-Client meetings weekly during discovery, moving to bi-weekly once the project is defined; Urte schedules.
+Client meetings weekly during discovery, moving to bi-weekly once the project is defined; Mark schedules.
 
 ### MVP: the team's committed deliverable
 
