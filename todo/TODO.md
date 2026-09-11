@@ -50,14 +50,14 @@ File: `reference/team/Virtual_Gold_Data_Architecture_Proposal_1.docx`
 
 ## E. Scope of Work edits before signing
 
-File: `docs/Scope of Work.docx` (dated Sep 15, 2026). Everything else in the SOW is consistent with the architecture doc.
+Original: `docs/Scope of Work.docx` (dated Sep 15, 2026). **Revised: `docs/Scope of Work v2.docx`, changes in red.** Everything else in the SOW is consistent with the architecture doc.
 
 | # | Edit | Done |
 |---|---|---|
-| 24 | Section 6, assumption 3: replace "Development and experimentation will primarily occur on student laptops, desktops, or other approved sandboxed computing environments" with "Development and experimentation will primarily occur in a cloud-based sandbox environment provided by the Client or by CMU Computing Services, configured to simulate an on-premises enterprise deployment; student laptops are used for development only." | [ ] |
-| 25 | Section 6: add a dependency: "The Client will provide access to a cloud-based sandbox environment for testing, as discussed on September 3, 2026." | [ ] |
-| 26 | Section 6: add cost ownership once B15 is answered, e.g. "The Client will provide cloud model API credits up to $X and sandbox compute; otherwise compute is provided through CMU Public Cloud Services." | [ ] |
-| 27 | Section 5, Phase 1: append "and begin early prototyping to validate architectural assumptions" (requested by Alex on Sep 3). | [ ] |
+| 24 | Section 6, assumption 3: replace "Development and experimentation will primarily occur on student laptops, desktops, or other approved sandboxed computing environments" with "Development and experimentation will primarily occur in a cloud-based sandbox environment provided by the Client or by CMU Computing Services, configured to simulate an on-premises enterprise deployment; student laptops are used for development only." | [x] |
+| 25 | Section 6: add a dependency: "The Client will provide access to a cloud-based sandbox environment for testing, as discussed on September 3, 2026." | [x] |
+| 26 | Section 6 cost ownership: written in v2 as a red paragraph with a $[X] placeholder; once B15 is answered, fill in the amount and remove the "to be confirmed" note. | [ ] |
+| 27 | Section 5, Phase 1: append "and begin early prototyping to validate architectural assumptions" (requested by Alex on Sep 3). | [x] |
 
 ## F. Research list (by workstream)
 

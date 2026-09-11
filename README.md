@@ -15,7 +15,7 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Team decisions on the section 11 to-do list (tool selection, RAG, sensitivity classification, cloud provider) | **Open, this week** |
 | Send section 10 defaults to the client for confirmation | Pending |
 | PR workflow set up (branch → PR → Mark reviews and merges) | Done, 2026-09-08 |
-| Scope of Work drafted (`docs/Scope of Work.docx`), four edits pending before signature (see `todo/`, section E) | Draft done, 2026-09-10 |
+| Scope of Work revised (`docs/Scope of Work v2.docx`, changes in red); cost line still needs the client's answer | v2 done, 2026-09-10 |
 | Team decision: no local LLM on laptops; models run on a cloud GPU sandbox simulating on-premises | Decided, 2026-09-10 |
 | Confirm with the client: sandbox offered on Sep 3, cloud API credits, use case / sector | **Open, this week** |
 | Week 4: start MVP build, evaluation harness skeleton | Not started |
@@ -57,7 +57,8 @@ Sections in the document:
 │   ├── architecture-v0.2-en.html  same, HTML with SVG diagrams
 │   ├── architecture-v0.2-zh.md    current architecture doc, Chinese
 │   ├── architecture-v0.2.html     same, HTML
-│   └── Scope of Work.docx         SOW draft for client signature (W3 deliverable)
+│   ├── Scope of Work.docx         SOW original draft (W3)
+│   └── Scope of Work v2.docx      SOW revised draft, changes in red; sign this one once the cost line is filled in
 ├── todo/                          team to-do: open decisions, pending actions, decision log
 │   ├── TODO.md                    English
 │   └── TODO-zh.md                 Traditional Chinese
