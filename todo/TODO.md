@@ -54,9 +54,9 @@ Original: `docs/Scope of Work.docx` (dated Sep 15, 2026). **Revised: `docs/Scope
 
 | # | Edit | Done |
 |---|---|---|
-| 24 | Section 6, assumption 3: replace "Development and experimentation will primarily occur on student laptops, desktops, or other approved sandboxed computing environments" with "Development and experimentation will primarily occur in a cloud-based sandbox environment provided by the Client or by CMU Computing Services, configured to simulate an on-premises enterprise deployment; student laptops are used for development only." | [x] |
+| 24 | Section 6, assumption 3: replace "Development and experimentation will primarily occur on student laptops, desktops, or other approved sandboxed computing environments" with "Development and experimentation will primarily occur in a cloud-based sandbox environment provided by the Client, configured to simulate an on-premises enterprise deployment; student laptops are used for development only." The SOW does not mention CMU resources. | [x] |
 | 25 | Section 6: add a dependency: "The Client will provide access to a cloud-based sandbox environment for testing, as discussed on September 3, 2026." | [x] |
-| 26 | Section 6 cost ownership: written in v2 as a red paragraph with a $[X] placeholder; once B15 is answered, fill in the amount and remove the "to be confirmed" note. | [ ] |
+| 26 | Section 6 cost ownership: written in v2 as a red paragraph stating the Client covers costs, with a $[X] placeholder; once B15 is answered, fill in the amount and remove the "to be confirmed" note. The SOW does not mention the CMU fallback. | [ ] |
 | 27 | Section 5, Phase 1: append "and begin early prototyping to validate architectural assumptions" (requested by Alex on Sep 3). | [x] |
 
 ## F. Research list (by workstream)
