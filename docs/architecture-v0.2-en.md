@@ -4,9 +4,9 @@
 
 A local-first enterprise AI assistant: open-source models are the primary intelligence layer, and requests escalate to cloud models only when confidence scores and data sensitivity allow.
 
-| Version | Date | Status | Team | Client contact |
+| Version | Date | Status | Team | Client |
 |---|---|---|---|---|
-| v0.2 team merge | 2026-09-08 | Team discussion | CMU MISM · 5 people | Urte Jesina |
+| v0.2.1 | 2026-09-10 | Team discussion | Anmol · Mark · Yudi · Zhexuan · Karina | Inderpal Bhandari · Alex Bhandari · Urte Jesina |
 
 ---
 
@@ -212,7 +212,7 @@ The timeline follows the 15-week course structure and does not change. The work 
 All five team members are full-time graduate students carrying a full course load; this project is roughly a third of one semester's credits. The target is therefore a working prototype plus a rigorous evaluation, not a production platform. Existing open-source components are preferred so effort goes into integration, evaluation, and the security and governance analysis.
 
 - **Router and orchestration:** the team writes the routing policy; the gateway tool is still open (see section 11, item 1).
-- **Local inference:** Llama 3.1 8B as the primary model, Qwen3 8B as the secondary for code and multilingual queries; served with Ollama on team laptops.
+- **Local inference:** Llama 3.1 8B as the primary model, Qwen3 8B as the secondary for code and multilingual queries; served with Ollama on a GPU sandbox that simulates on-premises (see "Deployment environment" below). Team decision 2026-09-10: no LLMs on laptops, laptops are for development only.
 - **Confidence scoring:** self-consistency or token logprob as the baseline signal.
 - **PII redaction gate:** between the router and any cloud call, directly implementing "keep sensitive data local".
 - **Cloud escalation:** one mainstream enterprise-grade API, called only on low confidence.
@@ -225,7 +225,28 @@ All five team members are full-time graduate students carrying a full course loa
 - A second local model for A/B comparison, or a small trained router instead of a threshold rule.
 - Format-preserving fake values and fuzzy re-identification in the de-identification pipeline.
 - Deeper red-teaming across more prompt-injection and jailbreak categories.
+- Local model enhancement (confirmed in scope at the Sep 3 meeting): quantization comparison, prompt tuning, LoRA fine-tuning on synthetic data.
 - An executive summary deck translating findings into governance recommendations.
+
+### Deployment environment: a cloud sandbox that simulates on-premises
+
+On 2026-09-10 the team decided not to run LLMs on laptops. Models run on a GPU host in a cloud sandbox instead: the client offered a sandbox at the Sep 3 meeting, with CMU Public Cloud Services as the fallback; laptops are for development only. What makes an environment "on-premises" is who controls it and whether data can leave, so the sandbox simulates that boundary, and the boundary must be verifiable.
+
+```
+internal network (no internet)      egress network (allow-list only)
+├── ollama      local model          └── egress-proxy  single exit, logs every request
+├── chroma      vector store / RAG           ↑
+├── presidio    de-identification            │
+├── audit-db    audit log                    │
+└── router  ── attached to both networks ────┘
+```
+
+- **Network boundary:** the VM sits in a private network. Nothing comes in except SSH or Tailscale for the team; nothing goes out except the allow-listed cloud LLM API. This is the layer 8 egress allow-list.
+- **Container isolation:** Docker Compose with two networks. The model, vector store, de-identification, and audit log live on `internal`, which cannot even resolve external DNS; only the router is attached to both networks, and it reaches the internet only through the egress proxy. The trust boundary in Figure 1 is enforced, not just drawn.
+- **Audited exit:** the proxy allows only allow-listed domains and logs every request. PII-leak rate and tokens sent per request are measured here; turning the proxy off gives the local-only configuration.
+- **Verifiable:** three automated tests in the evaluation harness: outbound from the model container must fail; the router must fail outside the allow-list and succeed inside it; a request containing a real name must appear in the proxy log with placeholders only. Runnable live at the midpoint.
+- **Hardware scenarios:** run the same test set under no GPU (CPU), T4, A10G, 4-bit vs 8-bit, and fully offline, to answer "how much on-prem hardware buys how much less cloud traffic" and to satisfy the SOW requirement to report needs for locally attainable hardware.
+
 
 ## 10. Proposed defaults and assumptions for the client to confirm
 
@@ -237,10 +258,12 @@ The client prefers concrete defaults over open questions. Each item below has a 
 | Escalation approval | Fully automatic, every escalation logged; human approval is a stretch goal. | Feasible in one semester and consistent with "escalation must be justified". | Add a review step at the second decision point. |
 | Cloud provider | One provider for the MVP: OpenAI or Anthropic, both publish enterprise data-retention commitments. | Fewer variables; multi-provider comparison is a stretch goal. | Name a provider, region, or compliance constraint. |
 | International open-source models | Qwen3 8B as the secondary model, with supply-chain checks (source, hash, license). | The brief explicitly raises international-model risk; evaluating one is the only way to conclude. | Ask to exclude it. |
-| Hardware and model size | 8B-class model at 4-bit quantization, about 6 GB of memory, on team laptops. | The realistic ceiling for five laptops. | Provide a GPU to test 14B-class models. |
+| Hardware and compute environment | Models run on a GPU sandbox (T4-class, 16 GB) that simulates on-premises; 8B-class model at 4-bit quantization. No LLMs on laptops. | Team decision 2026-09-10; the client offered a sandbox on Sep 3. | Confirm sandbox spec and cost; an A10G-class GPU allows 14B tests. |
 | Numeric sensitive data | Placeholders for everything in the MVP; format-preserving fake values are a stretch goal. | Prevent leakage first, enable computation second. | See section 11, item 4. |
 | Governance framework | NIST AI RMF (Govern, Map, Measure, Manage), noting where ISO/IEC 42001 would extend it. | Free, self-attestation based, suited to a one-semester practical risk assessment. | Switch to ISO 42001 if certification-grade work is needed. |
 | Data sources | Public datasets from section 7 plus LLM-generated synthetic data; no real data at any point. | The client provides public data only. | Provide example documents or formats as an extra seed. |
+| Use case / sector | Default focus: financial-services SMB document workflows (Q&A, summarization, extraction). | On Sep 3 the client said a sector focus is welcome and data follows once the use case is set. | Switch to real estate or another sector. |
+| Who pays | Cloud model API credits and sandbox compute provided by the client; otherwise CMU Public Cloud Services with a $100 cap. | The SOW does not yet state cost ownership; confirm and write it in. | Set a credit cap or provide a provider account. |
 
 ## 11. Team discussion items (to do)
 
@@ -248,10 +271,11 @@ The client prefers concrete defaults over open questions. Each item below has a 
 - [ ] **Keep the RAG knowledge layer or not.** The teammate version has none; this draft does. Affects: the demo value of answering questions about enterprise documents, the retrieval-grounding confidence strategy, and whether de-identification must handle document chunks. Leaning toward a minimal version; cut it and tell the client if time runs out.
 - [ ] **Include data sensitivity classification in the MVP?** The teammate version has only PII redaction, no "confidential never leaves" rule. One extra rule in the router; low cost, recommended.
 - [ ] **De-identification round trip: MVP or stretch?** The re-identification step is missing from the teammate version; decide placeholders vs fake values for numeric data at the same time.
-- [ ] **Local models and hardware.** Llama 3.1 8B primary, Qwen3 8B secondary. Confirm memory and GPU on the five laptops and pick the quantization level.
+- [ ] **Local models and sandbox.** Llama 3.1 8B primary, Qwen3 8B secondary; decided: no LLMs on laptops. Confirm with the client the sandbox offered on Sep 3 (spec, availability, cost) and cloud API credits; CMU cloud is the fallback.
 - [ ] **Pick one cloud provider.** OpenAI or Anthropic. Compare enterprise data-retention terms and pricing, then decide.
 - [ ] **What to show at the week 7 midpoint.** Suggested minimum: local-only vs hybrid accuracy and escalation rate on the MMLU subset and GSM8K.
 - [ ] **Corrections needed in the teammate proposal.** "Llama 3.3 8B" should be Llama 3.1 8B (3.3 exists only at 70B); "Qwen3 7B" should be Qwen3 8B (7B is Qwen2.5); in the diagram the "high confidence, return answer" arrow should not pass through the PII gate; cite Meta and Qwen model cards for model figures and the NIST text for the framework instead of blog posts; align the timeline with the course's W7 midpoint and W8 fall break.
+- [ ] **Use case and sector.** The client provides data only once the use case is set. Default: financial-services SMB document workflows; confirm with the client this week.
 - [ ] **Work split.** Router, models and inference, evaluation harness, security and de-identification, documentation and presentations: one owner each.
 
 ## 12. Next steps
@@ -262,4 +286,4 @@ The client prefers concrete defaults over open questions. Each item below has a 
 
 ---
 
-*Hybrid AI Assistant Architecture Draft v0.2 team merge · Capstone for Virtual Gold Inc · 2026-09-08*
+*Hybrid AI Assistant Architecture Draft v0.2.1 · Capstone for Virtual Gold Inc · 2026-09-10*

@@ -5,7 +5,7 @@ Client contact: Urte Jesina. Team: 5 people.
 
 We are designing and evaluating a **local-first enterprise AI assistant**: open-source models running locally are the primary intelligence layer, every response gets a measured confidence score, and requests escalate to a cloud model only when confidence is low **and** data sensitivity allows. Sensitive data stays local.
 
-## Current status (Week 3, updated 2026-09-08)
+## Current status (Week 3, updated 2026-09-10)
 
 | Milestone | Status |
 |---|---|
@@ -15,6 +15,9 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Team decisions on the section 11 to-do list (tool selection, RAG, sensitivity classification, cloud provider) | **Open, this week** |
 | Send section 10 defaults to the client for confirmation | Pending |
 | PR workflow set up (branch → PR → Mark reviews and merges) | Done, 2026-09-08 |
+| Scope of Work drafted (`docs/Scope of Work.docx`), four edits pending before signature (see `todo/`, section E) | Draft done, 2026-09-10 |
+| Team decision: no local LLM on laptops; models run on a cloud GPU sandbox simulating on-premises | Decided, 2026-09-10 |
+| Confirm with the client: sandbox offered on Sep 3, cloud API credits, use case / sector | **Open, this week** |
 | Week 4: start MVP build, evaluation harness skeleton | Not started |
 | Week 7: midpoint presentation with first local-only vs hybrid numbers | Target |
 
@@ -53,21 +56,24 @@ Sections in the document:
 │   ├── architecture-v0.2-en.md    current architecture doc, English (Markdown, renders on GitHub)
 │   ├── architecture-v0.2-en.html  same, HTML with SVG diagrams
 │   ├── architecture-v0.2-zh.md    current architecture doc, Chinese
-│   └── architecture-v0.2.html     same, HTML
+│   ├── architecture-v0.2.html     same, HTML
+│   └── Scope of Work.docx         SOW draft for client signature (W3 deliverable)
 ├── todo/                          team to-do: open decisions, pending actions, decision log
 │   ├── TODO.md                    English
 │   └── TODO-zh.md                 Traditional Chinese
 ├── reference/                     inputs we did NOT write; read-only
-│   ├── client/                    from Virtual Gold and the course
-│   │   ├── Virtual Gold Inc - AI Assistant.pdf    original capstone brief
-│   │   └── Proposed Weekly Structure.pdf          15-week course structure
-│   └── team/                      individual teammates' proposals and notes
-│       └── Virtual_Gold_Data_Architecture_Proposal_1.docx   Data & Architecture proposal (merged into v0.2)
+│   ├── client/                    from Virtual Gold
+│   │   └── Virtual Gold Inc - AI Assistant.pdf    original capstone brief
+│   ├── course/                    from the instructor
+│   │   └── Proposed Weekly Structure.pdf          15-week course structure we must follow
+│   └── team/                      teammates' proposals and meeting notes
+│       ├── Virtual_Gold_Data_Architecture_Proposal_1.docx   Data & Architecture proposal (merged into v0.2)
+│       └── Meeting Notes/         client meeting notes, one file per meeting, named YYYY-MM-DD
 ├── src/                           (from week 4) prototype code: router, confidence scoring, PII gate, eval harness
 └── data/                          (from week 4) synthetic datasets and benchmark subsets; never real data
 ```
 
-Rule of thumb: `docs/` is what we hand to the client, `reference/` is what we were handed, `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
+Rule of thumb: `docs/` is what we hand to the client (including the SOW), `reference/` is what we were handed (client, course, or a teammate), `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
 
 ## Timeline (follows the course structure, not negotiable)
 
