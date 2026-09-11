@@ -163,6 +163,8 @@ flowchart LR
 
 The same test set runs under three configurations. That is the only way to answer the client's real question: how much cost the hybrid design saves, how much quality it gives up, and how much data it leaks. This is the main experimental design for the midpoint and final presentations.
 
+At the Sep 3 meeting the client was explicit: evaluate with established general-purpose industry benchmarks and show that the local and hybrid configurations perform comparably to cloud models. Alex named the local-versus-cloud performance gap as the project's critical challenge, and Inderpal named cost as the other main driver for adopting a local model, so performance and cost numbers are how the client will judge success.
+
 | Configuration | Description | Purpose |
 |---|---|---|
 | Local-only | Every request answered by the local model, no escalation | Quality floor, cost floor, privacy ceiling |
@@ -207,6 +209,8 @@ The timeline follows the 15-week course structure and does not change. The work 
 | W9–W11 | **Extend** | Full three-configuration run, strategy comparison, de-identification round trip, red-teaming |
 | W12–W15 | **Converge** | Benchmark report, governance recommendations, draft deliverable, client feedback, **W15 final presentation** (W14 Thanksgiving) |
 
+Client meetings weekly during discovery, moving to bi-weekly once the project is defined; Urte schedules.
+
 ### MVP: the team's committed deliverable
 
 All five team members are full-time graduate students carrying a full course load; this project is roughly a third of one semester's credits. The target is therefore a working prototype plus a rigorous evaluation, not a production platform. Existing open-source components are preferred so effort goes into integration, evaluation, and the security and governance analysis.
@@ -217,6 +221,7 @@ All five team members are full-time graduate students carrying a full course loa
 - **PII redaction gate:** between the router and any cloud call, directly implementing "keep sensitive data local".
 - **Cloud escalation:** one mainstream enterprise-grade API, called only on low confidence.
 - **Evaluation and logging harness:** the three configurations and six metrics from section 7.
+- **Interface:** no GUI; CLI or REST API only (decided Sep 3, the client wants the architecture prioritized).
 - **Undecided:** a minimal RAG knowledge layer and data sensitivity classification (see section 11, items 2 and 3).
 
 ### Stretch goals: only if the MVP lands early

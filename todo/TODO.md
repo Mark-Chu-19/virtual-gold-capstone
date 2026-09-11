@@ -77,6 +77,7 @@ Record decisions here so nobody reopens them.
 
 | Date | Decision | Rationale |
 |---|---|---|
+| 2026-09-03 | Client kickoff decisions: hybrid architecture with a mandatory local model; evaluate with general-purpose benchmarks and show performance comparable to cloud; local model enhancement in scope; no GUI; client provides a cloud sandbox; weekly meetings during discovery | Sep 3 client meeting notes (reference/team/Meeting Notes/2026-09-03) |
 | 2026-09-07 | Local-first hybrid architecture with confidence-based escalation and sensitivity gating (architecture v0.1) | Matches the client brief |
 | 2026-09-08 | Adopt teammate proposal's three-configuration evaluation, named datasets, defaults-instead-of-questions style, MVP vs stretch split (architecture v0.2) | More concrete and matches client's preference for defaults |
 | 2026-09-08 | Timeline follows the course's 15-week structure without change | Midpoint W7 and breaks are fixed by the course |

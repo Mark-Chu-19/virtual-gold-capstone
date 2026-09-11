@@ -348,6 +348,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
 
 <h2>7. Evaluation design and datasets</h2>
 <p>The same test set runs under three configurations. That is the only way to answer the client's real question: how much cost the hybrid design saves, how much quality it gives up, and how much data it leaks. This is the main experimental design for the midpoint and final presentations.</p>
+<p>At the Sep 3 meeting the client was explicit: evaluate with established general-purpose industry benchmarks and show that the local and hybrid configurations perform comparably to cloud models. Alex named the local-versus-cloud performance gap as the project's critical challenge, and Inderpal named cost as the other main driver for adopting a local model, so performance and cost numbers are how the client will judge success.</p>
 <div class="scroll">
 <table>
   <thead><tr><th>Configuration</th><th>Description</th><th>Purpose</th></tr></thead>
@@ -400,7 +401,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
   <div class="wk p2">W9</div><div class="wk p2">W10</div><div class="wk p2">W11</div>
   <div class="wk p3">W12</div><div class="wk p3">W13</div><div class="wk p3 brk">W14</div><div class="wk p3 mile">W15</div>
 </div>
-<p style="font-size:14px;color:var(--muted)">W3 is this week: architecture sign-off. W7 midpoint presentation. W8 fall break, W14 Thanksgiving. W15 final delivery.</p>
+<p style="font-size:14px;color:var(--muted)">W3 is this week: architecture sign-off. W7 midpoint presentation. W8 fall break, W14 Thanksgiving. W15 final delivery. Client meetings weekly during discovery, moving to bi-weekly once the project is defined; Urte schedules.</p>
 
 <h3>MVP: the team's committed deliverable</h3>
 <p>All five team members are full-time graduate students carrying a full course load; this project is roughly a third of one semester's credits. The target is therefore a working prototype plus a rigorous evaluation, not a production platform. Existing open-source components are preferred so effort goes into integration, evaluation, and the security and governance analysis.</p>
@@ -411,6 +412,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
   <li><strong>PII redaction gate:</strong> between the router and any cloud call, directly implementing "keep sensitive data local".</li>
   <li><strong>Cloud escalation:</strong> one mainstream enterprise-grade API, called only on low confidence.</li>
   <li><strong>Evaluation and logging harness:</strong> the three configurations and six metrics from section 7.</li>
+  <li><strong>Interface:</strong> no GUI; CLI or REST API only (decided Sep 3, the client wants the architecture prioritized).</li>
   <li><strong>Undecided:</strong> a minimal RAG knowledge layer and data sensitivity classification (see section 11, items 2 and 3).</li>
 </ul>
 <h3>Stretch goals: only if the MVP lands early</h3>
