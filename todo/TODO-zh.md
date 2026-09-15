@@ -10,7 +10,7 @@
 | 1 | **工具選型**(除雲端 SDK 外已定案) | 客戶要的是路由機制與信心評分,沒有指定任何工具(9 月 3 日會議紀錄;SOW 第 2 節)。各元件與選擇,2026-09-15 定案:**本地推論:**HF transformers,T4 上 8B 4-bit(bitsandbytes);harness 需要每個 token 的 logprobs 與 hidden states 給 Semantic Entropy Probe 用(PR #2),Ollama、llama.cpp server、vLLM 都不暴露。**Router:**自己寫的 Python 模組(信心分數加敏感度規則),本地直接呼叫 transformers。**PII 閘道:**Presidio。**雲端呼叫:**A6 選定供應商的官方 SDK。不用:Ollama(沒有 hidden states);LiteLLM(包在 OpenAI 風格 API 外的 HTTP 轉接層,transformers 在程式內跑沒有東西可接;它的 hook 是呼叫前路由,不是依信心路由)。RouteLLM 是路由策略(任務複雜度分類),不是工具;架構第五節的 task heuristics 與第九節的 stretch goal 已涵蓋。 | Mark | W4 | [x] |
 | 2 | **RAG 知識層** | **2026-09-15 已決定:不進 MVP,列為 stretch goal。**客戶沒有要求知識庫(9 月 3 日會議紀錄、SOW);檢索接地驗證在 SOW 只是可選的信心策略之一,PR #2 也已把它排除在 harness 外。使用情境定案、客戶提供資料(A8)之前沒有文件可以 index。W7 期中後視客戶資料與時間再考慮;F32 的研究(一頁摘要)照做,把選項留著。 | Mark | — | [x] |
 | 3 | **資料敏感度分級** | **2026-09-15 已決定:納入 MVP。**「機密永不外送」規則就是 SOW「confidence-based or policy-based request routing」裡 policy 那一半,直接落實客戶的核心需求(保護專有資料,9 月 3 日)。在自寫的 router(A1)裡加一條規則:標記為機密的請求不論信心高低都留在本地。分級先用架構第十節的預設(public / internal / confidential),客戶回覆 B10 後再調。 | Mark | — | [x] |
-| 4 | **去識別化與還原管線放 MVP 還是 stretch** | 還原這一步組員版沒有。數值類用佔位符還是假值一起定。 | | | [ ] |
+| 4 | **去識別化與還原管線** | **2026-09-15 已決定:兩段都進 MVP,做最簡版。**去識別化(送雲端前用 Presidio 遮罩)是客戶隱私參數的硬需求。還原做成每次請求一張對照表:出去時記「佔位符對應原值」,回來時字串替換;沒有這步雲端回答裡仍是佔位符,CLI demo 不能用。數值類:MVP 用佔位符,格式保留的假值維持 stretch goal(架構第十節預設)。 | Mark | — | [x] |
 | 5 | **本地模型與沙盒** | **2026-09-10 已決定:不在筆電跑 LLM。**模型跑在模擬地端的 GPU 沙盒上,筆電只做開發。待確認:客戶 9 月 3 日承諾的沙盒(供應商、GPU、連線方式、何時可用、費用誰出)、雲端 API 額度、量化位元。CMU 雲端(B15)為備案。 | Mark | W4 | [ ] |
 | 6 | **雲端供應商:OpenAI 或 Anthropic** | 比較企業資料保留條款與價格。 | | | [ ] |
 | 7 | **W7 期中要展示什麼** | 建議至少:純本地 vs 混合在 MMLU 子集與 GSM8K 上的準確率與升級率。 | | | [ ] |
@@ -85,3 +85,4 @@
 | 2026-09-15 | 本地推論與評測 harness 都用 HF transformers(bitsandbytes 4-bit);不用 Ollama | harness 需要每個 token 的 logprobs 與 hidden states 給 Semantic Entropy Probe 用(PR #2);harness 與 router 共用一套堆疊,避免不同量化格式造成門檻值漂移 |
 | 2026-09-15 | RAG 知識層列為 stretch goal,不進 MVP | 不在客戶需求與評判標準內;客戶資料尚未提供(A8);檢索接地已排除在信心 harness 外(PR #2)。W7 期中後再考慮 |
 | 2026-09-15 | 資料敏感度分級納入 MVP:機密請求不論信心高低都不外送 | SOW 路由需求中 policy 的那一半;客戶核心動機是保護專有資料;router 裡一條規則 |
+| 2026-09-15 | 去識別化與還原都進 MVP;還原做成每次請求的佔位符對照表;數值類用佔位符,假值為 stretch | 遮罩是客戶隱私參數的硬需求;沒有還原雲端回答不能用;對照表一天可做完 |
