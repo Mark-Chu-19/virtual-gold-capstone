@@ -7,7 +7,7 @@
 
 | # | 項目 | 說明 | 負責人 | 期限 | 完成 |
 |---|---|---|---|---|---|
-| 1 | **工具選型**(部分定案) | **2026-09-15 已決定(Mark):本地推論與評測 harness 都用 HF transformers**(T4 上 8B 4-bit,bitsandbytes),因為 harness 需要每個 token 的 logprobs 與 hidden states 給 Semantic Entropy Probe 用(PR #2);Ollama、llama.cpp server、vLLM 都不暴露 hidden states。不用 Ollama。**Presidio** 做 PII 偵測:保留,與推論堆疊無關。**LiteLLM**:預設 MVP 不用。它是包在 OpenAI 風格 API 外面的 HTTP 轉接層;transformers 在程式內直接跑,本地端沒有 API 可接,而且它的 hook 是呼叫前在多個部署間選一個,不是看完回答再依信心升級。Router 寫成 Python 模組,本地呼叫 transformers,雲端呼叫 A6 選定供應商的 SDK。**RouteLLM**:不抵觸,但它是「看問題」的事前路由,和我們「看回答」的事後信心評分是不同訊號;留作 stretch goal 的對照組(task-aware routing,架構第九節),不進 MVP。LiteLLM 與 RouteLLM 的預設在團隊會議上確認。 | Mark | W4 | [ ] |
+| 1 | **工具選型**(除雲端 SDK 外已定案) | 客戶要的是路由機制與信心評分,沒有指定任何工具(9 月 3 日會議紀錄;SOW 第 2 節)。各元件與選擇,2026-09-15 定案:**本地推論:**HF transformers,T4 上 8B 4-bit(bitsandbytes);harness 需要每個 token 的 logprobs 與 hidden states 給 Semantic Entropy Probe 用(PR #2),Ollama、llama.cpp server、vLLM 都不暴露。**Router:**自己寫的 Python 模組(信心分數加敏感度規則),本地直接呼叫 transformers。**PII 閘道:**Presidio。**雲端呼叫:**A6 選定供應商的官方 SDK。不用:Ollama(沒有 hidden states);LiteLLM(包在 OpenAI 風格 API 外的 HTTP 轉接層,transformers 在程式內跑沒有東西可接;它的 hook 是呼叫前路由,不是依信心路由)。RouteLLM 是路由策略(任務複雜度分類),不是工具;架構第五節的 task heuristics 與第九節的 stretch goal 已涵蓋。 | Mark | W4 | [x] |
 | 2 | **RAG 知識層留不留** | 組員版沒有,架構文件有。影響企業文件問答的示範價值、檢索接地度策略、去識別化是否要處理文件片段。傾向保留最簡版,時間不夠再砍並告知客戶。 | | | [ ] |
 | 3 | **資料敏感度分級是否納入 MVP** | 「機密永不外送」規則。路由層多一條規則,成本低,建議納入。 | | | [ ] |
 | 4 | **去識別化與還原管線放 MVP 還是 stretch** | 還原這一步組員版沒有。數值類用佔位符還是假值一起定。 | | | [ ] |
