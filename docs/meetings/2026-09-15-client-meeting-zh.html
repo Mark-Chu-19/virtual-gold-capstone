@@ -68,6 +68,12 @@ th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:up
 .finding div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:14px;line-height:1.45}
 .finding .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .finding b{font-weight:600}
+mark{padding:0 .15em;border-radius:2px;color:inherit;background:transparent}
+mark.hl-key{background:var(--gold-soft);box-shadow:inset 0 -2px 0 var(--gold)}
+mark.hl-ask{background:var(--cloud-soft);box-shadow:inset 0 -2px 0 var(--cloud)}
+mark.hl-no{background:var(--warn-soft);box-shadow:inset 0 -2px 0 var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px;color:var(--muted)}
+.legend mark{color:var(--ink)}
 .q{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;padding:14px 16px;margin-bottom:14px}
 .q h4{margin:0 0 6px;font-size:17px;font-family:var(--serif)}
 .q h4 .ref{margin-left:8px;vertical-align:middle}
@@ -117,6 +123,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <button id="collapse-all" type="button">全部收合</button>
     <span style="font-size:13px;color:var(--muted)">各段落依需要展開。下方填寫的內容只存在這台瀏覽器。</span>
   </div>
+  <div class="legend"><span>標示:</span><span><mark class="hl-key">重點結論或決定</mark></span><span><mark class="hl-ask">今天需要貴方回答</mark></span><span><mark class="hl-no">排除或延後</mark></span></div>
 </header>
 
 <ol class="agenda">
@@ -131,10 +138,10 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <h2><span class="n">1</span>依專案說明所做的研究</h2>
   <p class="lede">專案說明要求混合式助理在「需要更高信心或推理能力時」升級到雲端。我們研究的是:在 8B 本地模型上,這個信心訊號可以是什麼,以及各要多少成本。</p>
   <div class="finding">
-    <div><div class="k">信心訊號</div><b>兩種訊號在 8B 模型上可用,且每次查詢幾乎零成本:</b>模型本來就會產生的 token 對數機率,以及在模型 hidden states 上一次訓練好的 Semantic Entropy Probe。兩者在 7–8B 尺度都有已發表的證據。</div>
-    <div><div class="k">排除</div><b>直接問模型「你多有信心」在這個尺寸不管用。</b>七個 3–9B 開源模型中,91.7% 的回答自稱信心至少 95%,答對答錯都一樣。我們不用模型自報信心做路由。</div>
-    <div><div class="k">本地模型</div><b>Llama 3.1 8B 為主,Qwen3 8B 為輔,</b>處理程式與多語言題目;以 Hugging Face transformers 4-bit 執行,讓 harness 能讀取對數機率與 hidden states。Qwen3 附來源、hash 與授權檢查。</div>
-    <div><div class="k">Benchmark</div><b>先做 MMLU 子集與 GSM8K,</b>即貴方 9 月 3 日要求的通用 benchmark;TruthfulQA 與 HaluEval 測事實性;Presidio 評測模組與標註的 prompt injection 資料集測安全。</div>
+    <div><div class="k">信心訊號</div><b><mark class="hl-key">兩種訊號在 8B 模型上可用,且每次查詢幾乎零成本:</mark></b>模型本來就會產生的 token 對數機率,以及在模型 hidden states 上一次訓練好的 Semantic Entropy Probe。兩者在 7–8B 尺度都有已發表的證據。</div>
+    <div><div class="k">排除</div><b><mark class="hl-no">直接問模型「你多有信心」在這個尺寸不管用。</mark></b>七個 3–9B 開源模型中,91.7% 的回答自稱信心至少 95%,答對答錯都一樣。<mark class="hl-no">我們不用模型自報信心做路由。</mark></div>
+    <div><div class="k">本地模型</div><b><mark class="hl-key">Llama 3.1 8B 為主,Qwen3 8B 為輔,</mark></b>處理程式與多語言題目;以 Hugging Face transformers 4-bit 執行,讓 harness 能讀取對數機率與 hidden states。Qwen3 附來源、hash 與授權檢查。</div>
+    <div><div class="k">Benchmark</div><b><mark class="hl-key">先做 MMLU 子集與 GSM8K,</mark></b>即貴方 9 月 3 日要求的通用 benchmark;TruthfulQA 與 HaluEval 測事實性;Presidio 評測模組與標註的 prompt injection 資料集測安全。</div>
   </div>
 
   <details class="more"><summary>8B 尺度下的信心訊號</summary><div class="body">
@@ -157,7 +164,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 <section id="architecture">
   <h2><span class="n">2</span>架構 v0.3</h2>
-  <p class="lede">本地優先。信心分數決定要不要升級;敏感度分級決定能不能升級。兩者都不通過時,系統承認無法回答,而不是把機密資料送出去。</p>
+  <p class="lede">本地優先。<mark class="hl-key">信心分數決定要不要升級;敏感度分級決定能不能升級。</mark>兩者都不通過時,系統承認無法回答,而不是把機密資料送出去。</p>
 
   <figure>
   <svg viewBox="0 0 840 470" role="img" aria-label="系統分層圖:使用者介面、閘道、路由、本地推論、信心評分、知識層與治理層都在本地環境內;只有路由層透過單一通道把已遮罩的內容送到外部雲端模型並接收回覆。">
@@ -377,17 +384,17 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <ul class="points">
     <li><strong>唯一信任邊界。</strong>只有路由層會對雲端說話,而且只送已遮罩、最小化的內容。沙盒以私有網路加記錄每次請求的出口代理來強制這條邊界。</li>
     <li><strong>去識別化來回。</strong>任何雲端呼叫前,Presidio 把人名、帳號、金額換成佔位符;對照表不離開沙盒;回覆在使用者看到前換回原值。</li>
-    <li><strong>資料敏感度分級。</strong>預設三級:公開、內部、機密。機密請求不論信心多低都留在本地。</li>
+    <li><strong>資料敏感度分級。</strong>預設三級:公開、內部、機密。<mark class="hl-key">機密請求不論信心多低都留在本地。</mark></li>
     <li><strong>元件可替換。</strong>模型、雲端供應商、向量庫都在介面之後;換掉 Qwen3 只是改設定。</li>
-    <li><strong>介面。</strong>只做 CLI 與 REST API,不做 GUI,如 9 月 3 日所議。</li>
-    <li><strong>延後。</strong>文件知識庫(RAG)列為 stretch goal;產業與範例格式定了之後,期中再評估。</li>
+    <li><strong>介面。</strong><mark class="hl-key">只做 CLI 與 REST API,不做 GUI</mark>,如 9 月 3 日所議。</li>
+    <li><strong>延後。</strong><mark class="hl-no">文件知識庫(RAG)列為 stretch goal</mark>;產業與範例格式定了之後,期中再評估。</li>
   </ul>
   </div></details>
 </section>
 
 <section id="comparison">
   <h2><span class="n">3</span>比較:怎麼呈現取捨</h2>
-  <p class="lede">同一組測試集在三種配置下各跑一次。這是回答貴方 9 月 3 日兩個問題的唯一方法:與雲端的差距多大,本地路徑省下多少。</p>
+  <p class="lede">同一組測試集在三種配置下各跑一次。這是回答貴方 9 月 3 日兩個問題的唯一方法:<mark class="hl-key">與雲端的差距多大,本地路徑省下多少。</mark></p>
 
   <div class="tbl">
   <table>
@@ -397,7 +404,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <tr><td><strong>純雲端</strong></td><td>所有請求直接送雲端模型</td><td>品質上限、成本上限、隱私下限</td></tr>
   </table>
   </div>
-  <p><strong>每種配置六個指標:</strong>準確率 · 延遲 · 每題成本 · 升級率 · PII 洩漏率 · prompt injection 抵抗力。</p>
+  <p><strong>每種配置六個指標:</strong><mark class="hl-key">準確率 · 延遲 · 每題成本 · 升級率 · PII 洩漏率 · prompt injection 抵抗力</mark>。</p>
 
   <details class="more"><summary>期中(10 月 2–9 日,第 7 週)會看到什麼</summary><div class="body">
   <div class="stat">
@@ -417,10 +424,10 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="q">
     <h4>雲端沙盒 <span class="ref">B15</span></h4>
     <ul>
-      <li>供應商與 GPU。T4(16 GB)跑得動 8B 模型;A10G(24 GB)可讓多樣本信心計算從容跑完。</li>
-      <li>團隊的直接存取(SSH 或同等方式)。模型在機器上直接跑,不是透過託管 API。</li>
-      <li>何時可用,以及能否用到 12 月 11 日。</li>
-      <li>算力費用由誰負擔。</li>
+      <li><mark class="hl-ask">供應商與 GPU。</mark>T4(16 GB)跑得動 8B 模型;A10G(24 GB)可讓多樣本信心計算從容跑完。</li>
+      <li><mark class="hl-ask">團隊的直接存取(SSH 或同等方式)。</mark>模型在機器上直接跑,不是透過託管 API。</li>
+      <li><mark class="hl-ask">何時可用,以及能否用到 12 月 11 日。</mark></li>
+      <li><mark class="hl-ask">算力費用由誰負擔。</mark></li>
     </ul>
     <label for="a-sandbox">回覆</label>
     <textarea id="a-sandbox" data-store="a-sandbox" placeholder="供應商、GPU、存取方式、日期、費用負擔"></textarea>
@@ -429,8 +436,8 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="q">
     <h4>雲端模型 API 額度 <span class="ref">B15 · A6</span></h4>
     <ul>
-      <li>API 額度或金鑰,以及我們應遵守的預算上限。</li>
-      <li>貴方是否已有 OpenAI 或 Anthropic 企業帳號?有的話就用那家。沒有偏好時,我們預設 Anthropic。</li>
+      <li><mark class="hl-ask">API 額度或金鑰,以及我們應遵守的預算上限。</mark></li>
+      <li><mark class="hl-ask">貴方是否已有 OpenAI 或 Anthropic 企業帳號?</mark>有的話就用那家。沒有偏好時,我們預設 Anthropic。</li>
     </ul>
     <label for="a-credits">回覆</label>
     <textarea id="a-credits" data-store="a-credits" placeholder="供應商、上限、金鑰怎麼交付"></textarea>
@@ -439,8 +446,8 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="q">
     <h4>使用情境與產業 <span class="ref">A8 · D22</span></h4>
     <ul>
-      <li>我們的預設:金融服務類中小企業的文件工作流(問答、摘要、資訊擷取)。可以嗎,還是偏好房地產或其他產業?</li>
-      <li>該產業有沒有範例文件或格式?只要格式與範例。專案全程不用真實資料,所以不需要交換任何敏感內容。</li>
+      <li>我們的預設:金融服務類中小企業的文件工作流(問答、摘要、資訊擷取)。<mark class="hl-ask">可以嗎,還是偏好房地產或其他產業?</mark></li>
+      <li><mark class="hl-ask">該產業有沒有範例文件或格式?</mark>只要格式與範例。專案全程不用真實資料,所以不需要交換任何敏感內容。</li>
     </ul>
     <label for="a-sector">回覆</label>
     <textarea id="a-sector" data-store="a-sector" placeholder="產業、可提供的範例、何時"></textarea>
@@ -448,7 +455,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
   <div class="q">
     <h4>我們將照此進行的預設 <span class="ref">D21</span></h4>
-    <p style="margin:0 0 4px;font-size:14px">七項;貴方不反對即照此進行。</p>
+    <p style="margin:0 0 4px;font-size:14px">七項;<mark class="hl-ask">貴方不反對即照此進行</mark>。</p>
     <details class="more"><summary>顯示七項預設</summary><div class="body">
     <div class="tbl">
     <table class="defaults">
@@ -475,10 +482,10 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="q">
     <h4>一起確認 <span class="ref">SOW v2</span></h4>
     <ul>
-      <li><strong>第 6 節費用歸屬:</strong>客戶負擔雲端 API 使用費至議定金額,加上沙盒算力。金額是文件裡唯一的空格,由上方沙盒與額度的回覆決定。</li>
+      <li><strong>第 6 節費用歸屬:</strong>客戶負擔雲端 API 使用費至議定金額,加上沙盒算力。<mark class="hl-ask">金額是文件裡唯一的空格</mark>,由上方沙盒與額度的回覆決定。</li>
       <li><strong>第 6 節沙盒:</strong>客戶提供設定為模擬地端的雲端沙盒;學生筆電只用於開發。</li>
       <li><strong>第 5 節 Phase 1:</strong>早期原型驗證架構假設,Alex 於 9 月 3 日提出。</li>
-      <li><strong>時程:</strong>期中簡報 10 月 2–9 日(第 7 週),期末簡報 12 月 2–11 日(第 15 週)。</li>
+      <li><strong>時程:</strong><mark class="hl-key">期中簡報 10 月 2–9 日(第 7 週),期末簡報 12 月 2–11 日(第 15 週)</mark>。</li>
     </ul>
     <label for="a-sow">議定金額與任何措辭修改</label>
     <textarea id="a-sow" data-store="a-sow" placeholder="第 6 節的金額;需要改寫的地方"></textarea>

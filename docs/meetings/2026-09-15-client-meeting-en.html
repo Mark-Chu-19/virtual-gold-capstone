@@ -68,6 +68,12 @@ th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:up
 .finding div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:14px;line-height:1.45}
 .finding .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .finding b{font-weight:600}
+mark{padding:0 .15em;border-radius:2px;color:inherit;background:transparent}
+mark.hl-key{background:var(--gold-soft);box-shadow:inset 0 -2px 0 var(--gold)}
+mark.hl-ask{background:var(--cloud-soft);box-shadow:inset 0 -2px 0 var(--cloud)}
+mark.hl-no{background:var(--warn-soft);box-shadow:inset 0 -2px 0 var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px;color:var(--muted)}
+.legend mark{color:var(--ink)}
 .q{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;padding:14px 16px;margin-bottom:14px}
 .q h4{margin:0 0 6px;font-size:17px;font-family:var(--serif)}
 .q h4 .ref{margin-left:8px;vertical-align:middle}
@@ -116,6 +122,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <button id="collapse-all" type="button">Collapse all</button>
     <span style="font-size:13px;color:var(--muted)">Sections open on request. Answers typed below stay in this browser only.</span>
   </div>
+  <div class="legend"><span>Highlights:</span><span><mark class="hl-key">key finding or decision</mark></span><span><mark class="hl-ask">needs your answer today</mark></span><span><mark class="hl-no">excluded or deferred</mark></span></div>
 </header>
 
 <ol class="agenda">
@@ -130,10 +137,10 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <h2><span class="n">1</span>Research based on the project description</h2>
   <p class="lede">The brief asks for a hybrid assistant that escalates to the cloud "when additional confidence or reasoning capability is required". We researched what that confidence signal can be on an 8B local model, and what it costs.</p>
   <div class="finding">
-    <div><div class="k">Confidence signal</div><b>Two signals work on an 8B model at near-zero cost per query:</b> the token log-probability the model already produces, and a Semantic Entropy Probe trained once on the model's hidden states. Both have published evidence at 7–8B scale.</div>
-    <div><div class="k">Excluded</div><b>Asking the model how confident it is does not work at this size.</b> Across seven 3–9B open-weight models, 91.7% of answers claimed at least 95% confidence whether right or wrong. We will not route on self-reported confidence.</div>
-    <div><div class="k">Local models</div><b>Llama 3.1 8B as the primary model, Qwen3 8B as the secondary</b> for code and multilingual queries, run with Hugging Face transformers at 4-bit so the harness can read log-probs and hidden states. Qwen3 carries source, hash and licence checks.</div>
-    <div><div class="k">Benchmarks</div><b>MMLU subset and GSM8K first,</b> as the general-purpose benchmarks you asked for on Sep 3; TruthfulQA and HaluEval for factuality; Presidio's evaluation module and a labelled prompt-injection set for security.</div>
+    <div><div class="k">Confidence signal</div><b><mark class="hl-key">Two signals work on an 8B model at near-zero cost per query:</mark></b> the token log-probability the model already produces, and a Semantic Entropy Probe trained once on the model's hidden states. Both have published evidence at 7–8B scale.</div>
+    <div><div class="k">Excluded</div><b><mark class="hl-no">Asking the model how confident it is does not work at this size.</mark></b> Across seven 3–9B open-weight models, 91.7% of answers claimed at least 95% confidence whether right or wrong. <mark class="hl-no">We will not route on self-reported confidence.</mark></div>
+    <div><div class="k">Local models</div><b><mark class="hl-key">Llama 3.1 8B as the primary model, Qwen3 8B as the secondary</mark></b> for code and multilingual queries, run with Hugging Face transformers at 4-bit so the harness can read log-probs and hidden states. Qwen3 carries source, hash and licence checks.</div>
+    <div><div class="k">Benchmarks</div><b><mark class="hl-key">MMLU subset and GSM8K first,</mark></b> as the general-purpose benchmarks you asked for on Sep 3; TruthfulQA and HaluEval for factuality; Presidio's evaluation module and a labelled prompt-injection set for security.</div>
   </div>
 
   <details class="more"><summary>Confidence signals at 8B scale</summary><div class="body">
@@ -156,7 +163,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 <section id="architecture">
   <h2><span class="n">2</span>Architecture v0.3</h2>
-  <p class="lede">Local first. The confidence score decides whether escalation is needed; the sensitivity class decides whether it is allowed. When both say no, the system admits uncertainty rather than sending confidential data out.</p>
+  <p class="lede">Local first. <mark class="hl-key">The confidence score decides whether escalation is needed; the sensitivity class decides whether it is allowed.</mark> When both say no, the system admits uncertainty rather than sending confidential data out.</p>
 
   <figure>
   <svg viewBox="0 0 840 470" role="img" aria-label="Layered system diagram: the user interface, gateway, router, local inference, confidence scoring, knowledge and governance layers all sit inside the local environment; only the router sends redacted content to an external cloud model over a single channel and receives the reply.">
@@ -366,17 +373,17 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <ul class="points">
     <li><strong>One trust boundary.</strong> Only the router talks to the cloud, and only with redacted, minimized content. The sandbox enforces this with a private network and an egress proxy that logs every request.</li>
     <li><strong>De-identification round trip.</strong> Presidio replaces names, accounts and amounts with placeholders before any cloud call; the placeholder table never leaves the sandbox; the reply is mapped back before the user sees it.</li>
-    <li><strong>Data sensitivity classification.</strong> Three levels by default: public, internal, confidential. Confidential requests stay local no matter how low the confidence.</li>
+    <li><strong>Data sensitivity classification.</strong> Three levels by default: public, internal, confidential. <mark class="hl-key">Confidential requests stay local no matter how low the confidence.</mark></li>
     <li><strong>Replaceable components.</strong> Models, cloud provider and vector store sit behind interfaces; swapping Qwen3 out is a configuration change.</li>
-    <li><strong>Interface.</strong> CLI and REST API only, no GUI, as agreed on Sep 3.</li>
-    <li><strong>Deferred.</strong> A document knowledge base (RAG) is a stretch goal; we revisit after the midpoint once a sector and sample formats are set.</li>
+    <li><strong>Interface.</strong> <mark class="hl-key">CLI and REST API only, no GUI</mark>, as agreed on Sep 3.</li>
+    <li><strong>Deferred.</strong> <mark class="hl-no">A document knowledge base (RAG) is a stretch goal</mark>; we revisit after the midpoint once a sector and sample formats are set.</li>
   </ul>
   </div></details>
 </section>
 
 <section id="comparison">
   <h2><span class="n">3</span>Comparison: how we will show the trade-off</h2>
-  <p class="lede">The same test set runs under three configurations. That is the only way to answer your two questions from Sep 3: how big is the gap to the cloud, and what does the local path save.</p>
+  <p class="lede">The same test set runs under three configurations. That is the only way to answer your two questions from Sep 3: <mark class="hl-key">how big is the gap to the cloud, and what does the local path save.</mark></p>
 
   <div class="tbl">
   <table>
@@ -386,7 +393,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <tr><td><strong>Cloud-only</strong></td><td>Every request straight to the cloud model</td><td>Quality ceiling, cost ceiling, privacy floor</td></tr>
   </table>
   </div>
-  <p><strong>Six metrics per configuration:</strong> accuracy · latency · cost per query · escalation rate · PII-leak rate · prompt-injection resistance.</p>
+  <p><strong>Six metrics per configuration:</strong> <mark class="hl-key">accuracy · latency · cost per query · escalation rate · PII-leak rate · prompt-injection resistance</mark>.</p>
 
   <details class="more"><summary>What you will see at the midpoint (Oct 2–9, week 7)</summary><div class="body">
   <div class="stat">
@@ -406,10 +413,10 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="q">
     <h4>Cloud sandbox <span class="ref">B15</span></h4>
     <ul>
-      <li>Provider and GPU. A T4 (16 GB) runs the 8B model; an A10G (24 GB) lets the multi-sample confidence runs finish comfortably.</li>
-      <li>Direct access for the team (SSH or equivalent). The model runs in-process, not behind a managed API.</li>
-      <li>When it is available, and whether it stays up through December 11.</li>
-      <li>Who covers the compute cost.</li>
+      <li><mark class="hl-ask">Provider and GPU.</mark> A T4 (16 GB) runs the 8B model; an A10G (24 GB) lets the multi-sample confidence runs finish comfortably.</li>
+      <li><mark class="hl-ask">Direct access for the team (SSH or equivalent).</mark> The model runs in-process, not behind a managed API.</li>
+      <li><mark class="hl-ask">When it is available, and whether it stays up through December 11.</mark></li>
+      <li><mark class="hl-ask">Who covers the compute cost.</mark></li>
     </ul>
     <label for="a-sandbox">Answer</label>
     <textarea id="a-sandbox" data-store="a-sandbox" placeholder="Provider, GPU, access, dates, cost owner"></textarea>
@@ -418,8 +425,8 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="q">
     <h4>Cloud model API credits <span class="ref">B15 · A6</span></h4>
     <ul>
-      <li>API credits or keys, and a budget cap we should stay within.</li>
-      <li>Do you already have an OpenAI or Anthropic enterprise account? We will use whichever you have. If there is no preference, we default to Anthropic.</li>
+      <li><mark class="hl-ask">API credits or keys, and a budget cap we should stay within.</mark></li>
+      <li><mark class="hl-ask">Do you already have an OpenAI or Anthropic enterprise account?</mark> We will use whichever you have. If there is no preference, we default to Anthropic.</li>
     </ul>
     <label for="a-credits">Answer</label>
     <textarea id="a-credits" data-store="a-credits" placeholder="Provider, cap, how keys are shared"></textarea>
@@ -428,8 +435,8 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="q">
     <h4>Use case and sector <span class="ref">A8 · D22</span></h4>
     <ul>
-      <li>Our default: financial-services SMB document workflows (Q&amp;A, summarization, extraction). Does that work, or would you rather real estate or another sector?</li>
-      <li>Any example documents or formats for that sector? Formats and samples only. The project uses no real data at any point, so nothing sensitive needs to change hands.</li>
+      <li>Our default: financial-services SMB document workflows (Q&amp;A, summarization, extraction). <mark class="hl-ask">Does that work, or would you rather real estate or another sector?</mark></li>
+      <li><mark class="hl-ask">Any example documents or formats for that sector?</mark> Formats and samples only. The project uses no real data at any point, so nothing sensitive needs to change hands.</li>
     </ul>
     <label for="a-sector">Answer</label>
     <textarea id="a-sector" data-store="a-sector" placeholder="Sector, what samples they can share, when"></textarea>
@@ -437,7 +444,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
   <div class="q">
     <h4>Defaults we will proceed on <span class="ref">D21</span></h4>
-    <p style="margin:0 0 4px;font-size:14px">Seven items; we proceed on these unless you object.</p>
+    <p style="margin:0 0 4px;font-size:14px">Seven items; <mark class="hl-ask">we proceed on these unless you object</mark>.</p>
     <details class="more"><summary>Show the seven defaults</summary><div class="body">
     <div class="tbl">
     <table class="defaults">
@@ -464,10 +471,10 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   <div class="q">
     <h4>To confirm together <span class="ref">SOW v2</span></h4>
     <ul>
-      <li><strong>Section 6, cost ownership:</strong> the client covers cloud API usage up to an agreed amount plus sandbox compute. The amount is the one blank in the document; it comes from the sandbox and credits answers above.</li>
+      <li><strong>Section 6, cost ownership:</strong> the client covers cloud API usage up to an agreed amount plus sandbox compute. <mark class="hl-ask">The amount is the one blank in the document</mark>; it comes from the sandbox and credits answers above.</li>
       <li><strong>Section 6, sandbox:</strong> the client provides a cloud sandbox configured to simulate on-premises; student laptops are for development only.</li>
       <li><strong>Section 5, Phase 1:</strong> early prototyping to validate architectural assumptions, added at Alex's request on Sep 3.</li>
-      <li><strong>Timeline:</strong> midterm presentation October 2–9 (week 7), final presentation December 2–11 (week 15).</li>
+      <li><strong>Timeline:</strong> <mark class="hl-key">midterm presentation October 2–9 (week 7), final presentation December 2–11 (week 15)</mark>.</li>
     </ul>
     <label for="a-sow">Agreed amount and any wording changes</label>
     <textarea id="a-sow" data-store="a-sow" placeholder="Amount for section 6; anything they want reworded"></textarea>
