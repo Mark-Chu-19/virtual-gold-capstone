@@ -7,7 +7,7 @@
 
 | # | 項目 | 說明 | 負責人 | 期限 | 完成 |
 |---|---|---|---|---|---|
-| 1 | **工具選型**(尚未定案) | 組員提案:LiteLLM 路由閘道、Ollama 本地推論、Presidio PII 偵測、RouteLLM 方法做路由訊號。要確認:LiteLLM 能否掛自訂路由政策與去識別化鉤子;RouteLLM 是「看問題」的事前路由,和「看回答」的事後信心評分是兩回事,要分開評估;Ollama 取 logprobs 是否方便,還是改用 vLLM。 | | | [ ] |
+| 1 | **工具選型**(尚未定案) | 組員提案:LiteLLM 路由閘道、Ollama 本地推論、Presidio PII 偵測、RouteLLM 方法做路由訊號。要確認:LiteLLM 能否掛自訂路由政策與去識別化鉤子;RouteLLM 是「看問題」的事前路由,和「看回答」的事後信心評分是兩回事,要分開評估;Ollama 取 logprobs 是否方便,還是改用 vLLM。**2026-09-14 新增硬需求(來自 PR #2):**評測 harness 的推論堆疊必須暴露每個 token 的 logprobs 與 hidden states,因為 Semantic Entropy Probe(Config B)要讀 hidden states。Ollama 與 llama.cpp server 兩者都不暴露;vLLM 只有 logprobs。預設:harness 用 HF transformers 跑(T4 上 8B 4-bit,bitsandbytes);Ollama 最多留給 demo CLI。 | | | [ ] |
 | 2 | **RAG 知識層留不留** | 組員版沒有,架構文件有。影響企業文件問答的示範價值、檢索接地度策略、去識別化是否要處理文件片段。傾向保留最簡版,時間不夠再砍並告知客戶。 | | | [ ] |
 | 3 | **資料敏感度分級是否納入 MVP** | 「機密永不外送」規則。路由層多一條規則,成本低,建議納入。 | | | [ ] |
 | 4 | **去識別化與還原管線放 MVP 還是 stretch** | 還原這一步組員版沒有。數值類用佔位符還是假值一起定。 | | | [ ] |
@@ -23,7 +23,7 @@
 |---|---|---|---|---|
 | 10 | 把架構文件第十節的預設方案送客戶確認;客戶不反對即照預設進行 | | | [ ] |
 | 11 | A1 到 A4 決定、客戶回覆 B10 之後,架構文件升版 v0.3 | | | [ ] |
-| 12 | 在 GPU 沙盒裝好 Ollama 與兩個模型;筆電只放 client 程式與一個小型開發用模型 | | W4 | [ ] |
+| 12 | 在 GPU 沙盒裝好兩個模型,推論堆疊依 A1 決定(預設 HF transformers,因為 harness 需要 logprobs 與 hidden states);筆電只放 client 程式與一個小型開發用模型 | | W4 | [ ] |
 | 13 | 搭起評測 harness 骨架(三配置、六指標、日誌) | | W4 | [ ] |
 | 14 | 準備 MMLU 子集與 GSM8K 測試集;生成第一批合成企業問題 | | W5 | [ ] |
 | 15 | **向客戶確認算力與額度,CMU 雲端為備案。**問客戶:(a) 9 月 3 日承諾的雲端沙盒:供應商、GPU、連線方式、何時可用、費用誰出;(b) 雲端模型 API 額度或金鑰(OpenAI 或 Anthropic)與預算上限;(c) 沙盒能否同時承載模擬地端的 VM 與雲端呼叫。任一項沒有,就向 CMU Public Cloud Services 申請 GPU 主機:送諮詢表單並附 Randy 為教職員聯絡人,再寄信給 Randall Trzeciak 說明理由與成本估算(T4 等級 VM、100 GB、100 美元上限),副本 Randy。第 4 週要能用。 | Mark | W4 | [ ] |
