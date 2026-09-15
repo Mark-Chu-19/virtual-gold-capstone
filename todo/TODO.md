@@ -21,7 +21,7 @@ Fill in **Owner** and **Due** at the team meeting. Chinese version: [`TODO-zh.md
 
 | # | Action | Owner | Due | Done |
 |---|---|---|---|---|
-| 10 | Send section 10 defaults (architecture doc) to the client for confirmation; proceed on defaults unless the client objects | | | [ ] |
+| 10 | **Walk the client through the architecture §10 defaults at the 2026-09-15 meeting** instead of sending them. Ask on three: cloud provider (A6: whichever they supply credits for, else Anthropic), who pays (B15), use case / sector (A8). Inform on the other seven: three sensitivity levels, automatic escalation with logging, Qwen3 as secondary with supply-chain checks, T4-class sandbox with 8B at 4-bit (now on HF transformers), placeholders for numeric data, NIST AI RMF, public datasets plus synthetic data. Proceed on defaults unless the client objects; record answers in D21–D23 after the meeting and fold them into v0.3 (B11). | Mark | 2026-09-15 | [ ] |
 | 11 | Bump architecture doc to v0.3 once A1–A4 are decided and the client answers B10 | | | [ ] |
 | 12 | Set up the sandbox: the two models on the GPU host, served by the stack decided in A1 (default HF transformers, since the harness needs logprobs and hidden states); laptops get only the client code and a small dev model | | W4 | [ ] |
 | 13 | Stand up the evaluation-harness skeleton (three configurations, six metrics, logging) | | W4 | [ ] |
