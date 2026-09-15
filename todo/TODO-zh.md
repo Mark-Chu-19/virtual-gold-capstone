@@ -25,7 +25,8 @@
 | 11 | **架構文件升版 v0.3。**條件(A1 到 A4 定案、客戶回覆 B10)於 2026-09-15 達成。等 PR #2 merge 後再動工,避免同一段改兩次。要改:第五節加口頭表態信心的排除與訊號優先順序(token logprob → SEP → 採樣集成);第七節加信心指標子表與每題送雲端一次並快取的做法;第九節 RAG 移到 stretch,敏感度規則與還原對照表明列在 MVP;第十節納入客戶回覆;第十一節 A1 到 A4 打勾,拿掉 LiteLLM / RouteLLM / Ollama / CMU 備案;版本表加 v0.3。四種格式(中英文 md 與 html)一起改。 | Mark | W4 | [ ] |
 | 12 | **沙盒建置**(等 B15)。裝 Python、PyTorch 加 CUDA、transformers、bitsandbytes、accelerate;下載 Llama 3.1 8B(先在 Hugging Face 接受 Meta 授權)與 Qwen3 8B。驗收:一個 smoke test,載入 8B 4-bit,跑一次 `generate` 回傳文字、每個 token 的 logprobs 與 hidden states,並記錄 token/s 與 GPU 記憶體峰值;這個測試就是 harness 採樣核心的第一步,交給工作流(3)。筆電只放 client 程式與一個小型開發用模型(Qwen3 0.6B 或 Llama 3.2 1B),讓程式在本機跑通再上沙盒。負責人:工作流(2),9 月 15 日會議認領。 | | W4 | [ ] |
 | 13 | **搭起評測 harness 骨架**,依 PR #2。跑架構第七節的三配置(local-only / hybrid / cloud-only),記錄其六個系統指標(準確率、延遲、每題成本、升級率、PII 洩漏率、prompt injection 抵抗力),並為每種信心訊號變體記錄信心子表(ECE、AUROC、AURC、升級率對準確率)。每題送雲端一次並快取,cloud-only 從同一次跑產出。W4 交付三個分支:`feat/harness-sampling-core`(共用 k 次採樣迴圈,建在 B12 的 smoke test 上)、`eval/benchmark-loaders`(先做 MMLU 子集與 GSM8K,對接 B14)、`eval/calibration-metrics`(用合成資料做單元測試;不需要 GPU,筆電可先做)。訊號變體 A 與期中 pilot 在 W5 到 W6。 | Zhexuan | W4 | [ ] |
-| 14 | 準備 MMLU 子集與 GSM8K 測試集;生成第一批合成企業問題 | | W5 | [ ] |
+| 14 | **Benchmark 測試集**(與 B13 的 loaders 是同一件事)。MMLU:每科固定題數(例如 20 × 57 約 1,140 題)、固定 random seed,另切一個 dev split 給門檻校準用(PR #2:門檻不在 test set 上調)。GSM8K:官方 test split(1,319 題),dev 從 train 切。 | Zhexuan | W4 | [ ] |
+| 14a | **合成企業資料**(工作流 5)。兩批:(i)期中 CLI demo 用的含 PII 請求十幾條(A7),W5 要有;(ii)W9 到 W11 的 PII 洩漏率與 prompt injection 測試用的企業文件:W5 先定格式與生成 prompt,W9 前生足量。產業背景依 A8。客戶給的範例(D22)只當格式樣板,不進資料集;全程不用真實資料(架構第十節)。 | | W5 | [ ] |
 | 15 | **向客戶確認算力與額度,CMU 雲端為備案。**問客戶:(a) 9 月 3 日承諾的雲端沙盒:供應商、GPU、連線方式、何時可用、費用誰出;(b) 雲端模型 API 額度或金鑰(OpenAI 或 Anthropic)與預算上限;(c) 沙盒能否同時承載模擬地端的 VM 與雲端呼叫。任一項沒有,就向 CMU Public Cloud Services 申請 GPU 主機:送諮詢表單並附 Randy 為教職員聯絡人,再寄信給 Randall Trzeciak 說明理由與成本估算(T4 等級 VM、100 GB、100 美元上限),副本 Randy。第 4 週要能用。 | Mark | W4 | [ ] |
 
 ## C. 組員 Data & Architecture 提案待修正
