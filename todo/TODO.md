@@ -45,9 +45,9 @@ File: `reference/team/Virtual_Gold_Data_Architecture_Proposal_1.docx`
 
 | # | Item | Asked on | Answer |
 |---|---|---|---|
-| 21 | Confirm or redirect the eight defaults in section 10 | | |
-| 22 | Any example documents or formats for the "enterprise and small business data" mentioned in the brief | | |
-| 23 | Whether international open-source models (Qwen3) may be included in the evaluation | | |
+| 21 | Confirm or redirect the ten defaults in architecture §10 (walked through at the meeting, B10) | 2026-09-15 | |
+| 22 | Example documents or formats for the "enterprise and small business data" in the brief, for the sector chosen in A8. Formats and samples only; no real data (B14a) | 2026-09-15 | |
+| 23 | Confirm Qwen3 8B as the secondary model with supply-chain checks (architecture §10 item 4). On Sep 3 the client said international models face more security scrutiny and asked for modularity so models can be swapped; this is a confirmation, not a new question | 2026-09-15 | |
 
 ## E. Scope of Work edits before signing
 
