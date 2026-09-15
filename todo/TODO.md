@@ -49,16 +49,13 @@ File: `reference/team/Virtual_Gold_Data_Architecture_Proposal_1.docx`
 | 22 | Example documents or formats for the "enterprise and small business data" in the brief, for the sector chosen in A8. Formats and samples only; no real data (B14a) | 2026-09-15 | |
 | 23 | Confirm Qwen3 8B as the secondary model with supply-chain checks (architecture §10 item 4). On Sep 3 the client said international models face more security scrutiny and asked for modularity so models can be swapped; this is a confirmation, not a new question | 2026-09-15 | |
 
-## E. Scope of Work edits before signing
+## E. Scope of Work before signing
 
-Original: `docs/Scope of Work.docx` (dated Sep 15, 2026). **Revised: `docs/Scope of Work v2.docx`, changes in red.** Everything else in the SOW is consistent with the architecture doc.
+`docs/Scope of Work v2.docx` (changes in red) is done except the cost amount. Completed edits (sandbox assumption, sandbox dependency, Phase 1 prototyping sentence) are recorded in git history and no longer tracked here.
 
 | # | Edit | Done |
 |---|---|---|
-| 24 | Section 6, assumption 3: replace "Development and experimentation will primarily occur on student laptops, desktops, or other approved sandboxed computing environments" with "Development and experimentation will primarily occur in a cloud-based sandbox environment provided by the Client, configured to simulate an on-premises enterprise deployment; student laptops are used for development only." The SOW does not mention CMU resources. | [x] |
-| 25 | Section 6: add a dependency: "The Client will provide access to a cloud-based sandbox environment for testing, as discussed on September 3, 2026." | [x] |
-| 26 | Section 6 cost ownership: written in v2 as a red paragraph stating the Client covers costs, with a $[X] placeholder; once B15 is answered, fill in the amount and remove the "to be confirmed" note. The SOW does not mention the CMU fallback. | [ ] |
-| 27 | Section 5, Phase 1: append "and begin early prototyping to validate architectural assumptions" (requested by Alex on Sep 3). | [x] |
+| 26 | Section 6 cost ownership: the red paragraph states the Client covers costs with a $[X] placeholder. Ask the amount at the 2026-09-15 meeting (B15), fill it in, remove the "to be confirmed" note, then sign. The SOW does not mention the CMU fallback. | [ ] |
 
 ## F. Research list (by workstream)
 
