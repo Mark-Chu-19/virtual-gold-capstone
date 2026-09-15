@@ -5,18 +5,24 @@ Client contact: Urte Jesina. Team: 5 people.
 
 We are designing and evaluating a **local-first enterprise AI assistant**: open-source models running locally are the primary intelligence layer, every response gets a measured confidence score, and requests escalate to a cloud model only when confidence is low **and** data sensitivity allows. Sensitive data stays local.
 
-## Current status (Week 3, updated 2026-09-08)
+## Current status (Week 4, updated 2026-09-15)
 
 | Milestone | Status |
 |---|---|
 | Client kickoff, brief received | Done |
 | Architecture draft v0.1 (layers, request flow, confidence scoring, de-identification pipeline) | Done, 2026-09-07 |
 | Teammate proposal (tooling, datasets, defaults, MVP vs stretch) reviewed and merged into **v0.2** | Done, 2026-09-08 |
-| Team decisions on the section 11 to-do list (tool selection, RAG, sensitivity classification, cloud provider) | **Open, this week** |
-| Send section 10 defaults to the client for confirmation | Pending |
+| Architecture **v0.3**: Sep 15 decisions written in (transformers, own router, RAG stretch, sensitivity + de-identification in MVP, midpoint scope); PR #2 confidence-harness content goes into v0.3.1 after merge | Done, 2026-09-15 |
+| Team decisions on the section 11 to-do list: tool selection (HF transformers, own router, Presidio), RAG deferred to stretch, sensitivity classification and de-identification round trip in the MVP | Decided, 2026-09-15 (`todo/TODO.md` decision log) |
+| Cloud provider: follows whichever the client supplies credits for, default Anthropic | Pending client answer |
+| Section 10 defaults walked through with the client | Client meeting 2026-09-15 |
 | PR workflow set up (branch → PR → Mark reviews and merges) | Done, 2026-09-08 |
-| Week 4: start MVP build, evaluation harness skeleton | Not started |
-| Week 7: midpoint presentation with first local-only vs hybrid numbers | Target |
+| Scope of Work revised (`docs/Scope of Work v2.docx`, changes in red); cost line still needs the client's answer | v2 done, 2026-09-10 |
+| Team decision: no local LLM on laptops; models run on a cloud GPU sandbox simulating on-premises | Decided, 2026-09-10 |
+| Confirm with the client: sandbox offered on Sep 3, cloud API credits, use case / sector, SOW cost amount | Client meeting 2026-09-15 |
+| Confidence-scoring harness design doc (PR #2, Zhexuan Ye) | Under review, changes requested 2026-09-14 |
+| Week 4: sandbox setup, harness skeleton (sampling core, loaders, metrics), workstream research one-pagers | In progress |
+| Week 7: midpoint presentation with first local-only / hybrid / cloud-only numbers on MMLU subset and GSM8K (scope in `todo/TODO.md` A7) | Target |
 
 ## Read this first
 
@@ -24,10 +30,10 @@ The single source of truth is the architecture document. Same content in four fo
 
 | File | Language | Format |
 |---|---|---|
-| [`docs/architecture-v0.2-en.md`](docs/architecture-v0.2-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
-| [`docs/architecture-v0.2-en.html`](docs/architecture-v0.2-en.html) | English | HTML with SVG diagrams, open in a browser |
-| [`docs/architecture-v0.2-zh.md`](docs/architecture-v0.2-zh.md) | Traditional Chinese | Markdown, Mermaid diagrams |
-| [`docs/architecture-v0.2.html`](docs/architecture-v0.2.html) | Traditional Chinese | HTML with SVG |
+| [`docs/architecture-v0.3-en.md`](docs/architecture-v0.3-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
+| [`docs/architecture-v0.3-en.html`](docs/architecture-v0.3-en.html) | English | HTML with SVG diagrams, open in a browser |
+| [`docs/architecture-v0.3-zh.md`](docs/architecture-v0.3-zh.md) | Traditional Chinese | Markdown, Mermaid diagrams |
+| [`docs/architecture-v0.3.html`](docs/architecture-v0.3.html) | Traditional Chinese | HTML with SVG |
 
 Sections in the document:
 
@@ -50,38 +56,43 @@ Sections in the document:
 .
 ├── README.md                      start here: progress, open decisions, layout
 ├── docs/                          documents WE write (the deliverables in progress)
-│   ├── architecture-v0.2-en.md    current architecture doc, English (Markdown, renders on GitHub)
-│   ├── architecture-v0.2-en.html  same, HTML with SVG diagrams
-│   ├── architecture-v0.2-zh.md    current architecture doc, Chinese
-│   └── architecture-v0.2.html     same, HTML
+│   ├── architecture-v0.3-en.md    current architecture doc, English (Markdown, renders on GitHub)
+│   ├── architecture-v0.3-en.html  same, HTML with SVG diagrams
+│   ├── architecture-v0.3-zh.md    current architecture doc, Chinese
+│   ├── architecture-v0.3.html     same, HTML
+│   ├── meetings/                  agendas we bring to client meetings, EN and zh, named YYYY-MM-DD
+│   ├── Scope of Work.docx         SOW original draft (W3)
+│   └── Scope of Work v2.docx      SOW revised draft, changes in red; sign this one once the cost line is filled in
 ├── todo/                          team to-do: open decisions, pending actions, decision log
 │   ├── TODO.md                    English
 │   └── TODO-zh.md                 Traditional Chinese
 ├── reference/                     inputs we did NOT write; read-only
-│   ├── client/                    from Virtual Gold and the course
-│   │   ├── Virtual Gold Inc - AI Assistant.pdf    original capstone brief
-│   │   └── Proposed Weekly Structure.pdf          15-week course structure
-│   └── team/                      individual teammates' proposals and notes
-│       └── Virtual_Gold_Data_Architecture_Proposal_1.docx   Data & Architecture proposal (merged into v0.2)
+│   ├── client/                    from Virtual Gold
+│   │   └── Virtual Gold Inc - AI Assistant.pdf    original capstone brief
+│   ├── course/                    from the instructor
+│   │   └── Proposed Weekly Structure.pdf          15-week course structure we must follow
+│   └── team/                      teammates' proposals and meeting notes
+│       ├── Virtual_Gold_Data_Architecture_Proposal_1.docx   Data & Architecture proposal (merged into v0.2)
+│       └── Meeting Notes/         client meeting notes, one file per meeting, named YYYY-MM-DD
 ├── src/                           (from week 4) prototype code: router, confidence scoring, PII gate, eval harness
 └── data/                          (from week 4) synthetic datasets and benchmark subsets; never real data
 ```
 
-Rule of thumb: `docs/` is what we hand to the client, `reference/` is what we were handed, `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
+Rule of thumb: `docs/` is what we hand to the client (including the SOW), `reference/` is what we were handed (client, course, or a teammate), `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
 
 ## Timeline (follows the course structure, not negotiable)
 
 | Weeks | Phase |
 |---|---|
-| W1–W3 | Setup: team, kickoff, **architecture sign-off (now)** |
-| W4–W7 | MVP build. **W7 midpoint presentation** |
+| W1–W3 | Setup: team, kickoff, architecture sign-off |
+| W4–W7 | **MVP build (now).** **W7 midpoint presentation** |
 | W8 | Fall break |
-| W9–W11 | Full three-configuration evaluation, red-teaming, de-identification round trip |
+| W9–W11 | Full three-configuration evaluation, SEP and sampling-ensemble confidence signals, red-teaming, format-preserving fake values |
 | W12–W15 | Analysis, report, client feedback. **W15 final presentation** (W14 Thanksgiving) |
 
 ## Open decisions
 
-Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): this week's decisions, pending actions, corrections to the teammate proposal, items waiting on the client, and a decision log. Section 11 of the architecture doc mirrors the decision items.
+Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): decisions, pending actions, corrections to the teammate proposal, items waiting on the client, the SOW cost line, the per-workstream research list, and a decision log. Section 11 of the architecture doc mirrors the decision items but lags behind the TODO until v0.3 (TODO B11).
 
 ## Contributing workflow
 

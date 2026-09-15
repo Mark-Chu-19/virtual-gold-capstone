@@ -11,6 +11,7 @@ Related to-do item: #<!-- number from todo/TODO.md, or "none" -->
 ## Type
 
 - [ ] docs (architecture document, README)
+- [ ] fix (bug fixes in src/)
 - [ ] code (src/)
 - [ ] eval (data/, benchmark results)
 - [ ] todo (decisions, decision log)

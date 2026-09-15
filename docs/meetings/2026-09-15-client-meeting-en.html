@@ -1,0 +1,504 @@
+<title>Virtual Gold Sep 15 Client Meeting</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone · Virtual Gold Inc · Client meeting 2 of the discovery phase</div>
+  <h1>Research, architecture, comparison plan, and the Scope of Work</h1>
+  <dl class="meta">
+    <div><dt>Date</dt><dd>Monday, September 15, 2026 · Week 4 of 15</dd></div>
+    <div><dt>Goal</dt><dd>Agree on scope and resources, then sign the Scope of Work</dd></div>
+  </dl>
+  <div class="toolbar">
+    <div class="btns"><button id="expand-all" type="button">Expand all</button><button id="collapse-all" type="button">Collapse all</button></div>
+    <div class="legend"><span><mark class="hl-key">Gold: key finding or decision</mark></span><span><mark class="hl-ask">Blue: needs your answer today</mark></span><span><mark class="hl-no">Red: excluded or deferred</mark></span></div>
+  </div>
+</header>
+
+<ol class="agenda">
+  <li><a href="#research"><span class="n">1</span><span class="t">Research</span><span class="m">what we read, what we chose</span></a></li>
+  <li><a href="#architecture"><span class="n">2</span><span class="t">Architecture</span><span class="m">v0.3, local-first</span></a></li>
+  <li><a href="#comparison"><span class="n">3</span><span class="t">Comparison</span><span class="m">three configurations, six metrics</span></a></li>
+  <li><a href="#questions"><span class="n">4</span><span class="t">Open questions</span><span class="m">sandbox, credits, sector, defaults</span></a></li>
+  <li><a href="#sow"><span class="n">5</span><span class="t">SOW signature</span><span class="m">fill the cost line, sign</span></a></li>
+</ol>
+
+<section id="research">
+  <h2><span class="n">1</span>Research based on the project description</h2>
+  <p class="lede">The brief asks for a hybrid assistant that escalates to the cloud "when additional confidence or reasoning capability is required". We researched what that confidence signal can be on an 8B local model, and what it costs.</p>
+  <div class="finding">
+    <div><div class="k">Confidence signal</div><b><mark class="hl-key">Two signals work on an 8B model at near-zero cost per query:</mark></b> the token log-probability the model already produces, and a Semantic Entropy Probe trained once on the model's hidden states. Both have published evidence at 7–8B scale.</div>
+    <div><div class="k">Excluded</div><b><mark class="hl-no">Asking the model how confident it is does not work at this size.</mark></b> Across seven 3–9B open-weight models, 91.7% of answers claimed at least 95% confidence whether right or wrong. <mark class="hl-no">We will not route on self-reported confidence.</mark></div>
+    <div><div class="k">Local models</div><b><mark class="hl-key">Llama 3.1 8B as the primary model, Qwen3 8B as the secondary</mark></b> for code and multilingual queries, run with Hugging Face transformers at 4-bit so the harness can read log-probs and hidden states. Qwen3 carries source, hash and licence checks.</div>
+    <div><div class="k">Benchmarks</div><b><mark class="hl-key">MMLU subset and GSM8K first,</mark></b> as the general-purpose benchmarks you asked for on Sep 3; TruthfulQA and HaluEval for factuality; Presidio's evaluation module and a labelled prompt-injection set for security.</div>
+  </div>
+</section>
+
+<section id="architecture">
+  <h2><span class="n">2</span>Architecture v0.3</h2>
+  <p class="lede">Local first. <mark class="hl-key">The confidence score decides whether escalation is needed; the sensitivity class decides whether it is allowed.</mark> When both say no, the system admits uncertainty rather than sending confidential data out.</p>
+
+  <figure>
+  <svg viewBox="0 0 840 470" role="img" aria-label="Layered system diagram: the user interface, gateway, router, local inference, confidence scoring, knowledge and governance layers all sit inside the local environment; only the router sends redacted content to an external cloud model over a single channel and receives the reply.">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+    <marker id="arc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cloud)"/></marker>
+  </defs>
+  <rect x="16" y="28" width="548" height="426" rx="6" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="32" y="50" font-size="12" font-weight="700" fill="var(--local)">LOCAL ENVIRONMENT · ENTERPRISE NETWORK</text>
+
+  <g font-size="12.5">
+    <rect x="40" y="66" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="85" font-weight="700">1 User interface</text>
+    <text x="52" y="102" fill="var(--muted)" font-size="11.5">CLI · REST API (no GUI)</text>
+
+    <rect x="40" y="130" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="149" font-weight="700">2 Gateway &amp; policy</text>
+    <text x="52" y="166" fill="var(--muted)" font-size="11.5">Auth · PII detection &amp; redaction · sensitivity classification · prompt-injection filter · rate limiting</text>
+
+    <rect x="40" y="194" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="52" y="213" font-weight="700">3 Router &amp; orchestration</text>
+    <text x="52" y="230" fill="var(--muted)" font-size="11.5">Task classification · policy check · escalation decision · response assembly</text>
+
+    <rect x="40" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="277" font-weight="700">4 Local inference</text>
+    <text x="52" y="294" fill="var(--muted)" font-size="11.5">HF transformers · Llama 3.x, Qwen, Mistral</text>
+
+    <rect x="298" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="310" y="277" font-weight="700">5 Confidence scoring</text>
+    <text x="310" y="294" fill="var(--muted)" font-size="11.5">logprob · self-consistency · verifier · grounding</text>
+
+    <rect x="40" y="322" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="341" font-weight="700">6 Knowledge (RAG, stretch)</text>
+    <text x="52" y="358" fill="var(--muted)" font-size="11.5">Local embeddings · Chroma / Qdrant / pgvector</text>
+
+    <rect x="298" y="322" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="310" y="341" font-weight="700">7 Governance &amp; observability</text>
+    <text x="310" y="358" fill="var(--muted)" font-size="11.5">Audit log · cost tracking · benchmarks · model provenance</text>
+
+    <rect x="40" y="386" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="405" font-weight="700">8 Security foundation</text>
+    <text x="52" y="422" fill="var(--muted)" font-size="11.5">Egress allow-list · sandbox · secrets management · model hash &amp; license checks</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)">
+    <line x1="290" y1="110" x2="290" y2="128"/>
+    <line x1="290" y1="174" x2="290" y2="192"/>
+    <line x1="160" y1="238" x2="160" y2="256"/>
+    <line x1="160" y1="302" x2="160" y2="320"/>
+  </g>
+  <line x1="419" y1="238" x2="419" y2="256" stroke="var(--gold)" stroke-width="1.2" marker-end="url(#ar)" marker-start="url(#ar)"/>
+  <text x="428" y="251" font-size="10.5" fill="var(--gold)">score</text>
+  <text x="168" y="251" font-size="10.5" fill="var(--muted)">generate</text>
+  <text x="168" y="315" font-size="10.5" fill="var(--muted)">retrieve</text>
+  <text x="52" y="446" font-size="10.5" fill="var(--muted)">Layer 7 records every layer's decisions, latency and cost</text>
+
+  <text x="608" y="50" font-size="12" font-weight="700" fill="var(--cloud)">EXTERNAL · CLOUD PROVIDERS</text>
+  <rect x="608" y="194" width="212" height="44" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+  <text x="620" y="213" font-size="12.5" font-weight="700" fill="var(--cloud)">Cloud escalation</text>
+  <text x="620" y="230" font-size="11.5" fill="var(--muted)">Claude / GPT / Gemini API</text>
+
+  <line x1="540" y1="206" x2="606" y2="206" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#arc)"/>
+  <line x1="606" y1="226" x2="542" y2="226" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#arc)"/>
+  <text x="573" y="184" font-size="10.5" text-anchor="middle" fill="var(--cloud)">redacted, minimized</text>
+  <text x="573" y="252" font-size="10.5" text-anchor="middle" fill="var(--cloud)">reply</text>
+  <text x="573" y="140" font-size="11" text-anchor="middle" fill="var(--local)" font-weight="700">trust boundary</text>
+  <line x1="573" y1="146" x2="573" y2="176" stroke="var(--local)" stroke-width="1" stroke-dasharray="3 3"/>
+</svg>
+  <figcaption>System layers. Everything inside the dashed box runs in the enterprise's local environment. The only channel crossing the trust boundary carries redacted content from the router to the cloud and the reply back.</figcaption>
+  </figure>
+
+  <details class="more"><summary>Request flow: three decision points</summary><div class="body">
+  <figure class="scroll">
+  <svg viewBox="0 0 960 340" role="img" aria-label="Request flow: the gateway redacts and classifies the request, the local model generates and is scored; if confidence meets the threshold the reply is returned; otherwise, if sensitivity permits, the redacted request goes to a cloud model; if not, the system replies that it cannot answer locally or hands off to a human.">
+  <defs>
+    <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+  </defs>
+  <g font-size="12.5">
+    <rect x="16" y="40" width="96" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="64" y="70" text-anchor="middle" font-weight="700">User request</text>
+
+    <rect x="150" y="40" width="160" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="230" y="60" text-anchor="middle" font-weight="700">Gateway</text>
+    <text x="230" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">PII redaction · classify</text>
+
+    <rect x="348" y="40" width="160" height="50" rx="3" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5"/>
+    <text x="428" y="60" text-anchor="middle" font-weight="700" fill="var(--local)">Local model</text>
+    <text x="428" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">generate (RAG optional)</text>
+
+    <rect x="546" y="40" width="110" height="50" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="601" y="70" text-anchor="middle" font-weight="700">Confidence</text>
+
+    <polygon points="694,65 760,32 826,65 760,98" fill="var(--surface)" stroke="currentColor"/>
+    <text x="760" y="61" text-anchor="middle" font-size="11.5">Score ≥ threshold?</text>
+    <text x="760" y="77" text-anchor="middle" font-size="10.5" fill="var(--muted)">threshold per task</text>
+
+    <rect x="856" y="40" width="90" height="50" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="901" y="70" text-anchor="middle" font-weight="700">Reply</text>
+
+    <polygon points="686,180 760,146 834,180 760,214" fill="var(--surface)" stroke="currentColor"/>
+    <text x="760" y="176" text-anchor="middle" font-size="11.5">Sensitivity allows?</text>
+    <text x="760" y="192" text-anchor="middle" font-size="10.5" fill="var(--muted)">public / internal yes · confidential no</text>
+
+    <rect x="856" y="155" width="90" height="50" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+    <text x="901" y="175" text-anchor="middle" font-weight="700" fill="var(--cloud)">Cloud model</text>
+    <text x="901" y="193" text-anchor="middle" font-size="10.5" fill="var(--muted)">redact, minimize</text>
+
+    <rect x="660" y="262" width="200" height="50" rx="3" fill="var(--surface)" stroke="var(--warn)" stroke-width="1.5"/>
+    <text x="760" y="282" text-anchor="middle" font-weight="700" fill="var(--warn)">"Cannot answer locally"</text>
+    <text x="760" y="300" text-anchor="middle" font-size="11" fill="var(--muted)">or hand off to a human</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#fa)">
+    <line x1="112" y1="65" x2="148" y2="65"/>
+    <line x1="310" y1="65" x2="346" y2="65"/>
+    <line x1="508" y1="65" x2="544" y2="65"/>
+    <line x1="656" y1="65" x2="692" y2="65"/>
+    <line x1="826" y1="65" x2="854" y2="65"/>
+    <line x1="760" y1="98" x2="760" y2="144"/>
+    <line x1="834" y1="180" x2="854" y2="180"/>
+    <line x1="901" y1="155" x2="901" y2="92"/>
+    <line x1="760" y1="214" x2="760" y2="260"/>
+  </g>
+  <g font-size="11" font-weight="700">
+    <text x="836" y="58" fill="var(--local)">yes</text>
+    <text x="768" y="124" fill="var(--warn)">no</text>
+    <text x="836" y="173" fill="var(--cloud)">yes</text>
+    <text x="768" y="240" fill="var(--warn)">no</text>
+  </g>
+  <text x="912" y="130" font-size="10.5" fill="var(--cloud)" text-anchor="middle">reply</text>
+</svg>
+  <figcaption>The confidence score decides whether escalation is needed; the sensitivity class decides whether it is allowed. When both fail, the system admits uncertainty rather than sending confidential data out.</figcaption>
+  </figure>
+  </div></details>
+
+  <details class="more"><summary>De-identification round trip</summary><div class="body">
+  <figure class="scroll">
+  <svg viewBox="0 0 850 330" role="img" aria-label="De-identification and re-identification pipeline: the request is scanned for sensitive entities locally, entities are replaced with placeholders and the content minimized before it goes to the cloud; the mapping table stays local; the cloud reply is re-identified through the table before reaching the user.">
+  <defs>
+    <marker id="da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+    <marker id="dc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--cloud)"/></marker>
+    <marker id="dg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--gold)"/></marker>
+  </defs>
+  <rect x="16" y="28" width="600" height="290" rx="6" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="32" y="50" font-size="12" font-weight="700" fill="var(--local)">LOCAL ENVIRONMENT · ENTERPRISE NETWORK</text>
+  <text x="638" y="50" font-size="11" font-weight="700" text-anchor="middle" fill="var(--local)">trust boundary</text>
+  <line x1="638" y1="58" x2="638" y2="300" stroke="var(--local)" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="660" y="50" font-size="12" font-weight="700" fill="var(--cloud)">EXTERNAL</text>
+
+  <g font-size="12.5">
+    <rect x="36" y="70" width="100" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="86" y="100" text-anchor="middle" font-weight="700">Raw request</text>
+
+    <rect x="166" y="70" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="231" y="90" text-anchor="middle" font-weight="700">Detect entities</text>
+    <text x="231" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">NER + regex rules</text>
+
+    <rect x="326" y="70" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="391" y="90" text-anchor="middle" font-weight="700">Replace</text>
+    <text x="391" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">PERSON_1 · ORG_1</text>
+
+    <rect x="486" y="70" width="110" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="541" y="90" text-anchor="middle" font-weight="700">Minimize</text>
+    <text x="541" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">only needed chunks</text>
+
+    <rect x="400" y="142" width="180" height="46" rx="3" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="490" y="161" text-anchor="middle" font-weight="700" fill="var(--gold)">Mapping table</text>
+    <text x="490" y="178" text-anchor="middle" font-size="11" fill="var(--muted)">PERSON_1 = Jane Doe · never leaves local</text>
+
+    <rect x="486" y="210" width="110" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="541" y="230" text-anchor="middle" font-weight="700">Re-identify</text>
+    <text x="541" y="248" text-anchor="middle" font-size="11" fill="var(--muted)">placeholders back to names</text>
+
+    <rect x="326" y="210" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="391" y="240" text-anchor="middle" font-weight="700">Reply to user</text>
+
+    <rect x="660" y="70" width="170" height="50" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+    <text x="745" y="90" text-anchor="middle" font-weight="700" fill="var(--cloud)">Cloud model</text>
+    <text x="745" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">sees only PERSON_1, ORG_1</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#da)">
+    <line x1="136" y1="95" x2="164" y2="95"/>
+    <line x1="296" y1="95" x2="324" y2="95"/>
+    <line x1="456" y1="95" x2="484" y2="95"/>
+    <line x1="484" y1="235" x2="458" y2="235"/>
+  </g>
+  <g stroke="var(--gold)" stroke-width="1.2" fill="none">
+    <polyline points="391,120 391,165 398,165" marker-end="url(#dg)"/>
+    <line x1="541" y1="188" x2="541" y2="208" marker-end="url(#dg)"/>
+  </g>
+  <text x="360" y="150" font-size="10.5" fill="var(--gold)">write</text>
+  <text x="548" y="202" font-size="10.5" fill="var(--gold)">look up</text>
+
+  <line x1="596" y1="95" x2="658" y2="95" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#dc)"/>
+  <text x="627" y="62" font-size="10.5" text-anchor="middle" fill="var(--cloud)">placeholders only</text>
+  <polyline points="745,120 745,235 598,235" fill="none" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#dc)"/>
+  <text x="752" y="185" font-size="10.5" fill="var(--cloud)">reply with placeholders</text>
+
+  <text x="32" y="300" font-size="10.5" fill="var(--muted)">Governance metrics: tokens sent · entities replaced · re-identification success rate · miss rate</text>
+</svg>
+  <figcaption>Sensitive entities are swapped for placeholders locally, the mapping table stays local, and the cloud sees only placeholders; the reply is mapped back to real names on the way in.</figcaption>
+  </figure>
+  </div></details>
+
+  <details class="more"><summary>What is in the prototype</summary><div class="body">
+  <ul class="points">
+    <li><strong>One trust boundary.</strong> Only the router talks to the cloud, and only with redacted, minimized content. The sandbox enforces this with a private network and an egress proxy that logs every request.</li>
+    <li><strong>De-identification round trip.</strong> Presidio replaces names, accounts and amounts with placeholders before any cloud call; the placeholder table never leaves the sandbox; the reply is mapped back before the user sees it.</li>
+    <li><strong>Data sensitivity classification.</strong> Three levels by default: public, internal, confidential. <mark class="hl-key">Confidential requests stay local no matter how low the confidence.</mark></li>
+    <li><strong>Replaceable components.</strong> Models, cloud provider and vector store sit behind interfaces; swapping Qwen3 out is a configuration change.</li>
+    <li><strong>Interface.</strong> <mark class="hl-key">CLI and REST API only, no GUI</mark>, as agreed on Sep 3.</li>
+    <li><strong>Deferred.</strong> <mark class="hl-no">A document knowledge base (RAG) is a stretch goal</mark>; we revisit after the midpoint once a sector and sample formats are set.</li>
+  </ul>
+  </div></details>
+</section>
+
+<section id="comparison">
+  <h2><span class="n">3</span>Comparison: how we will show the trade-off</h2>
+  <p class="lede">The same test set runs under three configurations. That is the only way to answer your two questions from Sep 3: <mark class="hl-key">how big is the gap to the cloud, and what does the local path save.</mark></p>
+
+  <div class="tbl">
+  <table>
+    <tr><th>Configuration</th><th>What it is</th><th>What it tells us</th></tr>
+    <tr><td><strong>Local-only</strong></td><td>Every request answered by the 8B model, no escalation</td><td>Quality floor, cost floor, privacy ceiling</td></tr>
+    <tr><td><strong>Hybrid</strong></td><td>Local first; confidence and sensitivity decide escalation</td><td>Where our proposal lands between the two extremes</td></tr>
+    <tr><td><strong>Cloud-only</strong></td><td>Every request straight to the cloud model</td><td>Quality ceiling, cost ceiling, privacy floor</td></tr>
+  </table>
+  </div>
+  <p><strong>Six metrics per configuration:</strong> <mark class="hl-key">accuracy · latency · cost per query · escalation rate · PII-leak rate · prompt-injection resistance</mark>.</p>
+
+  <h3>What you will see at the midpoint (Oct 2–9, week 7)</h3>
+  <div class="finding">
+    <div><div class="k">Three configurations, side by side</div><b>Local-only, hybrid and cloud-only, each run on the same MMLU subset and GSM8K questions,</b> so the gap between the 8B model and the cloud model is measured on identical inputs.</div>
+    <div><div class="k">Four numbers per configuration</div><b>Accuracy, escalation rate, cost per query and latency.</b> PII-leak rate and prompt-injection resistance follow in weeks 9–11 once the security tests are built.</div>
+    <div><div class="k">One chart</div><b>Escalation rate against accuracy for the hybrid configuration,</b> which answers "how much escalation is enough" and where the cost-quality trade-off sits.</div>
+    <div><div class="k">One live demo</div><b>A request containing PII goes through redaction, escalation and re-identification in the CLI,</b> end to end, so the privacy path is shown working rather than described.</div>
+    <div><div class="k">After the midpoint, weeks 9–11</div>The remaining confidence signals, the two security metrics, and hardware scenarios (CPU, T4, A10G, 4-bit vs 8-bit), so the final report can state what on-premises hardware buys how much less cloud traffic.</div>
+  </div>
+</section>
+
+<section id="questions">
+  <h2><span class="n">4</span>Questions we need answered today</h2>
+  <p class="lede">Three things gate the week-4 build. The fourth is a set of defaults we will proceed on unless you redirect us.</p>
+
+  <div class="q">
+    <h4>Cloud sandbox <span class="ref">B15</span></h4>
+    <ul>
+      <li><mark class="hl-ask">Provider and GPU.</mark> A T4 (16 GB) runs the 8B model; an A10G (24 GB) lets the multi-sample confidence runs finish comfortably.</li>
+      <li><mark class="hl-ask">Direct access for the team (SSH or equivalent).</mark> The model runs in-process, not behind a managed API.</li>
+      <li><mark class="hl-ask">When it is available, and whether it stays up through December 11.</mark></li>
+      <li><mark class="hl-ask">Who covers the compute cost.</mark></li>
+    </ul>
+    <label for="a-sandbox">Answer</label>
+    <textarea id="a-sandbox" data-store="a-sandbox" placeholder="Provider, GPU, access, dates, cost owner"></textarea>
+  </div>
+
+  <div class="q">
+    <h4>Cloud model API credits <span class="ref">B15 · A6</span></h4>
+    <ul>
+      <li><mark class="hl-ask">API credits or keys, and a budget cap we should stay within.</mark></li>
+      <li><mark class="hl-ask">Do you already have an OpenAI or Anthropic enterprise account?</mark> We will use whichever you have. If there is no preference, we default to Anthropic.</li>
+    </ul>
+    <label for="a-credits">Answer</label>
+    <textarea id="a-credits" data-store="a-credits" placeholder="Provider, cap, how keys are shared"></textarea>
+  </div>
+
+  <div class="q">
+    <h4>Use case and sector <span class="ref">A8 · D22</span></h4>
+    <ul>
+      <li>Our default: financial-services SMB document workflows (Q&amp;A, summarization, extraction). <mark class="hl-ask">Does that work, or would you rather real estate or another sector?</mark></li>
+      <li><mark class="hl-ask">Any example documents or formats for that sector?</mark> Formats and samples only. The project uses no real data at any point, so nothing sensitive needs to change hands.</li>
+    </ul>
+    <label for="a-sector">Answer</label>
+    <textarea id="a-sector" data-store="a-sector" placeholder="Sector, what samples they can share, when"></textarea>
+  </div>
+
+  <div class="q">
+    <h4>Defaults we will proceed on <span class="ref">D21</span></h4>
+    <p class="hint">Seven items; <mark class="hl-ask">we proceed on these unless you object</mark>.</p>
+    <details class="more"><summary>Show the seven defaults</summary><div class="body">
+    <div class="tbl">
+    <table class="defaults">
+      <tr><th>Item</th><th>Default</th></tr>
+      <tr><td>Sensitivity levels</td><td>Public, internal, confidential; confidential never leaves local</td></tr>
+      <tr><td>Escalation approval</td><td>Fully automatic, every escalation logged; human approval is a stretch goal</td></tr>
+      <tr><td>International models</td><td>Qwen3 8B as secondary, with source, hash and licence checks</td></tr>
+      <tr><td>Compute</td><td>GPU sandbox simulating on-premises; 8B model at 4-bit; no LLMs on laptops</td></tr>
+      <tr><td>Numeric sensitive data</td><td>Placeholders in the prototype; format-preserving fake values are a stretch goal</td></tr>
+      <tr><td>Governance</td><td>NIST AI RMF</td></tr>
+      <tr><td>Data</td><td>Public datasets plus LLM-generated synthetic enterprise data; no real data</td></tr>
+    </table>
+    </div>
+    </div></details>
+    <label for="a-defaults">Objections or changes</label>
+    <textarea id="a-defaults" data-store="a-defaults" placeholder="Leave blank if all accepted"></textarea>
+  </div>
+</section>
+
+<section id="sow">
+  <h2><span class="n">5</span>Scope of Work signature</h2>
+  <p class="lede">The full document is shared separately. Only these points need agreement in the meeting before it can be signed.</p>
+
+  <div class="q">
+    <h4>To confirm together <span class="ref">SOW v2</span></h4>
+    <ul>
+      <li><strong>Section 6, cost ownership:</strong> the client covers cloud API usage up to an agreed amount plus sandbox compute. <mark class="hl-ask">The amount is the one blank in the document</mark>; it comes from the sandbox and credits answers above.</li>
+      <li><strong>Section 6, sandbox:</strong> the client provides a cloud sandbox configured to simulate on-premises; student laptops are for development only.</li>
+      <li><strong>Section 5, Phase 1:</strong> early prototyping to validate architectural assumptions, added at Alex's request on Sep 3.</li>
+      <li><strong>Timeline:</strong> <mark class="hl-key">midterm presentation October 2–9 (week 7), final presentation December 2–11 (week 15)</mark>.</li>
+    </ul>
+    <label for="a-sow">Agreed amount and any wording changes</label>
+    <textarea id="a-sow" data-store="a-sow" placeholder="Amount for section 6; anything they want reworded"></textarea>
+  </div>
+
+  <ul class="check">
+    <li><input type="checkbox" id="c1" data-store="c1"><label for="c1">Cost amount agreed</label></li>
+    <li><input type="checkbox" id="c2" data-store="c2"><label for="c2">Amount filled in section 6, "to be confirmed" note removed</label></li>
+    <li><input type="checkbox" id="c3" data-store="c3"><label for="c3">Client signature</label></li>
+    <li><input type="checkbox" id="c4" data-store="c4"><label for="c4">Team signature</label></li>
+  </ul>
+</section>
+
+<div class="after">
+  <strong>After the meeting:</strong> record answers in <code>todo/TODO.md</code> (D21–D23, A6, A8, E26), update architecture v0.3 section 10, and send the confirmed defaults back to the client in one email.
+</div>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-meeting-2026-09-15:';
+  function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
+  var all=document.querySelectorAll('details.more');
+  document.getElementById('expand-all').addEventListener('click',function(){all.forEach(function(d){d.open=true})});
+  document.getElementById('collapse-all').addEventListener('click',function(){all.forEach(function(d){d.open=false})});
+  document.querySelectorAll('[data-store]').forEach(function(el){
+    var k=el.getAttribute('data-store');
+    if(el.type==='checkbox'){
+      el.checked=get(k)==='1';
+      el.addEventListener('change',function(){set(k,el.checked?'1':'0')});
+    }else{
+      var v=get(k); if(v!==null) el.value=v;
+      el.addEventListener('input',function(){set(k,el.value)});
+    }
+  });
+})();
+</script>
