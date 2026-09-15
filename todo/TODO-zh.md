@@ -23,7 +23,7 @@
 |---|---|---|---|---|
 | 10 | **2026-09-15 客戶會議上當面走過架構文件第十節的預設方案**,不另外寄。要問三項:雲端供應商(A6:客戶提供哪家額度就用哪家,否則 Anthropic)、費用誰出(B15)、使用情境 / 產業(A8)。其餘七項告知即可:敏感度三級、自動升級並記錄、Qwen3 為輔並做供應鏈檢查、T4 等級沙盒跑 8B 4-bit(現改用 HF transformers)、數值用佔位符、NIST AI RMF、公開資料集加合成資料。客戶不反對即照預設進行;會後把回覆填進 D21 到 D23,並納入 v0.3(B11)。 | Mark | 2026-09-15 | [ ] |
 | 11 | **架構文件升版 v0.3。**條件(A1 到 A4 定案、客戶回覆 B10)於 2026-09-15 達成。等 PR #2 merge 後再動工,避免同一段改兩次。要改:第五節加口頭表態信心的排除與訊號優先順序(token logprob → SEP → 採樣集成);第七節加信心指標子表與每題送雲端一次並快取的做法;第九節 RAG 移到 stretch,敏感度規則與還原對照表明列在 MVP;第十節納入客戶回覆;第十一節 A1 到 A4 打勾,拿掉 LiteLLM / RouteLLM / Ollama / CMU 備案;版本表加 v0.3。四種格式(中英文 md 與 html)一起改。 | Mark | W4 | [ ] |
-| 12 | 在 GPU 沙盒裝好兩個模型,推論堆疊依 A1 決定(預設 HF transformers,因為 harness 需要 logprobs 與 hidden states);筆電只放 client 程式與一個小型開發用模型 | | W4 | [ ] |
+| 12 | **沙盒建置**(等 B15)。裝 Python、PyTorch 加 CUDA、transformers、bitsandbytes、accelerate;下載 Llama 3.1 8B(先在 Hugging Face 接受 Meta 授權)與 Qwen3 8B。驗收:一個 smoke test,載入 8B 4-bit,跑一次 `generate` 回傳文字、每個 token 的 logprobs 與 hidden states,並記錄 token/s 與 GPU 記憶體峰值;這個測試就是 harness 採樣核心的第一步,交給工作流(3)。筆電只放 client 程式與一個小型開發用模型(Qwen3 0.6B 或 Llama 3.2 1B),讓程式在本機跑通再上沙盒。負責人:工作流(2),9 月 15 日會議認領。 | | W4 | [ ] |
 | 13 | 搭起評測 harness 骨架(三配置、六指標、日誌) | | W4 | [ ] |
 | 14 | 準備 MMLU 子集與 GSM8K 測試集;生成第一批合成企業問題 | | W5 | [ ] |
 | 15 | **向客戶確認算力與額度,CMU 雲端為備案。**問客戶:(a) 9 月 3 日承諾的雲端沙盒:供應商、GPU、連線方式、何時可用、費用誰出;(b) 雲端模型 API 額度或金鑰(OpenAI 或 Anthropic)與預算上限;(c) 沙盒能否同時承載模擬地端的 VM 與雲端呼叫。任一項沒有,就向 CMU Public Cloud Services 申請 GPU 主機:送諮詢表單並附 Randy 為教職員聯絡人,再寄信給 Randall Trzeciak 說明理由與成本估算(T4 等級 VM、100 GB、100 美元上限),副本 Randy。第 4 週要能用。 | Mark | W4 | [ ] |
