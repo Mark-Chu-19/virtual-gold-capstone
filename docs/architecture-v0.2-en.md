@@ -35,7 +35,7 @@ flowchart TB
     L1["1 User interface<br/>Web chat UI · CLI · REST API"]
     L2["2 Gateway & policy<br/>Auth · PII redaction · sensitivity classification · prompt-injection filter · rate limiting"]
     L3["3 Router & orchestration<br/>Task classification · policy check · escalation decision · response assembly"]
-    L4["4 Local inference<br/>Ollama / vLLM · Llama 3.x, Qwen, Mistral"]
+    L4["4 Local inference<br/>HF transformers · Llama 3.x, Qwen, Mistral"]
     L5["5 Confidence scoring<br/>logprob · self-consistency · verifier · grounding"]
     L6["6 Knowledge (RAG)<br/>Local embeddings · Chroma / Qdrant / pgvector"]
     L7["7 Governance & observability<br/>Audit log · cost tracking · benchmarks · model provenance"]
@@ -63,7 +63,7 @@ flowchart TB
 | 1 | User interface | Web chat UI, CLI, REST API |
 | 2 | Gateway & policy | Auth, PII detection & redaction, sensitivity classification, prompt-injection filter, rate limiting |
 | 3 | Router & orchestration | Task classification, policy check, escalation decision, response assembly |
-| 4 | Local inference | Ollama / vLLM; Llama 3.x, Qwen, Mistral |
+| 4 | Local inference | HF transformers; Llama 3.x, Qwen, Mistral |
 | 5 | Confidence scoring | logprob, self-consistency, verifier model, retrieval grounding |
 | 6 | Knowledge (RAG) | Local embeddings; Chroma / Qdrant / pgvector |
 | 7 | Governance & observability | Audit log, cost tracking, benchmarks, model provenance |
@@ -216,7 +216,7 @@ Client meetings weekly during discovery, moving to bi-weekly once the project is
 All five team members are full-time graduate students carrying a full course load; this project is roughly a third of one semester's credits. The target is therefore a working prototype plus a rigorous evaluation, not a production platform. Existing open-source components are preferred so effort goes into integration, evaluation, and the security and governance analysis.
 
 - **Router and orchestration:** the team writes the routing policy; the gateway tool is still open (see section 11, item 1).
-- **Local inference:** Llama 3.1 8B as the primary model, Qwen3 8B as the secondary for code and multilingual queries; served with Ollama on a GPU sandbox that simulates on-premises (see "Deployment environment" below). Team decision 2026-09-10: no LLMs on laptops, laptops are for development only.
+- **Local inference:** Llama 3.1 8B as the primary model, Qwen3 8B as the secondary for code and multilingual queries; loaded with HF transformers (4-bit via bitsandbytes) on a GPU sandbox that simulates on-premises (see "Deployment environment" below). Team decision 2026-09-10: no LLMs on laptops, laptops are for development only.
 - **Confidence scoring:** self-consistency or token logprob as the baseline signal.
 - **PII redaction gate:** between the router and any cloud call, directly implementing "keep sensitive data local".
 - **Cloud escalation:** one mainstream enterprise-grade API, called only on low confidence.
@@ -235,7 +235,7 @@ All five team members are full-time graduate students carrying a full course loa
 
 ### Deployment environment: a cloud sandbox that simulates on-premises
 
-On 2026-09-10 the team decided not to run LLMs on laptops. Models run on a GPU host in a cloud sandbox instead: the client offered a sandbox at the Sep 3 meeting, with CMU Public Cloud Services as the fallback; laptops are for development only. What makes an environment "on-premises" is who controls it and whether data can leave, so the sandbox simulates that boundary, and the boundary must be verifiable.
+On 2026-09-10 the team decided not to run LLMs on laptops. Models run on a GPU host in a cloud sandbox instead: the client offered a sandbox at the Sep 3 meeting; laptops are for development only. What makes an environment "on-premises" is who controls it and whether data can leave, so the sandbox simulates that boundary, and the boundary must be verifiable.
 
 ```
 internal network (no internet)      egress network (allow-list only)
@@ -263,12 +263,12 @@ The client prefers concrete defaults over open questions. Each item below has a 
 | Escalation approval | Fully automatic, every escalation logged; human approval is a stretch goal. | Feasible in one semester and consistent with "escalation must be justified". | Add a review step at the second decision point. |
 | Cloud provider | One provider for the MVP: OpenAI or Anthropic, both publish enterprise data-retention commitments. | Fewer variables; multi-provider comparison is a stretch goal. | Name a provider, region, or compliance constraint. |
 | International open-source models | Qwen3 8B as the secondary model, with supply-chain checks (source, hash, license). | The brief explicitly raises international-model risk; evaluating one is the only way to conclude. | Ask to exclude it. |
-| Hardware and compute environment | Models run on a GPU sandbox (T4-class, 16 GB) that simulates on-premises; 8B-class model at 4-bit quantization. No LLMs on laptops. | Team decision 2026-09-10; the client offered a sandbox on Sep 3. | Confirm sandbox spec and cost; an A10G-class GPU allows 14B tests. |
+| Hardware and compute environment | Models run on a GPU sandbox (T4-class, 16 GB) that simulates on-premises; 8B-class model loaded with HF transformers at 4-bit (bitsandbytes). No LLMs on laptops. | Team decision 2026-09-10; the client offered a sandbox on Sep 3. | Confirm sandbox spec and cost; an A10G-class GPU (24 GB) runs the k-sample confidence ensemble comfortably and allows 14B tests. |
 | Numeric sensitive data | Placeholders for everything in the MVP; format-preserving fake values are a stretch goal. | Prevent leakage first, enable computation second. | See section 11, item 4. |
 | Governance framework | NIST AI RMF (Govern, Map, Measure, Manage), noting where ISO/IEC 42001 would extend it. | Free, self-attestation based, suited to a one-semester practical risk assessment. | Switch to ISO 42001 if certification-grade work is needed. |
 | Data sources | Public datasets from section 7 plus LLM-generated synthetic data; no real data at any point. | The client provides public data only. | Provide example documents or formats as an extra seed. |
 | Use case / sector | Default focus: financial-services SMB document workflows (Q&A, summarization, extraction). | On Sep 3 the client said a sector focus is welcome and data follows once the use case is set. | Switch to real estate or another sector. |
-| Who pays | Cloud model API credits and sandbox compute provided by the client; otherwise CMU Public Cloud Services with a $100 cap. | The SOW does not yet state cost ownership; confirm and write it in. | Set a credit cap or provide a provider account. |
+| Who pays | Cloud model API credits and sandbox compute provided by the client. | SOW v2 section 6 states the client covers costs; the amount is still to be confirmed. | Set a credit cap or provide a provider account. |
 
 ## 11. Team discussion items (to do)
 

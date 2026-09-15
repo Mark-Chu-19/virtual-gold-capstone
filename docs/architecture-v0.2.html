@@ -130,7 +130,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
 
     <rect x="40" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
     <text x="52" y="277" font-weight="700">4 本地推論層</text>
-    <text x="52" y="294" fill="var(--muted)" font-size="11.5">Ollama / vLLM · Llama 3.x, Qwen, Mistral</text>
+    <text x="52" y="294" fill="var(--muted)" font-size="11.5">HF transformers · Llama 3.x, Qwen, Mistral</text>
 
     <rect x="298" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
     <text x="310" y="277" font-weight="700">5 信心評分模組</text>
@@ -419,7 +419,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
 <p>五個人都是全職研究生並修滿課程,這個專案約占一學期三分之一的學分。因此目標是「可運作的原型加嚴謹的評測」,不是產品級平台。盡量用現成的開源元件,把力氣放在整合、評測與安全治理分析。</p>
 <ul>
   <li><strong>路由與編排:</strong>團隊撰寫路由政策;閘道工具待定(見第十一節第 1 項)。</li>
-  <li><strong>本地推論:</strong>Llama 3.1 8B 為主力,Qwen3 8B 為程式與多語言題目的備選;透過 Ollama 跑在模擬地端的 GPU 沙盒上(見下方「部署環境」)。團隊 2026-09-10 決定:不在筆電上跑 LLM,筆電只做開發。</li>
+  <li><strong>本地推論:</strong>Llama 3.1 8B 為主力,Qwen3 8B 為程式與多語言題目的備選;以 HF transformers(bitsandbytes 4-bit)載入,跑在模擬地端的 GPU 沙盒上(見下方「部署環境」)。團隊 2026-09-10 決定:不在筆電上跑 LLM,筆電只做開發。</li>
   <li><strong>信心評分:</strong>自我一致性或 token logprob 作為基準線訊號。</li>
   <li><strong>PII 遮罩閘道:</strong>位於路由與任何雲端呼叫之間,直接落實「敏感資料留在本地」。</li>
   <li><strong>雲端升級:</strong>一家主流企業級 API,只在低信心時呼叫。</li>
@@ -438,7 +438,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
 </ul>
 
 <h3>部署環境:以雲端沙盒模擬地端</h3>
-<p>團隊於 2026-09-10 決定不在筆電上跑 LLM。模型改跑在雲端沙盒的 GPU 主機上,客戶在 9 月 3 日會議承諾提供沙盒,CMU Public Cloud Services 為備案;筆電只負責開發。地端的本質是「誰控制它、資料能不能出去」,所以沙盒要模擬的是那條邊界,而且要能被驗證。</p>
+<p>團隊於 2026-09-10 決定不在筆電上跑 LLM。模型改跑在雲端沙盒的 GPU 主機上,客戶在 9 月 3 日會議承諾提供沙盒;筆電只負責開發。地端的本質是「誰控制它、資料能不能出去」,所以沙盒要模擬的是那條邊界,而且要能被驗證。</p>
 <pre>internal 網路(無對外連線)          egress 網路(只到白名單)
 ├── ollama      本地模型             └── egress-proxy  唯一出口,記錄每次請求
 ├── chroma      向量庫 / RAG                 ↑
@@ -464,12 +464,12 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
     <tr><td>升級核准</td><td>全自動,每次升級寫入稽核日誌;人工核准列為 stretch。</td><td>一學期內可實作,且符合「升級要有依據」原則。</td><td>若要求人工核准,在流程第二決策點加審核。</td></tr>
     <tr><td>雲端供應商</td><td>MVP 只接一家:OpenAI 或 Anthropic,兩家都公開企業級資料保留承諾。</td><td>減少變數;多供應商比較列為 stretch。</td><td>指定供應商、地區或合規限制。</td></tr>
     <tr><td>國際開源模型</td><td>Qwen3 8B 作為備選並納入供應鏈檢查(來源、hash、授權)。</td><td>客戶提案明確關切國際模型風險,納入評估才能給結論。</td><td>可要求排除。</td></tr>
-    <tr><td>硬體與運算環境</td><td>模型跑在 GPU 沙盒(T4 等級,16GB)上模擬地端;8B 級模型 4-bit 量化。筆電不跑 LLM。</td><td>團隊 2026-09-10 決定;客戶 9 月 3 日承諾提供沙盒。</td><td>確認沙盒規格與費用;提供 A10G 級則可測 14B。</td></tr>
+    <tr><td>硬體與運算環境</td><td>模型跑在 GPU 沙盒(T4 等級,16GB)上模擬地端;8B 級模型以 HF transformers 載入,4-bit(bitsandbytes)。筆電不跑 LLM。</td><td>團隊 2026-09-10 決定;客戶 9 月 3 日承諾提供沙盒。</td><td>確認沙盒規格與費用;提供 A10G 級(24 GB)則 k 次採樣的信心集成可從容跑,並可測 14B。</td></tr>
     <tr><td>數值類敏感資料</td><td>MVP 一律換成佔位符;保留格式的假值列為 stretch。</td><td>先確保不外洩,再追求可計算。</td><td>見第十一節第 4 項。</td></tr>
     <tr><td>治理框架</td><td>NIST AI RMF(Govern、Map、Measure、Manage),標註 ISO/IEC 42001 可延伸之處。</td><td>免費、自我評估、適合一學期的實務風險評估。</td><td>需認證等級則改以 ISO 42001 為主。</td></tr>
     <tr><td>資料來源</td><td>全部使用第七節的公開資料集加 LLM 生成的合成資料,不用任何真實資料。</td><td>客戶只提供公開資料。</td><td>提供範例文件或格式可作為額外種子。</td></tr>
     <tr><td>使用情境 / 產業</td><td>預設聚焦金融服務類中小企業的文件工作流:問答、摘要、資訊擷取。</td><td>客戶 9 月 3 日表示可聚焦特定產業,且定了情境才會提供資料。</td><td>改為房地產或其他產業。</td></tr>
-    <tr><td>費用負擔</td><td>雲端模型 API 額度與沙盒算力由客戶提供;若無,改用 CMU Public Cloud Services,預算上限 100 美元。</td><td>SOW 尚未載明費用歸屬,需確認後寫入。</td><td>指定額度上限或供應商帳號。</td></tr>
+    <tr><td>費用負擔</td><td>雲端模型 API 額度與沙盒算力由客戶提供。</td><td>SOW v2 第 6 節已寫明由客戶負擔;金額待確認。</td><td>指定額度上限或供應商帳號。</td></tr>
   </tbody>
 </table>
 </div>
