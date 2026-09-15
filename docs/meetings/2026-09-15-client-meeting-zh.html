@@ -390,15 +390,14 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   </div>
   <p><strong>每種配置六個指標:</strong><mark class="hl-key">準確率 · 延遲 · 每題成本 · 升級率 · PII 洩漏率 · prompt injection 抵抗力</mark>。</p>
 
-  <details class="more"><summary>期中(10 月 2–9 日,第 7 週)會看到什麼</summary><div class="body">
-  <div class="stat">
-    <div><div class="k">配置</div><div class="v">3</div><div class="d">純本地、混合、純雲端</div></div>
-    <div><div class="k">Benchmark</div><div class="v">2</div><div class="d">MMLU 子集、GSM8K</div></div>
-    <div><div class="k">報告的指標</div><div class="v">4 / 6</div><div class="d">準確率、升級率、成本、延遲</div></div>
-    <div><div class="k">現場展示</div><div class="v">CLI</div><div class="d">一個含 PII 的請求走完全程</div></div>
+  <h3>期中(10 月 2–9 日,第 7 週)會看到什麼</h3>
+  <div class="finding">
+    <div><div class="k">三種配置並排</div><b>純本地、混合、純雲端,各自跑同一組 MMLU 子集與 GSM8K 題目,</b>8B 模型與雲端模型的差距在完全相同的輸入上量測。</div>
+    <div><div class="k">每種配置四個數字</div><b>準確率、升級率、每題成本、延遲。</b>PII 洩漏率與 prompt injection 抵抗力等安全測試建好後,第 9–11 週補上。</div>
+    <div><div class="k">一張圖</div><b>混合配置的升級率對準確率曲線,</b>回答「升級多少才夠」,以及成本與品質的取捨落在哪裡。</div>
+    <div><div class="k">一段現場展示</div><b>一個含 PII 的請求在 CLI 裡走完遮罩、升級、還原,</b>全程可見,隱私路徑是實際運作而不是口頭說明。</div>
+    <div><div class="k">期中之後,第 9–11 週</div>其餘信心訊號、兩個安全指標,以及硬體情境(CPU、T4、A10G、4-bit 對 8-bit),讓期末報告能說明地端硬體花多少、能少送多少上雲。</div>
   </div>
-  <p>混合配置另外畫升級率對準確率的曲線,回答「升級多少才夠」。第 9–11 週補上其餘信心訊號、安全指標,以及硬體情境(CPU、T4、A10G、4-bit 對 8-bit),讓期末報告能說明地端硬體花多少、能少送多少上雲。</p>
-  </div></details>
 </section>
 
 <section id="questions">

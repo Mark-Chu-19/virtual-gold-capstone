@@ -379,15 +379,14 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   </div>
   <p><strong>Six metrics per configuration:</strong> <mark class="hl-key">accuracy · latency · cost per query · escalation rate · PII-leak rate · prompt-injection resistance</mark>.</p>
 
-  <details class="more"><summary>What you will see at the midpoint (Oct 2–9, week 7)</summary><div class="body">
-  <div class="stat">
-    <div><div class="k">Configurations</div><div class="v">3</div><div class="d">local-only, hybrid, cloud-only</div></div>
-    <div><div class="k">Benchmarks</div><div class="v">2</div><div class="d">MMLU subset, GSM8K</div></div>
-    <div><div class="k">Metrics reported</div><div class="v">4 of 6</div><div class="d">accuracy, escalation, cost, latency</div></div>
-    <div><div class="k">Live demo</div><div class="v">CLI</div><div class="d">one PII-bearing request, end to end</div></div>
+  <h3>What you will see at the midpoint (Oct 2–9, week 7)</h3>
+  <div class="finding">
+    <div><div class="k">Three configurations, side by side</div><b>Local-only, hybrid and cloud-only, each run on the same MMLU subset and GSM8K questions,</b> so the gap between the 8B model and the cloud model is measured on identical inputs.</div>
+    <div><div class="k">Four numbers per configuration</div><b>Accuracy, escalation rate, cost per query and latency.</b> PII-leak rate and prompt-injection resistance follow in weeks 9–11 once the security tests are built.</div>
+    <div><div class="k">One chart</div><b>Escalation rate against accuracy for the hybrid configuration,</b> which answers "how much escalation is enough" and where the cost-quality trade-off sits.</div>
+    <div><div class="k">One live demo</div><b>A request containing PII goes through redaction, escalation and re-identification in the CLI,</b> end to end, so the privacy path is shown working rather than described.</div>
+    <div><div class="k">After the midpoint, weeks 9–11</div>The remaining confidence signals, the two security metrics, and hardware scenarios (CPU, T4, A10G, 4-bit vs 8-bit), so the final report can state what on-premises hardware buys how much less cloud traffic.</div>
   </div>
-  <p>For the hybrid configuration we also plot escalation rate against accuracy, which answers "how much escalation is enough". Weeks 9–11 add the remaining confidence signals, the security metrics, and hardware scenarios (CPU, T4, A10G, 4-bit vs 8-bit) so the final report can state what on-premises hardware buys how much less cloud traffic.</p>
-  </div></details>
 </section>
 
 <section id="questions">
