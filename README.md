@@ -60,6 +60,7 @@ Sections in the document:
 │   ├── architecture-v0.3-en.html  same, HTML with SVG diagrams
 │   ├── architecture-v0.3-zh.md    current architecture doc, Chinese
 │   ├── architecture-v0.3.html     same, HTML
+│   ├── meetings/                  agendas we bring to client meetings, EN and zh, named YYYY-MM-DD
 │   ├── Scope of Work.docx         SOW original draft (W3)
 │   └── Scope of Work v2.docx      SOW revised draft, changes in red; sign this one once the cost line is filled in
 ├── todo/                          team to-do: open decisions, pending actions, decision log

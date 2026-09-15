@@ -1,0 +1,514 @@
+<title>Virtual Gold 9/15 客戶會議</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --serif:"Source Serif 4","Noto Sans TC","PingFang TC",Georgia,serif;
+  --sans:"Source Sans 3","Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:32px 64px}
+.page{max-width:820px;margin:0 auto}
+header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:28px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,38px);line-height:1.15;margin:8px 0 12px;text-wrap:balance}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 24px;margin:0;font-size:14px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.agenda{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:24px 0 36px;list-style:none;padding:0}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:14px;line-height:1.3}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--muted);display:block;margin-bottom:4px}
+.agenda .t{font-weight:600}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+section{margin-bottom:44px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:24px;margin:0 0 4px;display:flex;align-items:baseline;gap:12px;text-wrap:balance}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:400}
+.lede{color:var(--muted);margin:0 0 16px;max-width:65ch}
+h3{font-family:var(--sans);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:600}
+p,li{max-width:70ch}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 5px;border-radius:3px}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0 4px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.tbl{overflow-x:auto}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;margin:10px 0 6px;font-size:13px}
+.flow .box{border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:8px 10px;min-width:120px;flex:1 1 130px}
+.flow .box b{display:block;font-weight:600}
+.flow .box span{color:var(--muted);font-size:12px}
+.flow .box.local{border-color:var(--local);background:var(--local-soft)}
+.flow .box.cloud{border-color:var(--cloud);background:var(--cloud-soft)}
+.flow .box.score{border-color:var(--gold);border-width:2px}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.stat div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--serif);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:2px}
+.stat .d{font-size:12px;color:var(--muted);margin-top:2px}
+.q{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;padding:14px 16px;margin-bottom:14px}
+.q h4{margin:0 0 6px;font-size:17px;font-family:var(--serif)}
+.q h4 .ref{margin-left:8px;vertical-align:middle}
+.q ul{margin:0 0 8px;padding-left:20px}
+.q li{margin-bottom:3px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+.q textarea{width:100%;min-height:56px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+.q label,.stat .k,.meta dt,.eyebrow,th,details.more>summary,h3{letter-spacing:.04em}
+details.more{margin:14px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 0;font-family:var(--sans);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:7px;height:7px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none;margin-left:2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+figure{margin:12px 0 4px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){details.more>summary::before{transition:none}}
+.toolbar{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+button{font:inherit;font-size:13px;padding:6px 12px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.check{list-style:none;padding:0;margin:0}
+.check li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.check input{margin-top:4px;accent-color:var(--local)}
+.check label{cursor:pointer}
+.after{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone · Virtual Gold Inc · 探索階段第二次客戶會議</div>
+  <h1>研究、架構、比較方案,以及 Scope of Work</h1>
+  <dl class="meta">
+    <div><dt>日期</dt><dd>2026 年 9 月 15 日(一)· 第 4 週,共 15 週</dd></div>
+    <div><dt>目標</dt><dd>就範圍與資源達成共識,然後簽署 Scope of Work</dd></div>
+  </dl>
+  <div class="toolbar">
+    <button id="expand-all" type="button">全部展開</button>
+    <button id="collapse-all" type="button">全部收合</button>
+    <span style="font-size:13px;color:var(--muted)">各段落依需要展開。下方填寫的內容只存在這台瀏覽器。</span>
+  </div>
+</header>
+
+<ol class="agenda">
+  <li><a href="#research"><span class="n">1</span><span class="t">研究</span><span class="m">讀了什麼、選了什麼</span></a></li>
+  <li><a href="#architecture"><span class="n">2</span><span class="t">架構</span><span class="m">v0.3,本地優先</span></a></li>
+  <li><a href="#comparison"><span class="n">3</span><span class="t">比較</span><span class="m">三配置、六指標</span></a></li>
+  <li><a href="#questions"><span class="n">4</span><span class="t">待確認問題</span><span class="m">沙盒、額度、產業、預設</span></a></li>
+  <li><a href="#sow"><span class="n">5</span><span class="t">SOW 簽署</span><span class="m">填費用金額、簽名</span></a></li>
+</ol>
+
+<section id="research">
+  <h2><span class="n">1</span>依專案說明所做的研究</h2>
+  <p class="lede">專案說明要求混合式助理在「需要更高信心或推理能力時」升級到雲端。我們研究的是:在 8B 本地模型上,這個信心訊號可以是什麼,以及各要多少成本。</p>
+  <div class="stat">
+    <div><div class="k">8B 可用訊號</div><div class="v">2</div><div class="d">token 機率 · 語意熵探針</div></div>
+    <div><div class="k">排除</div><div class="v">1</div><div class="d">模型自報信心</div></div>
+    <div><div class="k">本地模型</div><div class="v">8B</div><div class="d">Llama 3.1 · Qwen3</div></div>
+    <div><div class="k">先跑的 benchmark</div><div class="v">2</div><div class="d">MMLU 子集 · GSM8K</div></div>
+  </div>
+
+  <details class="more"><summary>8B 尺度下的信心訊號</summary><div class="body">
+  <ul class="points">
+    <li><strong>兩種訊號每次查詢幾乎零成本,且在接近 8B 的尺度有直接證據:</strong>token 對數機率(小模型研究中 AUROC 0.71–0.87),以及 Semantic Entropy Probe,一個在模型 hidden states 上一次訓練好的小型探針。</li>
+    <li><strong>排除模型自報信心。</strong>2026 年一項針對七個 3–9B 開源模型(含 Llama 3.1 8B)的篩檢發現,91.7% 的回答自稱信心至少 95%,與答對答錯無關。我們不用它做路由。</li>
+    <li><strong>採樣集成</strong>(自我一致性、語意熵)驗證最充分,但每次查詢要多生成 5–10 次。我們留作上限參考,不當預設。</li>
+  </ul>
+  </div></details>
+
+  <details class="more"><summary>由研究導出的選擇</summary><div class="body">
+  <ul class="points">
+    <li><strong>推論堆疊:</strong>Hugging Face transformers 加 4-bit 量化,因為評測需要每個 token 的對數機率與 hidden states,封裝好的推論伺服器不提供。</li>
+    <li><strong>本地模型:</strong>Llama 3.1 8B 為主;Qwen3 8B 為輔,處理程式與多語言題目,並記錄來源、hash 與授權檢查。</li>
+    <li><strong>Benchmark</strong>(依 9 月 3 日貴方建議,用業界通用 benchmark):先做 MMLU 子集與 GSM8K;TruthfulQA 與 HaluEval 測事實性;Presidio 評測模組與標註的 prompt injection 資料集測安全。</li>
+    <li><strong>治理框架:</strong>NIST AI RMF,並註記 ISO/IEC 42001 可延伸之處。</li>
+  </ul>
+  </div></details>
+</section>
+
+<section id="architecture">
+  <h2><span class="n">2</span>架構 v0.3</h2>
+  <p class="lede">本地優先。信心分數決定要不要升級;敏感度分級決定能不能升級。兩者都不通過時,系統承認無法回答,而不是把機密資料送出去。</p>
+
+  <figure>
+  <svg viewBox="0 0 840 470" role="img" aria-label="系統分層圖:使用者介面、閘道、路由、本地推論、信心評分、知識層與治理層都在本地環境內;只有路由層透過單一通道把已遮罩的內容送到外部雲端模型並接收回覆。">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+    <marker id="arc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cloud)"/></marker>
+  </defs>
+  <!-- local region -->
+  <rect x="16" y="28" width="548" height="426" rx="6" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="32" y="50" font-size="12" font-weight="700" fill="var(--local)">本地環境 · 企業內部網路</text>
+
+  <!-- rows -->
+  <g font-size="12.5">
+    <rect x="40" y="66" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="85" font-weight="700">1 使用者介面層</text>
+    <text x="52" y="102" fill="var(--muted)" font-size="11.5">CLI · REST API(不做 GUI)</text>
+
+    <rect x="40" y="130" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="149" font-weight="700">2 閘道與政策層</text>
+    <text x="52" y="166" fill="var(--muted)" font-size="11.5">認證授權 · PII 偵測與遮罩 · 資料敏感度分級 · Prompt Injection 過濾 · 速率限制</text>
+
+    <rect x="40" y="194" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="52" y="213" font-weight="700">3 路由與編排層</text>
+    <text x="52" y="230" fill="var(--muted)" font-size="11.5">任務分類 · 政策檢查 · 升級決策 · 合併回覆</text>
+
+    <rect x="40" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="277" font-weight="700">4 本地推論層</text>
+    <text x="52" y="294" fill="var(--muted)" font-size="11.5">HF transformers · Llama 3.x, Qwen, Mistral</text>
+
+    <rect x="298" y="258" width="242" height="44" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="310" y="277" font-weight="700">5 信心評分模組</text>
+    <text x="310" y="294" fill="var(--muted)" font-size="11.5">logprob · 自我一致性 · 驗證模型 · 接地度</text>
+
+    <rect x="40" y="322" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="341" font-weight="700">6 知識層(RAG,stretch)</text>
+    <text x="52" y="358" fill="var(--muted)" font-size="11.5">本地 Embedding · Chroma / Qdrant / pgvector</text>
+
+    <rect x="298" y="322" width="242" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="310" y="341" font-weight="700">7 治理與觀測層</text>
+    <text x="310" y="358" fill="var(--muted)" font-size="11.5">稽核日誌 · 成本追蹤 · Benchmark · 模型來源管理</text>
+
+    <rect x="40" y="386" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="52" y="405" font-weight="700">8 安全基礎</text>
+    <text x="52" y="422" fill="var(--muted)" font-size="11.5">出站網路白名單 · 沙盒 · 祕密管理 · 模型 hash 與授權檢查</text>
+  </g>
+
+  <!-- vertical arrows -->
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)">
+    <line x1="290" y1="110" x2="290" y2="128"/>
+    <line x1="290" y1="174" x2="290" y2="192"/>
+    <line x1="160" y1="238" x2="160" y2="256"/>
+    <line x1="160" y1="302" x2="160" y2="320"/>
+  </g>
+  <!-- router <-> confidence -->
+  <line x1="419" y1="238" x2="419" y2="256" stroke="var(--gold)" stroke-width="1.2" marker-end="url(#ar)" marker-start="url(#ar)"/>
+  <text x="428" y="251" font-size="10.5" fill="var(--gold)">評分回傳</text>
+  <text x="168" y="251" font-size="10.5" fill="var(--muted)">生成</text>
+  <text x="168" y="315" font-size="10.5" fill="var(--muted)">檢索</text>
+  <!-- governance collects everything -->
+  <text x="52" y="446" font-size="10.5" fill="var(--muted)">層 7 記錄每一層的決策、延遲與成本</text>
+
+  <!-- cloud -->
+  <text x="608" y="50" font-size="12" font-weight="700" fill="var(--cloud)">外部 · 雲端供應商</text>
+  <rect x="608" y="194" width="212" height="44" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+  <text x="620" y="213" font-size="12.5" font-weight="700" fill="var(--cloud)">雲端升級層</text>
+  <text x="620" y="230" font-size="11.5" fill="var(--muted)">Claude / GPT / Gemini API</text>
+
+  <!-- boundary crossing -->
+  <line x1="540" y1="206" x2="606" y2="206" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#arc)"/>
+  <line x1="606" y1="226" x2="542" y2="226" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#arc)"/>
+  <text x="573" y="184" font-size="10.5" text-anchor="middle" fill="var(--cloud)">已遮罩、最小化</text>
+  <text x="573" y="252" font-size="10.5" text-anchor="middle" fill="var(--cloud)">回覆</text>
+  <text x="573" y="140" font-size="11" text-anchor="middle" fill="var(--local)" font-weight="700">信任邊界</text>
+  <line x1="573" y1="146" x2="573" y2="176" stroke="var(--local)" stroke-width="1" stroke-dasharray="3 3"/>
+</svg>
+  <figcaption>系統分層。虛線框內全部在企業本地環境執行。唯一跨越信任邊界的通道,只把已遮罩的內容從路由層送到雲端,再把回覆帶回來。</figcaption>
+  </figure>
+
+  <details class="more"><summary>請求流程:三個決策點</summary><div class="body">
+  <figure class="scroll">
+  <svg viewBox="0 0 960 340" role="img" aria-label="請求流程圖:請求經過閘道遮罩與分級,由本地模型生成並評分;信心達門檻即回覆;未達門檻時若敏感度允許外送,則遮罩後送雲端模型再回覆;若不允許外送,則回覆本地無法確定或轉人工。">
+  <defs>
+    <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+  </defs>
+  <g font-size="12.5">
+    <!-- row 1 -->
+    <rect x="16" y="40" width="96" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="64" y="70" text-anchor="middle" font-weight="700">使用者請求</text>
+
+    <rect x="150" y="40" width="160" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="230" y="60" text-anchor="middle" font-weight="700">閘道</text>
+    <text x="230" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">PII 遮罩 · 敏感度分級</text>
+
+    <rect x="348" y="40" width="160" height="50" rx="3" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5"/>
+    <text x="428" y="60" text-anchor="middle" font-weight="700" fill="var(--local)">本地模型生成</text>
+    <text x="428" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">(RAG 為選配)</text>
+
+    <rect x="546" y="40" width="110" height="50" rx="3" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="601" y="70" text-anchor="middle" font-weight="700">信心評分</text>
+
+    <polygon points="694,65 760,32 826,65 760,98" fill="var(--surface)" stroke="currentColor"/>
+    <text x="760" y="61" text-anchor="middle" font-size="11.5">分數 ≥ 門檻?</text>
+    <text x="760" y="77" text-anchor="middle" font-size="10.5" fill="var(--muted)">門檻可依任務調整</text>
+
+    <rect x="856" y="40" width="90" height="50" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="901" y="70" text-anchor="middle" font-weight="700">回覆使用者</text>
+
+    <!-- row 2 -->
+    <polygon points="686,180 760,146 834,180 760,214" fill="var(--surface)" stroke="currentColor"/>
+    <text x="760" y="176" text-anchor="middle" font-size="11.5">敏感度允許外送?</text>
+    <text x="760" y="192" text-anchor="middle" font-size="10.5" fill="var(--muted)">公開 / 內部 可,機密 否</text>
+
+    <rect x="856" y="155" width="90" height="50" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+    <text x="901" y="175" text-anchor="middle" font-weight="700" fill="var(--cloud)">雲端模型</text>
+    <text x="901" y="193" text-anchor="middle" font-size="10.5" fill="var(--muted)">再遮罩、最小化</text>
+
+    <!-- row 3 -->
+    <rect x="660" y="262" width="200" height="50" rx="3" fill="var(--surface)" stroke="var(--warn)" stroke-width="1.5"/>
+    <text x="760" y="282" text-anchor="middle" font-weight="700" fill="var(--warn)">回覆「本地無法確定」</text>
+    <text x="760" y="300" text-anchor="middle" font-size="11" fill="var(--muted)">或轉人工處理</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#fa)">
+    <line x1="112" y1="65" x2="148" y2="65"/>
+    <line x1="310" y1="65" x2="346" y2="65"/>
+    <line x1="508" y1="65" x2="544" y2="65"/>
+    <line x1="656" y1="65" x2="692" y2="65"/>
+    <line x1="826" y1="65" x2="854" y2="65"/>
+    <line x1="760" y1="98" x2="760" y2="144"/>
+    <line x1="834" y1="180" x2="854" y2="180"/>
+    <line x1="901" y1="155" x2="901" y2="92"/>
+    <line x1="760" y1="214" x2="760" y2="260"/>
+  </g>
+  <g font-size="11" font-weight="700">
+    <text x="838" y="58" fill="var(--local)">是</text>
+    <text x="768" y="124" fill="var(--warn)">否</text>
+    <text x="838" y="173" fill="var(--cloud)">是</text>
+    <text x="768" y="240" fill="var(--warn)">否</text>
+  </g>
+  <text x="912" y="130" font-size="10.5" fill="var(--cloud)" text-anchor="middle">回覆</text>
+</svg>
+  <figcaption>信心分數決定是否需要升級;敏感度分級決定是否允許升級。兩者都不通過時,系統承認不確定,而不是把機密資料送出去。</figcaption>
+  </figure>
+  </div></details>
+
+  <details class="more"><summary>去識別化與還原</summary><div class="body">
+  <figure class="scroll">
+  <svg viewBox="0 0 850 330" role="img" aria-label="去識別化與還原管線:原始請求在本地偵測敏感實體、替換成佔位符並最小化後才送雲端;對照表只存本地;雲端回覆經對照表還原後回給使用者。">
+  <defs>
+    <marker id="da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+    <marker id="dc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--cloud)"/></marker>
+    <marker id="dg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--gold)"/></marker>
+  </defs>
+  <rect x="16" y="28" width="600" height="290" rx="6" fill="var(--local-soft)" stroke="var(--local)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="32" y="50" font-size="12" font-weight="700" fill="var(--local)">本地環境 · 企業內部網路</text>
+  <text x="638" y="50" font-size="11" font-weight="700" text-anchor="middle" fill="var(--local)">信任邊界</text>
+  <line x1="638" y1="58" x2="638" y2="300" stroke="var(--local)" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="660" y="50" font-size="12" font-weight="700" fill="var(--cloud)">外部</text>
+
+  <g font-size="12.5">
+    <rect x="36" y="70" width="100" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="86" y="100" text-anchor="middle" font-weight="700">原始請求</text>
+
+    <rect x="166" y="70" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="231" y="90" text-anchor="middle" font-weight="700">偵測敏感實體</text>
+    <text x="231" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">NER + 正則規則</text>
+
+    <rect x="326" y="70" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="391" y="90" text-anchor="middle" font-weight="700">替換佔位符</text>
+    <text x="391" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">PERSON_1 · ORG_1</text>
+
+    <rect x="486" y="70" width="110" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="541" y="90" text-anchor="middle" font-weight="700">最小化</text>
+    <text x="541" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">只送必要片段</text>
+
+    <rect x="400" y="142" width="180" height="46" rx="3" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.5"/>
+    <text x="490" y="161" text-anchor="middle" font-weight="700" fill="var(--gold)">對照表</text>
+    <text x="490" y="178" text-anchor="middle" font-size="11" fill="var(--muted)">PERSON_1 = 王大明 · 永不離開本地</text>
+
+    <rect x="486" y="210" width="110" height="50" rx="3" fill="var(--surface)" stroke="currentColor"/>
+    <text x="541" y="230" text-anchor="middle" font-weight="700">還原</text>
+    <text x="541" y="248" text-anchor="middle" font-size="11" fill="var(--muted)">佔位符換回真名</text>
+
+    <rect x="326" y="210" width="130" height="50" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+    <text x="391" y="240" text-anchor="middle" font-weight="700">回覆使用者</text>
+
+    <rect x="660" y="70" width="170" height="50" rx="3" fill="var(--cloud-soft)" stroke="var(--cloud)" stroke-width="1.5"/>
+    <text x="745" y="90" text-anchor="middle" font-weight="700" fill="var(--cloud)">雲端模型</text>
+    <text x="745" y="108" text-anchor="middle" font-size="11" fill="var(--muted)">只看得到 PERSON_1、ORG_1</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#da)">
+    <line x1="136" y1="95" x2="164" y2="95"/>
+    <line x1="296" y1="95" x2="324" y2="95"/>
+    <line x1="456" y1="95" x2="484" y2="95"/>
+    <line x1="484" y1="235" x2="458" y2="235"/>
+  </g>
+  <g stroke="var(--gold)" stroke-width="1.2" fill="none">
+    <polyline points="391,120 391,165 398,165" marker-end="url(#dg)"/>
+    <line x1="541" y1="188" x2="541" y2="208" marker-end="url(#dg)"/>
+  </g>
+  <text x="360" y="150" font-size="10.5" fill="var(--gold)">寫入</text>
+  <text x="548" y="202" font-size="10.5" fill="var(--gold)">查表</text>
+
+  <line x1="596" y1="95" x2="658" y2="95" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#dc)"/>
+  <text x="627" y="62" font-size="10.5" text-anchor="middle" fill="var(--cloud)">只有佔位符</text>
+  <polyline points="745,120 745,235 598,235" fill="none" stroke="var(--cloud)" stroke-width="1.5" marker-end="url(#dc)"/>
+  <text x="752" y="185" font-size="10.5" fill="var(--cloud)">含佔位符的回覆</text>
+
+  <text x="32" y="300" font-size="10.5" fill="var(--muted)">治理層指標:送出 token 數 · 替換實體數 · 還原成功率 · 漏檢率</text>
+</svg>
+  <figcaption>敏感實體在本地換成佔位符,對照表留在本地,雲端只看得到佔位符;回覆回來時再換回真實名稱。</figcaption>
+  </figure>
+  </div></details>
+
+  <details class="more"><summary>原型包含什麼</summary><div class="body">
+  <ul class="points">
+    <li><strong>唯一信任邊界。</strong>只有路由層會對雲端說話,而且只送已遮罩、最小化的內容。沙盒以私有網路加記錄每次請求的出口代理來強制這條邊界。</li>
+    <li><strong>去識別化來回。</strong>任何雲端呼叫前,Presidio 把人名、帳號、金額換成佔位符;對照表不離開沙盒;回覆在使用者看到前換回原值。</li>
+    <li><strong>資料敏感度分級。</strong>預設三級:公開、內部、機密。機密請求不論信心多低都留在本地。</li>
+    <li><strong>元件可替換。</strong>模型、雲端供應商、向量庫都在介面之後;換掉 Qwen3 只是改設定。</li>
+    <li><strong>介面。</strong>只做 CLI 與 REST API,不做 GUI,如 9 月 3 日所議。</li>
+    <li><strong>延後。</strong>文件知識庫(RAG)列為 stretch goal;產業與範例格式定了之後,期中再評估。</li>
+  </ul>
+  </div></details>
+</section>
+
+<section id="comparison">
+  <h2><span class="n">3</span>比較:怎麼呈現取捨</h2>
+  <p class="lede">同一組測試集在三種配置下各跑一次。這是回答貴方 9 月 3 日兩個問題的唯一方法:與雲端的差距多大,本地路徑省下多少。</p>
+
+  <div class="tbl">
+  <table>
+    <tr><th>配置</th><th>是什麼</th><th>告訴我們什麼</th></tr>
+    <tr><td><strong>純本地</strong></td><td>所有請求由 8B 模型回答,不升級</td><td>品質下限、成本下限、隱私上限</td></tr>
+    <tr><td><strong>混合</strong></td><td>本地優先;信心與敏感度決定升級</td><td>我們的方案落在兩端之間的哪裡</td></tr>
+    <tr><td><strong>純雲端</strong></td><td>所有請求直接送雲端模型</td><td>品質上限、成本上限、隱私下限</td></tr>
+  </table>
+  </div>
+  <p><strong>每種配置六個指標:</strong>準確率 · 延遲 · 每題成本 · 升級率 · PII 洩漏率 · prompt injection 抵抗力。</p>
+
+  <details class="more"><summary>期中(10 月 2–9 日,第 7 週)會看到什麼</summary><div class="body">
+  <div class="stat">
+    <div><div class="k">配置</div><div class="v">3</div><div class="d">純本地、混合、純雲端</div></div>
+    <div><div class="k">Benchmark</div><div class="v">2</div><div class="d">MMLU 子集、GSM8K</div></div>
+    <div><div class="k">報告的指標</div><div class="v">4 / 6</div><div class="d">準確率、升級率、成本、延遲</div></div>
+    <div><div class="k">現場展示</div><div class="v">CLI</div><div class="d">一個含 PII 的請求走完全程</div></div>
+  </div>
+  <p>混合配置另外畫升級率對準確率的曲線,回答「升級多少才夠」。第 9–11 週補上其餘信心訊號、安全指標,以及硬體情境(CPU、T4、A10G、4-bit 對 8-bit),讓期末報告能說明地端硬體花多少、能少送多少上雲。</p>
+  </div></details>
+</section>
+
+<section id="questions">
+  <h2><span class="n">4</span>今天需要答案的問題</h2>
+  <p class="lede">前三項卡著第 4 週的開工。第四項是一組預設方案,貴方不反對我們就照此進行。</p>
+
+  <div class="q">
+    <h4>雲端沙盒 <span class="ref">B15</span></h4>
+    <ul>
+      <li>供應商與 GPU。T4(16 GB)跑得動 8B 模型;A10G(24 GB)可讓多樣本信心計算從容跑完。</li>
+      <li>團隊的直接存取(SSH 或同等方式)。模型在機器上直接跑,不是透過託管 API。</li>
+      <li>何時可用,以及能否用到 12 月 11 日。</li>
+      <li>算力費用由誰負擔。</li>
+    </ul>
+    <label for="a-sandbox">回覆</label>
+    <textarea id="a-sandbox" data-store="a-sandbox" placeholder="供應商、GPU、存取方式、日期、費用負擔"></textarea>
+  </div>
+
+  <div class="q">
+    <h4>雲端模型 API 額度 <span class="ref">B15 · A6</span></h4>
+    <ul>
+      <li>API 額度或金鑰,以及我們應遵守的預算上限。</li>
+      <li>貴方是否已有 OpenAI 或 Anthropic 企業帳號?有的話就用那家。沒有偏好時,我們預設 Anthropic。</li>
+    </ul>
+    <label for="a-credits">回覆</label>
+    <textarea id="a-credits" data-store="a-credits" placeholder="供應商、上限、金鑰怎麼交付"></textarea>
+  </div>
+
+  <div class="q">
+    <h4>使用情境與產業 <span class="ref">A8 · D22</span></h4>
+    <ul>
+      <li>我們的預設:金融服務類中小企業的文件工作流(問答、摘要、資訊擷取)。可以嗎,還是偏好房地產或其他產業?</li>
+      <li>該產業有沒有範例文件或格式?只要格式與範例。專案全程不用真實資料,所以不需要交換任何敏感內容。</li>
+    </ul>
+    <label for="a-sector">回覆</label>
+    <textarea id="a-sector" data-store="a-sector" placeholder="產業、可提供的範例、何時"></textarea>
+  </div>
+
+  <div class="q">
+    <h4>我們將照此進行的預設 <span class="ref">D21</span></h4>
+    <p style="margin:0 0 4px;font-size:14px">七項;貴方不反對即照此進行。</p>
+    <details class="more"><summary>顯示七項預設</summary><div class="body">
+    <div class="tbl">
+    <table class="defaults">
+      <tr><th>項目</th><th>預設</th></tr>
+      <tr><td>敏感度分級</td><td>公開、內部、機密;機密永不外送</td></tr>
+      <tr><td>升級核准</td><td>全自動,每次升級記錄;人工核准為 stretch goal</td></tr>
+      <tr><td>國際模型</td><td>Qwen3 8B 為輔,做來源、hash、授權檢查</td></tr>
+      <tr><td>算力</td><td>GPU 沙盒模擬地端;8B 模型 4-bit;筆電不跑 LLM</td></tr>
+      <tr><td>數值類敏感資料</td><td>原型用佔位符;保留格式的假值為 stretch goal</td></tr>
+      <tr><td>治理</td><td>NIST AI RMF</td></tr>
+      <tr><td>資料</td><td>公開資料集加 LLM 生成的合成企業資料;不用真實資料</td></tr>
+    </table>
+    </div>
+    </div></details>
+    <label for="a-defaults">反對或修改</label>
+    <textarea id="a-defaults" data-store="a-defaults" placeholder="全部接受則留白"></textarea>
+  </div>
+</section>
+
+<section id="sow">
+  <h2><span class="n">5</span>Scope of Work 簽署</h2>
+  <p class="lede">完整文件另外提供。簽署前只有以下幾點需要在會議上達成共識。</p>
+
+  <div class="q">
+    <h4>一起確認 <span class="ref">SOW v2</span></h4>
+    <ul>
+      <li><strong>第 6 節費用歸屬:</strong>客戶負擔雲端 API 使用費至議定金額,加上沙盒算力。金額是文件裡唯一的空格,由上方沙盒與額度的回覆決定。</li>
+      <li><strong>第 6 節沙盒:</strong>客戶提供設定為模擬地端的雲端沙盒;學生筆電只用於開發。</li>
+      <li><strong>第 5 節 Phase 1:</strong>早期原型驗證架構假設,Alex 於 9 月 3 日提出。</li>
+      <li><strong>時程:</strong>期中簡報 10 月 2–9 日(第 7 週),期末簡報 12 月 2–11 日(第 15 週)。</li>
+    </ul>
+    <label for="a-sow">議定金額與任何措辭修改</label>
+    <textarea id="a-sow" data-store="a-sow" placeholder="第 6 節的金額;需要改寫的地方"></textarea>
+  </div>
+
+  <ul class="check">
+    <li><input type="checkbox" id="c1" data-store="c1"><label for="c1">費用金額已議定</label></li>
+    <li><input type="checkbox" id="c2" data-store="c2"><label for="c2">金額已填入第 6 節,「待確認」字樣已刪</label></li>
+    <li><input type="checkbox" id="c3" data-store="c3"><label for="c3">客戶簽名</label></li>
+    <li><input type="checkbox" id="c4" data-store="c4"><label for="c4">團隊簽名</label></li>
+  </ul>
+</section>
+
+<div class="after">
+  <strong>會後:</strong>把回覆記入 <code>todo/TODO-zh.md</code>(D21–D23、A6、A8、E26),更新架構 v0.3 第十節,並把確認後的預設方案用一封 email 回給客戶。
+</div>
+</div>
+<script>
+(function(){
+  var KEY='vg-meeting-2026-09-15-zh:';
+  function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
+  var all=document.querySelectorAll('details.more');
+  document.getElementById('expand-all').addEventListener('click',function(){all.forEach(function(d){d.open=true})});
+  document.getElementById('collapse-all').addEventListener('click',function(){all.forEach(function(d){d.open=false})});
+  document.querySelectorAll('[data-store]').forEach(function(el){
+    var k=el.getAttribute('data-store');
+    if(el.type==='checkbox'){
+      el.checked=get(k)==='1';
+      el.addEventListener('change',function(){set(k,el.checked?'1':'0')});
+    }else{
+      var v=get(k); if(v!==null) el.value=v;
+      el.addEventListener('input',function(){set(k,el.value)});
+    }
+  });
+})();
+</script>
