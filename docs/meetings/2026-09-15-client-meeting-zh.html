@@ -64,7 +64,8 @@ th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:up
 .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .stat .v{font-family:var(--serif);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:2px}
 .stat .d{font-size:12px;color:var(--muted);margin-top:2px}
-.finding{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:12px 0}
+.finding{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0}
+.finding div{max-width:none}
 .finding div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:14px;line-height:1.45}
 .finding .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .finding b{font-weight:600}
@@ -143,23 +144,6 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <div><div class="k">本地模型</div><b><mark class="hl-key">Llama 3.1 8B 為主,Qwen3 8B 為輔,</mark></b>處理程式與多語言題目;以 Hugging Face transformers 4-bit 執行,讓 harness 能讀取對數機率與 hidden states。Qwen3 附來源、hash 與授權檢查。</div>
     <div><div class="k">Benchmark</div><b><mark class="hl-key">先做 MMLU 子集與 GSM8K,</mark></b>即貴方 9 月 3 日要求的通用 benchmark;TruthfulQA 與 HaluEval 測事實性;Presidio 評測模組與標註的 prompt injection 資料集測安全。</div>
   </div>
-
-  <details class="more"><summary>8B 尺度下的信心訊號</summary><div class="body">
-  <ul class="points">
-    <li><strong>兩種訊號每次查詢幾乎零成本,且在接近 8B 的尺度有直接證據:</strong>token 對數機率(小模型研究中 AUROC 0.71–0.87),以及 Semantic Entropy Probe,一個在模型 hidden states 上一次訓練好的小型探針。</li>
-    <li><strong>排除模型自報信心。</strong>2026 年一項針對七個 3–9B 開源模型(含 Llama 3.1 8B)的篩檢發現,91.7% 的回答自稱信心至少 95%,與答對答錯無關。我們不用它做路由。</li>
-    <li><strong>採樣集成</strong>(自我一致性、語意熵)驗證最充分,但每次查詢要多生成 5–10 次。我們留作上限參考,不當預設。</li>
-  </ul>
-  </div></details>
-
-  <details class="more"><summary>由研究導出的選擇</summary><div class="body">
-  <ul class="points">
-    <li><strong>推論堆疊:</strong>Hugging Face transformers 加 4-bit 量化,因為評測需要每個 token 的對數機率與 hidden states,封裝好的推論伺服器不提供。</li>
-    <li><strong>本地模型:</strong>Llama 3.1 8B 為主;Qwen3 8B 為輔,處理程式與多語言題目,並記錄來源、hash 與授權檢查。</li>
-    <li><strong>Benchmark</strong>(依 9 月 3 日貴方建議,用業界通用 benchmark):先做 MMLU 子集與 GSM8K;TruthfulQA 與 HaluEval 測事實性;Presidio 評測模組與標註的 prompt injection 資料集測安全。</li>
-    <li><strong>治理框架:</strong>NIST AI RMF,並註記 ISO/IEC 42001 可延伸之處。</li>
-  </ul>
-  </div></details>
 </section>
 
 <section id="architecture">

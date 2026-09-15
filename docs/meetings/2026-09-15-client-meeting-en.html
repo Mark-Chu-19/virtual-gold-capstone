@@ -64,7 +64,8 @@ th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:up
 .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .stat .v{font-family:var(--serif);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:2px}
 .stat .d{font-size:12px;color:var(--muted);margin-top:2px}
-.finding{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:12px 0}
+.finding{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0}
+.finding div{max-width:none}
 .finding div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:14px;line-height:1.45}
 .finding .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .finding b{font-weight:600}
@@ -142,23 +143,6 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     <div><div class="k">Local models</div><b><mark class="hl-key">Llama 3.1 8B as the primary model, Qwen3 8B as the secondary</mark></b> for code and multilingual queries, run with Hugging Face transformers at 4-bit so the harness can read log-probs and hidden states. Qwen3 carries source, hash and licence checks.</div>
     <div><div class="k">Benchmarks</div><b><mark class="hl-key">MMLU subset and GSM8K first,</mark></b> as the general-purpose benchmarks you asked for on Sep 3; TruthfulQA and HaluEval for factuality; Presidio's evaluation module and a labelled prompt-injection set for security.</div>
   </div>
-
-  <details class="more"><summary>Confidence signals at 8B scale</summary><div class="body">
-  <ul class="points">
-    <li><strong>Two signals are near-free per query and have direct evidence near 8B:</strong> token log-probability (AUROC 0.71–0.87 in small-model studies) and Semantic Entropy Probes, a small probe trained once on the model's hidden states.</li>
-    <li><strong>Self-reported confidence is excluded.</strong> A 2026 screen of seven 3–9B open-weight models, including Llama 3.1 8B, found 91.7% of answers claimed at least 95% confidence regardless of correctness. We will not route on it.</li>
-    <li><strong>Sampling ensembles</strong> (self-consistency, semantic entropy) are the best-validated signals but cost 5–10 extra generations per query. We keep them as the upper-bound reference, not the default.</li>
-  </ul>
-  </div></details>
-
-  <details class="more"><summary>Choices that follow from the research</summary><div class="body">
-  <ul class="points">
-    <li><strong>Inference stack:</strong> Hugging Face transformers with 4-bit quantization, because the evaluation needs per-token log-probs and hidden states that packaged servers do not expose.</li>
-    <li><strong>Local models:</strong> Llama 3.1 8B primary; Qwen3 8B secondary for code and multilingual queries, with source, hash and licence checks recorded.</li>
-    <li><strong>Benchmarks</strong> (per your Sep 3 guidance to use established general-purpose benchmarks): MMLU subset and GSM8K first; TruthfulQA and HaluEval for factuality; Presidio's evaluation module and a labelled prompt-injection set for security.</li>
-    <li><strong>Governance frame:</strong> NIST AI RMF, with notes on where ISO/IEC 42001 would extend it.</li>
-  </ul>
-  </div></details>
 </section>
 
 <section id="architecture">
