@@ -21,7 +21,7 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Confirm with the client: sandbox offered on Sep 3, cloud API credits, use case / sector, SOW cost amount | Client meeting 2026-09-15 |
 | Confidence-scoring harness design doc (PR #2, Zhexuan Ye) | Under review, changes requested 2026-09-14 |
 | Week 4: sandbox setup, harness skeleton (sampling core, loaders, metrics), workstream research one-pagers | In progress |
-| Week 7: midpoint presentation with first local-only vs hybrid numbers | Target |
+| Week 7: midpoint presentation with first local-only / hybrid / cloud-only numbers on MMLU subset and GSM8K (scope in `todo/TODO.md` A7) | Target |
 
 ## Read this first
 
@@ -82,15 +82,15 @@ Rule of thumb: `docs/` is what we hand to the client (including the SOW), `refer
 
 | Weeks | Phase |
 |---|---|
-| W1–W3 | Setup: team, kickoff, **architecture sign-off (now)** |
-| W4–W7 | MVP build. **W7 midpoint presentation** |
+| W1–W3 | Setup: team, kickoff, architecture sign-off |
+| W4–W7 | **MVP build (now).** **W7 midpoint presentation** |
 | W8 | Fall break |
-| W9–W11 | Full three-configuration evaluation, red-teaming, de-identification round trip |
+| W9–W11 | Full three-configuration evaluation, SEP and sampling-ensemble confidence signals, red-teaming, format-preserving fake values |
 | W12–W15 | Analysis, report, client feedback. **W15 final presentation** (W14 Thanksgiving) |
 
 ## Open decisions
 
-Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): this week's decisions, pending actions, corrections to the teammate proposal, items waiting on the client, and a decision log. Section 11 of the architecture doc mirrors the decision items.
+Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): decisions, pending actions, corrections to the teammate proposal, items waiting on the client, the SOW cost line, the per-workstream research list, and a decision log. Section 11 of the architecture doc mirrors the decision items but lags behind the TODO until v0.3 (TODO B11).
 
 ## Contributing workflow
 
