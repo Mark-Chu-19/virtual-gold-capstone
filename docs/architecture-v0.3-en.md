@@ -1,11 +1,12 @@
 # Hybrid AI Assistant Architecture Draft
 
-**Capstone · Virtual Gold Inc · Week 3 · Scope & Project Charter**
+**Capstone · Virtual Gold Inc · Week 4 · Project Plan**
 
 A local-first enterprise AI assistant: open-source models are the primary intelligence layer, and requests escalate to cloud models only when confidence scores and data sensitivity allow.
 
 | Version | Date | Status | Team | Client |
 |---|---|---|---|---|
+| v0.3 | 2026-09-15 | Team decisions of Sep 15 recorded; client answers pending | Anmol · Mark · Yudi · Zhexuan · Karina | Inderpal Bhandari · Alex Bhandari · Urte Jesina |
 | v0.2.1 | 2026-09-10 | Team discussion | Anmol · Mark · Yudi · Zhexuan · Karina | Inderpal Bhandari · Alex Bhandari · Urte Jesina |
 
 ---
@@ -37,7 +38,7 @@ flowchart TB
     L3["3 Router & orchestration<br/>Task classification · policy check · escalation decision · response assembly"]
     L4["4 Local inference<br/>HF transformers · Llama 3.x, Qwen, Mistral"]
     L5["5 Confidence scoring<br/>logprob · self-consistency · verifier · grounding"]
-    L6["6 Knowledge (RAG)<br/>Local embeddings · Chroma / Qdrant / pgvector"]
+    L6["6 Knowledge (RAG, stretch goal)<br/>Local embeddings · Chroma / Qdrant / pgvector"]
     L7["7 Governance & observability<br/>Audit log · cost tracking · benchmarks · model provenance"]
     L8["8 Security foundation<br/>Egress allow-list · sandbox · secrets · model hash & license checks"]
     L1 --> L2 --> L3
@@ -65,7 +66,7 @@ flowchart TB
 | 3 | Router & orchestration | Task classification, policy check, escalation decision, response assembly |
 | 4 | Local inference | HF transformers; Llama 3.x, Qwen, Mistral |
 | 5 | Confidence scoring | logprob, self-consistency, verifier model, retrieval grounding |
-| 6 | Knowledge (RAG) | Local embeddings; Chroma / Qdrant / pgvector |
+| 6 | Knowledge (RAG), stretch goal | Local embeddings; Chroma / Qdrant / pgvector. Not in the MVP (decided 2026-09-15) |
 | 7 | Governance & observability | Audit log, cost tracking, benchmarks, model provenance |
 | 8 | Security foundation | Egress allow-list, sandbox, secrets management, model hash & license checks |
 | — | Cloud escalation (external) | Claude / GPT / Gemini API; receives only redacted, minimized content |
@@ -77,7 +78,7 @@ A request passes three decision points on its way to a reply: sensitivity classi
 ```mermaid
 flowchart LR
   U[User request] --> G["Gateway<br/>PII redaction · classify"]
-  G --> M["Local model<br/>generate with RAG"]
+  G --> M["Local model<br/>generate (RAG optional)"]
   M --> S[Confidence score]
   S --> D1{Score ≥ threshold?}
   D1 -- yes --> R[Reply to user]
@@ -96,7 +97,7 @@ flowchart LR
 Step by step:
 
 1. The gateway authenticates the user, scans for PII, and tags the request as public, internal, or confidential.
-2. The router classifies the task (Q&A, summary, code, reasoning) and retrieves relevant documents through RAG.
+2. The router classifies the task (Q&A, summary, code, reasoning); document retrieval through RAG is a stretch goal.
 3. The local model generates a response and the confidence module scores it.
 4. If the score meets the threshold, the response is returned directly.
 5. If the score is below the threshold and the sensitivity class permits, the content is redacted and minimized, then sent to a cloud model.
@@ -187,7 +188,7 @@ The client provides public data only, so each evaluation dimension uses an estab
 | Security: PII redaction | Presidio evaluation module | GitHub microsoft/presidio | Built-in evaluation method, no hand-labeled corpus needed; also measures the miss rate from section 6 |
 | Security: prompt injection | Prompt Injection & Benign Prompt Dataset | Kaggle cyberprince | Labeled injection vs benign prompts for red-teaming the security gate |
 
-> **Midpoint target:** before the week 7 midpoint, have at least local-only vs hybrid accuracy and escalation rate on the MMLU subset and GSM8K. The full three-configuration run belongs in weeks 9 to 11.
+> **Midpoint target (set 2026-09-15):** before the W7 midpoint, run all three configurations on the MMLU subset and GSM8K with token logprob as the only confidence signal, and report accuracy, escalation rate, cost per query and latency. Every query is sent to the cloud once and cached, so cloud-only comes from the same run. The remaining confidence strategies, PII-leak rate and prompt-injection resistance belong in weeks 9 to 11.
 
 ## 8. Security and governance
 
@@ -203,10 +204,10 @@ The timeline follows the 15-week course structure and does not change. The work 
 
 | Weeks | Phase | Scope |
 |---|---|---|
-| W1–W3 | Setup | Team formation, client kickoff, **architecture sign-off (this week)** |
-| W4–W7 | **MVP** | Local model + basic confidence strategy + router + PII gate + evaluation harness. **W7 midpoint presentation.** |
+| W1–W3 | Setup | Team formation, client kickoff, architecture sign-off |
+| W4–W7 | **MVP (now)** | Local model + basic confidence strategy + router + PII gate + evaluation harness. **W7 midpoint presentation.** |
 | W8 | Fall break | — |
-| W9–W11 | **Extend** | Full three-configuration run, strategy comparison, de-identification round trip, red-teaming |
+| W9–W11 | **Extend** | Full three-configuration run, remaining confidence strategies, red-teaming, format-preserving fake values |
 | W12–W15 | **Converge** | Benchmark report, governance recommendations, draft deliverable, client feedback, **W15 final presentation** (W14 Thanksgiving) |
 
 Client meetings weekly during discovery, moving to bi-weekly once the project is defined; Mark schedules.
@@ -215,18 +216,20 @@ Client meetings weekly during discovery, moving to bi-weekly once the project is
 
 All five team members are full-time graduate students carrying a full course load; this project is roughly a third of one semester's credits. The target is therefore a working prototype plus a rigorous evaluation, not a production platform. Existing open-source components are preferred so effort goes into integration, evaluation, and the security and governance analysis.
 
-- **Router and orchestration:** the team writes the routing policy; the gateway tool is still open (see section 11, item 1).
+- **Router and orchestration:** our own Python router: confidence threshold plus the confidential-stays-local rule, calling the local model in-process and the cloud provider's SDK. No gateway framework (decided 2026-09-15).
 - **Local inference:** Llama 3.1 8B as the primary model, Qwen3 8B as the secondary for code and multilingual queries; loaded with HF transformers (4-bit via bitsandbytes) on a GPU sandbox that simulates on-premises (see "Deployment environment" below). Team decision 2026-09-10: no LLMs on laptops, laptops are for development only.
-- **Confidence scoring:** self-consistency or token logprob as the baseline signal.
-- **PII redaction gate:** between the router and any cloud call, directly implementing "keep sensitive data local".
+- **Confidence scoring:** token logprob as the midpoint baseline; the other strategies in section 5 are compared in weeks 9 to 11.
+- **PII redaction gate and re-identification:** Presidio redaction between the router and any cloud call, and a per-request placeholder mapping table that restores the reply (decided 2026-09-15); numeric data uses placeholders.
 - **Cloud escalation:** one mainstream enterprise-grade API, called only on low confidence.
 - **Evaluation and logging harness:** the three configurations and six metrics from section 7.
 - **Interface:** no GUI; CLI or REST API only (decided Sep 3, the client wants the architecture prioritized).
-- **Undecided:** a minimal RAG knowledge layer and data sensitivity classification (see section 11, items 2 and 3).
+- **Data sensitivity classification:** three levels; confidential never leaves local regardless of confidence (decided 2026-09-15).
+- **RAG knowledge layer:** stretch goal, not in the MVP (decided 2026-09-15).
 
 ### Stretch goals: only if the MVP lands early
 
 - Task-aware routing by query type and complexity, not confidence alone, evaluated with the RouterBench methodology.
+- A minimal RAG knowledge layer over synthetic enterprise documents, with retrieval grounding as an extra confidence signal (deferred 2026-09-15).
 - A second local model for A/B comparison, or a small trained router instead of a threshold rule.
 - Format-preserving fake values and fuzzy re-identification in the de-identification pipeline.
 - Deeper red-teaming across more prompt-injection and jailbreak categories.
@@ -240,7 +243,7 @@ On 2026-09-10 the team decided not to run LLMs on laptops. Models run on a GPU h
 ```
 internal network (no internet)      egress network (allow-list only)
 ├── llm-server  local model (HF transformers) └── egress-proxy  single exit, logs every request
-├── chroma      vector store / RAG           ↑
+├── chroma      vector store (RAG, stretch)  ↑
 ├── presidio    de-identification            │
 ├── audit-db    audit log                    │
 └── router  ── attached to both networks ────┘
@@ -261,7 +264,7 @@ The client prefers concrete defaults over open questions. Each item below has a 
 |---|---|---|---|
 | Sensitivity levels | Three levels: public, internal, confidential. Defined by the team from common enterprise practice; confidential never leaves local. | No client classification standard yet; start with a working default. | Replace with the client's own standard. |
 | Escalation approval | Fully automatic, every escalation logged; human approval is a stretch goal. | Feasible in one semester and consistent with "escalation must be justified". | Add a review step at the second decision point. |
-| Cloud provider | One provider for the MVP: OpenAI or Anthropic, both publish enterprise data-retention commitments. | Fewer variables; multi-provider comparison is a stretch goal. | Name a provider, region, or compliance constraint. |
+| Cloud provider | One provider for the MVP: whichever the client supplies API credits or an enterprise account for; Anthropic if the client has no preference. Both publish enterprise data-retention commitments. | Fewer variables; multi-provider comparison is a stretch goal. | Name a provider, region, or compliance constraint. |
 | International open-source models | Qwen3 8B as the secondary model, with supply-chain checks (source, hash, license). | The brief explicitly raises international-model risk; evaluating one is the only way to conclude. | Ask to exclude it. |
 | Hardware and compute environment | Models run on a GPU sandbox (T4-class, 16 GB) that simulates on-premises; 8B-class model loaded with HF transformers at 4-bit (bitsandbytes). No LLMs on laptops. | Team decision 2026-09-10; the client offered a sandbox on Sep 3. | Confirm sandbox spec and cost; an A10G-class GPU (24 GB) runs the k-sample confidence ensemble comfortably and allows 14B tests. |
 | Numeric sensitive data | Placeholders for everything in the MVP; format-preserving fake values are a stretch goal. | Prevent leakage first, enable computation second. | See section 11, item 4. |
@@ -272,23 +275,25 @@ The client prefers concrete defaults over open questions. Each item below has a 
 
 ## 11. Team discussion items (to do)
 
-- [ ] **Tool selection, not yet decided.** Teammate proposal: LiteLLM as the routing gateway, Ollama for local models, Presidio for PII detection, the RouteLLM approach for the routing signal. To confirm: whether LiteLLM can host a custom routing policy and de-identification hooks; RouteLLM is pre-generation routing that looks at the query, which is a different thing from post-generation confidence scoring that looks at the answer, so evaluate them separately; whether Ollama exposes logprobs conveniently or vLLM is needed.
-- [ ] **Keep the RAG knowledge layer or not.** The teammate version has none; this draft does. Affects: the demo value of answering questions about enterprise documents, the retrieval-grounding confidence strategy, and whether de-identification must handle document chunks. Leaning toward a minimal version; cut it and tell the client if time runs out.
-- [ ] **Include data sensitivity classification in the MVP?** The teammate version has only PII redaction, no "confidential never leaves" rule. One extra rule in the router; low cost, recommended.
-- [ ] **De-identification round trip: MVP or stretch?** The re-identification step is missing from the teammate version; decide placeholders vs fake values for numeric data at the same time.
-- [ ] **Local models and sandbox.** Llama 3.1 8B primary, Qwen3 8B secondary; decided: no LLMs on laptops. Confirm with the client the sandbox offered on Sep 3 (spec, availability, cost) and cloud API credits; CMU cloud is the fallback.
-- [ ] **Pick one cloud provider.** OpenAI or Anthropic. Compare enterprise data-retention terms and pricing, then decide.
-- [ ] **What to show at the week 7 midpoint.** Suggested minimum: local-only vs hybrid accuracy and escalation rate on the MMLU subset and GSM8K.
+Tracked in `todo/TODO.md`; this list mirrors it as of 2026-09-15.
+
+- [x] **Tool selection.** Decided 2026-09-15: local inference and the evaluation harness run on HF transformers (bitsandbytes 4-bit) because the harness needs per-token logprobs and hidden states; the router is our own Python module; Presidio for PII; the cloud is called through the provider's SDK. Ollama, LiteLLM and RouteLLM are not used.
+- [x] **RAG knowledge layer.** Decided 2026-09-15: stretch goal, not in the MVP; reconsider after the W7 midpoint.
+- [x] **Data sensitivity classification.** Decided 2026-09-15: in the MVP; confidential requests never leave local regardless of confidence.
+- [x] **De-identification round trip.** Decided 2026-09-15: both halves in the MVP; re-identification is a per-request placeholder mapping table; numeric data uses placeholders, fake values are stretch.
+- [ ] **Local models and sandbox.** Llama 3.1 8B primary, Qwen3 8B secondary; no LLMs on laptops. Confirm with the client the sandbox offered on Sep 3 (GPU, direct access, availability, cost) and cloud API credits.
+- [ ] **Cloud provider.** Whichever the client supplies credits for; Anthropic if no preference. Closes with the client's answer on credits.
+- [x] **What to show at the W7 midpoint.** Set 2026-09-15: the midpoint target in section 7, plus a CLI demo of one PII-bearing request going through redaction, escalation and re-identification.
 - [ ] **Corrections needed in the teammate proposal.** "Llama 3.3 8B" should be Llama 3.1 8B (3.3 exists only at 70B); "Qwen3 7B" should be Qwen3 8B (7B is Qwen2.5); in the diagram the "high confidence, return answer" arrow should not pass through the PII gate; cite Meta and Qwen model cards for model figures and the NIST text for the framework instead of blog posts; align the timeline with the course's W7 midpoint and W8 fall break.
-- [ ] **Use case and sector.** The client provides data only once the use case is set. Default: financial-services SMB document workflows; confirm with the client this week.
-- [ ] **Work split.** Router, models and inference, evaluation harness, security and de-identification, documentation and presentations: one owner each.
+- [ ] **Use case and sector.** Default: financial-services SMB document workflows; confirm with the client at the Sep 15 meeting.
+- [ ] **Work split.** Five workstreams, one owner each: router and integration; models and inference; confidence scoring and evaluation harness (Zhexuan); security and de-identification; synthetic data. Owners claimed at the Sep 15 team meeting.
 
 ## 12. Next steps
 
-1. Walk through the section 11 list at this week's team meeting; settle tool selection and the RAG decision first.
-2. Send the section 10 defaults to the client for confirmation; proceed on the defaults unless the client objects.
-3. Start in week 4: fix the local model and inference framework, stand up the evaluation-harness skeleton, and aim for the first local-only vs hybrid numbers before W7.
+1. Sep 15 client meeting: walk through the section 10 defaults; confirm the sandbox, API credits, cloud provider, use case and the SOW cost amount.
+2. Sep 15 team meeting: claim workstream owners; each workstream delivers its research one-pager in week 4.
+3. Week 4 build: sandbox on HF transformers with a smoke test, harness skeleton (sampling core, benchmark loaders, metrics), MMLU subset and GSM8K test sets; first three-configuration numbers before W7.
 
 ---
 
-*Hybrid AI Assistant Architecture Draft v0.2.1 · Capstone for Virtual Gold Inc · 2026-09-10*
+*Hybrid AI Assistant Architecture Draft v0.3 · Capstone for Virtual Gold Inc · 2026-09-15*

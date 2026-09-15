@@ -12,6 +12,7 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Client kickoff, brief received | Done |
 | Architecture draft v0.1 (layers, request flow, confidence scoring, de-identification pipeline) | Done, 2026-09-07 |
 | Teammate proposal (tooling, datasets, defaults, MVP vs stretch) reviewed and merged into **v0.2** | Done, 2026-09-08 |
+| Architecture **v0.3**: Sep 15 decisions written in (transformers, own router, RAG stretch, sensitivity + de-identification in MVP, midpoint scope); PR #2 confidence-harness content goes into v0.3.1 after merge | Done, 2026-09-15 |
 | Team decisions on the section 11 to-do list: tool selection (HF transformers, own router, Presidio), RAG deferred to stretch, sensitivity classification and de-identification round trip in the MVP | Decided, 2026-09-15 (`todo/TODO.md` decision log) |
 | Cloud provider: follows whichever the client supplies credits for, default Anthropic | Pending client answer |
 | Section 10 defaults walked through with the client | Client meeting 2026-09-15 |
@@ -29,10 +30,10 @@ The single source of truth is the architecture document. Same content in four fo
 
 | File | Language | Format |
 |---|---|---|
-| [`docs/architecture-v0.2-en.md`](docs/architecture-v0.2-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
-| [`docs/architecture-v0.2-en.html`](docs/architecture-v0.2-en.html) | English | HTML with SVG diagrams, open in a browser |
-| [`docs/architecture-v0.2-zh.md`](docs/architecture-v0.2-zh.md) | Traditional Chinese | Markdown, Mermaid diagrams |
-| [`docs/architecture-v0.2.html`](docs/architecture-v0.2.html) | Traditional Chinese | HTML with SVG |
+| [`docs/architecture-v0.3-en.md`](docs/architecture-v0.3-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
+| [`docs/architecture-v0.3-en.html`](docs/architecture-v0.3-en.html) | English | HTML with SVG diagrams, open in a browser |
+| [`docs/architecture-v0.3-zh.md`](docs/architecture-v0.3-zh.md) | Traditional Chinese | Markdown, Mermaid diagrams |
+| [`docs/architecture-v0.3.html`](docs/architecture-v0.3.html) | Traditional Chinese | HTML with SVG |
 
 Sections in the document:
 
@@ -55,10 +56,10 @@ Sections in the document:
 .
 ├── README.md                      start here: progress, open decisions, layout
 ├── docs/                          documents WE write (the deliverables in progress)
-│   ├── architecture-v0.2-en.md    current architecture doc, English (Markdown, renders on GitHub)
-│   ├── architecture-v0.2-en.html  same, HTML with SVG diagrams
-│   ├── architecture-v0.2-zh.md    current architecture doc, Chinese
-│   ├── architecture-v0.2.html     same, HTML
+│   ├── architecture-v0.3-en.md    current architecture doc, English (Markdown, renders on GitHub)
+│   ├── architecture-v0.3-en.html  same, HTML with SVG diagrams
+│   ├── architecture-v0.3-zh.md    current architecture doc, Chinese
+│   ├── architecture-v0.3.html     same, HTML
 │   ├── Scope of Work.docx         SOW original draft (W3)
 │   └── Scope of Work v2.docx      SOW revised draft, changes in red; sign this one once the cost line is filled in
 ├── todo/                          team to-do: open decisions, pending actions, decision log
