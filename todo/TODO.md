@@ -3,7 +3,7 @@
 Single place for open decisions and pending actions. Tick items here; when a decision changes the architecture, update `docs/` in the same PR.
 Fill in **Owner** and **Due** at the team meeting. Chinese version: [`TODO-zh.md`](TODO-zh.md).
 
-## A. Decisions to make this week (Week 3)
+## A. Decisions (Week 3 items; A1–A4 decided 2026-09-15, the rest close at the Sep 15 client and team meetings)
 
 | # | Item | Notes | Owner | Due | Done |
 |---|---|---|---|---|---|

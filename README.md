@@ -5,20 +5,22 @@ Client contact: Urte Jesina. Team: 5 people.
 
 We are designing and evaluating a **local-first enterprise AI assistant**: open-source models running locally are the primary intelligence layer, every response gets a measured confidence score, and requests escalate to a cloud model only when confidence is low **and** data sensitivity allows. Sensitive data stays local.
 
-## Current status (Week 3, updated 2026-09-10)
+## Current status (Week 4, updated 2026-09-15)
 
 | Milestone | Status |
 |---|---|
 | Client kickoff, brief received | Done |
 | Architecture draft v0.1 (layers, request flow, confidence scoring, de-identification pipeline) | Done, 2026-09-07 |
 | Teammate proposal (tooling, datasets, defaults, MVP vs stretch) reviewed and merged into **v0.2** | Done, 2026-09-08 |
-| Team decisions on the section 11 to-do list (tool selection, RAG, sensitivity classification, cloud provider) | **Open, this week** |
-| Send section 10 defaults to the client for confirmation | Pending |
+| Team decisions on the section 11 to-do list: tool selection (HF transformers, own router, Presidio), RAG deferred to stretch, sensitivity classification and de-identification round trip in the MVP | Decided, 2026-09-15 (`todo/TODO.md` decision log) |
+| Cloud provider: follows whichever the client supplies credits for, default Anthropic | Pending client answer |
+| Section 10 defaults walked through with the client | Client meeting 2026-09-15 |
 | PR workflow set up (branch → PR → Mark reviews and merges) | Done, 2026-09-08 |
 | Scope of Work revised (`docs/Scope of Work v2.docx`, changes in red); cost line still needs the client's answer | v2 done, 2026-09-10 |
 | Team decision: no local LLM on laptops; models run on a cloud GPU sandbox simulating on-premises | Decided, 2026-09-10 |
-| Confirm with the client: sandbox offered on Sep 3, cloud API credits, use case / sector | **Open, this week** |
-| Week 4: start MVP build, evaluation harness skeleton | Not started |
+| Confirm with the client: sandbox offered on Sep 3, cloud API credits, use case / sector, SOW cost amount | Client meeting 2026-09-15 |
+| Confidence-scoring harness design doc (PR #2, Zhexuan Ye) | Under review, changes requested 2026-09-14 |
+| Week 4: sandbox setup, harness skeleton (sampling core, loaders, metrics), workstream research one-pagers | In progress |
 | Week 7: midpoint presentation with first local-only vs hybrid numbers | Target |
 
 ## Read this first
