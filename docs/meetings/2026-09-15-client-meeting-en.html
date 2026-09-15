@@ -64,6 +64,10 @@ th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:up
 .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .stat .v{font-family:var(--serif);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:2px}
 .stat .d{font-size:12px;color:var(--muted);margin-top:2px}
+.finding{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:12px 0}
+.finding div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:14px;line-height:1.45}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.finding b{font-weight:600}
 .q{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;padding:14px 16px;margin-bottom:14px}
 .q h4{margin:0 0 6px;font-size:17px;font-family:var(--serif)}
 .q h4 .ref{margin-left:8px;vertical-align:middle}
@@ -125,11 +129,11 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 <section id="research">
   <h2><span class="n">1</span>Research based on the project description</h2>
   <p class="lede">The brief asks for a hybrid assistant that escalates to the cloud "when additional confidence or reasoning capability is required". We researched what that confidence signal can be on an 8B local model, and what it costs.</p>
-  <div class="stat">
-    <div><div class="k">Usable signals at 8B</div><div class="v">2</div><div class="d">token log-prob · semantic entropy probe</div></div>
-    <div><div class="k">Excluded</div><div class="v">1</div><div class="d">self-reported confidence</div></div>
-    <div><div class="k">Local models</div><div class="v">8B</div><div class="d">Llama 3.1 · Qwen3</div></div>
-    <div><div class="k">Benchmarks first</div><div class="v">2</div><div class="d">MMLU subset · GSM8K</div></div>
+  <div class="finding">
+    <div><div class="k">Confidence signal</div><b>Two signals work on an 8B model at near-zero cost per query:</b> the token log-probability the model already produces, and a Semantic Entropy Probe trained once on the model's hidden states. Both have published evidence at 7–8B scale.</div>
+    <div><div class="k">Excluded</div><b>Asking the model how confident it is does not work at this size.</b> Across seven 3–9B open-weight models, 91.7% of answers claimed at least 95% confidence whether right or wrong. We will not route on self-reported confidence.</div>
+    <div><div class="k">Local models</div><b>Llama 3.1 8B as the primary model, Qwen3 8B as the secondary</b> for code and multilingual queries, run with Hugging Face transformers at 4-bit so the harness can read log-probs and hidden states. Qwen3 carries source, hash and licence checks.</div>
+    <div><div class="k">Benchmarks</div><b>MMLU subset and GSM8K first,</b> as the general-purpose benchmarks you asked for on Sep 3; TruthfulQA and HaluEval for factuality; Presidio's evaluation module and a labelled prompt-injection set for security.</div>
   </div>
 
   <details class="more"><summary>Confidence signals at 8B scale</summary><div class="body">

@@ -64,6 +64,10 @@ th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:up
 .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .stat .v{font-family:var(--serif);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:2px}
 .stat .d{font-size:12px;color:var(--muted);margin-top:2px}
+.finding{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:12px 0}
+.finding div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:14px;line-height:1.45}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.finding b{font-weight:600}
 .q{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;padding:14px 16px;margin-bottom:14px}
 .q h4{margin:0 0 6px;font-size:17px;font-family:var(--serif)}
 .q h4 .ref{margin-left:8px;vertical-align:middle}
@@ -126,11 +130,11 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 <section id="research">
   <h2><span class="n">1</span>依專案說明所做的研究</h2>
   <p class="lede">專案說明要求混合式助理在「需要更高信心或推理能力時」升級到雲端。我們研究的是:在 8B 本地模型上,這個信心訊號可以是什麼,以及各要多少成本。</p>
-  <div class="stat">
-    <div><div class="k">8B 可用訊號</div><div class="v">2</div><div class="d">token 機率 · 語意熵探針</div></div>
-    <div><div class="k">排除</div><div class="v">1</div><div class="d">模型自報信心</div></div>
-    <div><div class="k">本地模型</div><div class="v">8B</div><div class="d">Llama 3.1 · Qwen3</div></div>
-    <div><div class="k">先跑的 benchmark</div><div class="v">2</div><div class="d">MMLU 子集 · GSM8K</div></div>
+  <div class="finding">
+    <div><div class="k">信心訊號</div><b>兩種訊號在 8B 模型上可用,且每次查詢幾乎零成本:</b>模型本來就會產生的 token 對數機率,以及在模型 hidden states 上一次訓練好的 Semantic Entropy Probe。兩者在 7–8B 尺度都有已發表的證據。</div>
+    <div><div class="k">排除</div><b>直接問模型「你多有信心」在這個尺寸不管用。</b>七個 3–9B 開源模型中,91.7% 的回答自稱信心至少 95%,答對答錯都一樣。我們不用模型自報信心做路由。</div>
+    <div><div class="k">本地模型</div><b>Llama 3.1 8B 為主,Qwen3 8B 為輔,</b>處理程式與多語言題目;以 Hugging Face transformers 4-bit 執行,讓 harness 能讀取對數機率與 hidden states。Qwen3 附來源、hash 與授權檢查。</div>
+    <div><div class="k">Benchmark</div><b>先做 MMLU 子集與 GSM8K,</b>即貴方 9 月 3 日要求的通用 benchmark;TruthfulQA 與 HaluEval 測事實性;Presidio 評測模組與標註的 prompt injection 資料集測安全。</div>
   </div>
 
   <details class="more"><summary>8B 尺度下的信心訊號</summary><div class="body">
