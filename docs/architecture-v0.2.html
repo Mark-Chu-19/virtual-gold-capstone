@@ -118,7 +118,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
   <g font-size="12.5">
     <rect x="40" y="66" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
     <text x="52" y="85" font-weight="700">1 使用者介面層</text>
-    <text x="52" y="102" fill="var(--muted)" font-size="11.5">Web Chat UI · CLI · REST API</text>
+    <text x="52" y="102" fill="var(--muted)" font-size="11.5">CLI · REST API(不做 GUI)</text>
 
     <rect x="40" y="130" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
     <text x="52" y="149" font-weight="700">2 閘道與政策層</text>
@@ -396,7 +396,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
   <li><strong>模型供應鏈檢查:</strong>記錄每個模型的來源、hash 與授權條款。這直接回應客戶對「國際 AI 模型」風險的關注,可把 Qwen、DeepSeek 等模型的評估納入範圍。</li>
   <li><strong>雙向 Guardrail:</strong>輸入端擋 Prompt Injection,輸出端擋敏感資訊外洩。</li>
   <li><strong>完整稽核軌跡:</strong>每次升級都能回答「送了什麼、為什麼送、花了多少」。</li>
-  <li><strong>沙盒環境:</strong>學生在自己的電腦上以公開或合成資料作業,不接觸企業內部系統。</li>
+  <li><strong>沙盒環境:</strong>學生在客戶提供的雲端沙盒(模型)與自己的筆電(僅開發)上作業,全程只用公開或合成資料,不接觸企業內部系統。</li>
 </ul>
 
 <h2>九、範圍與時程</h2>
@@ -440,7 +440,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
 <h3>部署環境:以雲端沙盒模擬地端</h3>
 <p>團隊於 2026-09-10 決定不在筆電上跑 LLM。模型改跑在雲端沙盒的 GPU 主機上,客戶在 9 月 3 日會議承諾提供沙盒;筆電只負責開發。地端的本質是「誰控制它、資料能不能出去」,所以沙盒要模擬的是那條邊界,而且要能被驗證。</p>
 <pre>internal 網路(無對外連線)          egress 網路(只到白名單)
-├── ollama      本地模型             └── egress-proxy  唯一出口,記錄每次請求
+├── llm-server  本地模型(HF transformers)└── egress-proxy  唯一出口,記錄每次請求
 ├── chroma      向量庫 / RAG                 ↑
 ├── presidio    去識別化                     │
 ├── audit-db    稽核日誌                     │

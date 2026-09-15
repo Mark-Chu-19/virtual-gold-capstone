@@ -32,7 +32,7 @@ There is exactly one place where the system crosses the trust boundary: the rout
 ```mermaid
 flowchart TB
   subgraph LOCAL["Local environment · enterprise network"]
-    L1["1 User interface<br/>Web chat UI · CLI · REST API"]
+    L1["1 User interface<br/>CLI · REST API (no GUI, decided Sep 3)"]
     L2["2 Gateway & policy<br/>Auth · PII redaction · sensitivity classification · prompt-injection filter · rate limiting"]
     L3["3 Router & orchestration<br/>Task classification · policy check · escalation decision · response assembly"]
     L4["4 Local inference<br/>HF transformers · Llama 3.x, Qwen, Mistral"]
@@ -60,7 +60,7 @@ flowchart TB
 
 | # | Layer | Responsibilities |
 |---|---|---|
-| 1 | User interface | Web chat UI, CLI, REST API |
+| 1 | User interface | CLI, REST API; no GUI (decided Sep 3) |
 | 2 | Gateway & policy | Auth, PII detection & redaction, sensitivity classification, prompt-injection filter, rate limiting |
 | 3 | Router & orchestration | Task classification, policy check, escalation decision, response assembly |
 | 4 | Local inference | HF transformers; Llama 3.x, Qwen, Mistral |
@@ -195,7 +195,7 @@ The client provides public data only, so each evaluation dimension uses an estab
 - **Model supply-chain checks:** record every model's source, hash, and license. This directly addresses the client's concern about international AI models and lets us include Qwen, DeepSeek, and similar models in the evaluation.
 - **Two-way guardrails:** block prompt injection on input and sensitive-data leakage on output.
 - **Complete audit trail:** every escalation can answer "what was sent, why, and at what cost."
-- **Sandboxed environment:** students work on their own machines with public or synthetic data and never touch enterprise systems.
+- **Sandboxed environment:** students work in the client-provided cloud sandbox (models) and on their own laptops (development only), always with public or synthetic data, and never touch enterprise systems.
 
 ## 9. Scope and timeline
 
@@ -239,7 +239,7 @@ On 2026-09-10 the team decided not to run LLMs on laptops. Models run on a GPU h
 
 ```
 internal network (no internet)      egress network (allow-list only)
-├── ollama      local model          └── egress-proxy  single exit, logs every request
+├── llm-server  local model (HF transformers) └── egress-proxy  single exit, logs every request
 ├── chroma      vector store / RAG           ↑
 ├── presidio    de-identification            │
 ├── audit-db    audit log                    │

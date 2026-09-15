@@ -114,7 +114,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
   <g font-size="12.5">
     <rect x="40" y="66" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
     <text x="52" y="85" font-weight="700">1 User interface</text>
-    <text x="52" y="102" fill="var(--muted)" font-size="11.5">Web chat UI · CLI · REST API</text>
+    <text x="52" y="102" fill="var(--muted)" font-size="11.5">CLI · REST API (no GUI)</text>
 
     <rect x="40" y="130" width="500" height="44" rx="3" fill="var(--surface)" stroke="currentColor"/>
     <text x="52" y="149" font-weight="700">2 Gateway &amp; policy</text>
@@ -384,7 +384,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
   <li><strong>Model supply-chain checks:</strong> record every model's source, hash, and license. This directly addresses the client's concern about international AI models and lets us include Qwen, DeepSeek, and similar models in the evaluation.</li>
   <li><strong>Two-way guardrails:</strong> block prompt injection on input and sensitive-data leakage on output.</li>
   <li><strong>Complete audit trail:</strong> every escalation can answer "what was sent, why, and at what cost."</li>
-  <li><strong>Sandboxed environment:</strong> students work on their own machines with public or synthetic data and never touch enterprise systems.</li>
+  <li><strong>Sandboxed environment:</strong> students work in the client-provided cloud sandbox (models) and on their own laptops (development only), always with public or synthetic data, and never touch enterprise systems.</li>
 </ul>
 
 <h2>9. Scope and timeline</h2>
@@ -428,7 +428,7 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-si
 <h3>Deployment environment: a cloud sandbox that simulates on-premises</h3>
 <p>On 2026-09-10 the team decided not to run LLMs on laptops. Models run on a GPU host in a cloud sandbox instead: the client offered a sandbox at the Sep 3 meeting; laptops are for development only. What makes an environment "on-premises" is who controls it and whether data can leave, so the sandbox simulates that boundary, and the boundary must be verifiable.</p>
 <pre>internal network (no internet)      egress network (allow-list only)
-├── ollama      local model          └── egress-proxy  single exit, logs every request
+├── llm-server  local model (HF transformers) └── egress-proxy  single exit, logs every request
 ├── chroma      vector store / RAG           ↑
 ├── presidio    de-identification            │
 ├── audit-db    audit log                    │

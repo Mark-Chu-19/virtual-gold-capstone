@@ -32,7 +32,7 @@
 ```mermaid
 flowchart TB
   subgraph LOCAL["本地環境 · 企業內部網路"]
-    L1["1 使用者介面層<br/>Web Chat UI · CLI · REST API"]
+    L1["1 使用者介面層<br/>CLI · REST API(不做 GUI,9 月 3 日決定)"]
     L2["2 閘道與政策層<br/>認證授權 · PII 遮罩 · 敏感度分級 · Prompt Injection 過濾 · 速率限制"]
     L3["3 路由與編排層<br/>任務分類 · 政策檢查 · 升級決策 · 合併回覆"]
     L4["4 本地推論層<br/>HF transformers · Llama 3.x, Qwen, Mistral"]
@@ -60,7 +60,7 @@ flowchart TB
 
 | # | 層 | 職責 |
 |---|---|---|
-| 1 | 使用者介面層 | Web Chat UI、CLI、REST API |
+| 1 | 使用者介面層 | CLI、REST API;不做 GUI(9 月 3 日決定) |
 | 2 | 閘道與政策層 | 認證授權、PII 偵測與遮罩、資料敏感度分級、Prompt Injection 過濾、速率限制 |
 | 3 | 路由與編排層 | 任務分類、政策檢查、升級決策、合併回覆 |
 | 4 | 本地推論層 | HF transformers;Llama 3.x、Qwen、Mistral |
@@ -195,7 +195,7 @@ flowchart LR
 - **模型供應鏈檢查:**記錄每個模型的來源、hash 與授權條款。這直接回應客戶對「國際 AI 模型」風險的關注,可把 Qwen、DeepSeek 等模型的評估納入範圍。
 - **雙向 Guardrail:**輸入端擋 Prompt Injection,輸出端擋敏感資訊外洩。
 - **完整稽核軌跡:**每次升級都能回答「送了什麼、為什麼送、花了多少」。
-- **沙盒環境:**學生在自己的電腦上以公開或合成資料作業,不接觸企業內部系統。
+- **沙盒環境:**學生在客戶提供的雲端沙盒(模型)與自己的筆電(僅開發)上作業,全程只用公開或合成資料,不接觸企業內部系統。
 
 ## 九、範圍與時程
 
@@ -239,7 +239,7 @@ flowchart LR
 
 ```
 internal 網路(無對外連線)          egress 網路(只到白名單)
-├── ollama      本地模型             └── egress-proxy  唯一出口,記錄每次請求
+├── llm-server  本地模型(HF transformers)└── egress-proxy  唯一出口,記錄每次請求
 ├── chroma      向量庫 / RAG                 ↑
 ├── presidio    去識別化                     │
 ├── audit-db    稽核日誌                     │
