@@ -1,6 +1,6 @@
 # Virtual Gold x CMU Capstone Sync
 
-**2026 年 9 月 15 日** · Gemini 自動筆記的中文翻譯。原稿:同資料夾內 `2026-09-15 Capstone Sync (Gemini notes).pdf`。
+**2026 年 9 月 15 日** · Gemini 自動筆記的中文翻譯。原稿:同資料夾內 `notes-gemini-en.pdf`。
 
 > **譯註:**Gemini 筆記有幾處聽錯,翻譯照原文保留,在此更正:
 > 1. 「3B 參數模型處理程式與多語言」應為 **Qwen3 8B**。

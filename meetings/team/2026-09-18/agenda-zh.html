@@ -1,0 +1,323 @@
+<title>9/18 團隊會議</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4","Noto Sans TC","PingFang TC",Georgia,serif;
+  --sans:"Source Sans 3","Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.04em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+
+.cat{display:flex;align-items:baseline;gap:12px;margin:44px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{margin:0}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item h3{font-family:var(--serif);font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 8px;font-weight:600}
+.item .ctx{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.item .rec{margin:0 0 6px;font-size:15px}
+.item .rec b{color:var(--hl-key)}
+.item ul{margin:4px 0 8px;padding-left:20px}
+.item li{margin-bottom:4px;font-size:15px}
+.fields{display:grid;grid-template-columns:1fr 160px 110px;gap:10px;margin-top:10px}
+.fields label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fields textarea,.fields input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.fields textarea{min-height:56px;resize:vertical}
+.fields textarea:focus,.fields input:focus{outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:600px){.fields{grid-template-columns:1fr}}
+.owners{width:100%}
+.owners td input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:6px 10px}
+.owners td:first-child{font-weight:600;white-space:nowrap}
+.out{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.out li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.out li:last-child{border-bottom:none}
+.out input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.out .who{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-top:4px}
+</style>
+<div class="page">
+<header>
+  <div class="eyebrow">內部 · 僅限 CMU 團隊 · 不給客戶</div>
+  <h1>週五前要定的六件事</h1>
+  <dl class="meta">
+    <div><dt>日期</dt><dd>2026 年 9 月 18 日(四)· 第 4 週,共 15 週</dd></div>
+    <div><dt>為什麼是現在</dt><dd>客戶 9/15 把使用情境延後了;SOW、合成資料、demo 都卡在它後面</dd></div>
+    <div><dt>產出</dt><dd>9 月 19 日(五)前給客戶一封 email</dd></div>
+  </dl>
+  <div class="toolbar">
+    <div class="btns"><button id="expand-all" type="button">全部展開</button><button id="collapse-all" type="button">全部收合</button></div>
+    <div class="legend"><span><mark class="hl-key">金色:建議</mark></span><span><mark class="hl-ask">藍色:今天要決定或指派</mark></span><span><mark class="hl-no">紅色:不要做</mark></span></div>
+  </div>
+</header>
+
+<ol class="agenda">
+  <li><a href="#decide"><span class="n">A</span><span class="t">決定</span><span class="m">使用情境 · 回應 Alex · 35 分</span></a></li>
+  <li><a href="#assign"><span class="n">B</span><span class="t">指派</span><span class="m">負責人 · 研究 · 架構圖 · 15 分</span></a></li>
+  <li><a href="#check"><span class="n">C</span><span class="t">確認</span><span class="m">PR #2 · 5 分</span></a></li>
+  <li><a href="#admin"><span class="n">D</span><span class="t">行政</span><span class="m">OneDrive · Slack · email · 5 分</span></a></li>
+  <li><a href="#friday"><span class="n">E</span><span class="t">週五前</span><span class="m">要送出團隊的東西</span></a></li>
+</ol>
+
+<details class="more"><summary>客戶 9/15 說了什麼(回顧)</summary><div class="body">
+<div class="finding">
+  <div><div class="k">使用情境</div>延後。Inderpal 問:走垂直的金融服務情境,還是橫向的敏感資料淨化應用?他另外提了一個具體的垂直情境:<b>金融交易助理</b>,用公開市場資料與公司申報文件,交易員的策略留在本地。Priya 建議零售。下次客戶會議定案;Inderpal 希望本週內把題目定下來。</div>
+  <div><div class="k">敏感度閘門</div>Alex 質疑嚴格的二元閘門,建議考慮部分提示限制、輸出審查或分流。他要審架構圖,特別是系統怎麼判定什麼是敏感資訊、怎麼把它解析出來。</div>
+  <div><div class="k">資源</div>Inderpal 確認 OpenAI 與 Anthropic 帳號都可以給團隊用。沙盒規格沒談細節。SOW 等使用情境定了再簽。</div>
+  <div><div class="k">準確率</div>Priya 問準確率怎麼評;Anmol 說 golden dataset 或 LLM 當評審;Priya 說網路上有附標準答案的公開資料集。跟我們的 benchmark 方案一致。</div>
+  <div><div class="k">行政</div>共用 OneDrive 資料夾(Inderpal 建)。Slack 免費方案 30 天後到期,升級每月 15 美元;Mark 確認 Ruth 是否已有訂閱。客戶要兩份研究:遮罩工具、金融資料來源。</div>
+</div>
+</div></details>
+
+<div class="cat" id="decide"><h2>A · 決定</h2><span class="tag">35 分</span></div>
+
+<div class="item">
+  <h3>1 · 使用情境:垂直還是橫向</h3>
+  <p class="ctx">客戶把它問成二選一。我們的架構其實兩個都有:閘道(敏感度分級加去識別化來回)就是橫向能力,完整堆疊是垂直應用。Anmol 在會上就是這麼說的。</p>
+  <p class="rec"><mark class="hl-key">建議:回答「兩個都要」,並採用 Inderpal 提的交易情境當垂直。</mark></p>
+  <ul>
+    <li><strong>橫向能力:</strong>敏感度分級加去識別化來回。它本身可量測:PII 洩漏率、Presidio 評測、還原成功率。這就是 Alex 要審的區塊。</li>
+    <li><strong>垂直情境:</strong>一個回答公開公司申報文件與市場資料問題的助理,使用者的持倉與策略筆記是機密上下文。公開申報文件可以上雲;策略永不外送;內部分析遮罩後升級。三級敏感度在這裡是自然的,不是硬套。</li>
+    <li><strong>為什麼比原本的預設(中小企業文件工作流)好:</strong>客戶自己提的,買單機率高;資料全公開(SEC EDGAR、市場資料);本地與雲端的切分有明顯的商業理由。</li>
+    <li><strong>Benchmark 不變:</strong>MMLU 子集與 GSM8K 照跑。加一個有標準答案的金融資料集(FinanceBench 或 FinQA)回應 Priya。</li>
+    <li><mark class="hl-no">不做交易 app。</mark>不下單、不接即時行情、不做回測引擎。在機密上下文下回答申報文件與市場資料的問題,就是全部範圍。</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d1">團隊決定</label><textarea id="d1" data-store="d1" placeholder="同意的方向、反對意見、要跟客戶說什麼"></textarea></div>
+    <div><label for="d1o">給客戶的說明由誰寫</label><input id="d1o" data-store="d1o" placeholder="姓名"></div>
+    <div><label for="d1d">期限</label><input id="d1d" data-store="d1d" value="9/19(五)"></div>
+  </div>
+</div>
+
+<div class="item">
+  <h3>2 · 回應 Alex:閘門是三級,不是二元</h3>
+  <p class="ctx">Alex 的三個建議對得上我們已有或可以加的東西。講清楚,審閱才會落在對的地方。</p>
+  <p class="rec"><mark class="hl-key">建議:用下面這張分級表回覆,補上輸出檢查;分流列為會評估的 stretch。</mark></p>
+  <div class="tbl">
+  <table>
+    <tr><th>敏感度</th><th>怎麼處理</th><th>Alex 的說法</th></tr>
+    <tr><td><strong>機密</strong></td><td>不論信心高低都不外送。本地回答,或回覆「無法在本地回答」。</td><td>閘門</td></tr>
+    <tr><td><strong>內部</strong></td><td>遮罩並最小化後才升級:實體換佔位符,只送問題需要的片段。</td><td>部分提示限制</td></tr>
+    <tr><td><strong>公開</strong></td><td>直接升級。</td><td>—</td></tr>
+    <tr><td><strong>所有回覆</strong></td><td>本地還原;雲端回覆送到使用者前先掃描有沒有洩漏的實體(要補進架構第八節)。</td><td>輸出審查</td></tr>
+    <tr><td><strong>Stretch</strong></td><td>把一個問題拆成本地部分(策略)與雲端部分(公開資料),在本地合併。</td><td>分流</td></tr>
+  </table>
+  </div>
+  <ul>
+    <li><mark class="hl-ask">指派一人把第三張圖加上分級規則</mark>(一個請求怎麼拿到它的等級:使用者標記、偵測到的實體類型、文件來源),週五前給 Alex。</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d2">團隊決定</label><textarea id="d2" data-store="d2" placeholder="同意的說法、要加或要拿掉的"></textarea></div>
+    <div><label for="d2o">架構圖負責人</label><input id="d2o" data-store="d2o" placeholder="姓名"></div>
+    <div><label for="d2d">期限</label><input id="d2d" data-store="d2d" value="9/19(五)"></div>
+  </div>
+</div>
+
+<div class="cat" id="assign"><h2>B · 指派</h2><span class="tag">15 分</span></div>
+
+<div class="item">
+  <h3>3 · 工作流負責人(TODO A9)</h3>
+  <p class="ctx">五條工作流,一人一條。原本 9/15 團隊會議就要認領。<mark class="hl-ask">今天每一列都要填;第 4 週沒有名字的事不會開始。</mark></p>
+  <div class="tbl">
+  <table class="owners">
+    <tr><th>工作流</th><th>範圍(第 4–7 週)</th><th style="width:170px">負責人</th></tr>
+    <tr><td>路由與整合</td><td>自寫 Python router:信心門檻加「機密留本地」規則、雲端 SDK 呼叫、CLI 進入點</td><td><input data-store="w1" placeholder="姓名"></td></tr>
+    <tr><td>模型與推論</td><td>沙盒上的 HF transformers 加 bitsandbytes 4-bit、回傳 logprobs 與 hidden states 的 smoke test、吞吐量與記憶體</td><td><input data-store="w2" placeholder="姓名"></td></tr>
+    <tr><td>信心評分與 harness</td><td>採樣核心、benchmark 載入、指標、期中 pilot(PR #2)</td><td><input data-store="w3" value="Zhexuan"></td></tr>
+    <tr><td>安全與去識別化</td><td>Presidio 閘道、還原對照表、輸出檢查、PII 洩漏與 prompt injection 測試</td><td><input data-store="w4" placeholder="姓名"></td></tr>
+    <tr><td>合成資料</td><td>植入 PII 的合成申報文件、策略筆記與問題;金融 benchmark 資料集;負擔最輕,同時支援 harness 或期中投影片</td><td><input data-store="w5" placeholder="姓名"></td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="item">
+  <h3>4 · 客戶要的兩份研究</h3>
+  <p class="ctx">兩份各對到一條工作流。各一頁、附來源連結,週五前交,跟方向放同一封 email。</p>
+  <ul>
+    <li><strong>遮罩工具</strong> → 安全工作流。Presidio(我們的預設),加上替代方案掃描:spaCy NER 管線、Presidio 的評測結果、商用方案(Private AI、Google DLP)僅供比較。要回答的問題:Presidio 在金融文字上漏什麼,我們要疊什麼在上面。</li>
+    <li><strong>金融資料來源</strong> → 合成資料工作流。SEC EDGAR(10-K、10-Q、8-K,免費 API)、市場資料(例如 Yahoo Finance 或 Alpha Vantage 免費層)、附標準答案的金融問答 benchmark(FinanceBench、FinQA、TAT-QA)。要回答的問題:哪些可以免費用、授權是什麼、哪一套有可以評分的答案。</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d4">備註</label><textarea id="d4" data-store="d4" placeholder="兩份各要補什麼"></textarea></div>
+    <div><label for="d4o">負責人</label><input id="d4o" data-store="d4o" placeholder="安全 / 合成資料"></div>
+    <div><label for="d4d">期限</label><input id="d4d" data-store="d4d" value="9/19(五)"></div>
+  </div>
+</div>
+
+<div class="cat" id="check"><h2>C · 確認</h2><span class="tag">5 分</span></div>
+
+<div class="item">
+  <h3>5 · PR #2,信心 harness 設計文件</h3>
+  <p class="ctx">9/14 要求修改,之後沒有新 commit。harness 骨架(TODO B13)建在這份文件上,所以它卡住 harness 工作流的第 4 週。</p>
+  <p class="rec"><mark class="hl-key">當面問 Zhexuan 有沒有不清楚的地方。merge 只需要兩處修改:</mark></p>
+  <ul>
+    <li>寫明 Semantic Entropy Probe 需要 hidden states,採樣核心建在 HF transformers 上,訊號 B 和 C 排在第 9–11 週。</li>
+    <li>「六個指標」改名為「六個信心指標」,並說明 harness 仍記錄架構第七節的六個系統指標。</li>
+    <li>文件裡的連結指向 <code>architecture-v0.2-en.md</code>;檔案現在是 <code>docs/architecture/architecture-v0.3-en.md</code>。</li>
+    <li>Repo 於 9/18 重整:設計文件與文獻回顧都應放在 <code>docs/research/</code>,不是 <code>docs/</code> 根目錄或 <code>reference/team/</code>。</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d5">狀態</label><textarea id="d5" data-store="d5" placeholder="卡在什麼、何時改完"></textarea></div>
+    <div><label for="d5o">負責人</label><input id="d5o" data-store="d5o" value="Zhexuan"></div>
+    <div><label for="d5d">期限</label><input id="d5d" data-store="d5d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat" id="admin"><h2>D · 行政</h2><span class="tag">5 分</span></div>
+
+<div class="item">
+  <h3>6 · 三件小事</h3>
+  <ul>
+    <li><strong>OneDrive 共用資料夾。</strong>Inderpal 建。連結來了之後,那裡的即時文件是給客戶看的版本;GitHub 仍是團隊的 source of truth。要有人負責兩邊同步。</li>
+    <li><strong>Slack。</strong>免費方案約 30 天後到期,升級每月 15 美元。<mark class="hl-ask">Mark 先向 Ruth 確認是否已有訂閱</mark>,再決定誰付。</li>
+    <li><strong>週五前給客戶的 email。</strong>內容:第 1 項的方向、第 2 項的分級表與架構圖、第 4 項的兩份一頁摘要,以及我們還需要的答案(沙盒規格與存取、用哪一個 API 帳號、範例文件格式)。</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d6">備註</label><textarea id="d6" data-store="d6" placeholder="誰同步 OneDrive、Slack 結果"></textarea></div>
+    <div><label for="d6o">Email 負責人</label><input id="d6o" data-store="d6o" value="Mark"></div>
+    <div><label for="d6d">期限</label><input id="d6d" data-store="d6d" value="9/19(五)"></div>
+  </div>
+</div>
+
+<div class="cat" id="friday"><h2>E · 9 月 19 日(五)前</h2><span class="tag">要送出團隊的東西</span></div>
+<ul class="out">
+  <li><input type="checkbox" id="o1" data-store="o1"><label for="o1">使用情境方向寫成給客戶的說明(第 1 項)</label><span class="who">第 1 項負責人</span></li>
+  <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">第三張圖加上分級規則,寄給 Alex(第 2 項)</label><span class="who">第 2 項負責人</span></li>
+  <li><input type="checkbox" id="o3" data-store="o3"><label for="o3">遮罩工具一頁摘要(第 4 項)</label><span class="who">安全</span></li>
+  <li><input type="checkbox" id="o4" data-store="o4"><label for="o4">金融資料來源一頁摘要(第 4 項)</label><span class="who">合成資料</span></li>
+  <li><input type="checkbox" id="o5" data-store="o5"><label for="o5">PR #2 修改並 merge(第 5 項)</label><span class="who">Zhexuan · Mark</span></li>
+  <li><input type="checkbox" id="o6" data-store="o6"><label for="o6">Slack 訂閱狀態確認(第 6 項)</label><span class="who">Mark</span></li>
+  <li><input type="checkbox" id="o7" data-store="o7"><label for="o7">一封 email 給客戶,含上述全部(第 6 項)</label><span class="who">Mark</span></li>
+</ul>
+
+<div class="after">
+  <strong>會後:</strong>決定記入 <code>todo/TODO-zh.md</code>(A8、A9、新增敏感度三級一項)、決策紀錄與架構 v0.3 第十節;給客戶的 email 由第 1、2、4 項草擬。
+</div>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-team-2026-09-18-zh:';
+  function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
+  var all=document.querySelectorAll('details.more');
+  document.getElementById('expand-all').addEventListener('click',function(){all.forEach(function(d){d.open=true})});
+  document.getElementById('collapse-all').addEventListener('click',function(){all.forEach(function(d){d.open=false})});
+  document.querySelectorAll('[data-store]').forEach(function(el){
+    var k=el.getAttribute('data-store');
+    if(el.type==='checkbox'){
+      el.checked=get(k)==='1';
+      el.addEventListener('change',function(){set(k,el.checked?'1':'0')});
+    }else{
+      var v=get(k); if(v!==null) el.value=v;
+      el.addEventListener('input',function(){set(k,el.value)});
+    }
+  });
+})();
+</script>

@@ -5,7 +5,7 @@ Client contact: Urte Jesina. Team: 5 people.
 
 We are designing and evaluating a **local-first enterprise AI assistant**: open-source models running locally are the primary intelligence layer, every response gets a measured confidence score, and requests escalate to a cloud model only when confidence is low **and** data sensitivity allows. Sensitive data stays local.
 
-## Current status (Week 4, updated 2026-09-15)
+## Current status (Week 4, updated 2026-09-18)
 
 | Milestone | Status |
 |---|---|
@@ -15,11 +15,12 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Architecture **v0.3**: Sep 15 decisions written in (transformers, own router, RAG stretch, sensitivity + de-identification in MVP, midpoint scope); PR #2 confidence-harness content goes into v0.3.1 after merge | Done, 2026-09-15 |
 | Team decisions on the section 11 to-do list: tool selection (HF transformers, own router, Presidio), RAG deferred to stretch, sensitivity classification and de-identification round trip in the MVP | Decided, 2026-09-15 (`todo/TODO.md` decision log) |
 | Cloud provider: follows whichever the client supplies credits for, default Anthropic | Pending client answer |
-| Section 10 defaults walked through with the client | Client meeting 2026-09-15 |
+| Section 10 defaults walked through with the client | Done 2026-09-15; use case and cost line deferred |
 | PR workflow set up (branch → PR → Mark reviews and merges) | Done, 2026-09-08 |
-| Scope of Work revised (`docs/Scope of Work v2.docx`, changes in red); cost line still needs the client's answer | v2 done, 2026-09-10 |
+| Scope of Work revised (`docs/sow/Scope of Work v2.docx`, changes in red); cost line still needs the client's answer | v2 done, 2026-09-10 |
 | Team decision: no local LLM on laptops; models run on a cloud GPU sandbox simulating on-premises | Decided, 2026-09-10 |
-| Confirm with the client: sandbox offered on Sep 3, cloud API credits, use case / sector, SOW cost amount | Client meeting 2026-09-15 |
+| Client meeting Sep 15: OpenAI and Anthropic accounts confirmed; use case deferred (vertical finance vs horizontal data sanitization; Inderpal proposed a trading assistant on public filings); Alex to review the sensitivity gate; sandbox spec and SOW cost line still open | Notes in `meetings/client/2026-09-15/` |
+| Team meeting Sep 18: settle the use-case answer, workstream owners, two research one-pagers; one email to the client by Sep 19 | Agenda in `meetings/team/2026-09-18/` |
 | Confidence-scoring harness design doc (PR #2, Zhexuan Ye) | Under review, changes requested 2026-09-14 |
 | Week 4: sandbox setup, harness skeleton (sampling core, loaders, metrics), workstream research one-pagers | In progress |
 | Week 7: midpoint presentation with first local-only / hybrid / cloud-only numbers on MMLU subset and GSM8K (scope in `todo/TODO.md` A7) | Target |
@@ -30,10 +31,10 @@ The single source of truth is the architecture document. Same content in four fo
 
 | File | Language | Format |
 |---|---|---|
-| [`docs/architecture-v0.3-en.md`](docs/architecture-v0.3-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
-| [`docs/architecture-v0.3-en.html`](docs/architecture-v0.3-en.html) | English | HTML with SVG diagrams, open in a browser |
-| [`docs/architecture-v0.3-zh.md`](docs/architecture-v0.3-zh.md) | Traditional Chinese | Markdown, Mermaid diagrams |
-| [`docs/architecture-v0.3.html`](docs/architecture-v0.3.html) | Traditional Chinese | HTML with SVG |
+| [`docs/architecture/architecture-v0.3-en.md`](docs/architecture/architecture-v0.3-en.md) | English | Markdown, Mermaid diagrams (renders on GitHub) |
+| [`docs/architecture/architecture-v0.3-en.html`](docs/architecture/architecture-v0.3-en.html) | English | HTML with SVG diagrams, open in a browser |
+| [`docs/architecture/architecture-v0.3-zh.md`](docs/architecture/architecture-v0.3-zh.md) | Traditional Chinese | Markdown, Mermaid diagrams |
+| [`docs/architecture/architecture-v0.3-zh.html`](docs/architecture/architecture-v0.3-zh.html) | Traditional Chinese | HTML with SVG |
 
 Sections in the document:
 
@@ -55,30 +56,40 @@ Sections in the document:
 ```
 .
 ├── README.md                      start here: progress, open decisions, layout
-├── docs/                          documents WE write (the deliverables in progress)
-│   ├── architecture-v0.3-en.md    current architecture doc, English (Markdown, renders on GitHub)
-│   ├── architecture-v0.3-en.html  same, HTML with SVG diagrams
-│   ├── architecture-v0.3-zh.md    current architecture doc, Chinese
-│   ├── architecture-v0.3.html     same, HTML
-│   ├── meetings/                  agendas we bring to client meetings, EN and zh, named YYYY-MM-DD
-│   ├── Scope of Work.docx         SOW original draft (W3)
-│   └── Scope of Work v2.docx      SOW revised draft, changes in red; sign this one once the cost line is filled in
+├── docs/                          documents WE write and hand over
+│   ├── architecture/              the architecture document, single source of truth, four formats
+│   │   ├── architecture-v0.3-en.md      English, Markdown (renders on GitHub)
+│   │   ├── architecture-v0.3-en.html    English, HTML with SVG diagrams
+│   │   ├── architecture-v0.3-zh.md      Traditional Chinese, Markdown
+│   │   └── architecture-v0.3-zh.html    Traditional Chinese, HTML
+│   ├── sow/                       Scope of Work drafts
+│   │   ├── Scope of Work v1.docx        original draft (W3)
+│   │   └── Scope of Work v2.docx        revised, changes in red; sign this one once the cost line is filled in
+│   └── research/                  one-pagers and design docs per workstream (see its README)
+├── meetings/                      one folder per meeting, named YYYY-MM-DD: the agenda we bring plus the notes that come out
+│   ├── client/                    meetings with Virtual Gold
+│   │   ├── 2026-09-03/            notes-gemini-en.docx
+│   │   └── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
+│   └── team/                      internal team meetings, not shared with the client
+│       └── 2026-09-18/            agenda-en.html · agenda-zh.html
 ├── todo/                          team to-do: open decisions, pending actions, decision log
 │   ├── TODO.md                    English
 │   └── TODO-zh.md                 Traditional Chinese
 ├── reference/                     inputs we did NOT write; read-only
-│   ├── client/                    from Virtual Gold
-│   │   └── Virtual Gold Inc - AI Assistant.pdf    original capstone brief
-│   ├── course/                    from the instructor
-│   │   └── Proposed Weekly Structure.pdf          15-week course structure we must follow
-│   └── team/                      teammates' proposals and meeting notes
-│       ├── Virtual_Gold_Data_Architecture_Proposal_1.docx   Data & Architecture proposal (merged into v0.2)
-│       └── Meeting Notes/         client meeting notes, one file per meeting, named YYYY-MM-DD
+│   ├── client/                    Virtual Gold Inc - AI Assistant.pdf          original capstone brief
+│   ├── course/                    Proposed Weekly Structure.pdf                15-week course structure we must follow
+│   └── team/                      Virtual_Gold_Data_Architecture_Proposal_1.docx   teammate proposal (merged into v0.2)
 ├── src/                           (from week 4) prototype code: router, confidence scoring, PII gate, eval harness
 └── data/                          (from week 4) synthetic datasets and benchmark subsets; never real data
 ```
 
-Rule of thumb: `docs/` is what we hand to the client (including the SOW), `reference/` is what we were handed (client, course, or a teammate), `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
+Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, research), `meetings/` is everything about one meeting in one place, `reference/` is what we were handed (client, course, or a teammate), `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
+
+### Naming conventions
+
+- Every bilingual file carries a language suffix: `-en` or `-zh`. The exception is `todo/TODO.md`, which is English (`TODO-zh.md` is the Chinese copy).
+- Meeting folders are `YYYY-MM-DD`. Inside: `agenda-<lang>.html` for what we bring, `notes-<source>-<lang>` for what comes out (`gemini` = the auto-generated notes, `zh` = our translation).
+- Versions live in the filename: `architecture-v0.3-*`, `Scope of Work v2`. A new version is a new file; old versions stay for history.
 
 ## Timeline (follows the course structure, not negotiable)
 
@@ -110,7 +121,7 @@ There is no technical lock on `main` right now, so this works only if all of us 
 
 | Prefix | Use for | Example |
 |---|---|---|
-| `docs/` | architecture document, README | `docs/v0.3-rag-decision` |
+| `docs/` | architecture document, SOW, research, meeting agendas, README | `docs/v0.3-rag-decision` |
 | `feat/` | new code in `src/` | `feat/router-threshold` |
 | `fix/` | bug fixes | `fix/logprob-parsing` |
 | `eval/` | datasets, benchmark runs, results | `eval/gsm8k-subset` |
@@ -173,9 +184,9 @@ git push
 
 ### Where files go
 
-- Anything we author goes in `docs/`; anything a teammate or the client sends us goes in `reference/`.
+- Anything we author goes in `docs/` (architecture, SOW, research one-pagers); anything a teammate or the client sends us goes in `reference/`; anything about a meeting, ours or theirs, goes in that meeting's folder under `meetings/`.
 - Decisions go in `todo/`: tick the item and add a row to the decision log. If a decision changes the architecture, update `docs/` in the same PR.
-- `docs/` and `todo/` exist in English and Traditional Chinese; keep both in sync, or say in the PR which one is ahead. The README is English only.
+- `docs/`, `meetings/` agendas and `todo/` exist in English and Traditional Chinese; keep both in sync, or say in the PR which one is ahead. The README is English only.
 - Datasets and code go in `data/` and `src/` once the MVP starts in week 4.
 
 ## Notes on data
