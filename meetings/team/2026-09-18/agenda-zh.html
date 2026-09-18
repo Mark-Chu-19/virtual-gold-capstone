@@ -188,6 +188,86 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <li><strong>Benchmark 不變:</strong>MMLU 子集與 GSM8K 照跑。加一個有標準答案的金融資料集(FinanceBench 或 FinQA)回應 Priya。</li>
     <li><mark class="hl-no">不做交易 app。</mark>不下單、不接即時行情、不做回測引擎。在機密上下文下回答申報文件與市場資料的問題,就是全部範圍。</li>
   </ul>
+    <details class="more"><summary>實例:垂直(交易助理)</summary><div class="body">
+  <p class="ctx">一家小型資產管理公司的交易員。她的電腦上有公開資料(SEC EDGAR 的 10-K、10-Q、8-K,市場行情)和機密資料(持倉、進出場規則、策略筆記,例如「NVDA 跌破 200 日均線就加碼到 8%」)。</p>
+  <p class="rec">她問:<b>「根據 Apple 最新的 10-Q,服務營收的趨勢對我目前的部位有什麼影響?」</b></p>
+  <ol>
+    <li><strong>閘道分級。</strong>問題同時引用公開資料(10-Q)和機密資料(「我的部位」)。標為機密。</li>
+    <li><strong>本地模型先答。</strong>Llama 3.1 8B 讀 10-Q 的相關段落和她的持倉筆記。</li>
+    <li><strong>信心評分。</strong>token 對數機率偏低:財務表格對 8B 模型太難。</li>
+    <li><strong>Router 決定。</strong>信心低要升級,但機密不能整題送出去。所以拆題:10-Q 趨勢那部分是公開的,可以上雲;「我的部位」留本地。</li>
+    <li><strong>雲端呼叫。</strong>送出去的是:「摘要 Apple 最新 10-Q 中服務營收的趨勢與管理層說法。」沒有持倉、沒有策略、沒有名字。</li>
+    <li><strong>本地合併。</strong>雲端的摘要加上本地算的曝險,組成回答。</li>
+    <li><strong>稽核日誌。</strong>升級了、送了什麼、token 數、信心分數。</li>
+  </ol>
+  <p class="ctx">垂直,因為資料格式是領域專屬的,「機密」有領域定義(持倉和策略,不是泛用 PII),評測可以用有標準答案的金融問答集,demo 有故事。</p>
+  </div></details>
+
+  <details class="more"><summary>實例:橫向(淨化閘道)</summary><div class="body">
+  <p class="ctx">忘掉交易員。使用者是任何一家公司的 IT 部門,他們已經在用 ChatGPT 或 Claude 做客服回覆、合約摘要、內部問答。老闆的規則:客戶資料不能出去。他們在公司和雲端 API 之間裝一個代理層,所有應用都經過它。</p>
+  <ul>
+    <li><strong>客服。</strong>一封投訴信送去要回覆草稿:「王小明(帳號 4471-2209)投訴 9 月 3 日的轉帳 NT$85,000 沒有到帳,電話 0912-345-678。」Presidio 找到人名、帳號、金額、日期、電話,全部換成佔位符(PERSON_1、ACCOUNT_1、AMOUNT_1、DATE_1、PHONE_1);對照表留本地;雲端寫出「親愛的 PERSON_1,關於您 DATE_1 的 AMOUNT_1 轉帳⋯」;回覆在本地還原並掃描後客服才看到。</li>
+    <li><strong>法務。</strong>一份併購意向書送去做摘要。同樣流程,實體類型不同:ORG_1、ORG_2、AMOUNT_1。</li>
+    <li><strong>人資。</strong>一份含姓名和薪資的績效評語。文件來源標記是機密,閘道直接拒絕:「請用本地模型或移除機密內容」。</li>
+  </ul>
+  <p class="ctx">橫向,因為三個部門、三種文件,閘道一個都不認識。它只認實體類型和敏感度標記。它不回答問題,它是管子上的濾網。換公司換產業,程式碼不變,只改 recognizer 清單。量的是濾網本身:漏檢率、還原成功率、誤判率。</p>
+  </div></details>
+
+  <details class="more"><summary>兩個都做的話:技術堆疊</summary><div class="body">
+  <h3>橫向線:淨化閘道</h3>
+  <div class="tbl"><table>
+    <tr><th>元件</th><th>做什麼</th><th>技術</th></tr>
+    <tr><td>實體偵測</td><td>人名、組織、帳號、金額、電話、日期</td><td>Presidio(spaCy NER 加正規表示式);金融欄位(帳號格式、股票代號、持倉)寫自訂 recognizer</td></tr>
+    <tr><td>敏感度分級</td><td>每個請求貼 public / internal / confidential</td><td>先用規則:來源標記、偵測到的實體類型、使用者指定。之後可訓練小分類器</td></tr>
+    <tr><td>佔位符與對照表</td><td>PERSON_1 對應真名,同一對話內一致</td><td>每次請求一個 dict 或 SQLite,只存本地</td></tr>
+    <tr><td>最小化</td><td>只送問題需要的段落</td><td>切塊加關鍵字或 embedding 相似度</td></tr>
+    <tr><td>輸出檢查</td><td>雲端回覆進來先掃</td><td>同一套 Presidio 再跑一遍,加佔位符一致性檢查</td></tr>
+    <tr><td>出口代理</td><td>唯一對外通道,白名單加日誌</td><td>Docker Compose 雙網路;squid 或 mitmproxy</td></tr>
+    <tr><td>稽核日誌</td><td>送了什麼、花多少、怎麼決定</td><td>JSONL 或 SQLite;餵給 harness 和治理報告</td></tr>
+  </table></div>
+  <h3>垂直線:交易助理</h3>
+  <div class="tbl"><table>
+    <tr><th>元件</th><th>做什麼</th><th>技術</th></tr>
+    <tr><td>本地推論</td><td>8B 模型在沙盒跑</td><td>HF transformers 加 bitsandbytes 4-bit;Llama 3.1 8B 主、Qwen3 8B 輔</td></tr>
+    <tr><td>信心評分</td><td>決定要不要升級</td><td>期中用 token 對數機率;第 9 週後加 Semantic Entropy Probe;採樣集成當上限</td></tr>
+    <tr><td>Router</td><td>門檻加敏感度規則:本地、遮罩後上雲、或拒答</td><td>自寫 Python 模組</td></tr>
+    <tr><td>拆題</td><td>公開部分上雲,機密部分留下</td><td>先用規則(引用持倉的句子留下);模型拆題列 stretch</td></tr>
+    <tr><td>雲端呼叫</td><td>只在低信心且允許時</td><td>Anthropic 或 OpenAI SDK;客戶兩個帳號都有</td></tr>
+    <tr><td>資料</td><td>公開申報文件與行情</td><td>SEC EDGAR 免費 API(例如 edgartools);yfinance 或 Alpha Vantage 免費層</td></tr>
+    <tr><td>機密上下文</td><td>持倉、策略筆記</td><td>全部合成,LLM 生成</td></tr>
+    <tr><td>介面</td><td>給人用和給 harness 呼叫</td><td>CLI 加 FastAPI;不做 GUI</td></tr>
+    <tr><td>知識庫</td><td>讀多份申報文件</td><td>Chroma 加本地 embedding 模型;stretch</td></tr>
+  </table></div>
+  <h3>共用:評測 harness</h3>
+  <div class="tbl"><table>
+    <tr><th>元件</th><th>技術</th></tr>
+    <tr><td>三配置跑同一組題目</td><td>Python 迴圈;每題送雲端一次並快取</td></tr>
+    <tr><td>通用 benchmark</td><td>MMLU 子集、GSM8K,HF datasets 載入</td></tr>
+    <tr><td>領域 benchmark</td><td>FinanceBench 或 FinQA,有標準答案</td></tr>
+    <tr><td>校準指標</td><td>AUROC、ECE、AURC;scikit-learn 加自己寫</td></tr>
+    <tr><td>閘道指標</td><td>Presidio evaluation 模組算漏檢率;還原成功率自己算</td></tr>
+    <tr><td>安全測試</td><td>Kaggle prompt injection 資料集;紅隊腳本</td></tr>
+    <tr><td>成本與延遲</td><td>從稽核日誌算 token 數與時間</td></tr>
+  </table></div>
+  </div></details>
+
+  <details class="more"><summary>「兩個都做」怎麼呼應原始題目</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>Brief / SOW 要求</th><th>哪條線</th><th>怎麼回答</th></tr>
+    <tr><td>本地開源模型當主要智慧層</td><td>垂直</td><td>Llama 3.1 8B 先回答所有問題;雲端只是升級路徑</td></tr>
+    <tr><td>量測回覆的信心</td><td>垂直</td><td>token 對數機率與 SEP;harness 證明哪個訊號在 8B 上真的有用</td></tr>
+    <tr><td>智慧路由本地與雲端</td><td>兩者</td><td>Router 同時看信心(要不要升級)和敏感度(能不能升級);兩條線在這裡接起來</td></tr>
+    <tr><td>保護敏感資訊</td><td>橫向</td><td>分級、遮罩、還原、輸出檢查,每步有指標</td></tr>
+    <tr><td>評估第三方與國際模型風險</td><td>橫向</td><td>出口日誌就是證據:出去的只有佔位符。Qwen3 加供應鏈檢查</td></tr>
+    <tr><td>治理與安全控制</td><td>橫向</td><td>NIST AI RMF 對應表;稽核日誌實作 Measure 這一項</td></tr>
+    <tr><td>通用 benchmark、效能可比雲端(9/3)</td><td>共用</td><td>三配置在 MMLU 與 GSM8K 上的數字</td></tr>
+    <tr><td>成本是採用本地的主因(9/3)</td><td>共用</td><td>每題成本、升級率、升級率對準確率曲線</td></tr>
+    <tr><td>功能原型加評測框架(SOW 交付物 2、3)</td><td>兩者</td><td>交易助理是原型;harness 是框架</td></tr>
+    <tr><td>企業部署建議(SOW 交付物 6)</td><td>兩者</td><td>「何時本地、雲端、混合」的決策框架,數據來自 harness</td></tr>
+  </table></div>
+  <p class="rec"><mark class="hl-key">跟客戶說的一句話:題目要的是「本地優先、有信心分數、敏感資料不外流的助理」。橫向線交「敏感資料不外流」,垂直線交「本地優先加信心分數」,兩條線在 router 接起來,交易助理是第一個跑在上面的應用。</mark></p>
+  <p class="ctx">只做垂直:變成「做了一個金融 app」,治理和風險章節會很薄。只做橫向:沒有助理,brief 標題的 AI Assistant 交不出來。Brief 從頭到尾沒指定產業,它描述的是一個架構;橫向線是那個架構的核心能力,垂直線證明它能用。</p>
+  </div></details>
   <div class="fields">
     <div><label for="d1">團隊決定</label><textarea id="d1" data-store="d1" placeholder="同意的方向、反對意見、要跟客戶說什麼"></textarea></div>
     <div><label for="d1o">給客戶的說明由誰寫</label><input id="d1o" data-store="d1o" placeholder="姓名"></div>

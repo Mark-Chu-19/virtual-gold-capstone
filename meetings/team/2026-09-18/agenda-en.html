@@ -188,6 +188,86 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <li><strong>Benchmarks unchanged:</strong> MMLU subset and GSM8K stay. Add one finance set with ground truth (FinanceBench or FinQA) to answer Priya.</li>
     <li><mark class="hl-no">Do not build a trading app.</mark> No order execution, no live feeds, no backtesting engine. Question answering over filings and market data, with confidential context, is the whole scope.</li>
   </ul>
+    <details class="more"><summary>Worked example: the vertical (trading assistant)</summary><div class="body">
+  <p class="ctx">A trader at a small asset manager. On her machine: public data (SEC EDGAR 10-K / 10-Q / 8-K, market prices) and confidential data (positions, entry and exit rules, strategy notes such as "add NVDA to 8% if it breaks the 200-day").</p>
+  <p class="rec">She asks: <b>"Based on Apple's latest 10-Q, what does the services-revenue trend mean for my current position?"</b></p>
+  <ol>
+    <li><strong>Gateway classifies.</strong> The question cites both public data (the 10-Q) and confidential data ("my position"). Tagged confidential.</li>
+    <li><strong>Local model answers first.</strong> Llama 3.1 8B reads the relevant 10-Q passages and her position notes.</li>
+    <li><strong>Confidence is scored.</strong> Token log-prob comes out low: financial tables are hard for an 8B model.</li>
+    <li><strong>Router decides.</strong> Low confidence means escalate, but confidential means the whole question cannot leave. So the question is split: the 10-Q trend part is public and may go to the cloud; the "my position" part stays local.</li>
+    <li><strong>Cloud call.</strong> What leaves: "Summarize the services-revenue trend and management commentary in Apple's latest 10-Q." No positions, no strategy, no name.</li>
+    <li><strong>Local merge.</strong> The cloud summary plus the local exposure calculation become the answer.</li>
+    <li><strong>Audit log.</strong> Escalated, what was sent, tokens, confidence score.</li>
+  </ol>
+  <p class="ctx">Vertical because the data formats are domain-specific, "confidential" has a domain definition (positions and strategy, not generic PII), evaluation can use finance QA sets with ground truth, and the demo has a story.</p>
+  </div></details>
+
+  <details class="more"><summary>Worked example: the horizontal (sanitization gateway)</summary><div class="body">
+  <p class="ctx">Forget the trader. The user is any company's IT department that already calls ChatGPT or Claude for support replies, contract summaries, internal Q&amp;A. The boss's rule: customer data never leaves. They install a proxy layer between the company and the cloud API; every application passes through it.</p>
+  <ul>
+    <li><strong>Support.</strong> A complaint goes out for a reply draft: "Wang Xiaoming (account 4471-2209) reports the NT$85,000 transfer on Sep 3 did not arrive, phone 0912-345-678." Presidio finds name, account, amount, date, phone; all become placeholders (PERSON_1, ACCOUNT_1, AMOUNT_1, DATE_1, PHONE_1); the mapping table stays local; the cloud drafts "Dear PERSON_1, regarding your AMOUNT_1 transfer on DATE_1..."; the reply is re-identified locally and scanned before the agent sees it.</li>
+    <li><strong>Legal.</strong> An LOI goes out for a summary. Same flow, different entity types: ORG_1, ORG_2, AMOUNT_1.</li>
+    <li><strong>HR.</strong> A performance review with name and salary. The document's source tag is confidential, so the gate refuses: "use the local model or remove confidential content".</li>
+  </ul>
+  <p class="ctx">Horizontal because three departments, three document types, and the gate recognizes none of them. It only knows entity types and sensitivity tags. It answers nothing; it is a filter on the pipe. Change company or industry and the code stays; only the recognizer list changes. What gets measured is the filter: miss rate, re-identification success, false positives.</p>
+  </div></details>
+
+  <details class="more"><summary>If we do both: the tech stack</summary><div class="body">
+  <h3>Horizontal line: sanitization gateway</h3>
+  <div class="tbl"><table>
+    <tr><th>Component</th><th>Does</th><th>Tech</th></tr>
+    <tr><td>Entity detection</td><td>Names, orgs, accounts, amounts, phones, dates</td><td>Presidio (spaCy NER + regex); custom recognizers for finance fields (account formats, tickers, positions)</td></tr>
+    <tr><td>Sensitivity classification</td><td>Tag each request public / internal / confidential</td><td>Rules first: source tag, entity types found, user label. A small classifier later</td></tr>
+    <tr><td>Placeholders and mapping</td><td>PERSON_1 = real name, consistent within a conversation</td><td>Per-request dict or SQLite, local only</td></tr>
+    <tr><td>Minimization</td><td>Send only the passages the question needs</td><td>Chunking plus keyword or embedding similarity</td></tr>
+    <tr><td>Output check</td><td>Scan the cloud reply before the user sees it</td><td>Presidio again, plus placeholder consistency</td></tr>
+    <tr><td>Egress proxy</td><td>The only way out; allow-list and log</td><td>Docker Compose with two networks; squid or mitmproxy</td></tr>
+    <tr><td>Audit log</td><td>What was sent, cost, decision</td><td>JSONL or SQLite; feeds the harness and the governance report</td></tr>
+  </table></div>
+  <h3>Vertical line: trading assistant</h3>
+  <div class="tbl"><table>
+    <tr><th>Component</th><th>Does</th><th>Tech</th></tr>
+    <tr><td>Local inference</td><td>8B model in the sandbox</td><td>HF transformers + bitsandbytes 4-bit; Llama 3.1 8B primary, Qwen3 8B secondary</td></tr>
+    <tr><td>Confidence score</td><td>Decide whether to escalate</td><td>Token log-prob at midpoint; Semantic Entropy Probe after week 9; sampling ensemble as the upper bound</td></tr>
+    <tr><td>Router</td><td>Threshold plus sensitivity rule: local, redact-then-cloud, or refuse</td><td>Own Python module</td></tr>
+    <tr><td>Query split</td><td>Public part to the cloud, confidential part stays</td><td>Rules first (sentences citing positions stay); model-based split as stretch</td></tr>
+    <tr><td>Cloud call</td><td>Only on low confidence and when allowed</td><td>Anthropic or OpenAI SDK; the client has both accounts</td></tr>
+    <tr><td>Data</td><td>Public filings and prices</td><td>SEC EDGAR free API (e.g. edgartools); yfinance or Alpha Vantage free tier</td></tr>
+    <tr><td>Confidential context</td><td>Positions, strategy notes</td><td>All synthetic, LLM-generated</td></tr>
+    <tr><td>Interface</td><td>For people and for the harness</td><td>CLI plus FastAPI; no GUI</td></tr>
+    <tr><td>Knowledge base</td><td>Read many filings</td><td>Chroma with a local embedding model; stretch</td></tr>
+  </table></div>
+  <h3>Shared: evaluation harness</h3>
+  <div class="tbl"><table>
+    <tr><th>Component</th><th>Tech</th></tr>
+    <tr><td>Three configurations on one test set</td><td>Python loop; every query sent to the cloud once and cached</td></tr>
+    <tr><td>General benchmarks</td><td>MMLU subset, GSM8K via HF datasets</td></tr>
+    <tr><td>Domain benchmark</td><td>FinanceBench or FinQA, with ground truth</td></tr>
+    <tr><td>Calibration metrics</td><td>AUROC, ECE, AURC; scikit-learn plus own code</td></tr>
+    <tr><td>Gateway metrics</td><td>Presidio evaluation module for miss rate; re-identification success computed by us</td></tr>
+    <tr><td>Security tests</td><td>Kaggle prompt-injection set; red-team scripts</td></tr>
+    <tr><td>Cost and latency</td><td>Token counts and timings from the audit log</td></tr>
+  </table></div>
+  </div></details>
+
+  <details class="more"><summary>How "both" answers the original brief</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>Brief / SOW requirement</th><th>Line</th><th>How</th></tr>
+    <tr><td>Local open-source model as the primary intelligence layer</td><td>Vertical</td><td>Llama 3.1 8B answers everything first; the cloud is an escalation path</td></tr>
+    <tr><td>Measure confidence in generated responses</td><td>Vertical</td><td>Token log-prob and SEP; the harness shows which signal actually works at 8B</td></tr>
+    <tr><td>Intelligently route between local and cloud</td><td>Both</td><td>The router reads confidence (need to escalate?) and sensitivity (allowed to?); the two lines meet here</td></tr>
+    <tr><td>Protect sensitive information</td><td>Horizontal</td><td>Classification, redaction, re-identification, output check, each with a metric</td></tr>
+    <tr><td>Evaluate third-party and international model risk</td><td>Horizontal</td><td>The egress log is the evidence: only placeholders left. Qwen3 with supply-chain checks</td></tr>
+    <tr><td>Governance and security controls</td><td>Horizontal</td><td>NIST AI RMF mapping; the audit log implements the Measure function</td></tr>
+    <tr><td>General benchmarks, performance comparable to the cloud (Sep 3)</td><td>Shared</td><td>Three configurations on MMLU and GSM8K</td></tr>
+    <tr><td>Cost is the main driver for local (Sep 3)</td><td>Shared</td><td>Cost per query, escalation rate, escalation-vs-accuracy curve</td></tr>
+    <tr><td>Functional prototype + evaluation framework (SOW deliverables 2, 3)</td><td>Both</td><td>The trading assistant is the prototype; the harness is the framework</td></tr>
+    <tr><td>Enterprise deployment recommendations (SOW deliverable 6)</td><td>Both</td><td>The "when local, cloud, or hybrid" decision framework, backed by harness numbers</td></tr>
+  </table></div>
+  <p class="rec"><mark class="hl-key">One sentence for the client: the brief asks for a local-first assistant with a confidence score and no sensitive data leaving. The horizontal line delivers "no sensitive data leaving"; the vertical line delivers "local-first with a confidence score"; they meet in the router, and the trading assistant is the first application on top.</mark></p>
+  <p class="ctx">Only vertical: it becomes "we built a finance app" and the governance and risk chapters are thin. Only horizontal: no assistant, and the brief's title is not delivered. The brief never names an industry; it describes an architecture. The horizontal line is that architecture's core capability; the vertical line proves it works.</p>
+  </div></details>
   <div class="fields">
     <div><label for="d1">Team decision</label><textarea id="d1" data-store="d1" placeholder="Agreed direction, objections, what to tell the client"></textarea></div>
     <div><label for="d1o">Owner of the client write-up</label><input id="d1o" data-store="d1o" placeholder="Name"></div>
