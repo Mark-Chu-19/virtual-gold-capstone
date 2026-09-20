@@ -1,9 +1,6 @@
-"""Escalation rule shared by all three configurations.
-
-Design doc section 4.3: `escalate_X = conf_X < threshold_X`. Threshold
-calibration itself (feat/harness-threshold-calibration) is a separate,
-later branch — this just applies whatever threshold a ConfigSpec carries.
-"""
+"""Escalation rule shared by all signal variants (design doc §4.3:
+`escalate = confidence < threshold`). Threshold calibration is a separate
+branch (feat/harness-threshold-calibration)."""
 
 from __future__ import annotations
 

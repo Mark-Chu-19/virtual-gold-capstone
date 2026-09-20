@@ -1,14 +1,17 @@
 """Shared data structures for the confidence-scoring harness.
 
-See docs/confidence-harness-design-en.md section 4 for the design this
-implements: one shared sampling pass per query, three confidence-signal
-configurations (A/B/C) derived from that same pass.
+Vocabulary follows docs/confidence-harness-design-en.md: architecture §7's
+three *system configurations* (local-only, hybrid, cloud-only) come out of
+one sampling pass; A/B/C are *signal variants* that only exist inside the
+hybrid configuration.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
+
+SystemConfig = Literal["local-only", "cloud-only", "hybrid"]
 
 
 @dataclass(frozen=True)
@@ -35,11 +38,33 @@ class Sample:
 
 
 @dataclass(frozen=True)
+class CloudResponse:
+    """Cloud answer plus the token usage needed to price it."""
+
+    text: str
+    input_tokens: int
+    output_tokens: int
+
+
+@dataclass(frozen=True)
+class CloudPricing:
+    """Dollars per million tokens, used to turn token usage into cost per query."""
+
+    input_per_mtok: float
+    output_per_mtok: float
+
+    def cost(self, input_tokens: int, output_tokens: int) -> float:
+        return (
+            input_tokens * self.input_per_mtok + output_tokens * self.output_per_mtok
+        ) / 1_000_000
+
+
+@dataclass(frozen=True)
 class ConfidenceResult:
-    """What a confidence signal reports for one query: a score used to
-    decide escalation, and the answer this config would give if it did
-    *not* escalate (sample #1's text for A/B, the majority-vote answer
-    for a self-consistency-style C)."""
+    """What a signal variant reports for one query: a score used to decide
+    escalation, and the answer the variant gives if it does *not* escalate
+    (sample #1's text for A/B, the majority-vote answer for a
+    self-consistency-style C)."""
 
     confidence: float
     local_answer: str
@@ -50,15 +75,15 @@ class ConfidenceSignal(Protocol):
     feat/signal-sep-probe, feat/signal-sampling-ensemble) implements.
 
     `samples` is always the full shared batch; a signal that only needs
-    sample #1 (Config A, B) simply ignores the rest.
+    sample #1 (variants A, B) simply ignores the rest.
     """
 
     def score(self, samples: list[Sample]) -> ConfidenceResult: ...
 
 
 @dataclass(frozen=True)
-class ConfigSpec:
-    """One of the three configurations (A/B/C) from design doc section 4.1."""
+class SignalVariant:
+    """One of the hybrid configuration's confidence signals (A/B/C)."""
 
     name: str
     signal: ConfidenceSignal
@@ -66,27 +91,43 @@ class ConfigSpec:
 
 
 @dataclass(frozen=True)
-class ConfigResult:
-    """One row of the eventual 3x6 result table (design doc section 4.2),
-    minus the metrics that get aggregated across many queries — this is
-    the per-query record eval/calibration-metrics will consume."""
+class QueryResult:
+    """Per-query record for one system configuration (and, for hybrid, one
+    signal variant). eval/calibration-metrics aggregates these into the
+    §7 system metrics and the per-variant confidence metrics.
+
+    Latency is wall-clock seconds for this configuration's path: local
+    generation, plus signal scoring and the cloud call where the path
+    includes them. Cloud tokens and `cost_usd` are zero when the path
+    never reached the cloud.
+    """
 
     query_id: str
-    config_name: str
-    confidence: float
-    escalated: bool
-    final_answer: str
+    system_config: SystemConfig
+    variant: str | None
+    answer: str
     is_correct: bool
-    local_answer: str
-    local_is_correct: bool
+    local_answer: str | None
+    local_is_correct: bool | None
+    confidence: float | None
+    escalated: bool
+    latency_s: float
+    cloud_input_tokens: int
+    cloud_output_tokens: int
+    cost_usd: float | None
 
 
 @dataclass
 class HarnessRun:
-    """Accumulated per-query results for one evaluation set, one row list
-    per configuration name."""
+    """Every per-query record from one evaluation set."""
 
-    results: dict[str, list[ConfigResult]] = field(default_factory=dict)
+    results: list[QueryResult] = field(default_factory=list)
 
-    def add(self, result: ConfigResult) -> None:
-        self.results.setdefault(result.config_name, []).append(result)
+    def for_config(
+        self, system_config: SystemConfig, variant: str | None = None
+    ) -> list[QueryResult]:
+        return [
+            r
+            for r in self.results
+            if r.system_config == system_config and r.variant == variant
+        ]

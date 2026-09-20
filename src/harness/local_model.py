@@ -1,9 +1,9 @@
 """Local-model interface the harness generates samples through.
 
-feat/signal-* branches don't need this — they consume the `Sample` list
-the core loop already produced. This module only exists so
-`generate_shared_samples` has something typed to call, and so tests can
-supply a fake implementation instead of a real Ollama/vLLM backend.
+The real implementation is `harness.hf_local_model.HFTransformersModel`
+(HF transformers, per todo/TODO.md A1: the harness needs per-token
+logprobs and hidden states, which Ollama/llama.cpp/vLLM don't expose).
+Tests supply a fake instead.
 """
 
 from __future__ import annotations
@@ -15,7 +15,5 @@ from harness.types import Query, Sample
 
 class LocalModel(Protocol):
     def generate(self, query: Query, n: int, temperature: float) -> list[Sample]:
-        """Return `n` samples for `query`. Implementations wrap the actual
-        inference backend (Ollama, vLLM, ...); wiring one up is tracked in
-        todo/TODO.md item 11, not part of this branch."""
+        """Return `n` samples for `query`."""
         ...
