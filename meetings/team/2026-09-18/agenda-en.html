@@ -1,0 +1,403 @@
+<title>Sep 18 Team Meeting</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+
+.cat{display:flex;align-items:baseline;gap:12px;margin:44px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{margin:0}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item h3{font-family:var(--serif);font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 8px;font-weight:600}
+.item .ctx{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.item .rec{margin:0 0 6px;font-size:15px}
+.item .rec b{color:var(--hl-key)}
+.item ul{margin:4px 0 8px;padding-left:20px}
+.item li{margin-bottom:4px;font-size:15px}
+.fields{display:grid;grid-template-columns:1fr 160px 110px;gap:10px;margin-top:10px}
+.fields label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fields textarea,.fields input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.fields textarea{min-height:56px;resize:vertical}
+.fields textarea:focus,.fields input:focus{outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:600px){.fields{grid-template-columns:1fr}}
+.owners{width:100%}
+.owners td input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:6px 10px}
+.owners td:first-child{font-weight:600;white-space:nowrap}
+.out{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.out li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.out li:last-child{border-bottom:none}
+.out input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.out .who{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-top:4px}
+</style>
+<div class="page">
+<header>
+  <div class="eyebrow">Internal · CMU team only · not shared with the client</div>
+  <h1>Six things to settle before Friday</h1>
+  <dl class="meta">
+    <div><dt>Date</dt><dd>Thursday, September 18, 2026 · Week 4 of 15</dd></div>
+    <div><dt>Why now</dt><dd>The client deferred the use case on Sep 15; SOW, synthetic data and the demo all wait on it</dd></div>
+    <div><dt>Output</dt><dd>One email to the client by Friday, Sep 19</dd></div>
+  </dl>
+  <div class="toolbar">
+    <div class="btns"><button id="expand-all" type="button">Expand all</button><button id="collapse-all" type="button">Collapse all</button></div>
+    <div class="legend"><span><mark class="hl-key">Gold: recommendation</mark></span><span><mark class="hl-ask">Blue: decide or assign today</mark></span><span><mark class="hl-no">Red: do not do</mark></span></div>
+  </div>
+</header>
+
+<ol class="agenda">
+  <li><a href="#decide"><span class="n">A</span><span class="t">Decide</span><span class="m">use case · answer to Alex · 35 min</span></a></li>
+  <li><a href="#assign"><span class="n">B</span><span class="t">Assign</span><span class="m">owners · research · diagram · 15 min</span></a></li>
+  <li><a href="#check"><span class="n">C</span><span class="t">Check</span><span class="m">PR #2 · 5 min</span></a></li>
+  <li><a href="#admin"><span class="n">D</span><span class="t">Admin</span><span class="m">OneDrive · Slack · email · 5 min</span></a></li>
+  <li><a href="#friday"><span class="n">E</span><span class="t">By Friday</span><span class="m">what leaves the team</span></a></li>
+</ol>
+
+<details class="more"><summary>What the client said on Sep 15 (recap)</summary><div class="body">
+<div class="finding">
+  <div><div class="k">Use case</div>Deferred. Inderpal asked: vertical financial-services use case, or a horizontal sensitive-data sanitization application? He also proposed a concrete vertical: a <b>financial trading assistant</b> on public market data and company filings, where the trader's strategy stays local. Priya suggested retail. Decision due at the next client meeting; Inderpal wants the topic settled this week.</div>
+  <div><div class="k">Sensitivity gate</div>Alex questioned a strict binary gate and suggested partial prompt restriction, output censorship, or split routing. He wants to review the architecture diagram, specifically how the system decides what is sensitive and how it is parsed out.</div>
+  <div><div class="k">Resources</div>Inderpal confirmed OpenAI and Anthropic accounts are available to the team. Sandbox spec not discussed in detail. SOW signature waits for the use case.</div>
+  <div><div class="k">Accuracy</div>Priya asked how accuracy is assessed; Anmol said golden dataset or LLM-as-judge; Priya noted public datasets with ground truth exist. Matches our benchmark plan.</div>
+  <div><div class="k">Admin</div>Shared OneDrive folder (Inderpal sets up). Slack free plan expires in 30 days, $15/month to upgrade; Mark checks whether Ruth already has a subscription. Client asked for two research items: redaction tools, and financial data sources.</div>
+</div>
+</div></details>
+
+<div class="cat" id="decide"><h2>A · Decide</h2><span class="tag">35 min</span></div>
+
+<div class="item">
+  <h3>1 · Use case: vertical or horizontal</h3>
+  <p class="ctx">The client framed it as either/or. Our architecture already contains both: the gateway (sensitivity classification + de-identification round trip) is the horizontal capability; the full stack is the vertical application. Anmol said exactly this in the meeting.</p>
+  <p class="rec"><mark class="hl-key">Recommendation: answer "both", and take Inderpal's trading scenario as the vertical.</mark></p>
+  <ul>
+    <li><strong>Horizontal capability:</strong> sensitivity classification plus the de-identification round trip. Measurable on its own: PII-leak rate, Presidio evaluation, re-identification success rate. This is the block Alex wants to review.</li>
+    <li><strong>Vertical scenario:</strong> an assistant that answers questions about public company filings and market data, with the user's positions and strategy notes as confidential context. Public filings can go to the cloud; strategy never leaves; internal analysis is redacted before escalation. The three sensitivity levels are natural here, not forced.</li>
+    <li><strong>Why this over our old default (SMB document workflows):</strong> the client proposed it, so buy-in is high; all data is public (SEC EDGAR, market data); and the local-vs-cloud split has an obvious business reason.</li>
+    <li><strong>Benchmarks unchanged:</strong> MMLU subset and GSM8K stay. Add one finance set with ground truth (FinanceBench or FinQA) to answer Priya.</li>
+    <li><mark class="hl-no">Do not build a trading app.</mark> No order execution, no live feeds, no backtesting engine. Question answering over filings and market data, with confidential context, is the whole scope.</li>
+  </ul>
+    <details class="more"><summary>Worked example: the vertical (trading assistant)</summary><div class="body">
+  <p class="ctx">A trader at a small asset manager. On her machine: public data (SEC EDGAR 10-K / 10-Q / 8-K, market prices) and confidential data (positions, entry and exit rules, strategy notes such as "add NVDA to 8% if it breaks the 200-day").</p>
+  <p class="rec">She asks: <b>"Based on Apple's latest 10-Q, what does the services-revenue trend mean for my current position?"</b></p>
+  <ol>
+    <li><strong>Gateway classifies.</strong> The question cites both public data (the 10-Q) and confidential data ("my position"). Tagged confidential.</li>
+    <li><strong>Local model answers first.</strong> Llama 3.1 8B reads the relevant 10-Q passages and her position notes.</li>
+    <li><strong>Confidence is scored.</strong> Token log-prob comes out low: financial tables are hard for an 8B model.</li>
+    <li><strong>Router decides.</strong> Low confidence means escalate, but confidential means the whole question cannot leave. So the question is split: the 10-Q trend part is public and may go to the cloud; the "my position" part stays local.</li>
+    <li><strong>Cloud call.</strong> What leaves: "Summarize the services-revenue trend and management commentary in Apple's latest 10-Q." No positions, no strategy, no name.</li>
+    <li><strong>Local merge.</strong> The cloud summary plus the local exposure calculation become the answer.</li>
+    <li><strong>Audit log.</strong> Escalated, what was sent, tokens, confidence score.</li>
+  </ol>
+  <p class="ctx">Vertical because the data formats are domain-specific, "confidential" has a domain definition (positions and strategy, not generic PII), evaluation can use finance QA sets with ground truth, and the demo has a story.</p>
+  </div></details>
+
+  <details class="more"><summary>Worked example: the horizontal (sanitization gateway)</summary><div class="body">
+  <p class="ctx">Forget the trader. The user is any company's IT department that already calls ChatGPT or Claude for support replies, contract summaries, internal Q&amp;A. The boss's rule: customer data never leaves. They install a proxy layer between the company and the cloud API; every application passes through it.</p>
+  <ul>
+    <li><strong>Support.</strong> A complaint goes out for a reply draft: "Wang Xiaoming (account 4471-2209) reports the NT$85,000 transfer on Sep 3 did not arrive, phone 0912-345-678." Presidio finds name, account, amount, date, phone; all become placeholders (PERSON_1, ACCOUNT_1, AMOUNT_1, DATE_1, PHONE_1); the mapping table stays local; the cloud drafts "Dear PERSON_1, regarding your AMOUNT_1 transfer on DATE_1..."; the reply is re-identified locally and scanned before the agent sees it.</li>
+    <li><strong>Legal.</strong> An LOI goes out for a summary. Same flow, different entity types: ORG_1, ORG_2, AMOUNT_1.</li>
+    <li><strong>HR.</strong> A performance review with name and salary. The document's source tag is confidential, so the gate refuses: "use the local model or remove confidential content".</li>
+  </ul>
+  <p class="ctx">Horizontal because three departments, three document types, and the gate recognizes none of them. It only knows entity types and sensitivity tags. It answers nothing; it is a filter on the pipe. Change company or industry and the code stays; only the recognizer list changes. What gets measured is the filter: miss rate, re-identification success, false positives.</p>
+  </div></details>
+
+  <details class="more"><summary>If we do both: the tech stack</summary><div class="body">
+  <h3>Horizontal line: sanitization gateway</h3>
+  <div class="tbl"><table>
+    <tr><th>Component</th><th>Does</th><th>Tech</th></tr>
+    <tr><td>Entity detection</td><td>Names, orgs, accounts, amounts, phones, dates</td><td>Presidio (spaCy NER + regex); custom recognizers for finance fields (account formats, tickers, positions)</td></tr>
+    <tr><td>Sensitivity classification</td><td>Tag each request public / internal / confidential</td><td>Rules first: source tag, entity types found, user label. A small classifier later</td></tr>
+    <tr><td>Placeholders and mapping</td><td>PERSON_1 = real name, consistent within a conversation</td><td>Per-request dict or SQLite, local only</td></tr>
+    <tr><td>Minimization</td><td>Send only the passages the question needs</td><td>Chunking plus keyword or embedding similarity</td></tr>
+    <tr><td>Output check</td><td>Scan the cloud reply before the user sees it</td><td>Presidio again, plus placeholder consistency</td></tr>
+    <tr><td>Egress proxy</td><td>The only way out; allow-list and log</td><td>Docker Compose with two networks; squid or mitmproxy</td></tr>
+    <tr><td>Audit log</td><td>What was sent, cost, decision</td><td>JSONL or SQLite; feeds the harness and the governance report</td></tr>
+  </table></div>
+  <h3>Vertical line: trading assistant</h3>
+  <div class="tbl"><table>
+    <tr><th>Component</th><th>Does</th><th>Tech</th></tr>
+    <tr><td>Local inference</td><td>8B model in the sandbox</td><td>HF transformers + bitsandbytes 4-bit; Llama 3.1 8B primary, Qwen3 8B secondary</td></tr>
+    <tr><td>Confidence score</td><td>Decide whether to escalate</td><td>Token log-prob at midpoint; Semantic Entropy Probe after week 9; sampling ensemble as the upper bound</td></tr>
+    <tr><td>Router</td><td>Threshold plus sensitivity rule: local, redact-then-cloud, or refuse</td><td>Own Python module</td></tr>
+    <tr><td>Query split</td><td>Public part to the cloud, confidential part stays</td><td>Rules first (sentences citing positions stay); model-based split as stretch</td></tr>
+    <tr><td>Cloud call</td><td>Only on low confidence and when allowed</td><td>Anthropic or OpenAI SDK; the client has both accounts</td></tr>
+    <tr><td>Data</td><td>Public filings and prices</td><td>SEC EDGAR free API (e.g. edgartools); yfinance or Alpha Vantage free tier</td></tr>
+    <tr><td>Confidential context</td><td>Positions, strategy notes</td><td>All synthetic, LLM-generated</td></tr>
+    <tr><td>Interface</td><td>For people and for the harness</td><td>CLI plus FastAPI; no GUI</td></tr>
+    <tr><td>Knowledge base</td><td>Read many filings</td><td>Chroma with a local embedding model; stretch</td></tr>
+  </table></div>
+  <h3>Shared: evaluation harness</h3>
+  <div class="tbl"><table>
+    <tr><th>Component</th><th>Tech</th></tr>
+    <tr><td>Three configurations on one test set</td><td>Python loop; every query sent to the cloud once and cached</td></tr>
+    <tr><td>General benchmarks</td><td>MMLU subset, GSM8K via HF datasets</td></tr>
+    <tr><td>Domain benchmark</td><td>FinanceBench or FinQA, with ground truth</td></tr>
+    <tr><td>Calibration metrics</td><td>AUROC, ECE, AURC; scikit-learn plus own code</td></tr>
+    <tr><td>Gateway metrics</td><td>Presidio evaluation module for miss rate; re-identification success computed by us</td></tr>
+    <tr><td>Security tests</td><td>Kaggle prompt-injection set; red-team scripts</td></tr>
+    <tr><td>Cost and latency</td><td>Token counts and timings from the audit log</td></tr>
+  </table></div>
+  </div></details>
+
+  <details class="more"><summary>How "both" answers the original brief</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>Brief / SOW requirement</th><th>Line</th><th>How</th></tr>
+    <tr><td>Local open-source model as the primary intelligence layer</td><td>Vertical</td><td>Llama 3.1 8B answers everything first; the cloud is an escalation path</td></tr>
+    <tr><td>Measure confidence in generated responses</td><td>Vertical</td><td>Token log-prob and SEP; the harness shows which signal actually works at 8B</td></tr>
+    <tr><td>Intelligently route between local and cloud</td><td>Both</td><td>The router reads confidence (need to escalate?) and sensitivity (allowed to?); the two lines meet here</td></tr>
+    <tr><td>Protect sensitive information</td><td>Horizontal</td><td>Classification, redaction, re-identification, output check, each with a metric</td></tr>
+    <tr><td>Evaluate third-party and international model risk</td><td>Horizontal</td><td>The egress log is the evidence: only placeholders left. Qwen3 with supply-chain checks</td></tr>
+    <tr><td>Governance and security controls</td><td>Horizontal</td><td>NIST AI RMF mapping; the audit log implements the Measure function</td></tr>
+    <tr><td>General benchmarks, performance comparable to the cloud (Sep 3)</td><td>Shared</td><td>Three configurations on MMLU and GSM8K</td></tr>
+    <tr><td>Cost is the main driver for local (Sep 3)</td><td>Shared</td><td>Cost per query, escalation rate, escalation-vs-accuracy curve</td></tr>
+    <tr><td>Functional prototype + evaluation framework (SOW deliverables 2, 3)</td><td>Both</td><td>The trading assistant is the prototype; the harness is the framework</td></tr>
+    <tr><td>Enterprise deployment recommendations (SOW deliverable 6)</td><td>Both</td><td>The "when local, cloud, or hybrid" decision framework, backed by harness numbers</td></tr>
+  </table></div>
+  <p class="rec"><mark class="hl-key">One sentence for the client: the brief asks for a local-first assistant with a confidence score and no sensitive data leaving. The horizontal line delivers "no sensitive data leaving"; the vertical line delivers "local-first with a confidence score"; they meet in the router, and the trading assistant is the first application on top.</mark></p>
+  <p class="ctx">Only vertical: it becomes "we built a finance app" and the governance and risk chapters are thin. Only horizontal: no assistant, and the brief's title is not delivered. The brief never names an industry; it describes an architecture. The horizontal line is that architecture's core capability; the vertical line proves it works.</p>
+  </div></details>
+  <div class="fields">
+    <div><label for="d1">Team decision</label><textarea id="d1" data-store="d1" placeholder="Agreed direction, objections, what to tell the client"></textarea></div>
+    <div><label for="d1o">Owner of the client write-up</label><input id="d1o" data-store="d1o" placeholder="Name"></div>
+    <div><label for="d1d">Due</label><input id="d1d" data-store="d1d" value="Fri Sep 19"></div>
+  </div>
+</div>
+
+<div class="item">
+  <h3>2 · Answer to Alex: the gate is three-tier, not binary</h3>
+  <p class="ctx">Alex's three suggestions map onto things we already have or can add. State it plainly so the review goes to the right place.</p>
+  <p class="rec"><mark class="hl-key">Recommendation: reply with the tier table below and add output checking; list split routing as a stretch we will evaluate.</mark></p>
+  <div class="tbl">
+  <table>
+    <tr><th>Sensitivity</th><th>What happens</th><th>Alex's term</th></tr>
+    <tr><td><strong>Confidential</strong></td><td>Never leaves local, regardless of confidence. Answer locally or say "cannot answer locally".</td><td>the gate</td></tr>
+    <tr><td><strong>Internal</strong></td><td>Escalate only after redaction and minimization: placeholders for entities, only the chunks the question needs.</td><td>partial prompt restriction</td></tr>
+    <tr><td><strong>Public</strong></td><td>Escalate freely.</td><td>—</td></tr>
+    <tr><td><strong>All replies</strong></td><td>Re-identify locally; scan the cloud reply for leaked entities before it reaches the user (to add to architecture §8).</td><td>output censorship</td></tr>
+    <tr><td><strong>Stretch</strong></td><td>Split one query into a local part (strategy) and a cloud part (public data); merge locally.</td><td>split routing</td></tr>
+  </table>
+  </div>
+  <ul>
+    <li><mark class="hl-ask">Assign one person to extend Figure 3 with the classification rules</mark> (how a request gets its level: user tag, entity types found, source of the document) and send it to Alex by Friday.</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d2">Team decision</label><textarea id="d2" data-store="d2" placeholder="Agreed wording, anything to add or drop"></textarea></div>
+    <div><label for="d2o">Owner of the diagram</label><input id="d2o" data-store="d2o" placeholder="Name"></div>
+    <div><label for="d2d">Due</label><input id="d2d" data-store="d2d" value="Fri Sep 19"></div>
+  </div>
+</div>
+
+<div class="cat" id="assign"><h2>B · Assign</h2><span class="tag">15 min</span></div>
+
+<div class="item">
+  <h3>3 · Workstream owners (TODO A9)</h3>
+  <p class="ctx">Five workstreams, one owner each. Was due at the Sep 15 team meeting. <mark class="hl-ask">Fill every row today; nothing in week 4 starts without a name on it.</mark></p>
+  <div class="tbl">
+  <table class="owners">
+    <tr><th>Workstream</th><th>Scope (week 4–7)</th><th style="width:170px">Owner</th></tr>
+    <tr><td>Router and integration</td><td>Own Python router: confidence threshold + confidential-stays-local rule, cloud SDK call, CLI entry point</td><td><input data-store="w1" placeholder="Name"></td></tr>
+    <tr><td>Models and inference</td><td>HF transformers + bitsandbytes 4-bit on the sandbox, smoke test returning logprobs and hidden states, throughput and memory</td><td><input data-store="w2" placeholder="Name"></td></tr>
+    <tr><td>Confidence scoring and harness</td><td>Sampling core, benchmark loaders, metrics, midpoint pilot (PR #2)</td><td><input data-store="w3" value="Zhexuan"></td></tr>
+    <tr><td>Security and de-identification</td><td>Presidio gate, re-identification mapping table, output check, PII-leak and prompt-injection tests</td><td><input data-store="w4" placeholder="Name"></td></tr>
+    <tr><td>Synthetic data</td><td>Synthetic filings, strategy notes and queries with planted PII; finance benchmark set; lightest load, so also supports the harness or the midpoint deck</td><td><input data-store="w5" placeholder="Name"></td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="item">
+  <h3>4 · The two research items the client asked for</h3>
+  <p class="ctx">Both map onto a workstream. One page each, sources linked, due Friday so they go in the same email as the direction.</p>
+  <ul>
+    <li><strong>Redaction tools</strong> → security workstream. Presidio (our default), plus a scan of alternatives: spaCy NER pipelines, Microsoft Presidio evaluation results, commercial options (Private AI, Google DLP) for comparison only. Question to answer: what does Presidio miss on finance text, and what would we stack on top.</li>
+    <li><strong>Financial data sources</strong> → synthetic data workstream. SEC EDGAR (10-K, 10-Q, 8-K, free API), market data (e.g. Yahoo Finance or Alpha Vantage free tiers), and a finance QA benchmark with ground truth (FinanceBench, FinQA, TAT-QA). Question to answer: what is freely usable, what licence, and which set has answers we can score against.</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d4">Notes</label><textarea id="d4" data-store="d4" placeholder="Anything to add to either page"></textarea></div>
+    <div><label for="d4o">Owners</label><input id="d4o" data-store="d4o" placeholder="Security / Synthetic data"></div>
+    <div><label for="d4d">Due</label><input id="d4d" data-store="d4d" value="Fri Sep 19"></div>
+  </div>
+</div>
+
+<div class="cat" id="check"><h2>C · Check</h2><span class="tag">5 min</span></div>
+
+<div class="item">
+  <h3>5 · PR #2, confidence-harness design doc</h3>
+  <p class="ctx">Changes requested on Sep 14. No new commits since. The harness skeleton (TODO B13) is built on this doc, so it blocks week 4 for the harness workstream.</p>
+  <p class="rec"><mark class="hl-key">Ask Zhexuan directly whether anything is unclear. Only two changes are required to merge:</mark></p>
+  <ul>
+    <li>State that the Semantic Entropy Probe needs hidden states, build the sampling core on HF transformers, and schedule signal B and C for weeks 9–11.</li>
+    <li>Rename the "six metrics" to "six confidence metrics" and say the harness still records architecture §7's six system metrics.</li>
+    <li>Links in the doc point at <code>architecture-v0.2-en.md</code>; the file is now <code>docs/architecture/architecture-v0.3-en.md</code>.</li>
+    <li>The repo was reorganized on Sep 18: the design doc and the literature review both belong in <code>docs/research/</code>, not <code>docs/</code> root or <code>reference/team/</code>.</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d5">Status</label><textarea id="d5" data-store="d5" placeholder="Blocked on what, revised by when"></textarea></div>
+    <div><label for="d5o">Owner</label><input id="d5o" data-store="d5o" value="Zhexuan"></div>
+    <div><label for="d5d">Due</label><input id="d5d" data-store="d5d" placeholder="Date"></div>
+  </div>
+</div>
+
+<div class="cat" id="admin"><h2>D · Admin</h2><span class="tag">5 min</span></div>
+
+<div class="item">
+  <h3>6 · Three small things</h3>
+  <ul>
+    <li><strong>OneDrive shared folder.</strong> Inderpal sets it up. When the link arrives, the live document there is the client-facing copy; GitHub stays the source of truth for the team. Someone owns keeping the two in sync.</li>
+    <li><strong>Slack.</strong> Free plan expires in about 30 days; $15/month to upgrade. <mark class="hl-ask">Mark confirms with Ruth whether a subscription already exists</mark> before anyone pays.</li>
+    <li><strong>Email to the client by Friday.</strong> Contents: the direction from item 1, the tier table and diagram from item 2, the two one-pagers from item 4, and the questions we still need answered (sandbox spec and access, which of the two API accounts to use, sample document formats).</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d6">Notes</label><textarea id="d6" data-store="d6" placeholder="Who syncs OneDrive, Slack outcome"></textarea></div>
+    <div><label for="d6o">Email owner</label><input id="d6o" data-store="d6o" value="Mark"></div>
+    <div><label for="d6d">Due</label><input id="d6d" data-store="d6d" value="Fri Sep 19"></div>
+  </div>
+</div>
+
+<div class="cat" id="friday"><h2>E · By Friday, Sep 19</h2><span class="tag">what leaves the team</span></div>
+<ul class="out">
+  <li><input type="checkbox" id="o1" data-store="o1"><label for="o1">Use-case direction written up for the client (item 1)</label><span class="who">owner from item 1</span></li>
+  <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">Figure 3 extended with classification rules, sent to Alex (item 2)</label><span class="who">owner from item 2</span></li>
+  <li><input type="checkbox" id="o3" data-store="o3"><label for="o3">Redaction-tools one-pager (item 4)</label><span class="who">security</span></li>
+  <li><input type="checkbox" id="o4" data-store="o4"><label for="o4">Financial-data-sources one-pager (item 4)</label><span class="who">synthetic data</span></li>
+  <li><input type="checkbox" id="o5" data-store="o5"><label for="o5">PR #2 revised and merged (item 5)</label><span class="who">Zhexuan · Mark</span></li>
+  <li><input type="checkbox" id="o6" data-store="o6"><label for="o6">Slack subscription status confirmed (item 6)</label><span class="who">Mark</span></li>
+  <li><input type="checkbox" id="o7" data-store="o7"><label for="o7">One email to the client with all of the above (item 6)</label><span class="who">Mark</span></li>
+</ul>
+
+<div class="after">
+  <strong>After the meeting:</strong> decisions go to <code>todo/TODO.md</code> (A8, A9, new item for the sensitivity tiers), the decision log, and architecture v0.3 §10; the client email is drafted from items 1, 2 and 4.
+</div>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-team-2026-09-18:';
+  function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
+  var all=document.querySelectorAll('details.more');
+  document.getElementById('expand-all').addEventListener('click',function(){all.forEach(function(d){d.open=true})});
+  document.getElementById('collapse-all').addEventListener('click',function(){all.forEach(function(d){d.open=false})});
+  document.querySelectorAll('[data-store]').forEach(function(el){
+    var k=el.getAttribute('data-store');
+    if(el.type==='checkbox'){
+      el.checked=get(k)==='1';
+      el.addEventListener('change',function(){set(k,el.checked?'1':'0')});
+    }else{
+      var v=get(k); if(v!==null) el.value=v;
+      el.addEventListener('input',function(){set(k,el.value)});
+    }
+  });
+})();
+</script>
