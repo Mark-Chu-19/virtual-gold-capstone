@@ -20,6 +20,9 @@ class CloudModel(Protocol):
         ...
 
 
+# TODO(cloud provider, todo/TODO.md A6): replace with a provider SDK wrapper once chosen.
+# TODO(de-identification, todo/TODO.md A4): redaction/re-identification is not applied to
+# the cloud call; benchmark queries are public data, but the router branch must add it.
 class UnconfiguredCloudModel:
     """Default `CloudModel`: raises on use, so callers must pass a real (or
     fake, in tests) cloud model rather than silently getting an empty answer."""

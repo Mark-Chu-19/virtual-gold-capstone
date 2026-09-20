@@ -3,6 +3,13 @@ hidden state for every sample (todo/TODO.md A1, design doc §2 footnote).
 
 torch/transformers are imported lazily so the rest of the harness (and its
 tests) runs on laptops without a GPU stack. Install with `pip install -e ".[hf]"`.
+
+NOT YET RUN against a real model (no GPU stack where this was written). Verify
+on the sandbox with the TODO B12 smoke test before relying on it, in
+particular the hidden-state indexing in `generate` (each step's state belongs to
+the token fed in at that step, so this may be one token before the last
+generated one; check against the SEP reference code) and which `hidden_layer`
+a SEP should use (TODO F29).
 """
 
 from __future__ import annotations
@@ -10,6 +17,7 @@ from __future__ import annotations
 from harness.types import Query, Sample
 
 
+# TODO(sandbox, todo/TODO.md B12): needs the GPU sandbox to run; verify with scripts/hf_smoke_test.py.
 class HFTransformersModel:
     def __init__(
         self,
@@ -74,8 +82,8 @@ class HFTransformersModel:
             length = max(length, 1)
             text = self._tokenizer.decode(tokens[:length], skip_special_tokens=True)
             logprobs = [float(x) for x in transition_scores[i, :length].cpu()]
-            # hidden_states[step][layer]: step 0 covers the prompt (take its
-            # last position), later steps hold one new token each.
+            # Unverified: hidden_states[step][layer]; step 0 covers the prompt
+            # (last position taken), later steps hold one new token each.
             step = length - 1
             layer_states = out.hidden_states[step][self._hidden_layer]
             hidden = layer_states[i, -1, :].float().cpu()

@@ -28,6 +28,7 @@ from harness.types import (
     SignalVariant,
 )
 
+# TODO(eval/benchmark-loaders): real per-dataset correctness functions plug in here.
 CorrectnessFn = Callable[[str, object], bool]
 
 
@@ -115,6 +116,10 @@ def run_query(
     return results
 
 
+# TODO(eval/calibration-metrics): consume HarnessRun to compute the §7 system metrics and
+# the per-variant confidence metrics (ECE, AUROC, AURC, cost multiplier); nothing aggregates yet.
+# TODO(feat/signal-*): no ConfidenceSignal implementations exist yet; callers pass their own.
+# TODO(feat/harness-threshold-calibration): SignalVariant.threshold is supplied by the caller.
 def run_eval_set(
     queries: Sequence[Query],
     local_model: LocalModel,

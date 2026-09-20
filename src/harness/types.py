@@ -47,6 +47,7 @@ class CloudResponse:
 
 
 @dataclass(frozen=True)
+# TODO(cloud provider, todo/TODO.md A6): no default rates; supply the chosen provider's prices.
 class CloudPricing:
     """Dollars per million tokens, used to turn token usage into cost per query."""
 
