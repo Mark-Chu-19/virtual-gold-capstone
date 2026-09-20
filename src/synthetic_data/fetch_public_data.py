@@ -88,7 +88,17 @@ def fetch_filing_text(cik, filing):
     resp = requests.get(url, headers=SEC_HEADERS, timeout=20)
     resp.raise_for_status()
     if BeautifulSoup is not None and filing["primary_doc"].endswith((".htm", ".html")):
-        text = BeautifulSoup(resp.text, "html.parser").get_text(separator="\n")
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # Modern SEC filings are inline XBRL: an <ix:header> block holds every
+        # tagged accounting fact, date, and dimension member as raw metadata.
+        # It never renders in a browser, but a plain get_text() pulls it in
+        # anyway and buries the real narrative under thousands of lines of
+        # "us-gaap:...", "P1Y", context IDs, etc. Strip it before extracting.
+        for tag in soup.find_all(["ix:header", "ix:hidden", "ix:references", "ix:resources"]):
+            tag.decompose()
+        for tag in soup.select('[style*="display:none"], [style*="display: none"]'):
+            tag.decompose()
+        text = soup.get_text(separator="\n")
         # Collapse the excess blank lines HTML-to-text conversion leaves behind.
         text = "\n".join(line.strip() for line in text.splitlines() if line.strip())
     else:
