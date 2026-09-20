@@ -20,7 +20,7 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Scope of Work revised (`docs/sow/Scope of Work v2.docx`, changes in red); cost line still needs the client's answer | v2 done, 2026-09-10 |
 | Team decision: no local LLM on laptops; models run on a cloud GPU sandbox simulating on-premises | Decided, 2026-09-10 |
 | Client meeting Sep 15: OpenAI and Anthropic accounts confirmed; use case deferred (vertical finance vs horizontal data sanitization; Inderpal proposed a trading assistant on public filings); Alex to review the sensitivity gate; sandbox spec and SOW cost line still open | Notes in `meetings/client/2026-09-15/` |
-| Team meeting Sep 18: settle the use-case answer, workstream owners, two research one-pagers; one email to the client by Sep 19 | Agenda in `meetings/team/2026-09-18/` |
+| Team meeting Sep 19: settle the use-case answer, workstream owners, two research one-pagers; one email to the client before the Sep 22 client meeting | Agenda in `meetings/team/2026-09-19/` |
 | Confidence-scoring harness design doc (PR #2, Zhexuan Ye) | Under review, changes requested 2026-09-14 |
 | Week 4: sandbox setup, harness skeleton (sampling core, loaders, metrics), workstream research one-pagers | In progress |
 | Week 7: midpoint presentation with first local-only / hybrid / cloud-only numbers on MMLU subset and GSM8K (scope in `todo/TODO.md` A7) | Target |
@@ -70,8 +70,9 @@ Sections in the document:
 │   ├── client/                    meetings with Virtual Gold
 │   │   ├── 2026-09-03/            notes-gemini-en.docx
 │   │   └── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
-│   └── team/                      internal team meetings, not shared with the client
-│       └── 2026-09-18/            agenda-en.html · agenda-zh.html
+│   ├── team/                      internal team meetings, not shared with the client
+│   │   └── 2026-09-19/            agenda-en.html · agenda-zh.html
+│   └── professor/                 weekly check-ins with the faculty advisor
 ├── todo/                          team to-do: open decisions, pending actions, decision log
 │   ├── TODO.md                    English
 │   └── TODO-zh.md                 Traditional Chinese
@@ -90,6 +91,16 @@ Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, resea
 - Every bilingual file carries a language suffix: `-en` or `-zh`. The exception is `todo/TODO.md`, which is English (`TODO-zh.md` is the Chinese copy).
 - Meeting folders are `YYYY-MM-DD`. Inside: `agenda-<lang>.html` for what we bring, `notes-<source>-<lang>` for what comes out (`gemini` = the auto-generated notes, `zh` = our translation).
 - Versions live in the filename: `architecture-v0.3-*`, `Scope of Work v2`. A new version is a new file; old versions stay for history.
+
+## Meeting cadence
+
+| Meeting | When | Folder |
+|---|---|---|
+| Client meeting (Virtual Gold) | Monday 18:00–19:00 | `meetings/client/` |
+| Internal meeting with the professor | Tuesday 17:00–18:20 | `meetings/professor/` |
+| Internal team meeting | Friday 15:30–16:30 | `meetings/team/` |
+
+Agendas go up before the meeting, notes go in after, both in the meeting's own dated folder.
 
 ## Timeline (follows the course structure, not negotiable)
 

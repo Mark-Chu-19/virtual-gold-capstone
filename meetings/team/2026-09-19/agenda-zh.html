@@ -1,4 +1,4 @@
-<title>9/18 團隊會議</title>
+<title>9/19 團隊會議</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{
@@ -145,11 +145,11 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
 <div class="page">
 <header>
   <div class="eyebrow">內部 · 僅限 CMU 團隊 · 不給客戶</div>
-  <h1>週五前要定的六件事</h1>
+  <h1>週一客戶會議前要定的六件事</h1>
   <dl class="meta">
-    <div><dt>日期</dt><dd>2026 年 9 月 18 日(四)· 第 4 週,共 15 週</dd></div>
+    <div><dt>日期</dt><dd>2026 年 9 月 19 日(五)· 第 4 週,共 15 週</dd></div>
     <div><dt>為什麼是現在</dt><dd>客戶 9/15 把使用情境延後了;SOW、合成資料、demo 都卡在它後面</dd></div>
-    <div><dt>產出</dt><dd>9 月 19 日(五)前給客戶一封 email</dd></div>
+    <div><dt>產出</dt><dd>9 月 22 日(一)18:00 客戶會議前給客戶一封 email</dd></div>
   </dl>
   <div class="toolbar">
     <div class="btns"><button id="expand-all" type="button">全部展開</button><button id="collapse-all" type="button">全部收合</button></div>
@@ -162,7 +162,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   <li><a href="#assign"><span class="n">B</span><span class="t">指派</span><span class="m">負責人 · 研究 · 架構圖 · 15 分</span></a></li>
   <li><a href="#check"><span class="n">C</span><span class="t">確認</span><span class="m">PR #2 · 5 分</span></a></li>
   <li><a href="#admin"><span class="n">D</span><span class="t">行政</span><span class="m">OneDrive · Slack · email · 5 分</span></a></li>
-  <li><a href="#friday"><span class="n">E</span><span class="t">週五前</span><span class="m">要送出團隊的東西</span></a></li>
+  <li><a href="#friday"><span class="n">E</span><span class="t">週一前</span><span class="m">要送出團隊的東西</span></a></li>
 </ol>
 
 <details class="more"><summary>客戶 9/15 說了什麼(回顧)</summary><div class="body">
@@ -271,7 +271,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   <div class="fields">
     <div><label for="d1">團隊決定</label><textarea id="d1" data-store="d1" placeholder="同意的方向、反對意見、要跟客戶說什麼"></textarea></div>
     <div><label for="d1o">給客戶的說明由誰寫</label><input id="d1o" data-store="d1o" placeholder="姓名"></div>
-    <div><label for="d1d">期限</label><input id="d1d" data-store="d1d" value="9/19(五)"></div>
+    <div><label for="d1d">期限</label><input id="d1d" data-store="d1d" value="9/22(一)"></div>
   </div>
 </div>
 
@@ -295,7 +295,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   <div class="fields">
     <div><label for="d2">團隊決定</label><textarea id="d2" data-store="d2" placeholder="同意的說法、要加或要拿掉的"></textarea></div>
     <div><label for="d2o">架構圖負責人</label><input id="d2o" data-store="d2o" placeholder="姓名"></div>
-    <div><label for="d2d">期限</label><input id="d2d" data-store="d2d" value="9/19(五)"></div>
+    <div><label for="d2d">期限</label><input id="d2d" data-store="d2d" value="9/22(一)"></div>
   </div>
 </div>
 
@@ -318,7 +318,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
 
 <div class="item">
   <h3>4 · 客戶要的兩份研究</h3>
-  <p class="ctx">兩份各對到一條工作流。各一頁、附來源連結,週五前交,跟方向放同一封 email。</p>
+  <p class="ctx">兩份各對到一條工作流。各一頁、附來源連結,週一前交,跟方向放同一封 email。</p>
   <ul>
     <li><strong>遮罩工具</strong> → 安全工作流。Presidio(我們的預設),加上替代方案掃描:spaCy NER 管線、Presidio 的評測結果、商用方案(Private AI、Google DLP)僅供比較。要回答的問題:Presidio 在金融文字上漏什麼,我們要疊什麼在上面。</li>
     <li><strong>金融資料來源</strong> → 合成資料工作流。SEC EDGAR(10-K、10-Q、8-K,免費 API)、市場資料(例如 Yahoo Finance 或 Alpha Vantage 免費層)、附標準答案的金融問答 benchmark(FinanceBench、FinQA、TAT-QA)。要回答的問題:哪些可以免費用、授權是什麼、哪一套有可以評分的答案。</li>
@@ -326,7 +326,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   <div class="fields">
     <div><label for="d4">備註</label><textarea id="d4" data-store="d4" placeholder="兩份各要補什麼"></textarea></div>
     <div><label for="d4o">負責人</label><input id="d4o" data-store="d4o" placeholder="安全 / 合成資料"></div>
-    <div><label for="d4d">期限</label><input id="d4d" data-store="d4d" value="9/19(五)"></div>
+    <div><label for="d4d">期限</label><input id="d4d" data-store="d4d" value="9/22(一)"></div>
   </div>
 </div>
 
@@ -356,16 +356,16 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   <ul>
     <li><strong>OneDrive 共用資料夾。</strong>Inderpal 建。連結來了之後,那裡的即時文件是給客戶看的版本;GitHub 仍是團隊的 source of truth。要有人負責兩邊同步。</li>
     <li><strong>Slack。</strong>免費方案約 30 天後到期,升級每月 15 美元。<mark class="hl-ask">Mark 先向 Ruth 確認是否已有訂閱</mark>,再決定誰付。</li>
-    <li><strong>週五前給客戶的 email。</strong>內容:第 1 項的方向、第 2 項的分級表與架構圖、第 4 項的兩份一頁摘要,以及我們還需要的答案(沙盒規格與存取、用哪一個 API 帳號、範例文件格式)。</li>
+    <li><strong>週一會議前給客戶的 email。</strong>內容:第 1 項的方向、第 2 項的分級表與架構圖、第 4 項的兩份一頁摘要,以及我們還需要的答案(沙盒規格與存取、用哪一個 API 帳號、範例文件格式)。</li>
   </ul>
   <div class="fields">
     <div><label for="d6">備註</label><textarea id="d6" data-store="d6" placeholder="誰同步 OneDrive、Slack 結果"></textarea></div>
     <div><label for="d6o">Email 負責人</label><input id="d6o" data-store="d6o" value="Mark"></div>
-    <div><label for="d6d">期限</label><input id="d6d" data-store="d6d" value="9/19(五)"></div>
+    <div><label for="d6d">期限</label><input id="d6d" data-store="d6d" value="9/22(一)"></div>
   </div>
 </div>
 
-<div class="cat" id="friday"><h2>E · 9 月 19 日(五)前</h2><span class="tag">要送出團隊的東西</span></div>
+<div class="cat" id="friday"><h2>E · 9 月 22 日(一)客戶會議前</h2><span class="tag">要送出團隊的東西</span></div>
 <ul class="out">
   <li><input type="checkbox" id="o1" data-store="o1"><label for="o1">使用情境方向寫成給客戶的說明(第 1 項)</label><span class="who">第 1 項負責人</span></li>
   <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">第三張圖加上分級規則,寄給 Alex(第 2 項)</label><span class="who">第 2 項負責人</span></li>
@@ -383,7 +383,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
 
 <script>
 (function(){
-  var KEY='vg-team-2026-09-18-zh:';
+  var KEY='vg-team-2026-09-19-zh:';
   function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
   function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
   var all=document.querySelectorAll('details.more');
