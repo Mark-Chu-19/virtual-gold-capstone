@@ -210,7 +210,8 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <li><mark class="hl-key">Four layers, only the last one is a judgement:</mark> source (position store is confidential by construction, EDGAR is public by construction), pattern (checksums and fixed formats), written policy (one page, reviewable by the client), and judgement only for the trader's free-text notes, which are dropped by default.</li>
     <li><mark class="hl-key">Two scores, not one gate:</mark> sensitivity and task-necessity, driving keep / abstract / remove. A sensitivity-only gate keeps 4% of task-critical content; two scores keep 95% (MINIM, ICML 2026).</li>
     <li>Alex's three alternatives, partial restriction, output censorship, split routing: all in the design, timed per point (a) above.</li>
-    <li>Measurement: detector accuracy is not privacy; we report per-entity-type recall and multi-turn leakage across a working session.</li>
+    <li><mark class="hl-key">Three design conclusions:</mark> whatever authorizes a release is deterministic code, never a model (a model can be argued into anything by text it reads); the disclosure rules are fixed from the question before retrieval, so text planted in a filing cannot steer them; and disclosure is budgeted across the whole session, since twenty harmless questions can still reveal the book.</li>
+    <li>Measurement, five separate numbers rather than one accuracy: per-category detection weighted toward misses, leak rate at the network boundary with planted canaries, answer quality with protection on vs off, attack success vs unsafe actions counted separately, and disclosure across a whole session.</li>
     <li><mark class="hl-ask">Ask Alex: is this the review he wanted, and what should the written policy page cover for his use?</mark></li>
   </ul>
   <div class="fields">
