@@ -1,6 +1,6 @@
 # Research and design documents
 
-One document per workstream question, written by the workstream owner, in English with a Traditional Chinese copy where the team needs one (`-en` / `-zh` suffix).
+One document per workstream question, written by the workstream owner, in English with a Traditional Chinese copy where the team needs one (`-en` / `-zh` suffix). Markdown preferred; `.docx` is fine when that is what the author works in.
 
 What belongs here:
 

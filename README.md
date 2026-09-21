@@ -68,11 +68,12 @@ Sections in the document:
 │   ├── sow/                       Scope of Work drafts
 │   │   ├── Scope of Work v1.docx        original draft (W3)
 │   │   └── Scope of Work v2.docx        revised, changes in red; sign this one once the cost line is filled in
-│   └── research/                  one-pagers and design docs per workstream (see its README)
+│   └── research/                  research reports and design docs per workstream, md or docx (see its README)
 ├── meetings/                      one folder per meeting, named YYYY-MM-DD: the agenda we bring plus the notes that come out
 │   ├── client/                    meetings with Virtual Gold
 │   │   ├── 2026-09-03/            notes-gemini-en.docx
-│   │   └── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
+│   │   ├── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
+│   │   └── 2026-09-21/            briefing-security-deidentification-en.html (Yudi)
 │   ├── team/                      internal team meetings, not shared with the client
 │   │   └── 2026-09-18/            agenda-en.html · agenda-zh.html
 │   └── professor/                 weekly check-ins with the faculty advisor
@@ -92,7 +93,7 @@ Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, resea
 ### Naming conventions
 
 - Every bilingual file carries a language suffix: `-en` or `-zh`. The exception is `todo/TODO.md`, which is English (`TODO-zh.md` is the Chinese copy).
-- Meeting folders are `YYYY-MM-DD`. Inside: `agenda-<lang>.html` for what we bring, `notes-<source>-<lang>` for what comes out (`gemini` = the auto-generated notes, `zh` = our translation).
+- Meeting folders are `YYYY-MM-DD`. Inside: `agenda-<lang>.html` for the running order, `briefing-<topic>-<lang>.html` for a presentation piece one workstream brings, `notes-<source>-<lang>` for what comes out (`gemini` = the auto-generated notes, `zh` = our translation).
 - Versions live in the filename: `architecture-v0.3-*`, `Scope of Work v2`. A new version is a new file; old versions stay for history.
 
 ## Meeting cadence

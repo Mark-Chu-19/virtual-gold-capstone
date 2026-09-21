@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root { color-scheme: light dark; }
+  html, body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>Security &amp; De-identification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ink:#1C2128; --ink-2:#3D4650; --muted:#6E7278;
+    --paper:#F6F5F3; --surface:#FFFFFF; --rule:#DEDBD5; --rule-2:#EBE8E3;
+    --risk:#7A2E2E; --safe:#2C5545; --safe-bg:#ECF1EE;
+    --violet:#4A3A6B; --violet-bg:#F0EDF5;
+    --amber:#7A5A18; --amber-bg:#F7F1E2;
+    --serif:"Spectral",Georgia,serif;
+    --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:#E8E6E1; --ink-2:#BFC3C8; --muted:#8E9298;
+      --paper:#16191D; --surface:#1D2126; --rule:#333940; --rule-2:#272C32;
+      --risk:#D99A94; --safe:#8FBFA8; --safe-bg:#1A2622;
+      --violet:#B3A3D1; --violet-bg:#201D2A;
+      --amber:#D6B872; --amber-bg:#262017;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink:#E8E6E1; --ink-2:#BFC3C8; --muted:#8E9298;
+    --paper:#16191D; --surface:#1D2126; --rule:#333940; --rule-2:#272C32;
+    --risk:#D99A94; --safe:#8FBFA8; --safe-bg:#1A2622;
+    --violet:#B3A3D1; --violet-bg:#201D2A;
+    --amber:#D6B872; --amber-bg:#262017;
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    background:var(--paper); color:var(--ink); font-family:var(--sans);
+    font-size:16px; line-height:1.6; margin:0;
+    padding-inline:20px; padding-block:0 64px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:800px; margin:0 auto; }
+
+  .masthead { padding-block:46px 24px; border-bottom:2px solid var(--ink); }
+  .eyebrow { font-family:var(--mono); font-size:11.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted); margin:0 0 15px; }
+  h1 { font-family:var(--serif); font-weight:600; font-size:clamp(31px,6.2vw,44px);
+    line-height:1.1; letter-spacing:-.015em; margin:0 0 11px; text-wrap:balance; }
+  .standfirst { font-size:17.5px; color:var(--ink-2); margin:0 0 20px; max-width:54ch; }
+  .meta { display:flex; flex-wrap:wrap; gap:5px 24px; font-family:var(--mono);
+    font-size:12px; color:var(--muted); }
+  .meta b { color:var(--ink-2); font-weight:500; }
+
+  section { padding-block:38px 0; }
+  h2 { font-family:var(--serif); font-weight:600; font-size:23px;
+    letter-spacing:-.01em; margin:0 0 14px; text-wrap:balance; }
+  p { margin:0 0 13px; max-width:64ch; text-wrap:pretty; }
+  strong { font-weight:600; }
+
+  .specimen { background:var(--surface); border:1px solid var(--rule);
+    border-left:3px solid var(--risk); padding:16px 19px; margin:0 0 15px; }
+  .specimen .q { font-family:var(--serif); font-size:19px; line-height:1.4;
+    margin:0 0 7px; max-width:none; }
+  .specimen .a { font-size:14px; color:var(--muted); margin:0; max-width:none; }
+
+  .stats { display:grid; grid-template-columns:repeat(2,1fr); gap:1px;
+    background:var(--rule-2); border:1px solid var(--rule); }
+  .stat { background:var(--surface); padding:15px 17px 14px; }
+  .stat .n { font-family:var(--mono); font-weight:500; font-size:25px;
+    letter-spacing:-.02em; color:var(--risk); font-variant-numeric:tabular-nums;
+    display:block; line-height:1.1; margin-bottom:6px; }
+  .stat.good .n { color:var(--safe); }
+  .stat p { font-size:14px; color:var(--ink-2); margin:0; max-width:none; }
+  .stat .src { font-family:var(--mono); font-size:10.5px; color:var(--muted);
+    display:block; margin-top:8px; }
+
+  .figure { margin:2px 0 22px; overflow-x:auto; }
+  .figure svg { width:100%; min-width:740px; height:auto; display:block; }
+  .d-box { fill:var(--surface); stroke:var(--rule); stroke-width:1.5; }
+  .d-box.gate { fill:var(--safe-bg); stroke:var(--safe); stroke-width:2.5; }
+  .d-box.store { fill:var(--violet-bg); stroke:var(--violet); stroke-width:1.5; }
+  .d-box.ret { fill:var(--surface); stroke:var(--risk); stroke-width:1.5; }
+  .d-box.trust { fill:var(--surface); stroke:var(--ink); stroke-width:1.5; }
+  .d-box.untrust { fill:var(--surface); stroke:var(--risk); stroke-width:1.5; stroke-dasharray:5 3; }
+  .d-box.cloud { fill:none; stroke:var(--muted); stroke-dasharray:5 4; }
+  .d-accent { fill:var(--risk); }
+  .d-n { font-family:var(--mono); font-size:10.5px; fill:var(--muted); }
+  .d-n.g { fill:var(--safe); } .d-n.v { fill:var(--violet); } .d-n.r { fill:var(--risk); }
+  .d-name { font-family:var(--sans); font-size:14px; font-weight:600; fill:var(--ink); }
+  .d-sub { font-family:var(--sans); font-size:11.5px; fill:var(--ink-2); }
+  .d-region { font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; fill:var(--muted); }
+  .d-flow { stroke:var(--ink-2); stroke-width:1.8; fill:none; }
+  .d-back { stroke:var(--risk); stroke-width:1.8; fill:none; }
+  .d-link { stroke:var(--violet); stroke-width:1.5; fill:none; stroke-dasharray:4 3; }
+  .d-head { fill:var(--ink-2); } .d-head-b { fill:var(--risk); } .d-head-g { fill:var(--safe); }
+  .d-gov { stroke:var(--safe); stroke-width:1.6; fill:none; stroke-dasharray:6 4; }
+  .d-govlabel { font-family:var(--mono); font-size:10px; letter-spacing:.04em; fill:var(--safe); }
+  .d-bound { stroke:var(--risk); stroke-width:2; stroke-dasharray:7 5; }
+  .d-blabel { font-family:var(--mono); font-size:10px; letter-spacing:.06em; fill:var(--risk); }
+
+  .parts { display:grid; gap:1px; background:var(--rule-2);
+    border:1px solid var(--rule); margin-top:6px; }
+  .part { background:var(--surface); display:grid; grid-template-columns:186px 1fr;
+    gap:4px 18px; padding:14px 17px; }
+  .part dt { font-weight:600; font-size:14.5px; }
+  .part dt span { display:block; font-family:var(--mono); font-size:10.5px;
+    color:var(--muted); font-weight:400; letter-spacing:.05em; margin-top:2px; }
+  .part dd { margin:0; font-size:14.5px; color:var(--ink-2); }
+
+  table { width:100%; border-collapse:collapse; margin-top:6px; font-size:14px; }
+  caption { text-align:left; font-size:13.5px; color:var(--muted); padding-bottom:9px; }
+  th { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--muted); font-weight:400;
+    padding:0 12px 7px 0; border-bottom:1px solid var(--rule); }
+  td { padding:11px 12px 11px 0; border-bottom:1px solid var(--rule-2);
+    vertical-align:top; color:var(--ink-2); }
+  td:first-child { color:var(--ink); font-weight:600; white-space:nowrap; }
+  td code { font-family:var(--mono); font-size:12.5px; color:var(--ink); }
+
+  .rules { display:flex; flex-direction:column; gap:9px; margin-top:16px; }
+  .rule-item { display:grid; grid-template-columns:18px 1fr; gap:11px;
+    font-size:14.5px; color:var(--ink-2); }
+  .rule-item b { color:var(--ink); font-weight:600; }
+  .rule-item .k { font-family:var(--mono); font-size:12px; color:var(--safe); padding-top:2px; }
+
+  .lines { border-top:1px solid var(--rule); }
+  .line { display:grid; grid-template-columns:186px 1fr; gap:3px 18px;
+    padding:11px 0; border-bottom:1px solid var(--rule-2); }
+  .line dt { font-weight:600; font-size:14.5px; }
+  .line dd { margin:0; font-size:14.5px; color:var(--ink-2); }
+
+  .pairs { border-top:1px solid var(--rule); margin-top:4px; }
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:10px 30px;
+    padding:20px 0; border-bottom:1px solid var(--rule-2); align-items:start; }
+  .pair .found .n { font-family:var(--mono); font-weight:500; font-size:23px;
+    color:var(--risk); font-variant-numeric:tabular-nums; display:block;
+    line-height:1.1; margin-bottom:6px; letter-spacing:-.02em; }
+  .pair.good .found .n { color:var(--safe); }
+  .pair .found p { font-size:14.5px; color:var(--ink-2); margin:0; max-width:none; }
+  .pair .found .src { font-family:var(--mono); font-size:10.5px; color:var(--muted);
+    display:block; margin-top:8px; }
+  .pair .err { border-left:2px solid var(--risk); padding-left:16px; }
+  .pair .err h3 { font-family:var(--mono); font-size:10.5px; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--risk); font-weight:400; margin:0 0 6px; }
+  .pair .err p { font-size:14.5px; color:var(--ink); margin:0; max-width:none; }
+  .quoted { font-family:var(--serif); font-size:17px; line-height:1.4;
+    color:var(--ink); display:block; margin-bottom:8px; }
+
+  .open { display:flex; flex-direction:column; gap:8px; }
+  .oq { background:var(--amber-bg); border:1px solid var(--rule);
+    border-left:3px solid var(--amber); padding:12px 16px;
+    font-size:14.5px; color:var(--ink-2); }
+  .oq b { color:var(--ink); font-weight:600; }
+
+  .colophon { margin-top:40px; padding-top:18px; border-top:1px solid var(--rule);
+    font-size:13.5px; color:var(--muted); }
+  .colophon p { max-width:66ch; margin:0; }
+
+  @media (max-width:600px) {
+    .stats { grid-template-columns:1fr; }
+    .pair { grid-template-columns:1fr; gap:14px; }
+    .part, .line { grid-template-columns:1fr; }
+    table { font-size:13.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Virtual Gold Inc. &times; CMU Capstone &middot; Work package 3</p>
+    <h1>Security &amp; De-identification</h1>
+    <p class="standfirst">What seventeen papers told us about protecting a trading book from a
+      cloud model &mdash; and what they told us we had already got wrong.</p>
+    <div class="meta">
+      <span><b>Research summary</b></span>
+      <span>Yudi Guo</span>
+      <span>20 Sept 2026</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>We were aiming at the wrong target</h2>
+
+    <div class="pairs">
+      <div class="pair">
+        <div class="found">
+          <span class="quoted">&ldquo;Exit the regional-bank book before the Fed meeting.&rdquo;</span>
+          <p>No name, no account number, no identifier of any kind &mdash; and the whole strategy
+            is disclosed.</p>
+        </div>
+        <div class="err">
+          <h3>Sensitive is not the same as personal</h3>
+          <p>Our diagrams said &ldquo;PII detection.&rdquo; What this desk needs protected is
+            <strong>intent</strong> &mdash; the watchlist, the entry rules, the positions. A
+            personal-data detector scores perfectly on that sentence and catches nothing in it.</p>
+        </div>
+      </div>
+
+      <div class="pair">
+        <div class="found">
+          <span class="n">4%</span>
+          <p>of the content a task needed survived a filter that scored sensitivity alone. Adding a
+            second judgement &mdash; does this question actually require it &mdash; recovered 95%.</p>
+          <span class="src">MINIM &middot; ICML 2026</span>
+        </div>
+        <div class="err">
+          <h3>A single on/off gate breaks the assistant</h3>
+          <p>One sensitivity threshold is what we had drawn. It would have stripped out almost
+            everything the assistant answers with, and still leaked twice as much as the
+            two-judgement version.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Three pitfalls in how we planned to measure</h2>
+
+    <div class="pairs">
+      <div class="pair">
+        <div class="found">
+          <span class="n">9%</span>
+          <p>of medical records were still re-identified after a tool had masked every identifier
+            it could find.</p>
+          <span class="src">DIRI &middot; arXiv:2410.17035</span>
+        </div>
+        <div class="err">
+          <h3>Detection scores are not privacy scores</h3>
+          <p>We were going to report detection accuracy as evidence the gateway was safe. It
+            measures the detector, not the outcome. A separate benchmark makes the same point about
+            the specific tool we intend to use.</p>
+        </div>
+      </div>
+
+      <div class="pair">
+        <div class="found">
+          <span class="n">48%</span>
+          <p>is how often eighty human reviewers agreed with each other on context-dependent
+            sensitivity. On explicit identifiers they agreed 90% of the time.</p>
+          <span class="src">RedactionBench &middot; arXiv:2606.18782</span>
+        </div>
+        <div class="err">
+          <h3>Some of this cannot be scored at all</h3>
+          <p>No judgement of &ldquo;is this contextually sensitive&rdquo; can be validated much past
+            that figure &mdash; ours included. We set it by written policy instead of judging case
+            by case, and report the ceiling rather than a number implying more precision than exists.</p>
+        </div>
+      </div>
+
+      <div class="pair">
+        <div class="found">
+          <span class="n">+12</span>
+          <p>points more leakage once a conversation was allowed to continue for two follow-up
+            questions, compared with scoring the first message alone.</p>
+          <span class="src">Information Sufficiency &middot; arXiv:2604.06409</span>
+        </div>
+        <div class="err">
+          <h3>Testing one question at a time flatters the result</h3>
+          <p>Our assistant is conversational. Any evaluation that scores a single request will
+            overstate how safe it is, so leakage has to be measured across a whole working session.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How the system decides what is sensitive</h2>
+    <p>This was the question raised in the September review, and the 48% figure above is the
+      reason for the shape of the answer: <strong>most of it is not judged at all.</strong>
+      Four layers, and only the last one involves an opinion.</p>
+
+    <table>
+      <thead><tr><th>Basis</th><th>Covers</th><th>Can it be wrong?</th></tr></thead>
+      <tbody>
+        <tr><td>Where it came from</td>
+          <td>The position store is confidential by construction; a filing pulled from EDGAR is
+            public by construction. No inspection of the content is needed.</td>
+          <td>No &mdash; the label is assigned, not inferred. This carries most of the load.</td></tr>
+        <tr><td>Pattern</td>
+          <td>Securities identifiers carry check digits; account numbers have fixed formats.</td>
+          <td>No &mdash; it either passes the checksum or it does not.</td></tr>
+        <tr><td>Written policy</td>
+          <td>A table saying what each kind of thing counts as: a ticker drawn from the book
+            reveals attention; a quantity reveals the book itself.</td>
+          <td>No &mdash; it is a decision, not a measurement. One page, and yours to review.</td></tr>
+        <tr><td>Judgement</td>
+          <td>Free-text notes the trader wrote themselves.</td>
+          <td><strong>Yes</strong> &mdash; and this is where the 48% ceiling applies, so we do not
+            try. Notes are dropped by default rather than scored.</td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:22px">Sensitivity is only half of it. The second judgement is whether
+      <em>this particular question</em> needs the field at all &mdash; and that is fixed by the
+      kind of question being asked, not by the content. A question about concentration risk needs
+      the weights but never the names, so the names are removed regardless of how sensitive
+      anyone thinks they are. Uncertainty on one axis is absorbed by certainty on the other.</p>
+
+    <div class="rules">
+      <div class="rule-item"><span class="k">&mdash;</span><span><b>Partial restriction</b>
+        &mdash; each field gets its own treatment rather than the whole prompt being allowed or
+        blocked. See the table in the next section.</span></div>
+      <div class="rule-item"><span class="k">&mdash;</span><span><b>Output censorship</b>
+        &mdash; the return path is checked as well as the outbound one; the cloud&rsquo;s reply is
+        treated as untrusted input.</span></div>
+      <div class="rule-item"><span class="k">&mdash;</span><span><b>Split routing</b>
+        &mdash; the public half of a question goes to the cloud while the confidential half is
+        answered locally, and the two are merged on the device.</span></div>
+    </div>
+    <p style="margin-top:14px; color:var(--muted); font-size:14px">Three alternatives to a
+      strict binary gate were proposed in that review. All three are in the design above.</p>
+  </section>
+
+  <section>
+    <h2>Three ways to disguise sensitive data</h2>
+    <p>The literature offers three. We measured them against our own situation rather than taking
+      the most cited.</p>
+    <table>
+      <thead><tr><th>Strategy</th><th>What it does</th><th>What the evidence says</th></tr></thead>
+      <tbody>
+        <tr><td>Suppress</td><td>Delete it</td>
+          <td>Safest and costliest. Gaps in an answer invite follow-up questions, which create
+            fresh chances to leak.</td></tr>
+        <tr><td>Generalise</td><td>Say something broader but still true</td>
+          <td>The strategy that degrades most under follow-up. One study found it performs
+            <em>worse than no protection at all</em> on the combined measure.</td></tr>
+        <tr><td>Substitute</td><td>Replace with a plausible alternative</td>
+          <td>Best overall in the study that proposed it &mdash; but that study explicitly excludes
+            recipients who need the true value, and our cloud model computes with it.</td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:22px">Neither recommendation transfers cleanly, because our assistant is
+      <strong>both</strong> conversational (so generalising degrades) and <strong>computational</strong>
+      (so a false substitute corrupts the arithmetic). Swapping one regional-bank ETF for another
+      changes the sector mix and rate sensitivity the cloud is reasoning about, and the answer comes
+      back quietly wrong. What we propose splits the decision by field type:</p>
+
+    <table>
+      <caption>Only the first two can be reversed when the answer comes back.</caption>
+      <thead><tr><th>Field</th><th>Treatment</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Instrument</td>
+          <td><code>KRE &rarr; Instrument&nbsp;A</code><br>plus its true characteristics</td>
+          <td>The cloud reasons on real sector, duration and rate sensitivity without learning
+            which holding it is looking at.</td></tr>
+        <tr><td>Quantity</td>
+          <td>Rescaled by a secret factor</td>
+          <td>Concentration questions depend on ratios, not absolute size. We disclose the shape
+            of the book, never its scale.</td></tr>
+        <tr><td>Attribute</td>
+          <td>Broadened, but kept true</td>
+          <td>A vaguer statement is still a correct one. A false one is not.</td></tr>
+        <tr><td>Strategy note</td>
+          <td>Dropped entirely</td>
+          <td>Highest value to an adversary, and rarely needed to answer the question.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>What this implies for the design</h2>
+    <p>Three conclusions carry over from the reading. The shape below is what they produce when
+      put together; the detail is in the full review.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 960 402" role="img" aria-label="Pipeline diagram. The user's question, the only trusted input, feeds a policy resolver that fixes the egress rules before anything is retrieved. Retrieved documents and the local position store feed a detector, then a transformer, then a verifier, which the policy rules govern. A dashed device boundary separates the verifier from the cloud model. The mapping table serves both the transformer and the output check, and the cloud's answer returns through the output check to the trader.">
+        <defs>
+          <marker id="arF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path class="d-head" d="M0 0 L10 5 L0 10 z"/>
+          </marker>
+          <marker id="arB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path class="d-head-b" d="M0 0 L10 5 L0 10 z"/>
+          </marker>
+          <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path class="d-head-g" d="M0 0 L10 5 L0 10 z"/>
+          </marker>
+        </defs>
+
+        <text class="d-region" x="16" y="16">ON DEVICE</text>
+        <text class="d-region" x="736" y="16">OFF DEVICE</text>
+        <line class="d-bound" x1="700" y1="26" x2="700" y2="384"/>
+        <text class="d-blabel" x="706" y="380">BOUNDARY</text>
+
+        <rect class="d-box trust" x="16" y="38" width="140" height="52" rx="3"/>
+        <text class="d-n"    x="28" y="56">TRUSTED</text>
+        <text class="d-name" x="28" y="78">User question</text>
+
+        <rect class="d-box untrust" x="16" y="126" width="140" height="52" rx="3"/>
+        <text class="d-n r"  x="28" y="144">UNTRUSTED</text>
+        <text class="d-name" x="28" y="166">Retrieved docs</text>
+
+        <rect class="d-box store" x="16" y="190" width="140" height="52" rx="3"/>
+        <text class="d-n v"  x="28" y="208">CONFIDENTIAL</text>
+        <text class="d-name" x="28" y="230">Position store</text>
+
+        <rect class="d-box" x="186" y="30" width="150" height="72" rx="3"/>
+        <text class="d-n"    x="198" y="50">01</text>
+        <text class="d-name" x="198" y="72">Policy resolver</text>
+        <text class="d-sub"  x="198" y="90">Runs before retrieval</text>
+
+        <rect class="d-box" x="186" y="132" width="150" height="88" rx="3"/>
+        <text class="d-n"    x="198" y="154">02</text>
+        <text class="d-name" x="198" y="176">Detector</text>
+        <text class="d-sub"  x="198" y="196">Finds what is</text>
+        <text class="d-sub"  x="198" y="212">sensitive, and where</text>
+
+        <rect class="d-box" x="366" y="132" width="150" height="88" rx="3"/>
+        <text class="d-n"    x="378" y="154">03</text>
+        <text class="d-name" x="378" y="176">Transformer</text>
+        <text class="d-sub"  x="378" y="196">Swaps, rescales,</text>
+        <text class="d-sub"  x="378" y="212">removes</text>
+
+        <rect class="d-box gate" x="546" y="132" width="150" height="88" rx="3"/>
+        <text class="d-n g"  x="558" y="154">04</text>
+        <text class="d-name" x="558" y="176">Verifier</text>
+        <text class="d-sub"  x="558" y="196">Plain code.</text>
+        <text class="d-sub"  x="558" y="212">The only way out.</text>
+
+        <rect class="d-box cloud" x="742" y="132" width="156" height="88" rx="3"/>
+        <text class="d-n"    x="754" y="154">05</text>
+        <text class="d-name" x="754" y="176">Cloud model</text>
+        <text class="d-sub"  x="754" y="196">Sees real traits,</text>
+        <text class="d-sub"  x="754" y="212">never the identity</text>
+
+        <line class="d-flow" x1="158" y1="64" x2="182" y2="64" marker-end="url(#arF)"/>
+        <path class="d-flow" d="M 158 152 L 172 152 L 172 168 L 182 168" marker-end="url(#arF)"/>
+        <path class="d-flow" d="M 158 216 L 172 216 L 172 190 L 182 190" marker-end="url(#arF)"/>
+        <line class="d-flow" x1="338" y1="176" x2="362" y2="176" marker-end="url(#arF)"/>
+        <line class="d-flow" x1="518" y1="176" x2="542" y2="176" marker-end="url(#arF)"/>
+        <line class="d-flow" x1="698" y1="176" x2="738" y2="176" marker-end="url(#arF)"/>
+
+        <path class="d-gov" d="M 336 66 L 621 66 L 621 128" marker-end="url(#arG)"/>
+        <text class="d-govlabel" x="404" y="58">rules &mdash; what this question may disclose</text>
+
+        <rect class="d-box store" x="366" y="256" width="230" height="60" rx="3"/>
+        <text class="d-n v"  x="378" y="276">STATE</text>
+        <text class="d-name" x="378" y="298">Mapping table</text>
+        <text class="d-sub"  x="378" y="312">Placeholder &harr; real value. Never leaves.</text>
+
+        <path class="d-link" d="M 441 256 L 441 222"/>
+        <path class="d-link" d="M 521 316 L 521 344"/>
+
+        <rect class="d-box ret" x="366" y="344" width="230" height="52" rx="3"/>
+        <text class="d-n r"  x="378" y="364">06</text>
+        <text class="d-name" x="378" y="384">Output check</text>
+        <text class="d-sub"  x="492" y="384">restore &amp; re-scan</text>
+
+        <path class="d-back" d="M 820 222 L 820 370 L 602 370" marker-end="url(#arB)"/>
+        <path class="d-back" d="M 362 370 L 236 370" marker-end="url(#arB)"/>
+        <text class="d-sub" x="60" y="374">To the trader</text>
+      </svg>
+    </div>
+
+    <div class="rules">
+      <div class="rule-item"><span class="k">1</span><span><b>Whatever decides what leaves must be
+        code, not a model.</b> In one trial an independent authorisation layer left the model fooled
+        <em>every single time</em> and zero unsafe actions executed. A model can be argued into
+        anything by text it reads; a deterministic check cannot.
+        <span style="color:var(--muted)">&nbsp;IEEE CARS 2026</span></span></div>
+      <div class="rule-item"><span class="k">2</span><span><b>Decide before retrieving.</b> Our
+        original flow let the model read retrieved filings and <em>then</em> choose what could
+        leave &mdash; so anyone who plants text in a filing controls that choice. Fixing the rules
+        from the question first is a reordering, not new machinery.</span></div>
+      <div class="rule-item"><span class="k">3</span><span><b>Budget the whole session.</b> Twenty
+        individually harmless questions can still reveal the book, and nothing that inspects one
+        request at a time will notice. The same idea as a privacy budget, applied to a conversation.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How we will prove it works</h2>
+    <p>Five separate measurements. Collapsing them into one &ldquo;accuracy&rdquo; figure is the
+      most common mistake in this area, and it hides exactly the failures that matter.</p>
+    <table>
+      <thead><tr><th>Question</th><th>Measure</th><th>Why this one</th></tr></thead>
+      <tbody>
+        <tr><td>Does it catch things?</td>
+          <td>Detection rate per category, weighted toward misses</td>
+          <td>A miss is a permanent disclosure; a false alarm is a slightly worse answer.</td></tr>
+        <tr><td>Does anything escape?</td>
+          <td>Leak rate at the network boundary</td>
+          <td>We plant invented secrets locally and watch every outgoing byte. Catches what
+            detector scores cannot: logs, traces, error paths.</td></tr>
+        <tr><td>What does privacy cost?</td>
+          <td>Answer quality with protection on versus off</td>
+          <td>The figure that tells you what you are paying for this.</td></tr>
+        <tr><td>Does it survive attack?</td>
+          <td>Attack success and unsafe actions, counted separately</td>
+          <td>The two diverge, as the trial above shows.</td></tr>
+        <tr><td>Does it hold over time?</td>
+          <td>Disclosure measured across a whole session</td>
+          <td>Single-question testing systematically understates how much escapes.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Open resources</h2>
+    <p>Four public artifacts cover work we would otherwise repeat. None was built for finance,
+      which is why the extensions are ours.</p>
+    <table>
+      <thead><tr><th>Source</th><th>What it gives us</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>llm&#8209;redactor</td>
+          <td>A working shim between an agent and a cloud endpoint, plus a labelled leak benchmark
+            of 1,300 samples &mdash; the evaluation set we currently lack.</td>
+          <td>Verified public</td></tr>
+        <tr><td>Presidio</td>
+          <td>The detection engine itself, with reversible substitution already built in. We add
+            the financial identifiers it has no notion of.</td>
+          <td>Verified public</td></tr>
+        <tr><td>MINIM</td>
+          <td>Reference implementation of the two-judgement policy behind the 4% finding.</td>
+          <td>Verified public</td></tr>
+        <tr><td>RedactionBench</td>
+          <td>200 annotated documents and a matching metric, including the human-agreement study
+            behind the 48% figure.</td>
+          <td>Announced, unconfirmed</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Open questions</h2>
+    <div class="open">
+      <div class="oq"><b>None of this was tested on financial data.</b> Every method we reviewed was
+        validated on medical, legal or social text. Our domain, where the secret is direction and
+        exposure rather than identity, is untested ground.</div>
+      <div class="oq"><b>Published results mostly measure personal data, and ours is not that.</b>
+        One study ran the same protections across content types: personal data leaked 0.6% of the
+        time, proprietary content 31%. A trading rule has no names in it &mdash; structurally it is
+        the second kind.</div>
+      <div class="oq"><b>Our field-by-field scheme is a proposal, not a result.</b> We will run it
+        against the two established alternatives rather than assume it wins.</div>
+      <div class="oq"><b>How much one session may disclose in total is a business decision.</b>
+        We can measure how quickly an observer closes in on the book; where to draw the line is a
+        question for you.</div>
+    </div>
+  </section>
+
+  <div class="colophon">
+    <p>The architecture is not novel and we do not claim it is &mdash; two 2026 papers describe the
+      same local-to-cloud pattern, and the enforcement design applies a fifty-year-old security
+      principle to a language-model egress path. What is new is the financial-domain handling and
+      the measurement.</p>
+  </div>
+
+</div>
+</body>
+</html>
