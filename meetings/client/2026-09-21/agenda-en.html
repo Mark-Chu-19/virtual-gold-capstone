@@ -331,6 +331,34 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
+<div class="item">
+  <h3>If time allows: two more work-package updates</h3>
+  <p class="ctx">Both finished this weekend. Headlines only; the full documents are available on request.</p>
+
+  <details class="more"><summary>Models and inference: the research brief</summary><div class="body">
+  <div class="finding">
+    <div><div class="k">MVP choices, with reasons</div><b>Llama 3.1 8B Instruct as the primary model, Qwen3 8B as the independent comparator; Hugging Face transformers in-process; bitsandbytes 4-bit NF4; FP16 compute on the T4.</b> In-process because the confidence experiments need raw logits, per-token scores and hidden states, which a serving API does not expose. FP16, not BF16: the T4 is compute capability 7.5, so the earlier BF16 assumption is corrected. Keep one quantization path for the first comparison; do not mix NF4, GPTQ and AWQ in the same experiment.</div>
+    <div><div class="k">What fits on a 16 GB T4</div>KV cache for Llama 3.1 8B in FP16 is about 128 KB per token, so a 32K-token context costs about 4 GB per sequence before activations and captured hidden states. A nominal 128K context is not a practical 128K on a T4. Start with the default dynamic cache; try quantized or offloaded caches only when a measured memory problem justifies it.</div>
+    <div><div class="k">Newer models: track, do not substitute</div>Qwen3.5-9B (multimodal, hybrid architecture) needs its own smoke test for hidden states and memory before it could replace Qwen3 8B. Qwen3.8-27B does not fit a T4 with instrumentation (about 13.5 GB of weights alone at 4-bit). Llama 4 Scout is reported on a single H100, which says nothing about a T4. Every candidate passes the same artifact, hardware, interface and quality gates before it enters the MVP.</div>
+    <div><div class="k">Confidence path, consistent with the harness design</div>Selected-token log-probability from raw logits as the baseline (mean, lower tail, fraction below threshold, answer length); multi-sample semantic agreement at k=5 as the first extension; Semantic Entropy Probes with a small layer sweep on held-out data, never a hard-coded layer. Threshold selected on development data; report accuracy against escalation rate, not one universal threshold.</div>
+    <div><div class="k">Discipline for every run</div>Record model and tokenizer revision, library versions, GPU, quantization and dtype, prompt and output token counts, time to first token, decode tokens per second, p50 and p95 latency, peak memory, batch size and cache strategy. Vendor tokens-per-second claims are not carried into the client report. Speculative decoding stays off for the midpoint baseline.</div>
+    <div><div class="k">Two items that need a decision</div><b>Llama licence:</b> Meta's community licence carries an attribution notice and a 700-million-monthly-user clause, so legal review is required before any commercial deployment. <b>Jev</b> (a hosted typed-decision service) is proposed only as a separate comparison on approved non-confidential data; it does not expose log-probs or hidden states and adds a contract boundary, so it is not part of the local confidence baseline.</div>
+  </div>
+  </div></details>
+
+  <details class="more"><summary>Confidence scheduling and the confidentiality gate: how the two components interact (design draft)</summary><div class="body">
+  <div class="finding">
+    <div><div class="k">One principle</div><b>The confidentiality gate is a hard constraint; the confidence score schedules within the space the gate allows. They are never merged into one number and never substitute for each other.</b> Confidence answers "does this need escalation"; the gate answers "is escalation allowed".</div>
+    <div><div class="k">The gate runs first, unconditionally</div>Every request is looked up against its sensitivity label before anything else, an O(1) lookup with no model involved. A high confidence score never skips the gate, because confidence can be misled by out-of-distribution or adversarial input. The gate yields one of three outcomes: allow cloud; sanitize, then cloud; local only.</div>
+    <div><div class="k">Then confidence schedules within the outcome</div>Allow-cloud: local model answers first, escalate if the combined score is below a threshold calibrated per sensitivity level and task type. Sanitize-then-cloud: same, but only the sanitized part leaves. Local-only: the score no longer decides whether to escalate, only which local fallback to use, in rising cost order: multi-sample self-consistency, a larger local model, local retrieval, an answer that states its uncertainty, a human-review queue.</div>
+    <div><div class="k">Correction taken from the security review</div>A gate driven by sensitivity alone is the worst-performing policy in the MINIM ablation (4% of task-critical content kept). The draft therefore adds a task-necessity score derived from the user's question, so the three outcomes come from sensitivity and necessity together. Both scores are computed before retrieval, from provenance and the question, so the scoring layer sits outside the prompt-injection attack surface.</div>
+    <div><div class="k">Three further constraints folded in</div>Decide what may leave before retrieval, so text planted in a filing cannot widen it; authorization is deterministic allow-list code, never a model verdict; and disclosure is budgeted across a session, listed as an open risk rather than a promise, since neither budgeting method gives a provable bound.</div>
+    <div><div class="k">Audit</div>Every gate decision is logged for every request, including the ones answered locally; the sensitivity level also controls whether full prompts may appear in logs and telemetry, not only whether a request may leave.</div>
+    <div><div class="k">Open</div>The necessity-scoring module is a principle, not yet a design; session budgeting is unsolved; any field that must appear in the final answer needs a reversible transform, fixed at design time; none of the reviewed methods was validated on financial data; and the gate-plus-confidence combination has not yet been integrated in the prototype.</div>
+  </div>
+  </div></details>
+</div>
+
 <div class="cat" id="progress"><h2>C · Your two research requests, and what we still need</h2><span class="tag">20 min</span></div>
 <div class="item">
   <h3>The two research items you asked for on Sep 15</h3>

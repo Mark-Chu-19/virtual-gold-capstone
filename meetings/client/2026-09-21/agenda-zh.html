@@ -331,6 +331,34 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
+<div class="item">
+  <h3>時間允許的話:另外兩個工作包的進度</h3>
+  <p class="ctx">兩份都是這個週末完成的。這裡只列重點;完整文件可另行提供。</p>
+
+  <details class="more"><summary>模型與推論:研究簡報</summary><div class="body">
+  <div class="finding">
+    <div><div class="k">MVP 的選擇與理由</div><b>Llama 3.1 8B Instruct 為主模型,Qwen3 8B 為獨立對照;Hugging Face transformers 在程式內執行;bitsandbytes 4-bit NF4;T4 上用 FP16 計算。</b>程式內執行是因為信心實驗需要原始 logits、逐 token 分數與 hidden states,推論 API 不提供。用 FP16 不用 BF16:T4 是 compute capability 7.5,先前假設 BF16 是錯的,已修正。第一輪比較只用一種量化路徑;不要在同一個實驗混用 NF4、GPTQ、AWQ。</div>
+    <div><div class="k">16 GB 的 T4 放得下什麼</div>Llama 3.1 8B 的 KV cache 在 FP16 下約每 token 128 KB,32K token 的上下文一條序列約 4 GB,還沒算 activation 和抓下來的 hidden states。名義上的 128K 上下文在 T4 上不是實用的 128K。先用預設的 dynamic cache;量化或 offload 的 cache 只在量到記憶體問題時才試。</div>
+    <div><div class="k">更新的模型:追蹤,不直接替換</div>Qwen3.5-9B(多模態、混合架構)要先做 hidden states 與記憶體的 smoke test 才可能取代 Qwen3 8B。Qwen3.8-27B 在 T4 上放不下(4-bit 光權重就約 13.5 GB)。Llama 4 Scout 的報告是單張 H100,對 T4 沒有參考價值。任何候選模型都要過同一套產物、硬體、介面、品質的關卡才能進 MVP。</div>
+    <div><div class="k">信心路徑,與 harness 設計一致</div>從原始 logits 取選定 token 的對數機率當基準線(平均、低尾、低於門檻的比例、答案長度);k=5 的多樣本語意一致性是第一個延伸;語意熵探針在 held-out 資料上掃一小組層,不寫死層數。門檻在 dev 資料上選;報告準確率對升級率,不是一個放諸四海的門檻。</div>
+    <div><div class="k">每次執行都要記的</div>模型與 tokenizer 版本、函式庫版本、GPU、量化與 dtype、輸入輸出 token 數、首 token 時間、每秒解碼 token 數、p50 與 p95 延遲、記憶體峰值、batch 大小與 cache 策略。廠商的 token/s 數字不進客戶報告。期中基準線關掉 speculative decoding。</div>
+    <div><div class="k">兩件要決定的</div><b>Llama 授權:</b>Meta 的社群授權有署名要求和每月 7 億使用者的條款,商用部署前要法務審閱。<b>Jev</b>(託管的型別化決策服務)只提議在核准的非機密資料上做獨立比較;它不提供 logprob 與 hidden states,又多一個合約邊界,所以不在本地信心基準線裡。</div>
+  </div>
+  </div></details>
+
+  <details class="more"><summary>信心調度與機密性閘門:兩個元件怎麼互動(設計草稿)</summary><div class="body">
+  <div class="finding">
+    <div><div class="k">一條原則</div><b>機密性閘門是硬約束;信心分數只在閘門允許的空間內調度。兩者不合併成一個數字,也不能互相替代。</b>信心回答「需不需要升級」;閘門回答「能不能升級」。</div>
+    <div><div class="k">閘門無條件先跑</div>每個請求先查一次敏感度標籤,O(1) 的查表,不牽涉模型。信心再高也不能跳過閘門,因為信心會被分布外或對抗性輸入誤導。閘門輸出三檔:可上雲;淨化後上雲;只能本地。</div>
+    <div><div class="k">然後信心在該檔內調度</div>可上雲:本地先答,組合分數低於門檻才升級,門檻依敏感等級乘任務類型分別校準。淨化後上雲:同上,但只有淨化後的部分出去。只能本地:分數不再決定要不要升級,只決定用哪種本地兜底,成本遞增:多樣本自我一致性、更大的本地模型、本地檢索、明說不確定的回答、人工複核佇列。</div>
+    <div><div class="k">從安全研究採納的修正</div>只看敏感度的閘門是 MINIM 消融裡表現最差的政策(任務必要內容只留 4%)。草稿因此加入從使用者問題推導的任務必要性分數,三檔由敏感度與必要性共同決定。兩個分數都在檢索前算,來自來源與問題,所以評分層不在 prompt injection 的攻擊面內。</div>
+    <div><div class="k">另外併入的三條約束</div>什麼能出去在檢索前決定,申報文件裡植入的文字無法放寬;授權是確定性的白名單程式碼,不是模型的判斷;揭露量以會話為單位預算,列為開放風險而非承諾,因為兩種預算法都給不出可證明的上界。</div>
+    <div><div class="k">稽核</div>每個請求的閘門判定都留紀錄,包括本地回答的;敏感等級也控制完整 prompt 能不能進日誌與遙測,不只控制能不能出去。</div>
+    <div><div class="k">未解</div>必要性評分模組還只是原則,沒有設計;會話預算未解;任何必須出現在最終回答裡的欄位要用可逆的轉換,設計階段就定;被回顧的方法都沒在金融資料上驗證過;閘門加信心的組合還沒在原型裡整合。</div>
+  </div>
+  </div></details>
+</div>
+
 <div class="cat" id="progress"><h2>C · 貴方要的兩份研究,以及還需要什麼</h2><span class="tag">20 分</span></div>
 <div class="item">
   <h3>貴方 9/15 要的兩份研究</h3>
