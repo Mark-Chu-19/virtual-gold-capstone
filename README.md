@@ -5,7 +5,7 @@ Client contact: Urte Jesina. Team: 5 people.
 
 We are designing and evaluating a **local-first enterprise AI assistant**: open-source models running locally are the primary intelligence layer, every response gets a measured confidence score, and requests escalate to a cloud model only when confidence is low **and** data sensitivity allows. Sensitive data stays local.
 
-## Current status (Week 4, updated 2026-09-18)
+## Current status (Week 4, updated 2026-09-21)
 
 | Milestone | Status |
 |---|---|
@@ -21,7 +21,10 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Team decision: no local LLM on laptops; models run on a cloud GPU sandbox simulating on-premises | Decided, 2026-09-10 |
 | Client meeting Sep 15: OpenAI and Anthropic accounts confirmed; use case deferred (vertical finance vs horizontal data sanitization; Inderpal proposed a trading assistant on public filings); Alex to review the sensitivity gate; sandbox spec and SOW cost line still open | Notes in `meetings/client/2026-09-15/` |
 | Team meeting Sep 18 (Fri): settle the use-case answer, workstream owners, two research one-pagers; one email to the client before the Sep 21 client meeting | Agenda in `meetings/team/2026-09-18/` |
-| Confidence-scoring harness design doc (PR #2, Zhexuan Ye) | Under review, changes requested 2026-09-14 |
+| Confidence-scoring harness design doc and literature review (Zhexuan Ye, PR #2) | Merged 2026-09-21, in `docs/research/` |
+| Workstream owners: router Mark · models Anmol · confidence/harness Zhexuan · security Yudi · synthetic data Karina | Set 2026-09-18 |
+| Finance QA benchmark: FinQA (MIT); FinanceBench reserve only | Decided 2026-09-21 |
+| Karina's PRs #3 (schema), #4 (demo batch), #5 (SEC fetch + data) | Open; scope questions under team discussion |
 | Week 4: sandbox setup, harness skeleton (sampling core, loaders, metrics), workstream research one-pagers | In progress |
 | Week 7: midpoint presentation with first local-only / hybrid / cloud-only numbers on MMLU subset and GSM8K (scope in `todo/TODO.md` A7) | Target |
 
