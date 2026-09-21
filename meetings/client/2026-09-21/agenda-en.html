@@ -174,7 +174,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <div><div class="k">5 · What we propose</div><mark class="hl-key">Both lines, with Inderpal's trading assistant as the vertical.</mark> Why this vertical: you proposed it; all input data is public and free (SEC EDGAR filings, market prices, FinQA under MIT licence as a scored benchmark); and the local-vs-cloud split has a business reason a trader immediately recognizes: strategy is the secret, filings are not. What each line builds is below.</div>
   </div>
 
-  <h3>The horizontal line: the sanitization gateway (owner: Yudi)</h3>
+  <h3>The horizontal line: the sanitization gateway</h3>
   <div class="tbl"><table>
     <tr><th>We build</th><th>What it does</th><th>Done by</th></tr>
     <tr><td>Sensitivity classifier</td><td>Tags every request and document public / internal / confidential, by source first (position store is confidential by construction, EDGAR is public), then by pattern (account formats, ticker checksums), then by a one-page written policy you can review</td><td>Midpoint, Oct 2–9</td></tr>
@@ -185,7 +185,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <tr><td>Governance mapping</td><td>NIST AI RMF (Govern, Map, Measure, Manage) with our controls and metrics placed against it; the security and risk assessment (SOW deliverable 5)</td><td>W12–15</td></tr>
   </table></div>
 
-  <h3>The vertical line: the trading assistant (owners: Mark, Anmol, Zhexuan, Karina)</h3>
+  <h3>The vertical line: the trading assistant</h3>
   <div class="tbl"><table>
     <tr><th>We build</th><th>What it does</th><th>Done by</th></tr>
     <tr><td>Local inference</td><td>Llama 3.1 8B (Qwen3 8B secondary) on the sandbox GPU, 4-bit, run with Hugging Face transformers so we can read the model's own confidence signals</td><td>Week 5</td></tr>
@@ -196,7 +196,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <tr><td>Knowledge base over many filings (RAG)</td><td>Stretch goal; revisited after the midpoint</td><td>If time allows</td></tr>
   </table></div>
 
-  <h3>Shared: the evaluation harness (owner: Zhexuan)</h3>
+  <h3>Shared: the evaluation harness</h3>
   <div class="tbl"><table>
     <tr><th>We build</th><th>What it does</th><th>Done by</th></tr>
     <tr><td>Three-configuration runner</td><td>Same questions through local-only, hybrid and cloud-only; every query sent to the cloud once and cached so all three come from one run</td><td>Week 5 (code started)</td></tr>

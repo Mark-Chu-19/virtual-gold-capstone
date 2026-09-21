@@ -174,7 +174,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <div><div class="k">5 · 我們的提議</div><mark class="hl-key">兩條線都做,以 Inderpal 提的交易助理為垂直。</mark>為什麼選這個垂直:貴方提的;所有輸入資料都公開且免費(SEC EDGAR 申報文件、市場行情、MIT 授權的 FinQA 當可評分的 benchmark);本地與雲端的切分有交易員一看就懂的商業理由:策略是祕密,申報文件不是。兩條線各做什麼,見下面三張表。</div>
   </div>
 
-  <h3>橫向線:淨化閘道(負責人:Yudi)</h3>
+  <h3>橫向線:淨化閘道</h3>
   <div class="tbl"><table>
     <tr><th>我們做</th><th>它做什麼</th><th>何時完成</th></tr>
     <tr><td>敏感度分類器</td><td>把每個請求與文件標為 public / internal / confidential:先看來源(持倉庫天生機密、EDGAR 天生公開),再看格式(帳號格式、證券代號 checksum),最後依一頁貴方可審的書面政策</td><td>期中,10/2–9</td></tr>
@@ -185,7 +185,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <tr><td>治理對應</td><td>NIST AI RMF(Govern、Map、Measure、Manage)對上我們的控制與指標;安全與風險評估報告(SOW 交付物 5)</td><td>第 12–15 週</td></tr>
   </table></div>
 
-  <h3>垂直線:交易助理(負責人:Mark、Anmol、Zhexuan、Karina)</h3>
+  <h3>垂直線:交易助理</h3>
   <div class="tbl"><table>
     <tr><th>我們做</th><th>它做什麼</th><th>何時完成</th></tr>
     <tr><td>本地推論</td><td>Llama 3.1 8B(Qwen3 8B 為輔)在沙盒 GPU 上以 4-bit 執行,用 Hugging Face transformers 跑,才讀得到模型自身的信心訊號</td><td>第 5 週</td></tr>
@@ -196,7 +196,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <tr><td>多份申報文件的知識庫(RAG)</td><td>Stretch goal;期中後再評估</td><td>時間允許才做</td></tr>
   </table></div>
 
-  <h3>共用:評測 harness(負責人:Zhexuan)</h3>
+  <h3>共用:評測 harness</h3>
   <div class="tbl"><table>
     <tr><th>我們做</th><th>它做什麼</th><th>何時完成</th></tr>
     <tr><td>三配置執行器</td><td>同一組題目走純本地、混合、純雲端;每題送雲端一次並快取,三個配置從同一次跑產出</td><td>第 5 週(程式已開工)</td></tr>
