@@ -45,7 +45,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
 .legend mark{font-weight:600}
 
-.agenda{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
 .agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
 .agenda li:hover{border-color:var(--gold)}
 .agenda a{color:inherit;text-decoration:none;display:block}
@@ -161,7 +161,6 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   <li><a href="#usecase"><span class="n">A</span><span class="t">使用情境</span><span class="m">確認方向 · 10 分</span></a></li>
   <li><a href="#gate"><span class="n">B</span><span class="t">敏感度閘門</span><span class="m">Yudi 簡報 · 20 分</span></a></li>
   <li><a href="#progress"><span class="n">C</span><span class="t">進度與問題</span><span class="m">做了什麼 · 還缺什麼 · 20 分</span></a></li>
-  <li><a href="#after"><span class="n">D</span><span class="t">會後</span><span class="m">要記錄的事</span></a></li>
 </ol>
 
 <div class="cat" id="usecase"><h2>A · 使用情境:貴方問了什麼、我們檢視了什麼、我們提議什麼</h2><span class="tag">10 分</span></div>
@@ -273,14 +272,6 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
-<div class="cat" id="after"><h2>D · 會後</h2><span class="tag">週二</span></div>
-<ul class="out">
-  <li><input type="checkbox" id="o1" data-store="o1"><label for="o1">使用情境確認 → A8 關閉、決策紀錄、架構第十節更新</label><span class="who">Mark</span></li>
-  <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">A10 六點在 9/25(五)團隊會議定案;據此審 Karina 的 PR #3–#5</label><span class="who">Mark</span></li>
-  <li><input type="checkbox" id="o3" data-store="o3"><label for="o3">Alex 的回饋納入書面政策頁</label><span class="who">Yudi</span></li>
-  <li><input type="checkbox" id="o4" data-store="o4"><label for="o4">沙盒與 API 回答 → B15、A6;SOW 填金額送簽</label><span class="who">Mark</span></li>
-  <li><input type="checkbox" id="o5" data-store="o5"><label for="o5">Gemini 筆記存為 notes-gemini-en,翻譯存為 notes-zh</label><span class="who">Mark</span></li>
-</ul>
 </div>
 
 <script>
