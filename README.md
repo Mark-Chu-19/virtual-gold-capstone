@@ -73,7 +73,7 @@ Sections in the document:
 │   ├── client/                    meetings with Virtual Gold
 │   │   ├── 2026-09-03/            notes-gemini-en.docx
 │   │   ├── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
-│   │   └── 2026-09-21/            briefing-security-deidentification-en.html (Yudi)
+│   │   └── 2026-09-21/            agenda-en.html · agenda-zh.html · briefing-security-deidentification-en.html (Yudi)
 │   ├── team/                      internal team meetings, not shared with the client
 │   │   └── 2026-09-18/            agenda-en.html · agenda-zh.html
 │   └── professor/                 weekly check-ins with the faculty advisor

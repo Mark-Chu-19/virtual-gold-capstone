@@ -1,0 +1,274 @@
+<title>Sep 21 Client Meeting</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+
+.cat{display:flex;align-items:baseline;gap:12px;margin:44px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{margin:0}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item h3{font-family:var(--serif);font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 8px;font-weight:600}
+.item .ctx{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.item .rec{margin:0 0 6px;font-size:15px}
+.item .rec b{color:var(--hl-key)}
+.item ul{margin:4px 0 8px;padding-left:20px}
+.item li{margin-bottom:4px;font-size:15px}
+.fields{display:grid;grid-template-columns:1fr 160px 110px;gap:10px;margin-top:10px}
+.fields label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fields textarea,.fields input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.fields textarea{min-height:56px;resize:vertical}
+.fields textarea:focus,.fields input:focus{outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:600px){.fields{grid-template-columns:1fr}}
+.owners{width:100%}
+.owners td input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:6px 10px}
+.owners td:first-child{font-weight:600;white-space:nowrap}
+.out{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.out li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.out li:last-child{border-bottom:none}
+.out input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.out .who{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-top:4px}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone · Virtual Gold Inc · Client meeting 3</div>
+  <h1>Confirm the use case, show the sensitivity gate, close the resource questions</h1>
+  <dl class="meta">
+    <div><dt>Date</dt><dd>Monday, September 21, 2026 · 18:00–19:00 ET · Week 5 of 15</dd></div>
+    <div><dt>Goal</dt><dd>Client confirms vertical / horizontal / both; Alex reviews the gate design; sandbox, API account and SOW cost line answered</dd></div>
+  </dl>
+  <div class="toolbar">
+    <div class="btns"><button id="expand-all" type="button">Expand all</button><button id="collapse-all" type="button">Collapse all</button></div>
+    <div class="legend"><span><mark class="hl-key">Gold: our line tonight</mark></span><span><mark class="hl-ask">Blue: needs the client's answer</mark></span><span><mark class="hl-no">Red: internal only, do not raise</mark></span></div>
+  </div>
+</header>
+
+<ol class="agenda">
+  <li><a href="#align"><span class="n">A</span><span class="t">Before the call</span><span class="m">team only · 15 min · one voice</span></a></li>
+  <li><a href="#usecase"><span class="n">B</span><span class="t">Use case</span><span class="m">confirm direction · 10 min</span></a></li>
+  <li><a href="#gate"><span class="n">C</span><span class="t">Sensitivity gate</span><span class="m">Yudi's briefing · 20 min</span></a></li>
+  <li><a href="#progress"><span class="n">D</span><span class="t">Progress + questions</span><span class="m">what landed · what we need · 20 min</span></a></li>
+  <li><a href="#after"><span class="n">E</span><span class="t">After</span><span class="m">what to record</span></a></li>
+</ol>
+
+<div class="cat" id="align"><h2>A · Before the call: settle six points among ourselves</h2><span class="tag">team only · 15 min</span></div>
+<div class="item">
+  <p class="ctx">Karina's PRs (#3–#5) and Yudi's report each assume an answer to these. Tonight we must say one thing. TODO A10 tracks them; decide here, record after.</p>
+  <div class="tbl">
+  <table>
+    <tr><th>Point</th><th>Where the two versions differ</th><th>Our line tonight</th></tr>
+    <tr><td><strong>(a) Query split</strong></td><td>Our reply to Alex on Sep 18: stretch, W9+. Karina's demo data and Yudi's slide: already in the design.</td><td><mark class="hl-key">"Designed in; the midpoint (Oct 2–9) shows whole-request classification, split routing is evaluated in weeks 9–11."</mark> Both true, no contradiction.</td></tr>
+    <tr><td><strong>(b) Demo shape</strong></td><td>PR #4 puts phone, account and strategy inside the question. Realistic form: natural question plus a separate strategy note.</td><td><mark class="hl-no">Internal. Not for the client.</mark> Decide: natural question + `document_text`.</td></tr>
+    <tr><td><strong>(c) Public data in git</strong></td><td>PR #5 commits 48k lines under `data/real/`; README says no real data.</td><td><mark class="hl-no">Internal.</mark> Decide: `data/public/`, fetched at runtime, gitignored; README wording "no client or personal data".</td></tr>
+    <tr><td><strong>(d) Names in public filings</strong></td><td>Presidio flags executives' names in 10-Ks. Counting them as leaks inflates the PII-leak rate and blinds the cloud.</td><td><mark class="hl-key">"Sensitivity is assigned by source, not inferred from content: public-source text is not redacted."</mark> This is Yudi's layer 1 and answers Alex directly.</td></tr>
+    <tr><td><strong>(e) Numeric data</strong></td><td>Architecture §10 default: placeholders. Yudi: scale by a session-secret factor so the cloud can compute ratios.</td><td><mark class="hl-key">"Placeholders in the MVP; order-preserving scaling is a candidate we will test in the three-arm comparison."</mark> Present as proposal, not decision.</td></tr>
+    <tr><td><strong>(f) PII-leak metric</strong></td><td>Plan said detector-style rate. Yudi: detector F1 is not privacy; use per-entity-type recall and multi-turn leakage.</td><td><mark class="hl-key">Adopt Yudi's framing.</mark> No conflict with the client; it strengthens the security chapter.</td></tr>
+  </table>
+  </div>
+  <div class="fields">
+    <div><label for="a1">Agreed lines (edit if changed)</label><textarea id="a1" data-store="a1" placeholder="Any point where we chose differently"></textarea></div>
+    <div><label for="a1o">Records after</label><input id="a1o" data-store="a1o" value="Mark"></div>
+    <div><label for="a1d">Due</label><input id="a1d" data-store="a1d" value="Tue Sep 22"></div>
+  </div>
+</div>
+
+<div class="cat" id="usecase"><h2>B · Use case: confirm the direction</h2><span class="tag">10 min</span></div>
+<div class="item">
+  <p class="ctx">On Sep 15 the client asked: a vertical financial-services use case, or a horizontal sensitive-data sanitization application? Inderpal proposed a trading assistant on public filings. Our team proposal from Sep 18:</p>
+  <ul>
+    <li><mark class="hl-key">Both.</mark> The sanitization gateway is the horizontal capability, measurable on its own (leak rate, re-identification success). The trading assistant is the vertical scenario that runs on top of it: public filings and market data may go to the cloud; positions and strategy never leave.</li>
+    <li>Why this vertical: the client proposed it, all data is public (SEC EDGAR, market prices, FinQA benchmark), and the local-vs-cloud split has an obvious business reason.</li>
+    <li>Scope guard: a question-answering assistant over filings with confidential context. <mark class="hl-no">No order execution, no live feeds, no backtesting.</mark></li>
+    <li><mark class="hl-ask">Ask: does this direction work for you, or do you want horizontal only or vertical only?</mark></li>
+  </ul>
+  <div class="fields">
+    <div><label for="b1">Client's answer</label><textarea id="b1" data-store="b1" placeholder="Vertical / horizontal / both; any change to the scenario"></textarea></div>
+    <div><label for="b1o">Owner</label><input id="b1o" data-store="b1o" value="Mark"></div>
+    <div><label for="b1d">Decision log</label><input id="b1d" data-store="b1d" value="A8"></div>
+  </div>
+</div>
+
+<div class="cat" id="gate"><h2>C · Sensitivity gate: how the system decides what leaves</h2><span class="tag">Yudi · 20 min</span></div>
+<div class="item">
+  <p class="ctx">Alex's question from Sep 15. Yudi presents <code>briefing-security-deidentification-en.html</code> (this folder). The points to land:</p>
+  <ul>
+    <li><mark class="hl-key">Sensitive is not the same as PII.</mark> "Exit the regional-bank book before the Fed meeting" has no identifier and discloses the whole strategy. We protect intent, strategy, positions, then identifiers, in that order.</li>
+    <li><mark class="hl-key">Four layers, only the last one is a judgement:</mark> source (position store is confidential by construction, EDGAR is public by construction), pattern (checksums and fixed formats), written policy (one page, reviewable by the client), and judgement only for the trader's free-text notes, which are dropped by default.</li>
+    <li><mark class="hl-key">Two scores, not one gate:</mark> sensitivity and task-necessity, driving keep / abstract / remove. A sensitivity-only gate keeps 4% of task-critical content; two scores keep 95% (MINIM, ICML 2026).</li>
+    <li>Alex's three alternatives, partial restriction, output censorship, split routing: all in the design, timed per point (a) above.</li>
+    <li>Measurement: detector accuracy is not privacy; we report per-entity-type recall and multi-turn leakage across a working session.</li>
+    <li><mark class="hl-ask">Ask Alex: is this the review he wanted, and what should the written policy page cover for his use?</mark></li>
+  </ul>
+  <div class="fields">
+    <div><label for="c1">Alex's feedback</label><textarea id="c1" data-store="c1" placeholder="Objections, additions, what to put in the policy page"></textarea></div>
+    <div><label for="c1o">Owner</label><input id="c1o" data-store="c1o" value="Yudi"></div>
+    <div><label for="c1d">Follow-up by</label><input id="c1d" data-store="c1d" value="Fri Sep 25"></div>
+  </div>
+</div>
+
+<div class="cat" id="progress"><h2>D · Progress since Sep 15, and what we still need</h2><span class="tag">20 min</span></div>
+<div class="item">
+  <h3>Landed this week</h3>
+  <ul>
+    <li>Workstream owners set: router Mark, models Anmol, confidence and harness Zhexuan, security Yudi, synthetic data Karina.</li>
+    <li>Three research reports delivered: confidence signals at 8B (Zhexuan), financial data sources and licences (Karina), security and de-identification (Yudi). Finance benchmark chosen: FinQA, MIT licence, so nothing non-commercial reaches your systems.</li>
+    <li>Harness code started on HF transformers (Zhexuan); SEC EDGAR fetch script and a first synthetic demo batch drafted (Karina).</li>
+  </ul>
+  <h3>Still need from you</h3>
+  <ul>
+    <li><mark class="hl-ask">Sandbox:</mark> provider, GPU (T4 works, A10G preferred for multi-sample runs), SSH-style access, availability date, through Dec 11, who covers compute.</li>
+    <li><mark class="hl-ask">API account:</mark> you have both OpenAI and Anthropic. Which one should we build on, and how are keys and a budget cap shared?</li>
+    <li><mark class="hl-ask">Sample formats</mark> for the trading scenario, if any. Formats only; we never take real data.</li>
+    <li><mark class="hl-ask">OneDrive folder</mark> (Inderpal offered) and the <mark class="hl-ask">SOW cost line</mark>: once the sandbox and credits are agreed we fill the amount and sign.</li>
+  </ul>
+  <div class="fields">
+    <div><label for="d1">Answers</label><textarea id="d1" data-store="d1" placeholder="Sandbox · API account · formats · OneDrive · SOW amount"></textarea></div>
+    <div><label for="d1o">Owner</label><input id="d1o" data-store="d1o" value="Mark"></div>
+    <div><label for="d1d">Records to</label><input id="d1d" data-store="d1d" value="B15 · A6 · D22 · E26"></div>
+  </div>
+</div>
+
+<div class="cat" id="after"><h2>E · After the call</h2><span class="tag">Tuesday</span></div>
+<ul class="out">
+  <li><input type="checkbox" id="o1" data-store="o1"><label for="o1">Use case confirmed → A8 closed, decision-log row, architecture §10 updated</label><span class="who">Mark</span></li>
+  <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">Six A10 points recorded as decisions; Karina's PRs #3–#5 reviewed accordingly</label><span class="who">Mark</span></li>
+  <li><input type="checkbox" id="o3" data-store="o3"><label for="o3">Alex's feedback folded into the written policy page</label><span class="who">Yudi</span></li>
+  <li><input type="checkbox" id="o4" data-store="o4"><label for="o4">Sandbox and API answers → B15, A6; SOW amount filled and sent for signature</label><span class="who">Mark</span></li>
+  <li><input type="checkbox" id="o5" data-store="o5"><label for="o5">Gemini notes saved as notes-gemini-en, translation as notes-zh</label><span class="who">Mark</span></li>
+</ul>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-client-2026-09-21:';
+  function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
+  var all=document.querySelectorAll('details.more');
+  document.getElementById('expand-all').addEventListener('click',function(){all.forEach(function(d){d.open=true})});
+  document.getElementById('collapse-all').addEventListener('click',function(){all.forEach(function(d){d.open=false})});
+  document.querySelectorAll('[data-store]').forEach(function(el){
+    var k=el.getAttribute('data-store');
+    if(el.type==='checkbox'){
+      el.checked=get(k)==='1';
+      el.addEventListener('change',function(){set(k,el.checked?'1':'0')});
+    }else{
+      var v=get(k); if(v!==null) el.value=v;
+      el.addEventListener('input',function(){set(k,el.value)});
+    }
+  });
+})();
+</script>
