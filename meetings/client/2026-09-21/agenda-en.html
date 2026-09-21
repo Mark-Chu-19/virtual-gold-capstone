@@ -171,7 +171,48 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <div><div class="k">2 · What we examined: the vertical, in one scenario</div>A trader at a small asset manager asks: <b>"Based on Apple's latest 10-Q, what does the services-revenue trend mean for my current position?"</b> The gateway tags the request confidential because it touches her position. The local 8B model answers first; its confidence is low on a financial table, so escalation is needed. What goes to the cloud is only the public part: "summarize the services-revenue trend in Apple's latest 10-Q". Her positions, strategy note and identity never leave. The cloud summary and the local exposure calculation are merged on the device. Every step is logged. This is vertical because the data formats, the definition of "confidential" and the benchmark are all specific to trading.</div>
     <div><div class="k">3 · What we examined: the horizontal, in one scenario</div>Any company's IT department already calls a cloud model for support replies, contract summaries or internal Q&amp;A. The same gateway sits between them and the API: a customer complaint goes out with name, account and phone replaced by placeholders and comes back re-identified; a legal memo goes out with organizations and amounts replaced; an HR document tagged confidential is refused outright. Three departments, one filter, no knowledge of the business. Change industry and only the recognizer list changes. This is horizontal because the gateway is measured on its own: detection rate, leak rate, re-identification success.</div>
     <div><div class="k">4 · What we found</div><b>The two are not alternatives; they are two layers of the same architecture.</b> The gateway is the horizontal capability. The assistant is the first application that runs on top of it. Building the assistant requires the gateway anyway, so doing both adds no scope; the only addition is measuring the gateway separately.</div>
-    <div><div class="k">5 · What we propose</div><mark class="hl-key">Both lines, with Inderpal's trading assistant as the vertical.</mark> Why this vertical: you proposed it; all input data is public and free (SEC EDGAR filings, market prices, FinQA under MIT licence as a scored benchmark); and the local-vs-cloud split has a business reason a trader immediately recognizes: strategy is the secret, filings are not.</div>
+    <div><div class="k">5 · What we propose</div><mark class="hl-key">Both lines, with Inderpal's trading assistant as the vertical.</mark> Why this vertical: you proposed it; all input data is public and free (SEC EDGAR filings, market prices, FinQA under MIT licence as a scored benchmark); and the local-vs-cloud split has a business reason a trader immediately recognizes: strategy is the secret, filings are not. What each line builds is below.</div>
+  </div>
+
+  <h3>The horizontal line: the sanitization gateway (owner: Yudi)</h3>
+  <div class="tbl"><table>
+    <tr><th>We build</th><th>What it does</th><th>Done by</th></tr>
+    <tr><td>Sensitivity classifier</td><td>Tags every request and document public / internal / confidential, by source first (position store is confidential by construction, EDGAR is public), then by pattern (account formats, ticker checksums), then by a one-page written policy you can review</td><td>Midpoint, Oct 2–9</td></tr>
+    <tr><td>Detector and transformer</td><td>Finds sensitive spans and applies the treatment per field type: identifiers become placeholders, quantities are rescaled or replaced, strategy notes are dropped; the mapping table never leaves the device</td><td>Midpoint (placeholders); rescaling and generalization tested W9–11</td></tr>
+    <tr><td>Verifier and egress proxy</td><td>Deterministic code, not a model, authorizes what leaves; the proxy is the only exit and logs every outgoing request</td><td>Midpoint</td></tr>
+    <tr><td>Output check and re-identification</td><td>The cloud reply is scanned as untrusted input, then placeholders are restored locally before the user sees it</td><td>Midpoint</td></tr>
+    <tr><td>Security evaluation</td><td>Five measurements: per-category detection weighted toward misses, leak rate at the boundary with planted canaries, answer quality with protection on vs off, attack success vs unsafe actions, disclosure across a whole session</td><td>W9–11</td></tr>
+    <tr><td>Governance mapping</td><td>NIST AI RMF (Govern, Map, Measure, Manage) with our controls and metrics placed against it; the security and risk assessment (SOW deliverable 5)</td><td>W12–15</td></tr>
+  </table></div>
+
+  <h3>The vertical line: the trading assistant (owners: Mark, Anmol, Zhexuan, Karina)</h3>
+  <div class="tbl"><table>
+    <tr><th>We build</th><th>What it does</th><th>Done by</th></tr>
+    <tr><td>Local inference</td><td>Llama 3.1 8B (Qwen3 8B secondary) on the sandbox GPU, 4-bit, run with Hugging Face transformers so we can read the model's own confidence signals</td><td>Week 5</td></tr>
+    <tr><td>Confidence score</td><td>Token log-probability at the midpoint; a Semantic Entropy Probe and a sampling ensemble compared against it in W9–11, so the final report says which signal actually works at 8B</td><td>Midpoint (A); W9–11 (B, C)</td></tr>
+    <tr><td>Router</td><td>Our own code: escalate only when confidence is low and the sensitivity class allows; confidential never leaves; calls your OpenAI or Anthropic account through the official SDK</td><td>Midpoint</td></tr>
+    <tr><td>Data</td><td>Real public filings and prices pulled from SEC EDGAR and market data at run time; synthetic positions, strategy notes and client identities (never real); FinQA sample for scored accuracy</td><td>Week 5–6</td></tr>
+    <tr><td>Interface</td><td>CLI and REST API for people and for the harness; no GUI, as agreed Sep 3</td><td>Midpoint</td></tr>
+    <tr><td>Knowledge base over many filings (RAG)</td><td>Stretch goal; revisited after the midpoint</td><td>If time allows</td></tr>
+  </table></div>
+
+  <h3>Shared: the evaluation harness (owner: Zhexuan)</h3>
+  <div class="tbl"><table>
+    <tr><th>We build</th><th>What it does</th><th>Done by</th></tr>
+    <tr><td>Three-configuration runner</td><td>Same questions through local-only, hybrid and cloud-only; every query sent to the cloud once and cached so all three come from one run</td><td>Week 5 (code started)</td></tr>
+    <tr><td>Benchmarks and metrics</td><td>MMLU subset, GSM8K, FinQA; accuracy, latency, cost per query, escalation rate, plus calibration (ECE, AUROC) and the escalation-vs-accuracy curve</td><td>Midpoint: first numbers</td></tr>
+    <tr><td>Full run</td><td>All confidence signals, security metrics added from the same logs, hardware scenarios (T4 vs A10G, 4-bit vs 8-bit) for the "what on-prem hardware buys" question</td><td>W9–11</td></tr>
+  </table></div>
+
+  <h3>Timeline</h3>
+  <div class="tbl"><table>
+    <tr><th>When</th><th>What you see</th></tr>
+    <tr><td>Oct 2–9 (midpoint, week 7)</td><td>Three configurations on MMLU, GSM8K and FinQA with the token-logprob signal; the gateway working end to end in a CLI demo (a request with confidential context goes out sanitized, comes back re-identified); first leak-rate numbers</td></tr>
+    <tr><td>Weeks 9–11</td><td>Remaining confidence signals compared; the three sanitization strategies compared under multi-turn testing; full security metrics; hardware scenarios</td></tr>
+    <tr><td>Dec 2–11 (final, week 15)</td><td>Prototype, benchmark report, security and risk assessment, governance mapping, and the "when local, cloud, or hybrid" decision framework (SOW deliverables 1–6)</td></tr>
+  </table></div>
+
+  <div class="finding">
     <div><div class="k">6 · What this delivers against the brief</div><b>From the horizontal line:</b> a measured privacy layer, per-category detection rate, leak rate at the network boundary, re-identification success, a written policy page your team can review, and the governance mapping (NIST AI RMF). This is the brief's "protect sensitive information" and "governance and security controls". <b>From the vertical line:</b> the numbers you asked for on Sep 3, local-only vs hybrid vs cloud-only accuracy, latency, cost per query and escalation rate on MMLU, GSM8K and FinQA, and a working CLI demo at the Oct 2–9 midpoint. This is the brief's "local model as primary intelligence layer" and "measure confidence". The two meet in the router, which reads confidence (need to escalate?) and sensitivity (allowed to?).</div>
     <div><div class="k">7 · Scope</div>The assistant answers questions over filings and market data with confidential context. <mark class="hl-no">No order execution, no live market feeds, no backtesting engine, no GUI.</mark> Fifteen weeks, five part-time students; the value is in the routing, the gate and the evaluation, not in a trading product. Choosing only one line is possible: horizontal only drops the assistant and the midpoint demo; vertical only leaves the gate built for one scenario and the security chapter thin.</div>
     <div><div class="k">8 · The ask</div><mark class="hl-ask">Does this direction work for you: both lines, trading assistant as the vertical? Or do you want horizontal only or vertical only?</mark></div>
