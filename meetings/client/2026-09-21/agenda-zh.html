@@ -45,7 +45,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
 .legend mark{font-weight:600}
 
-.agenda{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
 .agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
 .agenda li:hover{border-color:var(--gold)}
 .agenda a{color:inherit;text-decoration:none;display:block}
@@ -153,40 +153,18 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </dl>
   <div class="toolbar">
     <div class="btns"><button id="expand-all" type="button">全部展開</button><button id="collapse-all" type="button">全部收合</button></div>
-    <div class="legend"><span><mark class="hl-key">金色:今晚的說法</mark></span><span><mark class="hl-ask">藍色:需要客戶回答</mark></span><span><mark class="hl-no">紅色:內部,不提</mark></span></div>
+    <div class="legend"><span><mark class="hl-key">金色:我們的說法</mark></span><span><mark class="hl-ask">藍色:需要客戶回答</mark></span></div>
   </div>
 </header>
 
 <ol class="agenda">
-  <li><a href="#align"><span class="n">A</span><span class="t">會前</span><span class="m">僅團隊 · 15 分 · 統一口徑</span></a></li>
-  <li><a href="#usecase"><span class="n">B</span><span class="t">使用情境</span><span class="m">確認方向 · 10 分</span></a></li>
-  <li><a href="#gate"><span class="n">C</span><span class="t">敏感度閘門</span><span class="m">Yudi 簡報 · 20 分</span></a></li>
-  <li><a href="#progress"><span class="n">D</span><span class="t">進度與問題</span><span class="m">做了什麼 · 還缺什麼 · 20 分</span></a></li>
-  <li><a href="#after"><span class="n">E</span><span class="t">會後</span><span class="m">要記錄的事</span></a></li>
+  <li><a href="#usecase"><span class="n">A</span><span class="t">使用情境</span><span class="m">確認方向 · 10 分</span></a></li>
+  <li><a href="#gate"><span class="n">B</span><span class="t">敏感度閘門</span><span class="m">Yudi 簡報 · 20 分</span></a></li>
+  <li><a href="#progress"><span class="n">C</span><span class="t">進度與問題</span><span class="m">做了什麼 · 還缺什麼 · 20 分</span></a></li>
+  <li><a href="#after"><span class="n">D</span><span class="t">會後</span><span class="m">要記錄的事</span></a></li>
 </ol>
 
-<div class="cat" id="align"><h2>A · 會前:六個點先在團隊內定</h2><span class="tag">僅團隊 · 15 分</span></div>
-<div class="item">
-  <p class="ctx">Karina 的 PR(#3–#5)和 Yudi 的報告各自假設了答案。今晚只能講一個版本。TODO A10 追蹤這六點;這裡定,會後記。</p>
-  <div class="tbl">
-  <table>
-    <tr><th>點</th><th>兩個版本差在哪</th><th>今晚的說法</th></tr>
-    <tr><td><strong>(a)拆題</strong></td><td>9/18 回 Alex:stretch,W9 後。Karina 的 demo 資料與 Yudi 的簡報:已在設計裡。</td><td><mark class="hl-key">「設計裡有;期中(10/2–9)展示整題判定,分流在第 9–11 週評估。」</mark>兩句都是真的,不矛盾。</td></tr>
-    <tr><td><strong>(b)Demo 形式</strong></td><td>PR #4 把電話、帳號、策略塞在問句裡。合理的形式:自然問句加獨立策略筆記。</td><td><mark class="hl-no">內部,不對客戶提。</mark>定:自然問句加 `document_text`。</td></tr>
-    <tr><td><strong>(c)公開資料進 git</strong></td><td>PR #5 把 48,000 行放進 `data/real/`;README 說不放真實資料。</td><td><mark class="hl-no">內部。</mark>定:`data/public/`、執行時抓、gitignore;README 改寫「不放客戶與個人資料」。</td></tr>
-    <tr><td><strong>(d)公開申報文件裡的人名</strong></td><td>Presidio 會把 10-K 裡的高階主管姓名標成 PII。算成洩漏會灌水,也讓雲端看不懂文件。</td><td><mark class="hl-key">「敏感度由來源指定,不從內容推斷:公開來源的文字不遮罩。」</mark>這就是 Yudi 的第一層,直接回答 Alex。</td></tr>
-    <tr><td><strong>(e)數值處理</strong></td><td>架構第十節預設:佔位符。Yudi:乘以會話祕密係數,讓雲端能算比例。</td><td><mark class="hl-key">「MVP 用佔位符;保序縮放是三臂比較裡要測的候選方案。」</mark>當提案講,不是定案。</td></tr>
-    <tr><td><strong>(f)PII 洩漏率指標</strong></td><td>原計畫是偵測器式的比率。Yudi:偵測器 F1 不是隱私;改用逐類別 recall 加多輪洩漏。</td><td><mark class="hl-key">採用 Yudi 的說法。</mark>跟客戶沒有衝突,反而強化安全章節。</td></tr>
-  </table>
-  </div>
-  <div class="fields">
-    <div><label for="a1">議定的說法(有改再填)</label><textarea id="a1" data-store="a1" placeholder="哪一點選了不同的版本"></textarea></div>
-    <div><label for="a1o">會後記錄</label><input id="a1o" data-store="a1o" value="Mark"></div>
-    <div><label for="a1d">期限</label><input id="a1d" data-store="a1d" value="9/22(二)"></div>
-  </div>
-</div>
-
-<div class="cat" id="usecase"><h2>B · 使用情境:確認方向</h2><span class="tag">10 分</span></div>
+<div class="cat" id="usecase"><h2>A · 使用情境:確認方向</h2><span class="tag">10 分</span></div>
 <div class="item">
   <p class="ctx">9/15 客戶問:垂直的金融服務情境,還是橫向的敏感資料淨化應用?Inderpal 提了公開申報文件上的交易助理。團隊 9/18 的提案:</p>
   <ul>
@@ -202,14 +180,14 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
-<div class="cat" id="gate"><h2>C · 敏感度閘門:系統怎麼決定什麼能出去</h2><span class="tag">Yudi · 20 分</span></div>
+<div class="cat" id="gate"><h2>B · 敏感度閘門:系統怎麼決定什麼能出去</h2><span class="tag">Yudi · 20 分</span></div>
 <div class="item">
   <p class="ctx">Alex 9/15 的問題。Yudi 用 <code>briefing-security-deidentification-en.html</code>(同資料夾)報告。要講到的重點:</p>
   <ul>
     <li><mark class="hl-key">敏感不等於 PII。</mark>「Fed 開會前出清區域銀行部位」沒有任何識別碼,卻揭露整個策略。我們保護的順序:意圖、策略、持倉,然後才是識別碼。</li>
     <li><mark class="hl-key">四層判定,只有最後一層是主觀判斷:</mark>來源(持倉庫天生機密、EDGAR 天生公開)、格式(checksum 與固定格式)、書面政策(一頁,客戶可審)、只對交易員的自由文字筆記做判斷,而且預設丟掉。</li>
     <li><mark class="hl-key">兩個分數,不是一個閘門:</mark>敏感度與任務必要性,決定保留 / 抽象化 / 移除。只看敏感度的閘門只留下 4% 任務必要內容;兩個分數留下 95%(MINIM,ICML 2026)。</li>
-    <li>Alex 的三個替代方案(部分限制、輸出審查、分流)都在設計裡,時程依上面第(a)點。</li>
+    <li>Alex 的三個替代方案(部分限制、輸出審查、分流)都在設計裡;分流在第 9–11 週評估,期中展示整題判定。</li>
     <li><mark class="hl-key">三個設計結論:</mark>決定什麼能出去的一律是確定性的程式碼,不是模型(模型會被它讀到的文字說服);揭露規則在檢索之前就由問題決定,申報文件裡被植入的文字無法左右它;揭露量以整段會話為單位預算,因為二十個各自無害的問題加起來仍可能揭露整個部位。</li>
     <li>量測用五個獨立數字,不是一個準確率:逐類別偵測率(偏重漏檢)、網路邊界的洩漏率(本地植入 canary,監看每個出去的位元組)、開關保護的答案品質差異、攻擊成功率與不安全動作分開計、整段會話的揭露量。</li>
     <li><mark class="hl-ask">問 Alex:這是不是他要的審閱,書面政策頁要涵蓋什麼才對他有用?</mark></li>
@@ -221,7 +199,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
-<div class="cat" id="progress"><h2>D · 9/15 之後的進度,以及還需要什麼</h2><span class="tag">20 分</span></div>
+<div class="cat" id="progress"><h2>C · 9/15 之後的進度,以及還需要什麼</h2><span class="tag">20 分</span></div>
 <div class="item">
   <h3>本週完成</h3>
   <ul>
@@ -243,10 +221,10 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
-<div class="cat" id="after"><h2>E · 會後</h2><span class="tag">週二</span></div>
+<div class="cat" id="after"><h2>D · 會後</h2><span class="tag">週二</span></div>
 <ul class="out">
   <li><input type="checkbox" id="o1" data-store="o1"><label for="o1">使用情境確認 → A8 關閉、決策紀錄、架構第十節更新</label><span class="who">Mark</span></li>
-  <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">A10 六點記為決定;據此審 Karina 的 PR #3–#5</label><span class="who">Mark</span></li>
+  <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">A10 六點在 9/25(五)團隊會議定案;據此審 Karina 的 PR #3–#5</label><span class="who">Mark</span></li>
   <li><input type="checkbox" id="o3" data-store="o3"><label for="o3">Alex 的回饋納入書面政策頁</label><span class="who">Yudi</span></li>
   <li><input type="checkbox" id="o4" data-store="o4"><label for="o4">沙盒與 API 回答 → B15、A6;SOW 填金額送簽</label><span class="who">Mark</span></li>
   <li><input type="checkbox" id="o5" data-store="o5"><label for="o5">Gemini 筆記存為 notes-gemini-en,翻譯存為 notes-zh</label><span class="who">Mark</span></li>

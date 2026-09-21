@@ -45,7 +45,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
 .legend mark{font-weight:600}
 
-.agenda{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
 .agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
 .agenda li:hover{border-color:var(--gold)}
 .agenda a{color:inherit;text-decoration:none;display:block}
@@ -153,40 +153,18 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </dl>
   <div class="toolbar">
     <div class="btns"><button id="expand-all" type="button">Expand all</button><button id="collapse-all" type="button">Collapse all</button></div>
-    <div class="legend"><span><mark class="hl-key">Gold: our line tonight</mark></span><span><mark class="hl-ask">Blue: needs the client's answer</mark></span><span><mark class="hl-no">Red: internal only, do not raise</mark></span></div>
+    <div class="legend"><span><mark class="hl-key">Gold: what we say</mark></span><span><mark class="hl-ask">Blue: needs the client's answer</mark></span></div>
   </div>
 </header>
 
 <ol class="agenda">
-  <li><a href="#align"><span class="n">A</span><span class="t">Before the call</span><span class="m">team only · 15 min · one voice</span></a></li>
-  <li><a href="#usecase"><span class="n">B</span><span class="t">Use case</span><span class="m">confirm direction · 10 min</span></a></li>
-  <li><a href="#gate"><span class="n">C</span><span class="t">Sensitivity gate</span><span class="m">Yudi's briefing · 20 min</span></a></li>
-  <li><a href="#progress"><span class="n">D</span><span class="t">Progress + questions</span><span class="m">what landed · what we need · 20 min</span></a></li>
-  <li><a href="#after"><span class="n">E</span><span class="t">After</span><span class="m">what to record</span></a></li>
+  <li><a href="#usecase"><span class="n">A</span><span class="t">Use case</span><span class="m">confirm direction · 10 min</span></a></li>
+  <li><a href="#gate"><span class="n">B</span><span class="t">Sensitivity gate</span><span class="m">Yudi's briefing · 20 min</span></a></li>
+  <li><a href="#progress"><span class="n">C</span><span class="t">Progress + questions</span><span class="m">what landed · what we need · 20 min</span></a></li>
+  <li><a href="#after"><span class="n">D</span><span class="t">After</span><span class="m">what to record</span></a></li>
 </ol>
 
-<div class="cat" id="align"><h2>A · Before the call: settle six points among ourselves</h2><span class="tag">team only · 15 min</span></div>
-<div class="item">
-  <p class="ctx">Karina's PRs (#3–#5) and Yudi's report each assume an answer to these. Tonight we must say one thing. TODO A10 tracks them; decide here, record after.</p>
-  <div class="tbl">
-  <table>
-    <tr><th>Point</th><th>Where the two versions differ</th><th>Our line tonight</th></tr>
-    <tr><td><strong>(a) Query split</strong></td><td>Our reply to Alex on Sep 18: stretch, W9+. Karina's demo data and Yudi's slide: already in the design.</td><td><mark class="hl-key">"Designed in; the midpoint (Oct 2–9) shows whole-request classification, split routing is evaluated in weeks 9–11."</mark> Both true, no contradiction.</td></tr>
-    <tr><td><strong>(b) Demo shape</strong></td><td>PR #4 puts phone, account and strategy inside the question. Realistic form: natural question plus a separate strategy note.</td><td><mark class="hl-no">Internal. Not for the client.</mark> Decide: natural question + `document_text`.</td></tr>
-    <tr><td><strong>(c) Public data in git</strong></td><td>PR #5 commits 48k lines under `data/real/`; README says no real data.</td><td><mark class="hl-no">Internal.</mark> Decide: `data/public/`, fetched at runtime, gitignored; README wording "no client or personal data".</td></tr>
-    <tr><td><strong>(d) Names in public filings</strong></td><td>Presidio flags executives' names in 10-Ks. Counting them as leaks inflates the PII-leak rate and blinds the cloud.</td><td><mark class="hl-key">"Sensitivity is assigned by source, not inferred from content: public-source text is not redacted."</mark> This is Yudi's layer 1 and answers Alex directly.</td></tr>
-    <tr><td><strong>(e) Numeric data</strong></td><td>Architecture §10 default: placeholders. Yudi: scale by a session-secret factor so the cloud can compute ratios.</td><td><mark class="hl-key">"Placeholders in the MVP; order-preserving scaling is a candidate we will test in the three-arm comparison."</mark> Present as proposal, not decision.</td></tr>
-    <tr><td><strong>(f) PII-leak metric</strong></td><td>Plan said detector-style rate. Yudi: detector F1 is not privacy; use per-entity-type recall and multi-turn leakage.</td><td><mark class="hl-key">Adopt Yudi's framing.</mark> No conflict with the client; it strengthens the security chapter.</td></tr>
-  </table>
-  </div>
-  <div class="fields">
-    <div><label for="a1">Agreed lines (edit if changed)</label><textarea id="a1" data-store="a1" placeholder="Any point where we chose differently"></textarea></div>
-    <div><label for="a1o">Records after</label><input id="a1o" data-store="a1o" value="Mark"></div>
-    <div><label for="a1d">Due</label><input id="a1d" data-store="a1d" value="Tue Sep 22"></div>
-  </div>
-</div>
-
-<div class="cat" id="usecase"><h2>B · Use case: confirm the direction</h2><span class="tag">10 min</span></div>
+<div class="cat" id="usecase"><h2>A · Use case: confirm the direction</h2><span class="tag">10 min</span></div>
 <div class="item">
   <p class="ctx">On Sep 15 the client asked: a vertical financial-services use case, or a horizontal sensitive-data sanitization application? Inderpal proposed a trading assistant on public filings. Our team proposal from Sep 18:</p>
   <ul>
@@ -202,14 +180,14 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
-<div class="cat" id="gate"><h2>C · Sensitivity gate: how the system decides what leaves</h2><span class="tag">Yudi · 20 min</span></div>
+<div class="cat" id="gate"><h2>B · Sensitivity gate: how the system decides what leaves</h2><span class="tag">Yudi · 20 min</span></div>
 <div class="item">
   <p class="ctx">Alex's question from Sep 15. Yudi presents <code>briefing-security-deidentification-en.html</code> (this folder). The points to land:</p>
   <ul>
     <li><mark class="hl-key">Sensitive is not the same as PII.</mark> "Exit the regional-bank book before the Fed meeting" has no identifier and discloses the whole strategy. We protect intent, strategy, positions, then identifiers, in that order.</li>
     <li><mark class="hl-key">Four layers, only the last one is a judgement:</mark> source (position store is confidential by construction, EDGAR is public by construction), pattern (checksums and fixed formats), written policy (one page, reviewable by the client), and judgement only for the trader's free-text notes, which are dropped by default.</li>
     <li><mark class="hl-key">Two scores, not one gate:</mark> sensitivity and task-necessity, driving keep / abstract / remove. A sensitivity-only gate keeps 4% of task-critical content; two scores keep 95% (MINIM, ICML 2026).</li>
-    <li>Alex's three alternatives, partial restriction, output censorship, split routing: all in the design, timed per point (a) above.</li>
+    <li>Alex's three alternatives, partial restriction, output censorship, split routing: all in the design; split routing is evaluated in weeks 9–11, the midpoint shows whole-request classification.</li>
     <li><mark class="hl-key">Three design conclusions:</mark> whatever authorizes a release is deterministic code, never a model (a model can be argued into anything by text it reads); the disclosure rules are fixed from the question before retrieval, so text planted in a filing cannot steer them; and disclosure is budgeted across the whole session, since twenty harmless questions can still reveal the book.</li>
     <li>Measurement, five separate numbers rather than one accuracy: per-category detection weighted toward misses, leak rate at the network boundary with planted canaries, answer quality with protection on vs off, attack success vs unsafe actions counted separately, and disclosure across a whole session.</li>
     <li><mark class="hl-ask">Ask Alex: is this the review he wanted, and what should the written policy page cover for his use?</mark></li>
@@ -221,7 +199,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
-<div class="cat" id="progress"><h2>D · Progress since Sep 15, and what we still need</h2><span class="tag">20 min</span></div>
+<div class="cat" id="progress"><h2>C · Progress since Sep 15, and what we still need</h2><span class="tag">20 min</span></div>
 <div class="item">
   <h3>Landed this week</h3>
   <ul>
@@ -243,10 +221,10 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
   </div>
 </div>
 
-<div class="cat" id="after"><h2>E · After the call</h2><span class="tag">Tuesday</span></div>
+<div class="cat" id="after"><h2>D · After the call</h2><span class="tag">Tuesday</span></div>
 <ul class="out">
   <li><input type="checkbox" id="o1" data-store="o1"><label for="o1">Use case confirmed → A8 closed, decision-log row, architecture §10 updated</label><span class="who">Mark</span></li>
-  <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">Six A10 points recorded as decisions; Karina's PRs #3–#5 reviewed accordingly</label><span class="who">Mark</span></li>
+  <li><input type="checkbox" id="o2" data-store="o2"><label for="o2">Six A10 points settled at the Fri Sep 25 team meeting; Karina's PRs #3–#5 reviewed accordingly</label><span class="who">Mark</span></li>
   <li><input type="checkbox" id="o3" data-store="o3"><label for="o3">Alex's feedback folded into the written policy page</label><span class="who">Yudi</span></li>
   <li><input type="checkbox" id="o4" data-store="o4"><label for="o4">Sandbox and API answers → B15, A6; SOW amount filled and sent for signature</label><span class="who">Mark</span></li>
   <li><input type="checkbox" id="o5" data-store="o5"><label for="o5">Gemini notes saved as notes-gemini-en, translation as notes-zh</label><span class="who">Mark</span></li>
