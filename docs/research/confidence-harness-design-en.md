@@ -2,7 +2,7 @@
 
 **Capstone · Virtual Gold Inc · Week 3 · Confidence-scoring work package**
 
-Extends [architecture-v0.3-en.md](architecture-v0.3-en.md) §5 (Confidence scoring) and §7 (Evaluation design and datasets) with an 8B-scale literature review and a concrete harness design. This document is the basis for the `feat/harness-*` and `eval/*` branches described in §6 below.
+Extends [architecture-v0.3-en.md](../architecture/architecture-v0.3-en.md) §5 (Confidence scoring) and §7 (Evaluation design and datasets) with an 8B-scale literature review and a concrete harness design. This document is the basis for the `feat/harness-*` and `eval/*` branches described in §6 below.
 
 | Version | Date | Status | Author |
 |---|---|---|---|
@@ -35,7 +35,7 @@ Three questions this document answers:
 | SelfCheckGPT (n-gram / BERTScore) | N−1 | 0 (n-gram) / light (BERTScore) | none | Direct: Llama-2-7B/13B tested |
 | SelfCheckGPT (NLI / prompt-based) | N−1 | N calls | none | Direct: 7B/13B tested, best result needs a GPT-3.5 judge |
 
-Full source review, per-paper caveats, and citations: `reference/team/confidence_scoring_harness_report_concise_en.md` (Zhexuan Ye, 2026-09-13).
+Full source review, per-paper caveats, and citations: `confidence-scoring-harness-report-en.md` (same folder) (Zhexuan Ye, 2026-09-13).
 
 \* **The SEP row's "0 at inference" assumes the inference stack exposes hidden states.** Ollama and the llama.cpp server don't expose them at all; vLLM exposes logprobs but not hidden states without a custom hook. The Semantic Entropy Probe reads hidden states directly (it's also what the OATML SEP reference implementation requires), so variant B is only buildable if the harness runs the model through HF transformers directly. Architecture v0.3 §9/TODO A1 has since settled on HF transformers with bitsandbytes 4-bit as the local inference stack precisely for this reason — see §3 below for what that means for sequencing.
 

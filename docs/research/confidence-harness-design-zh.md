@@ -2,7 +2,7 @@
 
 **Capstone · Virtual Gold Inc · 第 3 週 · 信心評分工作項目**
 
-延伸 [architecture-v0.3-zh.md](architecture-v0.3-zh.md) 第五節(信心評分)與第七節(評測設計與資料集),補上 8B 級文獻回顧與可執行的 harness 設計。本文件是下方第六節所列 `feat/harness-*`、`eval/*` 分支的依據。
+延伸 [architecture-v0.3-zh.md](../architecture/architecture-v0.3-zh.md) 第五節(信心評分)與第七節(評測設計與資料集),補上 8B 級文獻回顧與可執行的 harness 設計。本文件是下方第六節所列 `feat/harness-*`、`eval/*` 分支的依據。
 
 | 版本 | 日期 | 狀態 | 作者 |
 |---|---|---|---|
@@ -35,7 +35,7 @@
 | SelfCheckGPT(n-gram / BERTScore) | N−1 | 0(n-gram)/ 輕量(BERTScore) | 無 | 直接:Llama-2-7B/13B 測試 |
 | SelfCheckGPT(NLI / prompt-based) | N−1 | N 次呼叫 | 無 | 直接:7B/13B 測試,最佳結果需 GPT-3.5 當裁判 |
 
-完整文獻回顧、逐篇但書與引用出處:`reference/team/confidence_scoring_harness_report_concise_en.md`(Zhexuan Ye,2026-09-13)。
+完整文獻回顧、逐篇但書與引用出處:`confidence-scoring-harness-report-en.md`(同資料夾)(Zhexuan Ye,2026-09-13)。
 
 \* **SEP 那一列「推論時 0」有一個沒寫出來的前提:推論堆疊要能吐出 hidden states。**Ollama 和 llama.cpp server 完全不暴露 hidden states;vLLM 有 logprobs,但沒有自訂 hook 就拿不到 hidden states。SEP 直接讀 hidden states(OATML 的 SEP 參考實作也是這樣做),所以訊號變體 B 只有在 harness 直接用 HF transformers 跑模型時才做得出來。架構 v0.3 第九節 / TODO A1 已因為這個原因把本地推論堆疊定為 HF transformers 加 bitsandbytes 4-bit——第三節說明這對排程的影響。
 
