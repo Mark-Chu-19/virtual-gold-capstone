@@ -339,6 +339,12 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <li>Three research reports delivered: confidence signals at 8B (Zhexuan), financial data sources and licences (Karina), security and de-identification (Yudi). Finance benchmark chosen: FinQA, MIT licence, so nothing non-commercial reaches your systems.</li>
     <li>Harness code started on HF transformers (Zhexuan); SEC EDGAR fetch script and a first synthetic demo batch drafted (Karina).</li>
   </ul>
+  <h3>The two research items you asked for on Sep 15</h3>
+  <div class="finding">
+    <div><div class="k">Financial data sources</div><b>Done.</b> Public filings from SEC EDGAR (public domain, free API), prices from Yahoo Finance or Alpha Vantage, and three finance QA benchmarks compared on licence and ground truth. Conclusion: FinQA, MIT licence, so nothing non-commercial reaches your systems; FinanceBench (non-commercial) kept in reserve for coursework only.</div>
+    <div><div class="k">Redaction tools</div><b>Components chosen; commercial comparison not yet done.</b> The security review settled what the gateway is built from: Presidio for entity detection, a deterministic verifier and allow-list in front of the network, an open shim between the application and the cloud endpoint (llm-redactor, with its 1,300-sample leak benchmark), and the two-score policy from MINIM. It also found that Presidio's published scores measure identifier removal, not re-identification risk, which is why we add the layers above. What we have not done is a side-by-side of commercial services (Private AI, Google DLP and similar); <mark class="hl-ask">if that comparison is useful to you, we add it within a week.</mark></div>
+  </div>
+
   <h3>Still need from you</h3>
   <ul>
     <li><mark class="hl-ask">Sandbox:</mark> provider, GPU (T4 works, A10G preferred for multi-sample runs), SSH-style access, availability date, through Dec 11, who covers compute.</li>

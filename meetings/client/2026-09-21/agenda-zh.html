@@ -339,6 +339,12 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
     <li>三份研究交付:8B 的信心訊號(Zhexuan)、金融資料來源與授權(Karina)、安全與去識別化(Yudi)。金融 benchmark 選 FinQA,MIT 授權,不會有非商業授權的東西進到貴方系統。</li>
     <li>Harness 程式在 HF transformers 上開工(Zhexuan);SEC EDGAR 抓取腳本與第一批合成 demo 資料已草擬(Karina)。</li>
   </ul>
+  <h3>貴方 9/15 要的兩份研究</h3>
+  <div class="finding">
+    <div><div class="k">金融資料來源</div><b>已完成。</b>SEC EDGAR 的公開申報文件(公有領域、免費 API)、Yahoo Finance 或 Alpha Vantage 的行情,以及三個金融問答 benchmark 的授權與標準答案比較。結論:FinQA,MIT 授權,不會有非商業授權的東西進到貴方系統;FinanceBench(非商業)僅作課堂備用。</div>
+    <div><div class="k">遮罩工具</div><b>元件已選定;商用方案比較尚未做。</b>安全研究定了閘道由什麼組成:Presidio 做實體偵測、網路前一個確定性的驗證器與白名單、應用與雲端端點之間的開源中介層(llm-redactor,附 1,300 筆樣本的洩漏 benchmark)、以及 MINIM 的雙分數政策。研究也發現 Presidio 公開的分數量的是「移除識別碼」而不是重新識別風險,所以我們在它上面加了上述幾層。還沒做的是商用服務的並排比較(Private AI、Google DLP 之類);<mark class="hl-ask">如果這份比較對貴方有用,一週內補上。</mark></div>
+  </div>
+
   <h3>還需要貴方</h3>
   <ul>
     <li><mark class="hl-ask">沙盒:</mark>供應商、GPU(T4 可用,多樣本跑法偏好 A10G)、SSH 式存取、何時可用、用到 12/11、算力費用誰出。</li>
