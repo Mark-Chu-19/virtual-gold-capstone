@@ -96,11 +96,11 @@ Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, resea
 
 | Meeting | When | Folder |
 |---|---|---|
-| Client meeting (Virtual Gold) | Monday 18:00–19:00 | `meetings/client/` |
+| Client meeting (Virtual Gold) | Monday 18:00–19:00, weekly | `meetings/client/` |
 | Internal meeting with the professor | Tuesday 17:00–18:20 | `meetings/professor/` |
 | Internal team meeting | Friday 15:30–16:30 | `meetings/team/` |
 
-Agendas go up before the meeting, notes go in after, both in the meeting's own dated folder.
+All times US Eastern. Agendas go up before the meeting, notes go in after, both in the meeting's own dated folder.
 
 ## Timeline (follows the course structure, not negotiable)
 

@@ -210,7 +210,7 @@ The timeline follows the 15-week course structure and does not change. The work 
 | W9–W11 | **Extend** | Full three-configuration run, remaining confidence strategies, red-teaming, format-preserving fake values |
 | W12–W15 | **Converge** | Benchmark report, governance recommendations, draft deliverable, client feedback, **W15 final presentation** (W14 Thanksgiving) |
 
-Client meetings Monday 18:00–19:00 (weekly during discovery, bi-weekly once the project is defined); team meeting Friday 15:30–16:30; check-in with the professor Tuesday 17:00–18:20. Mark schedules.
+Client meetings Monday 18:00–19:00 US Eastern, weekly; team meeting Friday 15:30–16:30; check-in with the professor Tuesday 17:00–18:20. Mark schedules.
 
 ### MVP: the team's committed deliverable
 
