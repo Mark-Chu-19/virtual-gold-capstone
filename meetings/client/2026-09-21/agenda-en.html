@@ -233,7 +233,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
 
 <div class="cat" id="gate"><h2>B · Security and de-identification: what the research found</h2><span class="tag">Yudi · 20 min</span></div>
 <div class="item">
-  <p class="ctx">Seventeen papers reviewed against three questions: what counts as sensitive in a trading assistant and can it be detected reliably; which sanitization strategy keeps the answer useful at acceptable cost; and how to test leakage and prompt-injection resistance in one harness. Full report in <code>docs/research/</code>; briefing in this folder. Headlines below, detail on expand.</p>
+  <p class="ctx">Seventeen papers reviewed against three questions: what counts as sensitive in a trading assistant and can it be detected reliably; which sanitization strategy keeps the answer useful at acceptable cost; and how to test leakage and prompt-injection resistance in one harness. Full report and briefing available on request. Headlines below, detail on expand.</p>
 
   <div class="finding">
     <div><div class="k">1 · Sensitive is not the same as PII</div><mark class="hl-key">"Exit the regional-bank book before the Fed meeting" names no person, account or identifier, and discloses the whole strategy.</mark> A PII detector scores perfectly on that sentence and catches nothing. What we protect, in order of value to an adversary: intent (watchlist, unexecuted orders, entry and exit rules), strategy (thesis notes, sizing rules), positions and quantities, and only then conventional identifiers, the one category a standard detector targets. Our diagrams said "PII detection"; that was the wrong target.</div>

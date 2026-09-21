@@ -233,7 +233,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
 
 <div class="cat" id="gate"><h2>B · 安全與去識別化:研究發現了什麼</h2><span class="tag">Yudi · 20 分</span></div>
 <div class="item">
-  <p class="ctx">十七篇文獻,對三個問題:交易助理裡什麼算敏感、能不能可靠偵測;哪種淨化策略在可接受的成本下保住答案的有用性;怎麼在同一個 harness 裡測洩漏與 prompt injection 抵抗力。完整報告在 <code>docs/research/</code>,簡報在本資料夾。下面是重點,展開看細節。</p>
+  <p class="ctx">十七篇文獻,對三個問題:交易助理裡什麼算敏感、能不能可靠偵測;哪種淨化策略在可接受的成本下保住答案的有用性;怎麼在同一個 harness 裡測洩漏與 prompt injection 抵抗力。完整報告與簡報可另行提供。下面是重點,展開看細節。</p>
 
   <div class="finding">
     <div><div class="k">1 · 敏感不等於 PII</div><mark class="hl-key">「Fed 開會前出清區域銀行部位」沒有任何人名、帳號、識別碼,卻揭露了整個策略。</mark>PII 偵測器在這句話上滿分,什麼都沒抓到。我們要保護的,依對攻擊者的價值排序:意圖(關注清單、未執行的單、進出場規則)、策略(論點筆記、部位規則)、持倉與數量,最後才是傳統識別碼,而那是標準偵測器唯一鎖定的類別。我們的圖寫「PII 偵測」,目標畫錯了。</div>
