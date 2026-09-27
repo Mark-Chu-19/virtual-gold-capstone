@@ -1,0 +1,482 @@
+<title>脫敏服務:確定的事實與提案</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4","Noto Sans TC","PingFang TC",Georgia,serif;
+  --sans:"Source Sans 3","Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.04em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+
+.cat{display:flex;align-items:baseline;gap:12px;margin:44px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{margin:0}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item h3{font-family:var(--serif);font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 8px;font-weight:600}
+.item .ctx{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.item .rec{margin:0 0 6px;font-size:15px}
+.item .rec b{color:var(--hl-key)}
+.item ul{margin:4px 0 8px;padding-left:20px}
+.item li{margin-bottom:4px;font-size:15px}
+.fields{display:grid;grid-template-columns:1fr 160px 110px;gap:10px;margin-top:10px}
+.fields label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fields textarea,.fields input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.fields textarea{min-height:56px;resize:vertical}
+.fields textarea:focus,.fields input:focus{outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:600px){.fields{grid-template-columns:1fr}}
+.owners{width:100%}
+.owners td input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:6px 10px}
+.owners td:first-child{font-weight:600;white-space:nowrap}
+.out{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.out li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.out li:last-child{border-bottom:none}
+.out input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.out .who{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-top:4px}
+figure.arch svg{min-width:700px}
+.sec-b .intent{color:var(--local);font-weight:600}
+.sec-b th.intent{background:var(--local-soft);color:var(--local)}
+.sec-b .finding div.k{background:none;border:none;border-radius:0;padding:0;font-size:11px;line-height:1.4}
+.d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.d-box.gate{fill:var(--local-soft);stroke:var(--local);stroke-width:2.5}
+.d-box.policy{fill:var(--local-soft);stroke:var(--local);stroke-width:1.5;stroke-dasharray:5 3}
+.d-box.store{fill:var(--cloud-soft);stroke:var(--cloud)}
+.d-box.ret{stroke:var(--warn)}
+.d-box.trust{stroke:var(--ink)}
+.d-box.untrust{stroke:var(--warn);stroke-dasharray:5 3}
+.d-box.cloud{fill:none;stroke:var(--muted);stroke-dasharray:5 4}
+.d-n{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.d-n.g{fill:var(--local)} .d-n.v{fill:var(--cloud)} .d-n.r{fill:var(--warn)}
+.d-name{font-family:var(--sans);font-size:14.5px;font-weight:600;fill:var(--ink)}
+.d-sub{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+.d-region{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;fill:var(--muted)}
+.d-flow{stroke:var(--muted);stroke-width:1.8;fill:none}
+.d-back{stroke:var(--warn);stroke-width:1.8;fill:none}
+.d-link{stroke:var(--cloud);stroke-width:1.5;fill:none;stroke-dasharray:4 3}
+.d-head{fill:var(--muted)} .d-head-b{fill:var(--warn)} .d-head-g{fill:var(--local)}
+.d-rule{stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+.d-rulelabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--muted)}
+.d-gov{stroke:var(--local);stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+.d-govlabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--local)}
+.d-bound{stroke:var(--warn);stroke-width:2;stroke-dasharray:7 5}
+.d-blabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;fill:var(--warn)}
+.eg{background:var(--soft);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:12px 16px;margin:10px 0 14px;font-size:15px;line-height:1.75}
+.eg .who{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.opt td:first-child{white-space:nowrap;font-weight:600;width:1%}
+tr.pick td{background:var(--local-soft)}
+tr.pick td:first-child{color:var(--local)}
+.why,.sell,.risk{border-radius:6px;padding:11px 15px;margin:10px 0 0;font-size:15px;line-height:1.7}
+.why{background:var(--gold-soft)}
+.sell{background:var(--cloud-soft);font-size:14.5px}
+.risk{background:var(--warn-soft);font-size:14.5px}
+.why .h,.sell .h,.risk .h{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;display:block;margin-bottom:5px;color:var(--muted)}
+.q{font-size:15.5px;margin:0 0 10px;padding-left:13px;border-left:3px solid var(--cloud);color:var(--ink)}
+.sum td:first-child{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;width:1%}
+.flow{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.flow>div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 15px;font-size:14.5px;line-height:1.65}
+.flow .s{font-family:var(--mono);font-size:11px;color:var(--gold);margin-right:8px;font-weight:600}
+.badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;margin-left:8px;vertical-align:middle;font-weight:600;white-space:nowrap}
+.badge.fact{background:var(--local-soft);color:var(--local)}
+.badge.prop{background:var(--gold-soft);color:var(--hl-key)}
+.badge.unk{background:var(--warn-soft);color:var(--warn)}
+.src{font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
+blockquote{margin:8px 0;padding:10px 16px;border-left:3px solid var(--line);color:var(--ink);font-size:14.5px;line-height:1.7;background:var(--surface);border-radius:0 6px 6px 0}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone · Virtual Gold Inc · 工作文件</div>
+  <h1>脫敏服務:確定的事實與提案</h1>
+  <dl class="meta">
+    <div><dt>原用途</dt><dd>原為 2026-09-25(五)團隊會議準備。<b>該次會議團隊另有提案,本文件未被採用</b></dd></div>
+    <div><dt>怎麼讀</dt><dd>全文每一項都標了三種標籤之一。<b>只有標「確定」的可以拿去跟別人講</b></dd></div>
+  </dl>
+  <div class="tbl" style="margin-top:14px"><table>
+    <tr><td><span class="badge fact">確定</span></td><td>有書面來源,且註明出處。事實,不是判斷</td></tr>
+    <tr><td><span class="badge prop">提案</span></td><td>Mark 在 2026-09-24 提的解法。<mark class="hl-no">團隊沒確認過,客戶沒確認過,Aarvin 沒確認過</mark></td></tr>
+    <tr><td><span class="badge unk">未知</span></td><td>沒有人回答過。不要假裝有答案</td></tr>
+  </table></div>
+</header>
+
+<div style="background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:14px 18px;margin:18px 0 6px;font-size:15px;line-height:1.75">
+  <div style="font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--warn);font-weight:600;margin-bottom:7px">狀態 &middot; 備案,不是團隊提案</div>
+  <b>作者:Mark Chu。2026-09-24 寫成,團隊、客戶與 Aarvin 都沒有看過。</b><br><br>
+  團隊在 <b>2026-09-25(五)</b> 的內部會議上有自己的架構提案,<b style="color:var(--hl-key)">那一份優先</b>。這份文件是備案 &mdash;
+  <b>只有在客戶否決團隊提案之後,才拿出來討論。</b><br><br>
+  在那之前,本文件中的任何內容都不代表團隊立場,也不應對外引用。
+</div>
+
+
+<div class="cat"><h2>一 · 確定的事實</h2><span class="tag">附出處</span></div>
+<div class="item">
+  <p class="ctx">以下每一條都能在文件裡找到原文。出處縮寫:<b>N</b> = 9/21 會議紀錄 <code>notes-gemini-en.pdf</code>,<b>E</b> = Aarvin 信件 <code>email-aarvin-onboarding-en.md</code>,<b>T</b> = <code>todo/TODO.md</code>。</p>
+
+  <h3>關於做什麼</h3>
+  <div class="tbl"><table>
+    <tr><th>事實</th><th>出處</th></tr>
+    <tr><td>先做 horizontal 與 privacy module,<b>vertical 延後至「時間允許」&mdash; 是延後,不是取消</b></td><td class="src">N · Decisions</td></tr>
+    <tr><td>horizontal 框成「支援 chief of staff assistant 的 IT 部門能力」</td><td class="src">N · Decisions</td></tr>
+    <tr><td>做成 standalone service + HTTP API endpoint,不做 MCP server</td><td class="src">N · Decisions, p7</td></tr>
+    <tr><td>我們的服務是 <b>intermediate layer</b>;<b>main agent orchestration 是他們的</b></td><td class="src">N · p7</td></tr>
+    <tr><td><mark class="hl-key">服務要做三件事:receive、sanitize、<b>decompose</b> instructions</mark></td><td class="src">N · p7</td></tr>
+    <tr><td>終端使用者是一位 C-suite 主管,每天使用</td><td class="src">E</td></tr>
+    <tr><td>他們的系統會自動呼叫我們,位置在文字抵達 AI 助理之前</td><td class="src">E</td></tr>
+    <tr><td>下次會議的交付物:horizontal 架構圖與系統圖</td><td class="src">N · Decisions</td></tr>
+    <tr><td>專案更名為 Hybrid</td><td class="src">N · Next steps</td></tr>
+  </table></div>
+
+  <h3>關於怎麼做</h3>
+  <div class="tbl"><table>
+    <tr><th>事實</th><th>出處</th></tr>
+    <tr><td>判定什麼算私密是主要難題;情境會影響(私人電話 vs 公開客服電話、信件串裡引用的人名)</td><td class="src">E</td></tr>
+    <tr><td><b>Aarvin 要求:本地模型做這些判斷並輸出信心分數</b></td><td class="src">E</td></tr>
+    <tr><td>五個工作領域:評測與測試資料、隱私研究、模型、服務工程、整合協調</td><td class="src">E</td></tr>
+    <tr><td>要建立 ground truth、success metrics、regression testing</td><td class="src">N · p7, Next steps</td></tr>
+    <tr><td><mark class="hl-key">Anmol 提議在回程加一層 LM 評估、對照信心門檻再送回。Aarvin 回應:方法可行,但仍需要人來定義正確條件 &mdash; <b>他沒有否決</b></mark></td><td class="src">N · p7</td></tr>
+    <tr><td>Alex 與 Aarvin 負責定 endpoint 規格(request 參數與 response 格式)</td><td class="src">N · Next steps</td></tr>
+    <tr><td>Aarvin 承諾隔日(9/22)提供初版 API contract,並說契約會在頭一週半持續演變</td><td class="src">N · p7</td></tr>
+  </table></div>
+
+  <h3>Aarvin 要我們回覆的</h3>
+  <div class="tbl"><table>
+    <tr><th>事實</th><th>出處</th></tr>
+    <tr><td>立刻開始評測:一個人做 100 封真實信件、人工標註該遮什麼,整學期用它評分</td><td class="src">E</td></tr>
+    <tr><td>指定單一對口窗口</td><td class="src">E</td></tr>
+    <tr><td>確認硬體,特別是 GPU。<b>要求這週回覆</b></td><td class="src">E</td></tr>
+    <tr><td>回報:每人前二志願 + 一個不想做的領域 + 每週可投入時數</td><td class="src">E</td></tr>
+    <tr><td>角色確認後他會給完整規格</td><td class="src">E</td></tr>
+    <tr><td>AI 生成的文件要「好消化、有實質訊號」</td><td class="src">E</td></tr>
+  </table></div>
+
+  <h3>團隊既有決定(轉向前,尚未確認是否仍適用)</h3>
+  <div class="tbl"><table>
+    <tr><th>事實</th><th>出處</th></tr>
+    <tr><td>模型:Llama 3.1 8B 主、Qwen3 8B 對照;HF transformers 行程內、bitsandbytes 4-bit、T4 上 FP16</td><td class="src">T · A1, A5</td></tr>
+    <tr><td>筆電不跑 LLM,用雲端 GPU sandbox 模擬地端</td><td class="src">T · A5</td></tr>
+    <tr><td>分工:router Mark · models Anmol · confidence/harness Zhexuan · security Yudi · synthetic data Karina</td><td class="src">T · A9</td></tr>
+    <tr><td>sandbox 與雲端額度仍等客戶回覆(9/15 提出)</td><td class="src">T · B15</td></tr>
+    <tr><td>SOW v2 除成本欄外皆完成,<b>尚未簽署</b>;SOW §2 寫的是 routing mechanism 與 confidence scoring</td><td class="src">T · E26, A1</td></tr>
+    <tr><td>Zhexuan 的信心評分 harness 設計與文獻回顧已合併(PR #2)</td><td class="src">T · A9</td></tr>
+  </table></div>
+</div>
+
+<div class="cat"><h2>二 · 還不知道的</h2><span class="tag">沒有人回答過</span></div>
+<div class="item">
+  <p class="ctx">以下每一題都<b>沒有書面答案</b>。我先前的版本把其中幾題當成已經有答案,那是我推測的,不對。</p>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>未知</th><th>不解決會怎樣</th></tr>
+    <tr><td>1</td><td><mark class="hl-ask">API contract 有沒有「這段文字從哪來」的欄位?</mark></td><td>決定判斷架構可不可行。沒有出處,查表那關直接作廢</td></tr>
+    <tr><td>2</td><td><mark class="hl-ask">decompose instructions 具體指什麼?</mark>是把請求拆成公開/機密兩半(接近 Alex 9/15 提的 split routing),還是只是在形容脫敏過程?</td><td>決定服務範圍。如果是前者,我們的端點設計不夠</td></tr>
+    <tr><td>3</td><td>原本的路由(本地先答、信心低才上雲)還算不算數?</td><td>決定 Mark 的 workstream 還存不存在</td></tr>
+    <tr><td>4</td><td>信心分數要對什麼評分?Aarvin 要的是對隱私判斷;Anmol 提的回程門檻是對答案 &mdash; <b>兩者都在紀錄上,沒有人裁決</b></td><td>決定 Zhexuan 的 harness 要不要轉向</td></tr>
+    <tr><td>5</td><td>W7 期中要展示什麼?README 現有計畫是 MMLU / GSM8K</td><td>那套測答題品質,與脫敏的關係未經確認</td></tr>
+    <tr><td>6</td><td>SOW §2 寫 routing + confidence scoring,與現在的主線是否仍相符?<b>還沒簽,改得動</b></td><td>合約與交付物不符的風險</td></tr>
+    <tr><td>7</td><td>附件與掃描件在不在範圍?Aarvin 的閱讀清單裡有 OCR</td><td>可能是實質的範圍擴張</td></tr>
+    <tr><td>8</td><td>100 封信件從哪來?主管真實信箱幾乎不可能取得</td><td>評測基準的可行性</td></tr>
+  </table></div>
+  <div class="risk"><span class="h">第 1、2 題最優先</span>兩題都由 Aarvin 的 API contract 回答,他承諾 9/22 交件,<b>今天 9/24</b>。<mark class="hl-key">明天第一件事是確認那份文件到了沒,而不是討論架構。</mark></div>
+</div>
+
+<div class="cat"><h2>三 · 提案</h2><span class="tag">Mark · 未經任何人確認</span></div>
+<div class="item">
+  <p class="ctx">以下全部是 2026-09-24 討論出來的解法。<mark class="hl-no">團隊、客戶、Aarvin 都沒看過。</mark>列出來是為了明天有東西可以吵,不是為了當結論用。</p>
+  <div class="tbl"><table class="sum">
+    <tr><th>#</th><th>決策點</th><th>提案</th><th>基礎</th></tr>
+    <tr><td>01</td><td>服務長什麼樣</td><td>獨立 HTTP 服務</td><td class="src">已確定,非提案</td></tr>
+    <tr><td>02</td><td>誰呼叫雲端</td><td>他們呼叫;我們開 <code>/sanitize</code> 與 <code>/restore</code></td><td class="src">推論自 E、N·p7</td></tr>
+    <tr><td>03</td><td>怎麼判斷</td><td>三關查表 + 查不到才問模型</td><td class="src">Yudi 研究 + 五個例子</td></tr>
+    <tr><td>04</td><td>遮成什麼</td><td>依欄位型態四種處理</td><td class="src">Yudi 研究的欄位分型</td></tr>
+    <tr><td>05</td><td>出口把關</td><td>純程式碼白名單</td><td class="src">Yudi 研究</td></tr>
+    <tr><td>06</td><td>信心分數</td><td><b>兩種都保留,不要現在裁決</b></td><td class="src">未知 #4</td></tr>
+    <tr><td>07</td><td>評測資料</td><td>公開語料改寫 + 請對方標一小批</td><td class="src">Mark,待查授權</td></tr>
+    <tr><td>08</td><td>掛掉怎麼辦</td><td>失敗即關閉 + 模型掛了能降級</td><td class="src">Mark</td></tr>
+    <tr><td>09</td><td>先做什麼</td><td>先做不需要 GPU 的部分</td><td class="src">Mark</td></tr>
+    <tr><td>10</td><td>模型硬體</td><td>沿用既有決定</td><td class="src">T·A1/A5 + 推論</td></tr>
+  </table></div>
+  <div class="why"><span class="h">貫穿全部提案的一句話</span><b>模型可以提議,但放行由程式碼決定。</b>它同時解掉注入攻擊、可稽核性、以及「錯誤率降不到零怎麼跟客戶交代」三個問題 &mdash; 因為不需要保證模型永遠對,只需要保證它錯了也出不去。<br><br><span class="src">依據:Yudi 研究引用的實驗 &mdash; 加上獨立授權層後,模型仍 100% 被騙,但不安全動作 0%。<b>這個數據是確定的;把它用在這個設計上是提案。</b></span></div>
+</div>
+
+<div class="item">
+  <h3>02 · 誰呼叫雲端<span class="badge prop">提案</span></h3>
+  <p class="q">脫敏完之後,是我們直接送雲端,還是把乾淨文字還給他們、由他們送?</p>
+  <p class="ctx"><b>確定的部分:</b>Aarvin 信說「我們的系統會在文字抵達 AI 助理之前自動呼叫它」;會議紀錄說我們是 intermediate layer,「before passing them to the main agent orchestration」。<b>兩處都指向他們掌控主流程。</b>但兩個端點的具體形狀是我提的,沒有人確認過。</p>
+  <div class="tbl"><table class="opt">
+    <tr><th>選項</th><th>評估</th></tr>
+    <tr><td>我們代送</td><td>對照表完全不外流,但我們要管他們的金鑰、成本、重試、逾時</td></tr>
+    <tr class="pick"><td>他們自己送 ✓<br>我們開兩個端點</td><td><code>/sanitize</code> 收原文回乾淨文字,<code>/restore</code> 收雲端回覆回原樣</td></tr>
+    <tr><td>對照表也給他們</td><td>我們無狀態,最單純。<mark class="hl-no">但對照表就是那份機密本身</mark></td></tr>
+  </table></div>
+  <div class="sell"><span class="h">怎麼說服 Aarvin</span>「你不用把金鑰給我們,也不用為了我們改雲端供應商。我們只要兩個 HTTP 呼叫。」<b>對工程師是減法,不是加法。</b></div>
+  <div class="risk"><span class="h">這個提案有個已知缺口</span><mark class="hl-no">未知 #2:如果 decompose 真的是指「把請求拆成公開/機密兩半」,兩個端點不夠</mark> &mdash; 還缺一個輸出,告訴他們哪一半該送雲端、哪一半要留在本地。<b>這個設計要等 decompose 的定義確定才能定案。</b></div>
+</div>
+
+<div class="item">
+  <h3>03 · 怎麼判斷要遮什麼<span class="badge prop">提案</span></h3>
+  <p class="q">誰來決定這段字算不算機密?</p>
+  <p class="ctx"><b>確定的部分:</b>Aarvin 要求由本地模型判斷並輸出信心分數。<b>Yudi 的研究(已向客戶簡報)則指出</b>情境敏感度的人類一致率只有 48%,建議把判斷範圍壓到最小。<b>兩者都是事實;怎麼調和是我的提案。</b></p>
+  <div class="tbl"><table class="opt">
+    <tr><th>選項</th><th>評估</th></tr>
+    <tr><td>全部交給模型</td><td>Aarvin 要的。最靈活,但有 48% 天花板、擋不住注入、講不出理由</td></tr>
+    <tr><td>全部靠規則</td><td>不會錯,但真實信箱不可能窮舉</td></tr>
+    <tr class="pick"><td>三關查表 +<br>查不到才問模型 ✓</td><td>先問「從哪來」「長得像什麼」「政策表怎麼寫」,答不出來才交給模型並附把握程度</td></tr>
+  </table></div>
+  <div class="why"><span class="h">依據</span>五個真實信件例子跑下來的結果,詳見 <code>sanitization-gate-options-zh.html</code>。純查表輸在「外部來信但內容敏感」和「內部代號」;純模型輸在「信裡藏指令」,而且輸的方式是整個系統被外人接管。</div>
+  <div class="sell"><span class="h">怎麼說服 Aarvin</span>不要說「你的做法不好」。說:<b>「你要的判斷我們照做,但先讓便宜又不會錯的部分處理掉大半,模型才有餘力專心處理真正難的。」</b>對他是減負擔,不是否定。</div>
+  <div class="risk"><span class="h">前提</span><mark class="hl-ask">未知 #1:第一關需要對方告訴我們出處。拿不到,這一關就廢了,整個提案退化成純模型。</mark></div>
+</div>
+
+<div class="item">
+  <h3>04 · 遮成什麼<span class="badge prop">提案</span></h3>
+  <p class="q">判斷出「這個要遮」之後,換成什麼?</p>
+  <p class="ctx"><b>確定的部分:</b>Yudi 的研究提出依欄位型態分開處理(識別碼假名化、數量縮放、屬性泛化、筆記丟棄),並指出泛化在多輪對話中退化最嚴重。<b>把它對應到信件情境、以及下面那個「問對問題」的框架,是我提的。</b></p>
+
+  <h3 style="text-transform:none;font-family:var(--serif);font-size:17px;color:var(--ink)">先把問題問對</h3>
+  <p>直覺會問<b>「怎樣最安全?」</b>&mdash; 照這個問法,答案永遠是「全部刪掉」,然後服務就沒用了。</p>
+  <div class="why"><span class="h">建議的問法</span><mark class="hl-key">「雲端 AI 拿這個欄位要做什麼?」</mark><br><br>需要<b>指涉</b>它 → 給假名<br>需要<b>計算</b>它 → 等比例縮放<br>需要知道<b>哪一類</b> → 講模糊但保持為真<br><b>根本用不到</b> → 直接刪掉</div>
+
+  <div class="tbl"><table>
+    <tr><th>型態</th><th>例子</th><th>換成</th><th>換得回來?</th></tr>
+    <tr><td><strong>識別碼</strong><br>人名、公司、專案代號</td><td><code>Blue Harbor</code> / <code>Chen</code></td><td>穩定假名 <code>Project_A</code> / <code>Person_1</code></td><td>可以</td></tr>
+    <tr><td><strong>絕對數量</strong><br>金額、股數、人數</td><td><code>240 萬</code></td><td>乘一個只有我們知道的係數 → <code>72 萬</code></td><td>可以</td></tr>
+    <tr><td><strong>屬性</strong><br>產業、職稱、地區</td><td><code>KRE</code></td><td>模糊但為真 → <code>一檔區域銀行 ETF</code></td><td>不行</td></tr>
+    <tr><td><strong>純識別符</strong><br>電話、卡號</td><td><code>412-555-0182</code></td><td>直接刪掉</td><td>不行</td></tr>
+    <tr><td><strong>自由文字筆記</strong></td><td>主管手寫想法</td><td>丟棄</td><td>不行</td></tr>
+  </table></div>
+  <p class="ctx"><b>穩定假名</b>:同一個 session 裡 Chen 永遠是 <code>Person_1</code>,雲端才能前後一致地談論同一個人。</p>
+
+  <h3 style="text-transform:none;font-family:var(--serif);font-size:17px;color:var(--ink)">完整走一遍</h3>
+  <div class="eg"><span class="who">① 主管原文</span><b>Blue Harbor</b> 這季預算 <b>240 萬</b>,比原本多 <b>18%</b>。幫我擬信給 <b>Chen</b>(<b>412-555-0182</b>)說明一下,抄送 <b>Sarah</b>。</div>
+  <div class="eg"><span class="who">② 送去雲端</span><b>Project_A</b> 這季預算 <b>72 萬</b>,比原本多 <b>18%</b>。幫我擬信給 <b>Person_1</b> 說明一下,抄送 <b>Person_2</b>。</div>
+  <div class="eg"><span class="who">③ 雲端回覆</span>Dear <b>Person_1</b>,關於 <b>Project_A</b> 本季預算調整為 <b>72 萬</b>(較原規劃增加 <b>18%</b>)……</div>
+  <div class="eg"><span class="who">④ 還原後交給主管</span>Dear <b>Chen</b>,關於 <b>Blue Harbor</b> 本季預算調整為 <b>240 萬</b>(較原規劃增加 <b>18%</b>)……</div>
+  <p class="verdict" style="background:var(--local-soft)"><b>雲端全程不知道</b>這是哪個專案、金額多少、寄給誰,<b>但它寫得出這封信</b>。</p>
+
+  <div class="risk"><span class="h">會踩到的坑</span><b>縮放只能用在「絕對量」,不能用在「比率」。</b>金額乘 0.3、百分比也乘 0.3 的話,只要雲端拿這兩個數字做過運算,結果就錯,而且很難發現。同理「數量」與「單價」各自乘 0.3,總價會變成 0.09 倍。<br><br><b>規則:同一 session 內所有絕對量共用一個係數;比率、百分比、單價一律不縮放。</b></div>
+
+  <h3 style="text-transform:none;font-family:var(--serif);font-size:17px;color:var(--ink)">還原時要檢查三件事</h3>
+  <div class="flow">
+    <div><span class="s">1</span>雲端編出對照表裡沒有的假名(例如自己寫了 <code>Person_7</code>)&mdash; 換不回去,必須偵測並標記,不能默默放行</div>
+    <div><span class="s">2</span>還原必須全域一致,不能只換部分</div>
+    <div><span class="s">3</span><b>雲端回覆要當成不可信輸入</b>,還原後要再掃一次 &mdash; 不能因為是我們送出去的就信任回程</div>
+  </div>
+
+  <div class="tbl" style="margin-top:14px"><table class="opt">
+    <tr><th>否決的做法</th><th>為什麼</th></tr>
+    <tr><td>一律 <code>[已遮蔽]</code></td><td>最安全也最沒用,信擬不出來</td></tr>
+    <tr><td>一律泛化</td><td>AI 無法指涉。Yudi 研究:泛化在多輪中退化最嚴重(追問後外洩 +11.8 個百分點)</td></tr>
+    <tr><td>格式保留的假值</td><td><mark class="hl-no">AI 看不出是假的 &mdash; 可能把假電話寫進真的要寄出去的信</mark></td></tr>
+    <tr><td>加密後送出</td><td>AI 無法對密文做事。同態加密、安全多方計算同理(Yudi 引的評測:八種技術皆不具部署可行性)</td></tr>
+  </table></div>
+</div>
+
+<div class="item">
+  <h3>05 · 出口怎麼把關<span class="badge prop">提案</span></h3>
+  <p class="q">誰有權決定「這份可以送出去了」?</p>
+  <div class="tbl"><table class="opt">
+    <tr><th>選項</th><th>評估</th></tr>
+    <tr><td>模型說可以</td><td>模型被騙就直接放行,沒有第二道</td></tr>
+    <tr><td>程式碼黑名單</td><td>擋得掉列進表的,擋不掉沒想到的</td></tr>
+    <tr class="pick"><td>程式碼白名單 ✓</td><td>先由問題本身決定「這次允許放出哪些欄位」,不在名單上一律不准出去</td></tr>
+  </table></div>
+  <div class="why"><span class="h">為什麼</span>差別在<b>預設值</b>:黑名單預設放行,白名單預設攔下。<mark class="hl-key">安全機制的預設值必須是「不」。</mark><br><br>還有一個細節:<b>白名單要在讀任何外部內容之前就決定好</b>。先讀信再決定放什麼,信裡藏的指令就有機會影響那個決定。</div>
+</div>
+
+<div class="item">
+  <h3>06 · 信心分數要對什麼評分<span class="badge unk">未知,不建議現在裁決</span></h3>
+  <p class="q">Aarvin 要信心分數。但是對什麼的信心?</p>
+  <div class="risk"><span class="h">我先前講錯的地方</span>我之前說「原本那套路由已經沒了,所以信心分數應該改成對隱私判斷評分」。<mark class="hl-no">那是我的推測,沒有來源。</mark>實際上會議紀錄裡兩種都在:<br><br><b>①</b> Aarvin 的信明確要求「本地模型做判斷並<b>輸出信心分數</b>」&mdash; 對隱私判斷<br><b>②</b> 會議紀錄 p7:Anmol 提議「在回程加一層 LM 評估,對照<b>信心門檻</b>再送回」,Aarvin 回應方法可行、但需要人來定義正確條件 &mdash; 對答案品質<br><br><b>兩種都在紀錄上,沒有人裁決過。</b></div>
+  <div class="why"><span class="h">提案</span>明天<b>不要急著二選一</b>,而是問 Aarvin:「你要的信心分數,是對『這段算不算機密』的把握,還是對『這個答案可不可靠』的把握?」<br><br>這題問清楚之前,Zhexuan 的 harness 先不要動方向 &mdash; 既有的校準、ECE、AUROC 方法論兩種都用得上,不會白做。</div>
+</div>
+
+<div class="item">
+  <h3>07 · 評測資料哪裡來<span class="badge prop">提案</span></h3>
+  <p class="q">Aarvin 要 100 封標註好的真實信件。但主管的信箱不可能給我們。</p>
+  <div class="tbl"><table class="opt">
+    <tr><th>選項</th><th>評估</th></tr>
+    <tr><td>真實信件</td><td>拿不到</td></tr>
+    <tr><td>純合成</td><td><mark class="hl-no">我們自己生、自己標、自己考 &mdash; 標準答案沒有權威</mark></td></tr>
+    <tr class="pick"><td>公開語料改寫 ✓<br>+ 請對方標一小批</td><td>公開企業信件語料改寫成主管情境,再請他們標 20&ndash;30 封當「標準答案的標準答案」</td></tr>
+  </table></div>
+  <div class="sell"><span class="h">怎麼跟 Aarvin 講</span>「100 封我們生得出來,但『什麼該遮』的標準必須是你們的。<b>能不能請你們標 20 封?</b>剩下我們照那個標準補完,標完再請你們抽查。」<br><br>他的工作量從 100 降到 20,而我們拿到有權威的判準。</div>
+  <div class="risk"><span class="h">未查證</span><b>公開企業信件語料的授權條款我還沒查</b>,不確定能不能改寫使用。這是待辦,不是結論。</div>
+  <p class="ctx" style="margin-top:12px"><b>指標提案</b>:漏抓率(分型態、對漏抓加權,不用 F1)、端到端外洩率(埋 canary 在網路層掃)、<b>可用性落差(開 vs 關脫敏,信件品質差多少)</b>、注入抵抗力(攻擊成功率與危害動作分開計)、延遲。中間那個回答「隱私要付多少代價」。</p>
+</div>
+
+<div class="item">
+  <h3>08 · 掛掉怎麼辦<span class="badge prop">提案</span></h3>
+  <p class="q">Aarvin 信裡點名 failure modes。</p>
+  <div class="tbl"><table class="opt">
+    <tr><th>選項</th><th>評估</th></tr>
+    <tr><td>失敗即放行</td><td><mark class="hl-no">不行。</mark>服務掛掉等於機密裸奔上雲</td></tr>
+    <tr><td>失敗即關閉</td><td>安全,但服務一掛助理就整個不能用</td></tr>
+    <tr class="pick"><td>失敗即關閉 +<br>模型掛了能降級 ✓</td><td>任何環節出錯一律擋下。但模型那關掛掉時前三關還能跑 &mdash; 查表不需要 GPU</td></tr>
+  </table></div>
+  <div class="sell"><span class="h">對 Aarvin 好用</span>「我們的服務就算 GPU 整個掛掉也不會停,只是會變得比較保守。」他問 failure modes 表示在意線上穩定性,這是他想聽的答案。</div>
+</div>
+
+<div class="item">
+  <h3>09 · 先做什麼<span class="badge prop">提案</span></h3>
+  <div class="tbl"><table>
+    <tr><th>期</th><th>週</th><th>做什麼</th><th>要 GPU?</th></tr>
+    <tr><td><strong>第一期</strong></td><td>W5&ndash;W7</td><td>HTTP 端點、三關查表、遮蔽引擎、程式碼白名單、還原與輸出檢查、政策表第一版</td><td>不要</td></tr>
+    <tr><td><strong>第二期</strong></td><td>W8&ndash;W11</td><td>模型判斷那關、把握程度與校準、評測資料集、可用性落差量測</td><td>要</td></tr>
+    <tr><td><strong>第三期</strong></td><td>W12&ndash;W14</td><td>注入測試、多輪外洩、規避手法、降級演練、最終 demo</td><td>要</td></tr>
+  </table></div>
+  <div class="why"><span class="h">為什麼</span><b>一</b>、期中有東西可以跑,不是投影片。<b>二</b>、<mark class="hl-key">不用等 sandbox</mark> &mdash; B15 卡在客戶那邊兩週了,這個順序讓它不再阻塞。<b>三</b>、第一期沒有錯誤率可言,是確定交得出來的東西。</div>
+  <div class="risk"><span class="h">注意</span>這個排程假設主線就是脫敏服務。<mark class="hl-no">如果未知 #3(路由還算不算數)的答案是「還算」,這張表要重排。</mark></div>
+</div>
+
+<div class="item">
+  <h3>10 · 模型與硬體<span class="badge prop">提案</span></h3>
+  <div class="tbl"><table>
+    <tr><th>項目</th><th>既有決定<span class="badge fact">確定</span></th><th>轉向後的影響<span class="badge prop">提案</span></th></tr>
+    <tr><td>模型</td><td>Llama 3.1 8B 主、Qwen3 8B 對照</td><td>若採三關架構,模型只處理少量殘餘,8B 綽綽有餘</td></tr>
+    <tr><td>執行</td><td>transformers 行程內、4-bit NF4、T4 上 FP16</td><td>不變</td></tr>
+    <tr><td>硬體</td><td>T4 16GB 可跑,A10G 24GB 較寬裕;sandbox 仍等客戶</td><td>第一期不需要 GPU</td></tr>
+  </table></div>
+  <div class="sell"><span class="h">怎麼回 Aarvin 的硬體問題(他要求這週回覆)</span>「第一期不需要 GPU,下週就能給你可以打的端點。第二期的模型判斷需要一張 T4 等級以上的卡,目前在跟 Virtual Gold 確認 sandbox(9/15 提出,尚未有結論)。如果 sandbox 有變數,只影響第二期時程,不影響整合。」<br><br>不拖延、把 sandbox 的球踢回客戶、不讓他覺得我們會開天窗。</div>
+</div>
+
+<div class="cat"><h2>四 · 怎麼說服各方</h2><span class="tag">提案</span></div>
+<div class="item">
+  <div class="finding">
+    <div><div class="k">對 Aarvin</div>他要的都給了,只是位置不同。信心分數有,彈性有,而且我們對他是減法:不要金鑰、不綁供應商、兩個 HTTP 呼叫。<b>只跟他要一件事:每段文字的出處</b> &mdash; 理由講成功能面的:「給出處能直接降低錯誤率,比我們把模型調得更好有效。」</div>
+    <div><div class="k">對客戶(Inderpal / Alex / Urte)</div>期中是能跑的服務,不是簡報。每一次遮蔽都講得出理由,企業採購最在意這個。模型掛掉服務還活著。</div>
+    <div><div class="k">對教授</div>研究問題明確:混合式脫敏在安全性與可用性之間的權衡,而且有量化 &mdash; 開關脫敏的品質落差就是「隱私的代價」。</div>
+    <div><div class="k">對團隊</div>Aarvin 的五個領域對得上五個人。第一期沒有 ML,卡在 sandbox 的人也有事做。</div>
+  </div>
+  <div class="why"><span class="h">如果只能講一句</span><b>「模型可以提議,但放行由程式碼決定。」</b>承認模型會錯、會被騙(對方本來就知道),再說明為什麼不要緊。<mark class="hl-key">比宣稱「我們的模型很準」可信得多</mark> &mdash; 尤其對方是工程師。</div>
+</div>
+
+<div class="cat"><h2>五 · 明天的議程</h2><span class="tag">9/25 團隊會議</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>順序</th><th>做什麼</th><th>誰</th></tr>
+    <tr><td><strong>先</strong></td><td><mark class="hl-ask">確認 Aarvin 的 API contract 到了沒。到了就看有沒有出處欄位、decompose 怎麼定義</mark> &mdash; 未知 #1、#2</td><td>Mark</td></tr>
+    <tr><td>1</td><td>問清楚 decompose 指什麼。這題決定服務範圍</td><td>Mark 問 Aarvin</td></tr>
+    <tr><td>2</td><td>原本的路由還算不算數 &mdash; 未知 #3</td><td>全體</td></tr>
+    <tr><td>3</td><td>信心分數對什麼評分 &mdash; 未知 #4。<b>建議先問 Aarvin,不要自己裁決</b></td><td>Mark + Zhexuan</td></tr>
+    <tr><td>4</td><td>W7 期中展示什麼 &mdash; 未知 #5</td><td>全體</td></tr>
+    <tr><td>5</td><td>SOW §2 與現在的主線是否相符 &mdash; 未知 #6。<b>還沒簽,改得動</b></td><td>Mark → Urte</td></tr>
+    <tr><td>6</td><td>收集五個人的志願、時數,定對口窗口,回覆硬體(Aarvin 要求本週)</td><td>全體</td></tr>
+    <tr><td>7</td><td>100 封信件怎麼來 &mdash; 未知 #8;公開語料授權要查</td><td>Karina</td></tr>
+    <tr><td>8</td><td>政策表誰寫、找誰簽</td><td>Yudi</td></tr>
+    <tr><td>9</td><td>Mark 同時吃 Service Engineering 與 Coordination,工程要不要分出去</td><td>全體</td></tr>
+  </table></div>
+  <div class="risk"><span class="h">提醒</span>三 的所有提案都建立在「主線就是脫敏服務」這個假設上。<b>那個假設本身還沒被確認</b>(未知 #2、#3)。<mark class="hl-key">先把「先」那一列做完再討論架構,否則可能白吵。</mark></div>
+</div>
+
+<footer style="margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)">
+  工作文件 · Mark · 2026-09-24 · 第一、二節為有出處的事實與未知;第三節以後全是未經確認的提案<br>
+  兩種判斷做法的五個例子:<code>sanitization-gate-options-zh.html</code> · 安全研究:<code>docs/research/</code> · 來源文件:<code>meetings/client/2026-09-21/</code>
+</footer>
+
+</div>
