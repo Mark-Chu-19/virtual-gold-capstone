@@ -5,7 +5,7 @@ Client contact: Urte Jesina. Team: 5 people.
 
 We are designing and evaluating a **local-first enterprise AI assistant**: open-source models running locally are the primary intelligence layer, every response gets a measured confidence score, and requests escalate to a cloud model only when confidence is low **and** data sensitivity allows. Sensitive data stays local.
 
-## Current status (Week 4, updated 2026-09-21)
+## Current status (Week 5, updated 2026-09-27)
 
 | Milestone | Status |
 |---|---|
@@ -27,10 +27,22 @@ We are designing and evaluating a **local-first enterprise AI assistant**: open-
 | Karina's PRs #3 (schema), #4 (demo batch), #5 (SEC fetch + data) | Open; scope questions under team discussion |
 | Week 4: sandbox setup, harness skeleton (sampling core, loaders, metrics), workstream research one-pagers | In progress |
 | Week 7: midpoint presentation with first local-only / hybrid / cloud-only numbers on MMLU subset and GSM8K (scope in `todo/TODO.md` A7) | Target |
+| **Client meeting Sep 21: direction changed.** Team aligned to prioritize the horizontal scenario and privacy module first, deferring the vertical (trading assistant) to time-permitting; horizontal framed around a chief-of-staff assistant; the module is to be a **standalone service with an HTTP API endpoint**, not an MCP server | Notes in `meetings/client/2026-09-21/notes-gemini-en.pdf` |
+| Aarvin George (Virtual Gold alumnus, developer of the VG08 assistant) joined as technical counterpart. Our service is an intermediate layer; the main agent orchestration is theirs. He owes an initial API contract; Alex and Aarvin own the endpoint spec | Notes p7; his onboarding email in `meetings/client/2026-09-21/email-aarvin-onboarding-en.md` |
+| NDA addendum with CMU still unsigned; the client is reluctant to share internal architecture until it is. The standalone-HTTP approach is explicitly a workaround for that | Notes p4, p7; follow-up owned by Inderpal |
+| Architecture doc v0.3 describes the pre-pivot design and has **not** been revised for the horizontal direction yet | Open |
+| Team meeting Sep 25 (Fri): team produced its own architecture proposal for the horizontal direction | Held; materials not yet in the repo |
+| Client meeting Sep 28 (Mon): present the horizontal architecture | Upcoming |
 
 ## Read this first
 
-The single source of truth is the architecture document. Same content in four formats:
+The single source of truth is the architecture document. Same content in four formats.
+
+> **Note (2026-09-27):** v0.3 describes the pre-pivot design (hybrid assistant with confidence-based
+> routing). The Sep 21 client meeting changed the direction to a standalone sanitization service for
+> the horizontal scenario. v0.3 has not yet been revised; treat its request-flow and scope sections as
+> out of date until a v0.4 lands.
+
 
 | File | Language | Format |
 |---|---|---|
@@ -64,7 +76,9 @@ Sections in the document:
 │   │   ├── architecture-v0.3-en.md      English, Markdown (renders on GitHub)
 │   │   ├── architecture-v0.3-en.html    English, HTML with SVG diagrams
 │   │   ├── architecture-v0.3-zh.md      Traditional Chinese, Markdown
-│   │   └── architecture-v0.3-zh.html    Traditional Chinese, HTML
+│   │   ├── architecture-v0.3-zh.html    Traditional Chinese, HTML
+│   │   └── horizontal-draft/            Mark's personal drafts for the post-pivot horizontal design.
+│   │                                    NOT the team's proposal — fallback only, see the banner in each file
 │   ├── sow/                       Scope of Work drafts
 │   │   ├── Scope of Work v1.docx        original draft (W3)
 │   │   └── Scope of Work v2.docx        revised, changes in red; sign this one once the cost line is filled in
@@ -73,10 +87,12 @@ Sections in the document:
 │   ├── client/                    meetings with Virtual Gold
 │   │   ├── 2026-09-03/            notes-gemini-en.docx
 │   │   ├── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
-│   │   └── 2026-09-21/            agenda-en.html · agenda-zh.html · briefing-security-deidentification-en.html (Yudi)
+│   │   └── 2026-09-21/            agenda-{en,zh}.html · agenda-en.pdf · notes-gemini-en.pdf
+│   │                              briefing-security-deidentification-en.{html,pdf} (Yudi)
+│   │                              financial-data-sources-en.pdf · email-aarvin-onboarding-en.md
 │   ├── team/                      internal team meetings, not shared with the client
 │   │   └── 2026-09-18/            agenda-en.html · agenda-zh.html
-│   └── professor/                 weekly check-ins with the faculty advisor
+│   └── professor/                 (not created yet) weekly check-ins with the faculty advisor
 ├── todo/                          team to-do: open decisions, pending actions, decision log
 │   ├── TODO.md                    English
 │   └── TODO-zh.md                 Traditional Chinese
@@ -84,8 +100,9 @@ Sections in the document:
 │   ├── client/                    Virtual Gold Inc - AI Assistant.pdf          original capstone brief
 │   ├── course/                    Proposed Weekly Structure.pdf                15-week course structure we must follow
 │   └── team/                      Virtual_Gold_Data_Architecture_Proposal_1.docx   teammate proposal (merged into v0.2)
-├── src/                           (from week 4) prototype code: router, confidence scoring, PII gate, eval harness
-└── data/                          (from week 4) synthetic datasets and benchmark subsets; never real data
+├── .github/                       CODEOWNERS, pull_request_template.md
+├── src/                           (not created yet) prototype code
+└── data/                          (not created yet) synthetic datasets and benchmark subsets; never real data
 ```
 
 Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, research), `meetings/` is everything about one meeting in one place, `reference/` is what we were handed (client, course, or a teammate), `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
@@ -93,7 +110,7 @@ Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, resea
 ### Naming conventions
 
 - Every bilingual file carries a language suffix: `-en` or `-zh`. The exception is `todo/TODO.md`, which is English (`TODO-zh.md` is the Chinese copy).
-- Meeting folders are `YYYY-MM-DD`. Inside: `agenda-<lang>.html` for the running order, `briefing-<topic>-<lang>.html` for a presentation piece one workstream brings, `notes-<source>-<lang>` for what comes out (`gemini` = the auto-generated notes, `zh` = our translation).
+- Meeting folders are `YYYY-MM-DD`. Inside: `agenda-<lang>.html` for the running order, `briefing-<topic>-<lang>.html` for a presentation piece one workstream brings, `notes-<source>-<lang>` for what comes out (`gemini` = the auto-generated notes, `zh` = our translation), `email-<who>-<topic>-<lang>.md` for correspondence that belongs to that meeting.
 - Versions live in the filename: `architecture-v0.3-*`, `Scope of Work v2`. A new version is a new file; old versions stay for history.
 
 ## Meeting cadence
@@ -118,7 +135,7 @@ All times US Eastern. Agendas go up before the meeting, notes go in after, both 
 
 ## Open decisions
 
-Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): decisions, pending actions, corrections to the teammate proposal, items waiting on the client, the SOW cost line, the per-workstream research list, and a decision log. Section 11 of the architecture doc mirrors the decision items but lags behind the TODO until v0.3 (TODO B11).
+Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): decisions, pending actions, corrections to the teammate proposal, items waiting on the client, the SOW cost line, the per-workstream research list, and a decision log. Section 11 of the architecture doc mirrors the decision items but lags behind the TODO; since the Sep 21 pivot both are partly out of date and are due a pass together.
 
 ## Contributing workflow
 
