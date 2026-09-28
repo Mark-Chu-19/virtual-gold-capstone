@@ -1,0 +1,411 @@
+<title>Sensitive Data Classification</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --key:#7A5E1A;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.04em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --key:#E2BE62;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --key:#E2BE62;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+
+header{padding-bottom:22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,42px);line-height:1.12;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:10px 36px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+
+.cat{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:46px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{font-family:var(--serif);font-size:25px;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.ctx{color:var(--muted);margin:6px 0 14px;font-size:15.5px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item > p:first-child{margin-top:0}
+.item > p:last-child{margin-bottom:0}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+
+.thesis{font-family:var(--serif);font-size:clamp(20px,2.6vw,24px);line-height:1.45;margin:18px 0 0;padding:18px 20px;background:var(--local-soft);border:1px solid var(--local);border-radius:8px;text-wrap:balance}
+.thesis b{color:var(--local)}
+
+code{font-family:var(--mono);font-size:.84em;background:var(--soft);padding:1px 6px;border-radius:4px;white-space:nowrap}
+.tbl{overflow-x:auto;border-radius:8px;margin:8px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.nowrap{white-space:nowrap}
+.tier{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.tier.h{background:var(--warn-soft);color:var(--warn)}
+.tier.m{background:var(--gold-soft);color:var(--key)}
+.tier.l{background:var(--cloud-soft);color:var(--cloud)}
+.tier.p{background:var(--local-soft);color:var(--local)}
+.act-r{color:var(--warn);font-weight:600}
+.act-k{color:var(--local);font-weight:600}
+
+.badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;font-weight:600;white-space:nowrap}
+.badge.fact{background:var(--local-soft);color:var(--local)}
+.badge.prop{background:var(--gold-soft);color:var(--key)}
+.badge.unk{background:var(--warn-soft);color:var(--warn)}
+
+.note{border-radius:6px;padding:11px 15px;margin:12px 0 0;font-size:15px;line-height:1.65;background:var(--gold-soft)}
+.note .h{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;display:block;margin-bottom:4px;color:var(--muted)}
+.note.risk{background:var(--warn-soft)}
+.note.ok{background:var(--local-soft)}
+
+.mail{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--cloud);border-radius:0 6px 6px 0;padding:13px 17px;margin:8px 0 12px;font-size:15px;line-height:1.8;white-space:pre-wrap}
+.mail .who{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;white-space:normal}
+.mail.out{border-left-color:var(--local)}
+.mail mark{background:var(--local-soft);color:var(--local);font-family:var(--mono);font-size:.88em;padding:0 4px;border-radius:3px;font-weight:600}
+.mail .hl{background:var(--gold-soft);border-radius:3px;padding:0 2px}
+.req{font-size:15px;margin:0 0 12px;padding:10px 14px;border-left:3px solid var(--gold);background:var(--soft);border-radius:0 6px 6px 0}
+.req .who{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+
+figure{margin:12px 0 4px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;min-width:680px;font-family:var(--sans)}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+.d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.d-box.judge{fill:var(--gold-soft);stroke:var(--gold);stroke-width:1.8}
+.d-box.code{fill:var(--local-soft);stroke:var(--local);stroke-width:2.2}
+.d-box.policy{fill:var(--local-soft);stroke:var(--local);stroke-width:1.5;stroke-dasharray:5 3}
+.d-box.cloud{fill:var(--cloud-soft);stroke:var(--cloud);stroke-width:1.5;stroke-dasharray:5 4}
+.d-bound{fill:none;stroke:var(--local);stroke-width:1.6;stroke-dasharray:7 5}
+.d-n{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.d-n.g{fill:var(--local)} .d-n.y{fill:var(--key)} .d-n.c{fill:var(--cloud)}
+.d-name{font-size:14.5px;font-weight:600;fill:var(--ink)}
+.d-sub{font-size:12px;fill:var(--muted)}
+.d-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;fill:var(--local)}
+.d-in{font-family:var(--mono);font-size:11px;letter-spacing:.04em;fill:var(--muted)}
+.d-flow{stroke:var(--muted);stroke-width:1.7;fill:none}
+.d-head{fill:var(--muted)}
+
+ol.qs{margin:8px 0 0;padding-left:22px}
+ol.qs li{margin-bottom:10px}
+ol.qs li b{font-weight:600}
+ul.plain{margin:6px 0 0;padding-left:20px}
+ul.plain li{margin-bottom:6px}
+.src{font-size:13.5px;color:var(--muted);line-height:1.7}
+.src a{color:var(--cloud)}
+.src ol{padding-left:20px;margin:6px 0 0}
+ol.steps{margin:6px 0 0;padding-left:22px}
+ol.steps li{margin-bottom:6px}
+.cap{font-size:13.5px;color:var(--muted);margin:6px 0 0}
+a{color:var(--cloud)}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line)}
+@media (max-width:600px){ .item{padding:14px 14px 12px} th,td{padding:9px 10px} }
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+@media (prefers-reduced-motion:reduce){details.more>summary::before{transition:none}}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone × Virtual Gold · Proposal</div>
+  <h1>Sensitive Data Classification Proposal</h1>
+  <dl class="meta">
+    <div><dt>Scope</dt><dd>How the local service determines which content to redact, and how the approach will be validated</dd></div>
+    <div><dt>Prepared by</dt><dd>Yudi Guo · Privacy research &amp; evaluation</dd></div>
+    <div><dt>Date</dt><dd>27 Sep 2026</dd></div>
+    <div><dt>Status</dt><dd>Draft proposal; not yet validated on data</dd></div>
+  </dl>
+</header>
+
+<div class="cat"><h2>Overview</h2></div>
+<p class="thesis">Each detected item is assessed on two dimensions: its <b>category</b>, which determines the severity of a potential leak, and its <b>context</b>, which determines the confidence that it is private. A <b>rule-based decision layer</b> combines the two. Where confidence is insufficient, the item is redacted by default and replaced with a reversible placeholder, so the assistant’s task is unaffected.</p>
+
+<div class="tbl"><table>
+  <tr><th>Requirement</th><th>Approach</th></tr>
+  <tr><td>Local execution on an open-source model</td><td>All detectors and the model run on project hardware. The service has no outbound network access.</td></tr>
+  <tr><td>Contextual judgment by the model</td><td>The model assesses each candidate span within its surrounding text, for example “my cell” versus “our support line”.</td></tr>
+  <tr><td>Confidence score output</td><td>The model scores each span; the score is calibrated against labelled emails before use.</td></tr>
+</table></div>
+
+<div class="cat"><h2>System Architecture</h2></div>
+<figure>
+  <svg viewBox="0 0 900 470" role="img" aria-label="Pipeline. Within the local service: split the email, identify candidate spans with rules, Presidio and the local model, assess each span in context with a confidence score, decide in code against the client-approved tier table, and replace spans with placeholders. The cloud assistant receives placeholders only. Its response returns to the local service, where placeholders are restored before delivery to the executive.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-head" d="M0 0 L10 5 L0 10 z"/></marker>
+    </defs>
+    <rect class="d-bound" x="8" y="16" width="624" height="440" rx="6"/>
+    <text class="d-label" x="24" y="444">LOCAL SERVICE · NO OUTBOUND NETWORK ACCESS</text>
+
+    <text class="d-in" x="24" y="44">INPUT: EMAIL + EXECUTIVE’S REQUEST</text>
+    <line class="d-flow" x1="109" y1="50" x2="109" y2="66" marker-end="url(#ah)"/>
+
+    <rect class="d-box" x="24" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n" x="36" y="89">01</text>
+    <text class="d-name" x="36" y="110">Segmentation</text>
+    <text class="d-sub" x="36" y="128">body · quotes · signature</text>
+
+    <rect class="d-box" x="230" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="89">02</text>
+    <text class="d-name" x="242" y="110">Candidate detection</text>
+    <text class="d-sub" x="242" y="128">rules ∪ Presidio ∪ model</text>
+
+    <rect class="d-box judge" x="436" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n y" x="448" y="89">03 · MODEL</text>
+    <text class="d-name" x="448" y="110">Context assessment</text>
+    <text class="d-sub" x="448" y="128">private? + confidence</text>
+
+    <line class="d-flow" x1="202" y1="104" x2="226" y2="104" marker-end="url(#ah)"/>
+    <line class="d-flow" x1="408" y1="104" x2="432" y2="104" marker-end="url(#ah)"/>
+    <path class="d-flow" d="M525 138 L525 172 L113 172 L113 206" marker-end="url(#ah)"/>
+
+    <rect class="d-box code" x="24" y="210" width="178" height="68" rx="3"/>
+    <text class="d-n g" x="36" y="229">04 · CODE</text>
+    <text class="d-name" x="36" y="250">Decision</text>
+    <text class="d-sub" x="36" y="268">tier × threshold</text>
+
+    <rect class="d-box" x="230" y="210" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="229">05</text>
+    <text class="d-name" x="242" y="250">Pseudonymisation</text>
+    <text class="d-sub" x="242" y="268">[PHONE_1]; map kept local</text>
+
+    <line class="d-flow" x1="202" y1="244" x2="226" y2="244" marker-end="url(#ah)"/>
+    <line class="d-flow" x1="408" y1="244" x2="686" y2="244" marker-end="url(#ah)"/>
+
+    <rect class="d-box cloud" x="690" y="210" width="190" height="68" rx="3"/>
+    <text class="d-n c" x="702" y="229">EXTERNAL</text>
+    <text class="d-name" x="702" y="250">Cloud assistant</text>
+    <text class="d-sub" x="702" y="268">receives placeholders only</text>
+
+    <path class="d-flow" d="M785 278 L785 384 L618 384" marker-end="url(#ah)"/>
+
+    <rect class="d-box policy" x="24" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n g" x="36" y="369">POLICY</text>
+    <text class="d-name" x="36" y="390">Tier table</text>
+    <text class="d-sub" x="36" y="408">client-approved</text>
+    <line class="d-flow" x1="113" y1="350" x2="113" y2="282" marker-end="url(#ah)"/>
+
+    <rect class="d-box" x="436" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n" x="448" y="369">06</text>
+    <text class="d-name" x="448" y="390">Restoration</text>
+    <text class="d-sub" x="448" y="408">placeholders → originals</text>
+
+    <rect class="d-box" x="230" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="369">OUTPUT</text>
+    <text class="d-name" x="242" y="390">Executive</text>
+    <text class="d-sub" x="242" y="408">original values restored</text>
+    <line class="d-flow" x1="436" y1="384" x2="412" y2="384" marker-end="url(#ah)"/>
+  </svg>
+  <figcaption>The model produces assessments (step 03); decisions are made by code (step 04) against a client-approved table. All components other than the cloud assistant run within the local service.</figcaption>
+</figure>
+
+<div class="cat"><h2>Technical Feasibility</h2><span class="tag">Implementation</span></div>
+<p class="ctx">Every stage is built on existing open-source tools. The only substantial custom component is the merging of detector outputs.</p>
+<div class="tbl"><table>
+  <tr><th>Component</th><th>Implementation</th><th>Effort</th></tr>
+  <tr><td>Rule-based detection</td><td>Regular expressions with checksum validation for phone numbers, email addresses, card and ID numbers. Presidio includes a set of such recognisers.</td><td class="nowrap">Low</td></tr>
+  <tr><td>Presidio</td><td>The <code>presidio-analyzer</code> package with a spaCy language model [2]</td><td class="nowrap">Low</td></tr>
+  <tr><td>Local model</td><td>Served through Ollama with Rescriber’s open-source detection prompt [1]; OpenAI Privacy Filter as an alternative [3]</td><td class="nowrap">Low to medium</td></tr>
+  <tr><td>Merging outputs (union)</td><td>Custom code that aligns results by character position; overlapping spans are counted once</td><td class="nowrap">Medium, approx. 50–100 lines</td></tr>
+</table></div>
+<details class="more"><summary>Integration considerations</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>Issue</th><th>Resolution</th></tr>
+  <tr><td>The model returns text rather than character positions</td><td>Each returned string is located in the source text. Rescriber’s prompt requires verbatim substrings for this reason [1].</td></tr>
+  <tr><td>Detectors use different category names</td><td>All outputs are mapped to a single category list. Rescriber’s <code>presidio_server.py</code> provides a reference mapping [1].</td></tr>
+  <tr><td>Latency accumulates across detectors</td><td>Detectors run in parallel. The model is the bottleneck: on an Apple M2 machine with 24 GB of memory, Rescriber reports a mean of 0.73 s for Presidio and 3.40 s for Llama3-8B [1].</td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>Sensitivity Tiers</h2><span class="tag">For client review</span></div>
+<p class="ctx">Each category is assigned to a tier. The tier determines the confidence required before redaction: the more severe the potential harm, the lower the threshold.</p>
+<div class="tbl"><table>
+  <tr><th>Tier</th><th>Categories</th><th>Redaction rule</th></tr>
+  <tr><td><span class="tier h">High</span></td><td>Government IDs, passwords and keys, bank and card numbers, health information</td><td>Redact at confidence ≥ 0.2</td></tr>
+  <tr><td><span class="tier h">High</span></td><td>Business-confidential information: unreleased financial results, deal and M&amp;A terms, project code names, legal matters</td><td>Redact at confidence ≥ 0.2; see below</td></tr>
+  <tr><td><span class="tier m">Medium</span></td><td>Names of private individuals, personal phone numbers, personal email addresses, home addresses</td><td>Redact at confidence ≥ 0.5</td></tr>
+  <tr><td><span class="tier l">Low</span></td><td>City, dates, organisation names, age, gender</td><td>Retain when isolated; redact when several items together could identify an individual</td></tr>
+  <tr><td><span class="tier p">Public</span></td><td>Public figures, published support lines, company names in a public context</td><td>Retain only when the model is confident the item is public</td></tr>
+</table></div>
+<h3>Business-confidential information</h3>
+<p style="margin:0 0 8px">This category cannot be listed exhaustively and has no fixed format, so rules and Presidio do not detect it. Coverage relies on three layers:</p>
+<div class="tbl"><table>
+  <tr><th>Layer</th><th>Mechanism</th><th>Covers</th></tr>
+  <tr><td class="nowrap">1. Term list</td><td>The client supplies project code names, deal names and key counterparties; any match is redacted</td><td>Confidential items the client already knows</td></tr>
+  <tr><td class="nowrap">2. Explicit markers</td><td>Phrases such as “confidential”, “board only”, “do not forward” or “privileged” place the surrounding passage in the High tier</td><td>Content the sender has marked as confidential</td></tr>
+  <tr><td class="nowrap">3. Default placeholder</td><td>Proper nouns and amounts the model cannot classify are replaced with reversible placeholders</td><td>Items missed by the first two layers</td></tr>
+</table></div>
+<div class="note risk"><span class="h">Known limitation</span>NIST SP 800-122 covers personal data only, so tiering for business information will follow the client’s internal data classification. This category depends on the model’s contextual judgment and is the principal recall risk; its leak rate will be reported separately. <span class="badge prop">Proposed</span></div>
+<details class="more"><summary>Basis for the tiers and threshold selection</summary><div class="body">
+<div class="note"><span class="h">Basis for the tiers</span>NIST SP 800-122 classifies personal data by low, moderate and high confidentiality impact, taking into account the sensitivity of each field and its context of use, and notes that combinations of fields may be more sensitive than individual fields [5]. The Low-tier combination rule reflects Sweeney’s finding that ZIP code, gender and date of birth together uniquely identify an estimated 87% of the US population [6]. The category list is adapted from Rescriber’s taxonomy [1].</div>
+
+<h3>Threshold selection</h3>
+<p style="margin:0 0 6px">The thresholds above are initial values. Final values will be determined empirically:</p>
+<ol class="steps">
+  <li>The client sets an acceptable leak rate for each tier. This is a business decision.</li>
+  <li>A range of thresholds is evaluated on labelled emails, recording the leak rate and the over-redaction rate at each.</li>
+  <li>For each tier, the highest threshold that meets its leak-rate target is selected, which minimises unnecessary redaction.</li>
+</ol>
+<div class="tbl"><table>
+  <tr><th>Threshold</th><th>Leak rate</th><th>Over-redaction rate</th></tr>
+  <tr><td class="num">0.2</td><td class="num">1%</td><td class="num">40%</td></tr>
+  <tr><td class="num">0.3</td><td class="num">2%</td><td class="num">25%</td></tr>
+  <tr><td class="num">0.5</td><td class="num">5%</td><td class="num">12%</td></tr>
+  <tr><td class="num">0.7</td><td class="num">12%</td><td class="num">5%</td></tr>
+</table></div>
+<p class="cap">Illustrative values for the Medium tier. With a 2% leak-rate target, the selected threshold would be 0.3.</p>
+<div class="note risk"><span class="h">Validation and sign-off</span>Given the dataset size (100 emails), thresholds will be tuned and evaluated on separate subsets, or by cross-validation, to avoid optimistic results. Tier assignments are a business decision and require client confirmation.</div>
+</div></details>
+
+<div class="cat"><h2>Worked Example</h2></div>
+<p class="ctx">The example includes the case raised in the client’s email: a personal mobile number and a public support number in the same message.</p>
+<div class="mail"><span class="who">Incoming · from Dana Whitfield to Tom Reyes</span>Hi Tom,
+Before Thursday’s board call: my <span class="hl">oncologist</span> moved my appointment, so I’ll dial in from home. Reach me on my cell, <span class="hl">412-555-0182</span>.
+On the vendor outage, Acme’s support line is <span class="hl">1-800-555-0199</span>.
+— Dana</div>
+<div class="req"><span class="who">Executive’s request to the assistant</span>Draft a reply to Dana and summarise the vendor issue.</div>
+
+<div class="tbl"><table>
+  <tr><th>Span</th><th>Category · tier</th><th>Contextual evidence</th><th>Confidence (private)</th><th>Decision</th></tr>
+  <tr><td>Dana, Dana Whitfield</td><td>Name · <span class="tier m">Med</span></td><td>Private individual; sender</td><td class="num">0.90</td><td class="act-r">[PERSON_1]</td></tr>
+  <tr><td>Tom</td><td>Name · <span class="tier m">Med</span></td><td>Private individual; recipient</td><td class="num">0.85</td><td class="act-r">[PERSON_2]</td></tr>
+  <tr><td>oncologist</td><td>Health · <span class="tier h">High</span></td><td>“my … appointment”</td><td class="num">0.95</td><td class="act-r">[HEALTH_1]</td></tr>
+  <tr><td class="nowrap">412-555-0182</td><td>Phone · <span class="tier m">Med</span></td><td>“my cell”</td><td class="num">0.95</td><td class="act-r">[PHONE_1]</td></tr>
+  <tr><td class="nowrap">1-800-555-0199</td><td>Phone · <span class="tier m">Med</span></td><td>Toll-free prefix; “Acme’s support line”</td><td class="num">0.15</td><td class="act-k">Retain</td></tr>
+  <tr><td>Acme, Thursday</td><td>Organisation, date · <span class="tier l">Low</span></td><td>Isolated; insufficient to identify an individual</td><td class="num">n/a</td><td class="act-k">Retain</td></tr>
+</table></div>
+<p class="cap">Confidence values are illustrative.</p>
+
+<div class="mail out"><span class="who">Text sent to the cloud assistant</span>Hi <mark>[PERSON_2]</mark>,
+Before Thursday’s board call: my <mark>[HEALTH_1]</mark> moved my appointment, so I’ll dial in from home. Reach me on my cell, <mark>[PHONE_1]</mark>.
+On the vendor outage, Acme’s support line is 1-800-555-0199.
+— <mark>[PERSON_1]</mark></div>
+<div class="note ok"><span class="h">Outcome</span>The assistant can still draft the reply to [PERSON_1] and summarise the Acme outage. The cloud service does not receive the diagnosis, the personal number or either name. Placeholders are restored locally before the draft is returned to the executive.</div>
+
+<div class="cat"><h2>Confidence Scoring</h2></div>
+<p class="ctx">The model scores each span. Because language models tend to be overconfident [7], the raw score is calibrated against labelled emails before thresholds are applied.</p>
+<details class="more"><summary>Calibration procedure and alternative method</summary><div class="body">
+<h3 style="margin-top:0">Version 1: model score with calibration</h3>
+  <p style="margin:0">The model assigns a raw score to each span. Language models tend to be overconfident when stating their own confidence [7], so the raw score is calibrated against labelled emails before use:</p>
+  <ol class="steps">
+    <li>Run the system on labelled emails, recording each span’s raw score and its true label.</li>
+    <li>Group spans by raw score and compute the proportion in each group that is actually private.</li>
+    <li>At run time, convert each raw score to the corresponding observed proportion.</li>
+  </ol>
+  <div class="tbl"><table>
+    <tr><th>Raw score</th><th>Spans</th><th>Actually private</th><th>Calibrated score</th></tr>
+    <tr><td class="num">0.9–1.0</td><td class="num">200</td><td class="num">140</td><td class="num">0.70</td></tr>
+    <tr><td class="num">0.7–0.9</td><td class="num">100</td><td class="num">50</td><td class="num">0.50</td></tr>
+    <tr><td class="num">0.5–0.7</td><td class="num">50</td><td class="num">15</td><td class="num">0.30</td></tr>
+    <tr><td class="num">0.0–0.5</td><td class="num">150</td><td class="num">15</td><td class="num">0.10</td></tr>
+  </table></div>
+  <p class="cap">Illustrative values. A raw score of 0.95 would be reported as 0.70.</p>
+  <p style="margin:12px 0 0">Calibration corrects a raw score; it is not a separate source of scores. It ensures that a threshold of 0.5 corresponds to an observed 50% likelihood.</p>
+  <h3>Version 2: agreement-based scoring</h3>
+  <p style="margin:0">If calibration shows that the model’s scores discriminate poorly, for example with most spans scored near 0.9, the raw score will instead be derived from agreement: the share of detectors that flag a span, and the share of 3–5 repeated model runs that label it private. Agreement across repeated answers has been shown to be a more reliable uncertainty signal than stated confidence [7]. Both methods will be compared on the same data.</p>
+</div></details>
+
+<div class="cat"><h2>Related Work and Contributions</h2></div>
+<p class="ctx">No individual component is novel. Each has a published source or an industry precedent.</p>
+<div class="note ok"><span class="h">Contributions of this project</span><b>1.</b> Integration of these components for executive email, without per-item human review. Rescriber, the closest prior system, requires the user to confirm each item.<br><b>2.</b> A labelled email benchmark and an ablation study quantifying the contribution of each component.</div>
+<details class="more"><summary>Sources for each component</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>Component</th><th>Source</th><th>Reported finding or capability</th></tr>
+  <tr><td>Local detection, placeholders sent to the cloud, restoration of the response</td><td>Rescriber, CHI 2025 [1]</td><td>On 240 test samples: Llama3-8B precision 0.94, recall 0.63; GPT-4o recall 0.88; Presidio 0.69 / 0.68. MIT-licensed code.</td></tr>
+  <tr><td>Rule-based and NER detection; allow-lists</td><td>Microsoft Presidio [2]</td><td>Widely used open-source toolkit; <code>allow_list</code> excludes known-safe values</td></tr>
+  <tr><td>Local PII detection model</td><td>OpenAI Privacy Filter [3]</td><td>Open-weight, Apache 2.0, deployable on-premises</td></tr>
+  <tr><td>Per-category thresholds</td><td>Google Cloud Sensitive Data Protection [4]</td><td>Five likelihood levels; minimum likelihood configurable per data type</td></tr>
+  <tr><td>Sensitivity tiers</td><td>NIST SP 800-122 [5]</td><td>Low / moderate / high impact levels; context of use can change the level</td></tr>
+  <tr><td>Automated decisions from scores and thresholds</td><td>MINIM, ICML 2026 [8]; OCELOT, 2026 [9]</td><td>Scored, rule-based decisions in place of human review</td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>Improving Recall</h2><span class="tag">Principal risk</span></div>
+<p class="ctx">Rescriber’s 8B model missed approximately one third of personal data (recall 0.63) [1]. Its users reviewed every message; here, a missed item reaches the cloud directly. A baseline will first be measured on email, and the measures below added one at a time.</p>
+<details class="more"><summary>Measures and supporting evidence</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>Measure</th><th>Rationale</th><th>Evidence</th></tr>
+  <tr><td>Union of all detectors</td><td>The union’s recall is at least that of its best member; the cost is additional over-redaction.</td><td><span class="badge fact">Holds by definition</span></td></tr>
+  <tr><td>Entity propagation</td><td>Once a name is detected, every occurrence in the text is marked. Rescriber reports missed variants of the same name.</td><td><span class="badge fact">Failure mode in [1]</span></td></tr>
+  <tr><td>Repeated model runs</td><td>Spans flagged in any run become candidates.</td><td><span class="badge fact">Holds by definition</span></td></tr>
+  <tr><td>Email-specific prompt examples</td><td>Rescriber’s prompt examples are chat messages, not email threads.</td><td><span class="badge prop">Proposed</span></td></tr>
+  <tr><td>One category per pass</td><td>A shorter category list per pass may reduce omissions.</td><td><span class="badge unk">Untested</span></td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>Evaluation Plan</h2></div>
+<p class="ctx">100 realistic emails, as requested, with each private span labelled by category and by whether it is private or public in context. Public labelled datasets will supplement this set [10]. The primary metric is the <b>leak rate</b>: the proportion of private spans sent to the cloud, reported per tier.</p>
+<details class="more"><summary>Full metric set and ablation study</summary><div class="body">
+<h3 style="margin-top:4px">Metrics</h3>
+<div class="tbl"><table>
+    <tr><th>Metric</th><th>Definition</th></tr>
+    <tr><td><b>Leak rate</b> (primary)</td><td>Proportion of private spans sent to the cloud, reported per tier</td></tr>
+    <tr><td>Over-redaction rate</td><td>Proportion of public spans redacted unnecessarily</td></tr>
+    <tr><td>Calibration</td><td>Agreement between calibrated scores and observed proportions</td></tr>
+    <tr><td>Latency</td><td>Processing time per email on the confirmed hardware</td></tr>
+  </table></div>
+<h3>Ablation study</h3>
+<p style="margin:0">Starting from a Rescriber-style baseline, components are added one at a time: detector union → entity propagation → repeated runs → tier thresholds. Thresholds are tuned on one subset and results are reported on a held-out subset.</p>
+</div></details>
+
+<div class="cat"><h2>Failure Handling</h2></div>
+<p class="ctx">The service fails safe: if any component fails, every candidate span is redacted.</p>
+<details class="more"><summary>Failure-handling rules</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>Condition</th><th>Behaviour</th></tr>
+  <tr><td>Model unavailable or output unparseable</td><td>Fall back to rule-based detection, redact all candidates, and flag the response as degraded</td></tr>
+  <tr><td>Response contains a placeholder that was not issued</td><td>Flag the placeholder rather than infer a value. Rescriber observed GPT-4o generating placeholders such as “[Your Full Name]” [1].</td></tr>
+  <tr><td>Logging</td><td>Record category and score only; original text is never logged</td></tr>
+  <tr><td>Model and list updates</td><td>Installed at deployment; the running service does not access the internet</td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>Next Steps</h2><span class="tag">With the client</span></div>
+<p class="ctx">The following items will be finalised with the client once the prototype is demonstrated, using measured results rather than assumptions.</p>
+<div class="tbl"><table>
+  <tr><th>Item</th><th>How it will be determined</th><th>Timing</th></tr>
+  <tr><td><b>Input scope</b></td><td>Plain text only, or also attachments and scanned documents. This defines what the prototype must handle.</td><td class="nowrap">Before prototyping</td></tr>
+  <tr><td><b>Confidential term list</b></td><td>The client supplies project code names, deal names and key counterparties for the business-confidential term list.</td><td class="nowrap">Before prototyping</td></tr>
+  <tr><td><b>Tier assignments</b></td><td>The prototype’s redactions on sample emails are reviewed with the client, who adjusts the tier table accordingly.</td><td class="nowrap">After the demo</td></tr>
+  <tr><td><b>Thresholds</b></td><td>The client sets an acceptable leak rate per tier; thresholds are then selected from experimental results.</td><td class="nowrap">After the demo</td></tr>
+  <tr><td><b>Latency</b></td><td>Processing time is measured on the confirmed hardware and compared with the client’s expectations.</td><td class="nowrap">After the demo</td></tr>
+  <tr><td><b>Optional context fields</b></td><td>Over-redaction is compared with and without fields such as internal or external sender, to show whether they are worth providing.</td><td class="nowrap">After the demo</td></tr>
+</table></div>
+
+<footer>
+  <div class="src"><details class="more"><summary>Sources (verified 24–27 Sep 2026; figures are taken from each source’s own experiments)</summary><div class="body">
+<ol>
+    <li>Zhou, Xu, Wu, Li. <a href="https://arxiv.org/abs/2410.11876">Rescriber: Smaller-LLM-Powered User-Led Data Minimization for LLM-Based Chatbots</a>. CHI 2025. Code: <a href="https://github.com/PEACH-Research-Lab/Rescriber">github.com/PEACH-Research-Lab/Rescriber</a></li>
+    <li><a href="https://microsoft.github.io/presidio/tutorial/13_allow_list/">Microsoft Presidio, allow-lists</a></li>
+    <li><a href="https://github.com/openai/privacy-filter">OpenAI Privacy Filter</a> (April 2026)</li>
+    <li><a href="https://docs.cloud.google.com/sensitive-data-protection/docs/likelihood">Google Cloud Sensitive Data Protection, match likelihood</a></li>
+    <li>NIST <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-122.pdf">SP 800-122</a>, Guide to Protecting the Confidentiality of PII (2010), §3.2</li>
+    <li>Sweeney. <a href="https://dataprivacylab.org/projects/identifiability/paper1.pdf">Simple Demographics Often Identify People Uniquely</a>. CMU Data Privacy Working Paper 3, 2000</li>
+    <li>Xiong et al. <a href="https://arxiv.org/abs/2306.13063">Can LLMs Express Their Uncertainty?</a> ICLR 2024</li>
+    <li>Yu et al. <a href="https://arxiv.org/abs/2606.13949">MINIM: Privacy-Aware Minimal View for Agents via Trusted Local Sanitization</a>. ICML 2026</li>
+    <li>Xie, Li. <a href="https://arxiv.org/abs/2606.12341">OCELOT: Inference-Leakage Budgets for Privacy-Preserving LLM Agents</a>. 2026</li>
+    <li>Agyemang et al. <a href="https://arxiv.org/abs/2604.12064">LLM-Redactor</a>. 2026. Benchmark on Hugging Face: jayluxferro/llm-redactor-leak-benchmark</li>
+  </ol>
+</div></details></div>
+</footer>
+</div>

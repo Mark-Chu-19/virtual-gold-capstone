@@ -1,0 +1,411 @@
+<title>敏感資訊判定方案</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --key:#7A5E1A;
+  --serif:"Source Serif 4","Noto Serif SC","Songti SC",Georgia,serif;
+  --sans:"Source Sans 3","Noto Sans SC","PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.04em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --key:#E2BE62;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --key:#E2BE62;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+
+header{padding-bottom:22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,42px);line-height:1.12;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:10px 36px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+
+.cat{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:46px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{font-family:var(--serif);font-size:25px;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.ctx{color:var(--muted);margin:6px 0 14px;font-size:15.5px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item > p:first-child{margin-top:0}
+.item > p:last-child{margin-bottom:0}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+
+.thesis{font-family:var(--serif);font-size:clamp(20px,2.6vw,24px);line-height:1.45;margin:18px 0 0;padding:18px 20px;background:var(--local-soft);border:1px solid var(--local);border-radius:8px;text-wrap:balance}
+.thesis b{color:var(--local)}
+
+code{font-family:var(--mono);font-size:.84em;background:var(--soft);padding:1px 6px;border-radius:4px;white-space:nowrap}
+.tbl{overflow-x:auto;border-radius:8px;margin:8px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.nowrap{white-space:nowrap}
+.tier{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.tier.h{background:var(--warn-soft);color:var(--warn)}
+.tier.m{background:var(--gold-soft);color:var(--key)}
+.tier.l{background:var(--cloud-soft);color:var(--cloud)}
+.tier.p{background:var(--local-soft);color:var(--local)}
+.act-r{color:var(--warn);font-weight:600}
+.act-k{color:var(--local);font-weight:600}
+
+.badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;font-weight:600;white-space:nowrap}
+.badge.fact{background:var(--local-soft);color:var(--local)}
+.badge.prop{background:var(--gold-soft);color:var(--key)}
+.badge.unk{background:var(--warn-soft);color:var(--warn)}
+
+.note{border-radius:6px;padding:11px 15px;margin:12px 0 0;font-size:15px;line-height:1.65;background:var(--gold-soft)}
+.note .h{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;display:block;margin-bottom:4px;color:var(--muted)}
+.note.risk{background:var(--warn-soft)}
+.note.ok{background:var(--local-soft)}
+
+.mail{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--cloud);border-radius:0 6px 6px 0;padding:13px 17px;margin:8px 0 12px;font-size:15px;line-height:1.8;white-space:pre-wrap}
+.mail .who{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;white-space:normal}
+.mail.out{border-left-color:var(--local)}
+.mail mark{background:var(--local-soft);color:var(--local);font-family:var(--mono);font-size:.88em;padding:0 4px;border-radius:3px;font-weight:600}
+.mail .hl{background:var(--gold-soft);border-radius:3px;padding:0 2px}
+.req{font-size:15px;margin:0 0 12px;padding:10px 14px;border-left:3px solid var(--gold);background:var(--soft);border-radius:0 6px 6px 0}
+.req .who{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+
+figure{margin:12px 0 4px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;min-width:680px;font-family:var(--sans)}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+.d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.d-box.judge{fill:var(--gold-soft);stroke:var(--gold);stroke-width:1.8}
+.d-box.code{fill:var(--local-soft);stroke:var(--local);stroke-width:2.2}
+.d-box.policy{fill:var(--local-soft);stroke:var(--local);stroke-width:1.5;stroke-dasharray:5 3}
+.d-box.cloud{fill:var(--cloud-soft);stroke:var(--cloud);stroke-width:1.5;stroke-dasharray:5 4}
+.d-bound{fill:none;stroke:var(--local);stroke-width:1.6;stroke-dasharray:7 5}
+.d-n{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.d-n.g{fill:var(--local)} .d-n.y{fill:var(--key)} .d-n.c{fill:var(--cloud)}
+.d-name{font-size:14.5px;font-weight:600;fill:var(--ink)}
+.d-sub{font-size:12px;fill:var(--muted)}
+.d-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;fill:var(--local)}
+.d-in{font-family:var(--mono);font-size:11px;letter-spacing:.04em;fill:var(--muted)}
+.d-flow{stroke:var(--muted);stroke-width:1.7;fill:none}
+.d-head{fill:var(--muted)}
+
+ol.qs{margin:8px 0 0;padding-left:22px}
+ol.qs li{margin-bottom:10px}
+ol.qs li b{font-weight:600}
+ul.plain{margin:6px 0 0;padding-left:20px}
+ul.plain li{margin-bottom:6px}
+.src{font-size:13.5px;color:var(--muted);line-height:1.7}
+.src a{color:var(--cloud)}
+.src ol{padding-left:20px;margin:6px 0 0}
+ol.steps{margin:6px 0 0;padding-left:22px}
+ol.steps li{margin-bottom:6px}
+.cap{font-size:13.5px;color:var(--muted);margin:6px 0 0}
+a{color:var(--cloud)}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line)}
+@media (max-width:600px){ .item{padding:14px 14px 12px} th,td{padding:9px 10px} }
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+@media (prefers-reduced-motion:reduce){details.more>summary::before{transition:none}}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone × Virtual Gold · 提案</div>
+  <h1>敏感資訊判定方案</h1>
+  <dl class="meta">
+    <div><dt>範圍</dt><dd>本地服務判定脫敏內容的方法，以及該方法的驗證方案</dd></div>
+    <div><dt>撰寫</dt><dd>Yudi Guo · 隱私研究與評估</dd></div>
+    <div><dt>日期</dt><dd>2026 年 9 月 27 日</dd></div>
+    <div><dt>狀態</dt><dd>提案草稿，尚未經資料驗證</dd></div>
+  </dl>
+</header>
+
+<div class="cat"><h2>方案概述</h2></div>
+<p class="thesis">系統從兩個維度評估每個檢測到的片段：<b>類別</b>決定洩漏後果的嚴重程度，<b>上下文</b>決定該片段屬於隱私的置信度。兩者由<b>基於規則的決策層</b>綜合判定。置信度不足時預設脫敏，並以可還原的佔位符替換，不影響助手完成任務。</p>
+
+<div class="tbl"><table>
+  <tr><th>客戶需求</th><th>實現方式</th></tr>
+  <tr><td>基於開源模型本地執行</td><td>所有檢測器與模型均部署在專案硬體上，服務不具備外網訪問許可權</td></tr>
+  <tr><td>由模型進行情境判斷</td><td>模型結合上下文評估每個候選片段，例如區分“my cell”（個人手機）與“our support line”（客服熱線）</td></tr>
+  <tr><td>輸出置信度</td><td>模型為每個片段打分，分數經標註郵件校準後使用</td></tr>
+</table></div>
+
+<div class="cat"><h2>系統架構</h2></div>
+<figure>
+  <svg viewBox="0 0 900 470" role="img" aria-label="流程圖。在本地服務內：郵件分段；以規則、Presidio 和本地模型檢測候選片段；結合上下文評估每個片段並給出置信度；由程式碼依據客戶批准的分檔表作出決策；以佔位符替換片段。雲端助手僅接收佔位符。其回覆返回本地服務，還原佔位符後交付高管。">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-head" d="M0 0 L10 5 L0 10 z"/></marker>
+    </defs>
+    <rect class="d-bound" x="8" y="16" width="624" height="440" rx="6"/>
+    <text class="d-label" x="24" y="444">本地服務 · 無外網訪問許可權</text>
+
+    <text class="d-in" x="24" y="44">輸入：郵件 + 高管請求</text>
+    <line class="d-flow" x1="109" y1="50" x2="109" y2="66" marker-end="url(#ah)"/>
+
+    <rect class="d-box" x="24" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n" x="36" y="89">01</text>
+    <text class="d-name" x="36" y="110">郵件分段</text>
+    <text class="d-sub" x="36" y="128">正文 · 引用 · 簽名</text>
+
+    <rect class="d-box" x="230" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="89">02</text>
+    <text class="d-name" x="242" y="110">候選片段檢測</text>
+    <text class="d-sub" x="242" y="128">規則 ∪ Presidio ∪ 模型</text>
+
+    <rect class="d-box judge" x="436" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n y" x="448" y="89">03 · 模型</text>
+    <text class="d-name" x="448" y="110">情境評估</text>
+    <text class="d-sub" x="448" y="128">是否隱私 + 置信度</text>
+
+    <line class="d-flow" x1="202" y1="104" x2="226" y2="104" marker-end="url(#ah)"/>
+    <line class="d-flow" x1="408" y1="104" x2="432" y2="104" marker-end="url(#ah)"/>
+    <path class="d-flow" d="M525 138 L525 172 L113 172 L113 206" marker-end="url(#ah)"/>
+
+    <rect class="d-box code" x="24" y="210" width="178" height="68" rx="3"/>
+    <text class="d-n g" x="36" y="229">04 · 程式碼</text>
+    <text class="d-name" x="36" y="250">決策</text>
+    <text class="d-sub" x="36" y="268">檔位 × 閾值</text>
+
+    <rect class="d-box" x="230" y="210" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="229">05</text>
+    <text class="d-name" x="242" y="250">假名化替換</text>
+    <text class="d-sub" x="242" y="268">[PHONE_1]，對映表本地儲存</text>
+
+    <line class="d-flow" x1="202" y1="244" x2="226" y2="244" marker-end="url(#ah)"/>
+    <line class="d-flow" x1="408" y1="244" x2="686" y2="244" marker-end="url(#ah)"/>
+
+    <rect class="d-box cloud" x="690" y="210" width="190" height="68" rx="3"/>
+    <text class="d-n c" x="702" y="229">外部</text>
+    <text class="d-name" x="702" y="250">雲端助手</text>
+    <text class="d-sub" x="702" y="268">僅接收佔位符</text>
+
+    <path class="d-flow" d="M785 278 L785 384 L618 384" marker-end="url(#ah)"/>
+
+    <rect class="d-box policy" x="24" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n g" x="36" y="369">策略</text>
+    <text class="d-name" x="36" y="390">分檔表</text>
+    <text class="d-sub" x="36" y="408">經客戶批准</text>
+    <line class="d-flow" x1="113" y1="350" x2="113" y2="282" marker-end="url(#ah)"/>
+
+    <rect class="d-box" x="436" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n" x="448" y="369">06</text>
+    <text class="d-name" x="448" y="390">還原</text>
+    <text class="d-sub" x="448" y="408">佔位符 → 原值</text>
+
+    <rect class="d-box" x="230" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="369">輸出</text>
+    <text class="d-name" x="242" y="390">高管</text>
+    <text class="d-sub" x="242" y="408">原始資訊已還原</text>
+    <line class="d-flow" x1="436" y1="384" x2="412" y2="384" marker-end="url(#ah)"/>
+  </svg>
+  <figcaption>模型負責評估（第 03 步），決策由程式碼依據客戶批准的分檔表作出（第 04 步）。除雲端助手外，所有元件均在本地服務內執行。</figcaption>
+</figure>
+
+<div class="cat"><h2>技術可行性</h2><span class="tag">實現</span></div>
+<p class="ctx">各環節均基於現有開源工具實現，唯一需要較多自行開發的是多個檢測器結果的合併。</p>
+<div class="tbl"><table>
+  <tr><th>元件</th><th>實現方式</th><th>工作量</th></tr>
+  <tr><td>規則檢測</td><td>正規表示式加校驗位驗證，覆蓋電話、郵箱、卡號、證件號。Presidio 已內建一批此類識別器</td><td class="nowrap">低</td></tr>
+  <tr><td>Presidio</td><td><code>presidio-analyzer</code> 軟體包加一個 spaCy 語言模型 [2]</td><td class="nowrap">低</td></tr>
+  <tr><td>本地模型</td><td>透過 Ollama 部署，採用 Rescriber 開源的檢測提示詞 [1]；也可採用 OpenAI Privacy Filter [3]</td><td class="nowrap">低至中</td></tr>
+  <tr><td>結果合併（並集）</td><td>自行開發：按字元位置對齊各檢測器結果，重疊片段只計一次</td><td class="nowrap">中，約 50–100 行</td></tr>
+</table></div>
+<details class="more"><summary>整合要點</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>問題</th><th>解決方式</th></tr>
+  <tr><td>模型返回的是文字，而非字元位置</td><td>在原文中檢索返回的字串以確定位置。Rescriber 的提示詞要求模型原樣摘錄原文，正是為此 [1]</td></tr>
+  <tr><td>各檢測器的類別名稱不統一</td><td>統一對映至同一類別表。Rescriber 的 <code>presidio_server.py</code> 提供了可參考的對映 [1]</td></tr>
+  <tr><td>多個檢測器的延遲疊加</td><td>各檢測器並行執行，瓶頸在模型。Rescriber 在 Apple M2（24 GB 記憶體）上測得 Presidio 平均 0.73 秒、Llama3-8B 平均 3.40 秒 [1]</td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>敏感資訊分級</h2><span class="tag">待客戶稽核</span></div>
+<p class="ctx">每個類別歸入一個檔位，檔位決定脫敏所需的置信度：潛在危害越嚴重，閾值越低。</p>
+<div class="tbl"><table>
+  <tr><th>檔位</th><th>類別</th><th>脫敏規則</th></tr>
+  <tr><td><span class="tier h">高</span></td><td>政府證件號、密碼與金鑰、銀行賬號與卡號、健康資訊</td><td>置信度 ≥ 0.2 即脫敏</td></tr>
+  <tr><td><span class="tier h">高</span></td><td>商業機密：未公開的財務資料、交易與併購條款、專案代號、法律事務</td><td>置信度 ≥ 0.2 即脫敏；詳見下文</td></tr>
+  <tr><td><span class="tier m">中</span></td><td>非公眾人物的姓名、個人電話、個人郵箱、住址</td><td>置信度 ≥ 0.5 即脫敏</td></tr>
+  <tr><td><span class="tier l">低</span></td><td>城市、日期、機構名稱、年齡、性別</td><td>單獨出現時保留；多項組合足以識別個人時脫敏</td></tr>
+  <tr><td><span class="tier p">公開</span></td><td>公眾人物、公開的客服熱線、公開場合使用的公司名稱</td><td>僅在模型確信其為公開資訊時保留</td></tr>
+</table></div>
+<h3>商業機密</h3>
+<p style="margin:0 0 8px">此類資訊無法窮舉，也沒有固定格式，規則與 Presidio 均無法檢測，因此採用三層覆蓋：</p>
+<div class="tbl"><table>
+  <tr><th>層級</th><th>機制</th><th>覆蓋範圍</th></tr>
+  <tr><td class="nowrap">1. 術語表</td><td>由客戶提供專案代號、交易名稱與重要交易對手，命中即脫敏</td><td>客戶已知的機密事項</td></tr>
+  <tr><td class="nowrap">2. 顯式標記</td><td>出現“confidential”“board only”“do not forward”“privileged”等表述時，所在段落按高檔處理</td><td>發件人已標註為機密的內容</td></tr>
+  <tr><td class="nowrap">3. 預設佔位符</td><td>模型無法歸類的專有名詞與金額，預設以可還原的佔位符替換</td><td>前兩層遺漏的內容</td></tr>
+</table></div>
+<div class="note risk"><span class="h">已知侷限</span>NIST SP 800-122 僅涵蓋個人資訊，商業資訊的分級將依據客戶內部的資料分級制度。此類別依賴模型的情境判斷，是召回率的主要風險，其洩漏率將單獨統計。<span class="badge prop">本專案提案</span></div>
+<details class="more"><summary>分級依據與閾值確定方法</summary><div class="body">
+<div class="note"><span class="h">分級依據</span>NIST SP 800-122 按低、中、高三級保密影響對個人資料分類，考慮因素包括各欄位的敏感程度與使用情境，並指出欄位組合可能比單個欄位更敏感 [5]。低檔的組合規則依據 Sweeney 的研究：郵編、性別與出生日期三項組合，估計可唯一識別 87% 的美國人口 [6]。類別列表改編自 Rescriber 的分類法 [1]。</div>
+
+<h3>閾值確定方法</h3>
+<p style="margin:0 0 6px">上表閾值為初始值，最終數值透過實驗確定：</p>
+<ol class="steps">
+  <li>由客戶設定各檔位可接受的洩漏率，此為業務決策。</li>
+  <li>在標註郵件上評估一系列閾值，記錄每個閾值下的洩漏率與過度脫敏率。</li>
+  <li>對每個檔位，選取滿足洩漏率目標的最高閾值，以儘量減少不必要的脫敏。</li>
+</ol>
+<div class="tbl"><table>
+  <tr><th>閾值</th><th>洩漏率</th><th>過度脫敏率</th></tr>
+  <tr><td class="num">0.2</td><td class="num">1%</td><td class="num">40%</td></tr>
+  <tr><td class="num">0.3</td><td class="num">2%</td><td class="num">25%</td></tr>
+  <tr><td class="num">0.5</td><td class="num">5%</td><td class="num">12%</td></tr>
+  <tr><td class="num">0.7</td><td class="num">12%</td><td class="num">5%</td></tr>
+</table></div>
+<p class="cap">中檔的示意資料。若洩漏率目標為 2%，則選定閾值為 0.3。</p>
+<div class="note risk"><span class="h">驗證與審批</span>鑑於資料規模（100 封郵件），閾值的調整與評估將在不同子集上進行，或採用交叉驗證，以避免結果偏於樂觀。各類別的檔位歸屬屬於業務決策，需經客戶確認。</div>
+</div></details>
+
+<div class="cat"><h2>示例分析</h2></div>
+<p class="ctx">本例包含客戶來信中提及的情形：同一封郵件中同時出現個人手機號與公開客服號。</p>
+<div class="mail"><span class="who">收到的郵件 · Dana Whitfield 發給 Tom Reyes</span>Hi Tom,
+Before Thursday’s board call: my <span class="hl">oncologist</span> moved my appointment, so I’ll dial in from home. Reach me on my cell, <span class="hl">412-555-0182</span>.
+On the vendor outage, Acme’s support line is <span class="hl">1-800-555-0199</span>.
+— Dana</div>
+<div class="req"><span class="who">高管對助手的請求</span>Draft a reply to Dana and summarise the vendor issue.（為 Dana 起草回覆，並總結供應商問題。）</div>
+
+<div class="tbl"><table>
+  <tr><th>片段</th><th>類別 · 檔位</th><th>上下文依據</th><th>隱私置信度</th><th>決策</th></tr>
+  <tr><td>Dana、Dana Whitfield</td><td>姓名 · <span class="tier m">中</span></td><td>非公眾人物；發件人</td><td class="num">0.90</td><td class="act-r">[PERSON_1]</td></tr>
+  <tr><td>Tom</td><td>姓名 · <span class="tier m">中</span></td><td>非公眾人物；收件人</td><td class="num">0.85</td><td class="act-r">[PERSON_2]</td></tr>
+  <tr><td>oncologist（腫瘤科醫生）</td><td>健康 · <span class="tier h">高</span></td><td>“my … appointment”（本人就診預約）</td><td class="num">0.95</td><td class="act-r">[HEALTH_1]</td></tr>
+  <tr><td class="nowrap">412-555-0182</td><td>電話 · <span class="tier m">中</span></td><td>“my cell”（個人手機）</td><td class="num">0.95</td><td class="act-r">[PHONE_1]</td></tr>
+  <tr><td class="nowrap">1-800-555-0199</td><td>電話 · <span class="tier m">中</span></td><td>免費熱線號段；“Acme’s support line”</td><td class="num">0.15</td><td class="act-k">保留</td></tr>
+  <tr><td>Acme、Thursday</td><td>機構、日期 · <span class="tier l">低</span></td><td>單獨出現，不足以識別個人</td><td class="num">不適用</td><td class="act-k">保留</td></tr>
+</table></div>
+<p class="cap">置信度數值僅作示意。</p>
+
+<div class="mail out"><span class="who">傳送至雲端助手的文字</span>Hi <mark>[PERSON_2]</mark>,
+Before Thursday’s board call: my <mark>[HEALTH_1]</mark> moved my appointment, so I’ll dial in from home. Reach me on my cell, <mark>[PHONE_1]</mark>.
+On the vendor outage, Acme’s support line is 1-800-555-0199.
+— <mark>[PERSON_1]</mark></div>
+<div class="note ok"><span class="h">結果</span>助手仍可為 [PERSON_1] 起草回覆並總結 Acme 的故障。雲端服務無法獲取病情、個人號碼及雙方姓名。草稿返回高管之前，佔位符在本地還原。</div>
+
+<div class="cat"><h2>置信度評估方法</h2></div>
+<p class="ctx">由模型為每個片段打分。鑑於語言模型自報的置信度普遍偏高 [7]，原始分數須經標註郵件校準後，再與閾值比較。</p>
+<details class="more"><summary>校準步驟與替代方法</summary><div class="body">
+<h3 style="margin-top:0">第一版：模型打分加校準</h3>
+  <p style="margin:0">模型為每個片段給出原始分數。由於語言模型自報的置信度普遍偏高 [7]，原始分數須經標註郵件校準後方可使用：</p>
+  <ol class="steps">
+    <li>在標註郵件上執行系統，記錄每個片段的原始分數及其真實標籤。</li>
+    <li>按原始分數分組，統計每組中實際為隱私的比例。</li>
+    <li>執行時將原始分數換算為對應的實際比例。</li>
+  </ol>
+  <div class="tbl"><table>
+    <tr><th>原始分數</th><th>片段數</th><th>實際為隱私</th><th>校準後分數</th></tr>
+    <tr><td class="num">0.9–1.0</td><td class="num">200</td><td class="num">140</td><td class="num">0.70</td></tr>
+    <tr><td class="num">0.7–0.9</td><td class="num">100</td><td class="num">50</td><td class="num">0.50</td></tr>
+    <tr><td class="num">0.5–0.7</td><td class="num">50</td><td class="num">15</td><td class="num">0.30</td></tr>
+    <tr><td class="num">0.0–0.5</td><td class="num">150</td><td class="num">15</td><td class="num">0.10</td></tr>
+  </table></div>
+  <p class="cap">示意資料。原始分數 0.95 將被換算為 0.70。</p>
+  <p style="margin:12px 0 0">校準是對原始分數的修正，並非獨立的打分來源。其作用是確保閾值 0.5 對應實際觀測到的 50% 可能性。</p>
+  <h3>第二版：基於一致性的打分</h3>
+  <p style="margin:0">若校準結果顯示模型打分割槽分度不足（例如大多數片段均被打為 0.9 左右），則改為以一致性作為原始分數：標出該片段的檢測器所佔比例，以及 3–5 次重複執行中判定其為隱私的次數比例。研究表明，多次回答之間的一致性是比自報置信度更可靠的不確定性訊號 [7]。兩種方法將在同一資料上進行對比。</p>
+</div></details>
+
+<div class="cat"><h2>相關工作與本專案貢獻</h2></div>
+<p class="ctx">單獨而言，各元件均非首創，每一部分都有已發表的來源或業界先例。</p>
+<div class="note ok"><span class="h">本專案貢獻</span><b>1.</b> 將上述元件整合應用於高管郵件場景，且無需逐條人工稽核。最接近的前作 Rescriber 需由使用者逐條確認。<br><b>2.</b> 構建標註郵件基準資料集，並透過消融實驗量化各元件的貢獻。</div>
+<details class="more"><summary>各元件的來源</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>元件</th><th>來源</th><th>來源中的結論或功能</th></tr>
+  <tr><td>本地檢測、佔位符發往雲端、回覆還原</td><td>Rescriber，CHI 2025 [1]</td><td>在 240 條測試樣本上：Llama3-8B 精確率 0.94、召回率 0.63；GPT-4o 召回率 0.88；Presidio 0.69 / 0.68。程式碼採用 MIT 許可</td></tr>
+  <tr><td>規則與命名實體識別檢測；白名單</td><td>Microsoft Presidio [2]</td><td>廣泛使用的開源工具包；<code>allow_list</code> 可排除已知安全的值</td></tr>
+  <tr><td>本地 PII 檢測模型</td><td>OpenAI Privacy Filter [3]</td><td>開放權重，Apache 2.0 許可，可本地部署</td></tr>
+  <tr><td>按類別設定閾值</td><td>Google Cloud Sensitive Data Protection [4]</td><td>五級可能性，可按資料型別分別設定最低閾值</td></tr>
+  <tr><td>敏感度分級</td><td>NIST SP 800-122 [5]</td><td>低 / 中 / 高三級影響；使用情境可改變級別</td></tr>
+  <tr><td>基於分數與閾值的自動決策</td><td>MINIM，ICML 2026 [8]；OCELOT，2026 [9]</td><td>以打分加規則的自動決策取代人工稽核</td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>召回率提升方案</h2><span class="tag">主要風險</span></div>
+<p class="ctx">Rescriber 的 8B 模型漏檢了約三分之一的個人資訊（召回率 0.63）[1]。其使用者會審閱每條訊息；在本專案中，漏檢內容將直接傳送至雲端。將首先在郵件資料上建立基線，再逐項加入以下措施。</p>
+<details class="more"><summary>措施與依據</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>措施</th><th>依據</th><th>證據</th></tr>
+  <tr><td>合併所有檢測器（並集）</td><td>並集的召回率不低於其中最優的單個檢測器，代價是過度脫敏增加</td><td><span class="badge fact">定義上成立</span></td></tr>
+  <tr><td>實體傳播</td><td>檢測到某個名字後，標記其在全文中的所有出現位置。Rescriber 報告過同一名字的不同寫法被漏檢</td><td><span class="badge fact">[1] 中的失敗案例</span></td></tr>
+  <tr><td>多次執行模型</td><td>任一次執行中被標出的片段均納入候選</td><td><span class="badge fact">定義上成立</span></td></tr>
+  <tr><td>提示詞采用郵件示例</td><td>Rescriber 的提示詞示例為聊天訊息，而非郵件往來</td><td><span class="badge prop">本專案提案</span></td></tr>
+  <tr><td>每次只檢測一個類別</td><td>每次檢測的類別較少，可能減少遺漏</td><td><span class="badge unk">尚未驗證</span></td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>評估方案</h2></div>
+<p class="ctx">按客戶要求構建 100 封貼近真實的郵件，每個隱私片段均標註其類別，以及在上下文中屬於隱私還是公開資訊，並以公開標註資料集作為補充 [10]。首要指標為<b>洩漏率</b>：傳送至雲端的隱私片段所佔比例，按檔位分別統計。</p>
+<details class="more"><summary>完整指標與消融實驗</summary><div class="body">
+<h3 style="margin-top:4px">指標</h3>
+<div class="tbl"><table>
+    <tr><th>指標</th><th>定義</th></tr>
+    <tr><td><b>洩漏率</b>（首要指標）</td><td>傳送至雲端的隱私片段所佔比例，按檔位分別統計</td></tr>
+    <tr><td>過度脫敏率</td><td>被不必要脫敏的公開片段所佔比例</td></tr>
+    <tr><td>校準度</td><td>校準後分數與實際觀測比例的吻合程度</td></tr>
+    <tr><td>延遲</td><td>在確認的硬體上處理每封郵件所需時間</td></tr>
+  </table></div>
+<h3>消融實驗</h3>
+<p style="margin:0">以 Rescriber 式基線為起點，逐項加入各元件：檢測器並集 → 實體傳播 → 多次執行 → 分檔閾值。閾值在一個子集上調整，結果在另一獨立子集上報告。</p>
+</div></details>
+
+<div class="cat"><h2>異常處理</h2></div>
+<p class="ctx">服務採用故障安全設計：任一元件發生故障時，所有候選片段一律脫敏。</p>
+<details class="more"><summary>異常處理規則</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>情形</th><th>處理方式</th></tr>
+  <tr><td>模型不可用或輸出無法解析</td><td>降級為僅使用規則檢測，所有候選片段一律脫敏，並在響應中標註“降級”</td></tr>
+  <tr><td>回覆中出現未經簽發的佔位符</td><td>予以標記，不推測其取值。Rescriber 觀察到 GPT-4o 會自行生成 “[Your Full Name]” 等佔位符 [1]</td></tr>
+  <tr><td>日誌</td><td>僅記錄類別與分數，不記錄原文</td></tr>
+  <tr><td>模型與名單更新</td><td>於部署時安裝；執行中的服務不訪問網際網路</td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>後續計劃</h2><span class="tag">與客戶共同確定</span></div>
+<p class="ctx">以下事項將在原型演示後，依據實測結果而非假設，與客戶共同確定。</p>
+<div class="tbl"><table>
+  <tr><th>事項</th><th>確定方式</th><th>時間</th></tr>
+  <tr><td><b>輸入範圍</b></td><td>僅限純文字，還是也包括附件與掃描件。此項決定原型需覆蓋的範圍</td><td class="nowrap">原型開發前</td></tr>
+  <tr><td><b>機密術語表</b></td><td>由客戶提供專案代號、交易名稱與重要交易對手，用於商業機密術語表</td><td class="nowrap">原型開發前</td></tr>
+  <tr><td><b>檔位歸屬</b></td><td>與客戶共同審閱原型在示例郵件上的脫敏結果，由客戶據此調整分檔表</td><td class="nowrap">原型演示後</td></tr>
+  <tr><td><b>閾值</b></td><td>客戶設定各檔位可接受的洩漏率，據實驗結果選定閾值</td><td class="nowrap">原型演示後</td></tr>
+  <tr><td><b>延遲</b></td><td>在確認的硬體上實測處理時間，與客戶預期對照</td><td class="nowrap">原型演示後</td></tr>
+  <tr><td><b>可選上下文欄位</b></td><td>對比有無“發件人為內部或外部”等欄位時的過度脫敏率，以判斷是否值得提供</td><td class="nowrap">原型演示後</td></tr>
+</table></div>
+
+<footer>
+  <div class="src"><details class="more"><summary>參考來源（核實於 2026 年 9 月 24–27 日；資料均取自各來源自身的實驗）</summary><div class="body">
+<ol>
+    <li>Zhou, Xu, Wu, Li. <a href="https://arxiv.org/abs/2410.11876">Rescriber: Smaller-LLM-Powered User-Led Data Minimization for LLM-Based Chatbots</a>. CHI 2025. 程式碼：<a href="https://github.com/PEACH-Research-Lab/Rescriber">github.com/PEACH-Research-Lab/Rescriber</a></li>
+    <li><a href="https://microsoft.github.io/presidio/tutorial/13_allow_list/">Microsoft Presidio, allow-lists</a></li>
+    <li><a href="https://github.com/openai/privacy-filter">OpenAI Privacy Filter</a>（2026 年 4 月）</li>
+    <li><a href="https://docs.cloud.google.com/sensitive-data-protection/docs/likelihood">Google Cloud Sensitive Data Protection, match likelihood</a></li>
+    <li>NIST <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-122.pdf">SP 800-122</a>, Guide to Protecting the Confidentiality of PII（2010），§3.2</li>
+    <li>Sweeney. <a href="https://dataprivacylab.org/projects/identifiability/paper1.pdf">Simple Demographics Often Identify People Uniquely</a>. CMU Data Privacy Working Paper 3, 2000</li>
+    <li>Xiong et al. <a href="https://arxiv.org/abs/2306.13063">Can LLMs Express Their Uncertainty?</a> ICLR 2024</li>
+    <li>Yu et al. <a href="https://arxiv.org/abs/2606.13949">MINIM: Privacy-Aware Minimal View for Agents via Trusted Local Sanitization</a>. ICML 2026</li>
+    <li>Xie, Li. <a href="https://arxiv.org/abs/2606.12341">OCELOT: Inference-Leakage Budgets for Privacy-Preserving LLM Agents</a>. 2026</li>
+    <li>Agyemang et al. <a href="https://arxiv.org/abs/2604.12064">LLM-Redactor</a>. 2026。Hugging Face 上的基準資料：jayluxferro/llm-redactor-leak-benchmark</li>
+  </ol>
+</div></details></div>
+</footer>
+</div>
