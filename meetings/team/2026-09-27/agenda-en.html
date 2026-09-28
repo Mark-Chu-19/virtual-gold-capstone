@@ -196,8 +196,8 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
 
 <div class="cat"><h2>Why these six</h2><span class="tag">Framing</span></div>
 <div class="item">
-  <p>We have four proposals: <b>Yudi</b>'s tiered classification, <b>Karina</b>'s redact-always, <b>Zhexuan and Anmol</b>'s API contract and architecture v2, and <b>Mark</b>'s three signals (fallback).</p>
-  <p class="rec"><b>The good news:</b> all four converged independently on the same principle &mdash; <mark class="hl-key">the model may propose, but only code may release</mark>. All four also use reversible placeholders and all four fail closed.</p>
+  <p>We have three proposals: <b>Yudi</b>'s tiered classification, <b>Karina</b>'s redact-always, and <b>Zhexuan and Anmol</b>'s API contract and architecture v2.</p>
+  <p class="rec"><b>The good news:</b> all three converged independently on the same principle &mdash; <mark class="hl-key">the model may propose, but only code may release</mark>. All three also use reversible placeholders and all three fail closed.</p>
   <p>What is left is six places where <b>two documents give different answers to the same question</b>. Ordered by dependency: the later ones cannot be settled until the earlier ones are.</p>
   <div class="tbl"><table>
     <tr><th>#</th><th>Conflict</th><th>Between</th><th>Settle tonight?</th></tr>
@@ -287,17 +287,16 @@ account <b>4532-1178-9902</b>.
     <tr><td><b>Yudi</b></td><td>Use thresholds, err toward caution (High tier drops to 0.2)</td></tr>
     <tr><td><b>Karina</b></td><td>Mask it anyway; it comes back on restore</td></tr>
     <tr><td><b>Zhexuan</b></td><td>Return <code>PENDING_REVIEW</code>, <b>hand it to a person</b>, caller polls</td></tr>
-    <tr><td><b>Mark</b></td><td>Fall toward safety (the ratchet only goes up)</td></tr>
   </table></div>
   <div class="eg"><span class="who">On this email</span><b><code>Harborview</code></b> &mdash; a project code name (sensitive) or a place name (not)? The model returns <b>0.55</b>.<br><br>
   Yudi: above the Medium threshold of 0.5 → mask<br>
   Karina: detected, so mask<br>
   <b>Zhexuan: between auto-redact and reject → <code>PENDING_REVIEW</code></b><br>
-  Mark: ratchet up → mask<br><br>
+<br>
   <mark class="hl-no">Under Zhexuan's design the executive hits "draft me a reply" and gets back "still processing", then waits for a person to go and decide what Harborview is.</mark></div>
   <div class="risk"><span class="h">Why this is a conflict, not just a preference</span>Yudi states "<b>without per-item human review</b>" as this project's research contribution &mdash; on the grounds that Rescriber, the closest prior system, requires the user to confirm every item, and we cannot.<br><br><b>What Zhexuan added is exactly that mechanism.</b> The two contribution claims cancel out.</div>
   <div class="why"><span class="h">The observation that resolves it</span>Human review exists because <b>getting it wrong is expensive</b>.<br><br>Karina's entire argument is that <b>getting it wrong is cheap</b>, because everything is restored. <mark class="hl-key">If that argument holds, the reason for human review disappears.</mark></div>
-  <div class="sell"><span class="h">Mark's suggestion</span>Take "<b>mask anyway, and log the low-confidence spans for later analysis</b>".<br><br>It does three things at once: keeps Yudi's contribution claim, matches Karina's reversibility, and does not require a reviewer who does not exist.<br><br>And Zhexuan's <code>PENDING_REVIEW</code> <b>need not be thrown away</b> &mdash; keep it in the API, disabled in v0, as a future option. Leaving the interface in place also reads well to the client.</div>
+  <div class="sell"><span class="h">Suggestion</span>Take "<b>mask anyway, and log the low-confidence spans for later analysis</b>".<br><br>It does three things at once: keeps Yudi's contribution claim, matches Karina's reversibility, and does not require a reviewer who does not exist.<br><br>And Zhexuan's <code>PENDING_REVIEW</code> <b>need not be thrown away</b> &mdash; keep it in the API, disabled in v0, as a future option. Leaving the interface in place also reads well to the client.</div>
   <p class="rec"><b>Decide:</b> what happens in the middle band. If human review stays, we must also answer <b>who the reviewer is</b>.</p>
   <div class="fields">
     <div><label for="d3">Outcome</label><textarea id="d3" data-store="d3" placeholder="middle-band handling / keep PENDING_REVIEW?"></textarea></div>
@@ -306,16 +305,15 @@ account <b>4532-1178-9902</b>.
   </div>
 </div>
 
-<div class="cat"><h2><span class="ord">4</span>State storage: three names, or four things</h2><span class="tag">Everyone · 15 min</span></div>
+<div class="cat"><h2><span class="ord">4</span>State storage: two names, or three things</h2><span class="tag">Everyone · 15 min</span></div>
 <div class="item">
   <div class="tbl"><table>
     <tr><th>Who</th><th>Name</th><th>Holds</th><th>Scope</th><th>Lifetime</th></tr>
     <tr><td>Zhexuan</td><td><code>session mapping</code></td><td>placeholder label consistency</td><td>one session</td><td>bounded</td></tr>
     <tr><td>Karina</td><td><code>vault</code></td><td>placeholder → real value</td><td>one session</td><td>cleared at session end</td></tr>
-    <tr><td>Mark</td><td>mapping table</td><td>placeholder → real value</td><td>one session</td><td>session end</td></tr>
     <tr><td><b>Zhexuan</b></td><td><b><code>global context store</code></b></td><td><b>known entities, private information</b></td><td><b>across sessions and callers</b></td><td><b>persistent</b></td></tr>
   </table></div>
-  <p>The first three are the same thing under three names &mdash; <b>rename and move on, five minutes</b>. The fourth is new and needs a real discussion.</p>
+  <p>The first two are the same thing under two names &mdash; <b>rename and move on, five minutes</b>. The third is new and needs a real discussion.</p>
   <div class="eg"><span class="who">On this email</span><b>Dana Whitfield</b> becomes <code>PERSON_1</code> this time. Three days later another email mentions Dana &mdash;<br><br>
   <code>session mapping</code>: does not remember (new session, new numbering)<br>
   <b><code>global context store</code>: remembers, and <u>shares it across all callers</u></b><br><br>
@@ -397,7 +395,7 @@ account <b>4532-1178-9902</b>.
 </div>
 
 <footer style="margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)">
-  Internal · 2026-09-27 · The four proposals are in <code>docs/research/{yudi,karina,zhexuan}/</code> and <code>docs/architecture/horizontal-draft/</code> (Mark's fallback)<br>
+  Internal · 2026-09-27 · The three proposals are in <code>docs/research/{yudi,karina,zhexuan}/</code><br>
   Three further groups &mdash; A (each author's own technical decisions), C (questions for the client), D (documents to chase) &mdash; are deliberately not on tonight's agenda and go into <code>todo/TODO.md</code> after tomorrow
 </footer>
 

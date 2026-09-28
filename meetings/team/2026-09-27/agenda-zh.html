@@ -196,8 +196,8 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
 
 <div class="cat"><h2>為什麼是這六個</h2><span class="tag">前提</span></div>
 <div class="item">
-  <p>我們手上有四份提案:<b>Yudi</b> 的分級判定、<b>Karina</b> 的全遮還原、<b>Zhexuan + Anmol</b> 的 API 契約與架構 v2、<b>Mark</b> 的三訊號(備案)。</p>
-  <p class="rec"><b>好消息:</b>四份在同一個原則上獨立收斂 &mdash; <mark class="hl-key">模型只提議,放行由程式碼決定</mark>。四份也都用可還原佔位符、都 fail closed。</p>
+  <p>我們手上有三份提案:<b>Yudi</b> 的分級判定、<b>Karina</b> 的全遮還原、<b>Zhexuan + Anmol</b> 的 API 契約與架構 v2。</p>
+  <p class="rec"><b>好消息:</b>三份在同一個原則上獨立收斂 &mdash; <mark class="hl-key">模型只提議,放行由程式碼決定</mark>。三份也都用可還原佔位符、都 fail closed。</p>
   <p>要處理的是剩下六個地方,它們<b>不是各自內部的問題,是兩份文件對同一件事給了不同答案</b>。順序照依賴關係排,前面沒定後面就定不了。</p>
   <div class="tbl"><table>
     <tr><th>#</th><th>衝突</th><th>誰對誰</th><th>今晚能解嗎</th></tr>
@@ -286,17 +286,16 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
     <tr><td><b>Yudi</b></td><td>用門檻,寧可錯殺(High 門檻壓到 0.2)</td></tr>
     <tr><td><b>Karina</b></td><td>一律遮,反正還原得回來</td></tr>
     <tr><td><b>Zhexuan</b></td><td>回傳 <code>PENDING_REVIEW</code>,<b>交給人審</b>,呼叫端輪詢</td></tr>
-    <tr><td><b>Mark</b></td><td>往安全方向倒(棘輪只能升)</td></tr>
   </table></div>
   <div class="eg"><span class="who">在這封信上</span><b><code>Harborview</code></b> &mdash; 是專案代號(敏感)還是地名(不敏感)?模型給 <b>0.55</b>。<br><br>
   Yudi:高於 Medium 門檻 0.5 → 遮<br>
   Karina:偵測到就遮<br>
   <b>Zhexuan:落在自動遮蔽與拒絕門檻之間 → <code>PENDING_REVIEW</code></b><br>
-  Mark:棘輪往上 → 遮<br><br>
+<br>
   <mark class="hl-no">在 Zhexuan 的設計下,主管按下「幫我擬回覆」之後,拿到的是「還在處理中」,然後要等一個人去看 Harborview 是什麼。</mark></div>
   <div class="risk"><span class="h">為什麼這是衝突,不只是選項差異</span>Yudi 把「<b>不需要逐項人工審查</b>」明確寫成本專案的研究貢獻 &mdash; 理由是最接近的前人系統 Rescriber 需要使用者確認每一項,而我們不能。<br><br><b>Zhexuan 加進來的正是那個機制。</b>兩人的貢獻主張會互相抵銷。</div>
   <div class="why"><span class="h">關鍵觀察</span>人工審查存在的前提是「<b>遮錯了代價很大</b>」。<br><br>而 Karina 整個提案的論點就是「<b>遮錯了代價很小</b>」&mdash; 因為會還原回來。<mark class="hl-key">如果那個論點成立,人工審查的動機就消失了。</mark></div>
-  <div class="sell"><span class="h">Mark 的建議</span>選「<b>一律遮蔽 + 記錄低信心 span 供事後分析</b>」。<br><br>同時做到三件事:保住 Yudi 的貢獻主張、符合 Karina 的可還原性、不需要一個現實中不存在的審查員。<br><br>而 Zhexuan 的 <code>PENDING_REVIEW</code> <b>不必丟掉</b> &mdash; 寫進 API 但 v0 不啟用,降級成未來選配。介面先留著,對客戶也有說服力。</div>
+  <div class="sell"><span class="h">建議</span>選「<b>一律遮蔽 + 記錄低信心 span 供事後分析</b>」。<br><br>同時做到三件事:保住 Yudi 的貢獻主張、符合 Karina 的可還原性、不需要一個現實中不存在的審查員。<br><br>而 Zhexuan 的 <code>PENDING_REVIEW</code> <b>不必丟掉</b> &mdash; 寫進 API 但 v0 不啟用,降級成未來選配。介面先留著,對客戶也有說服力。</div>
   <p class="rec"><b>要決:</b>低信心區間的處置。若保留人工審查,必須同時回答「<b>審查員是誰</b>」。</p>
   <div class="fields">
     <div><label for="d3">結論</label><textarea id="d3" data-store="d3" placeholder="低信心怎麼處置 / PENDING_REVIEW 留不留"></textarea></div>
@@ -305,16 +304,15 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
   </div>
 </div>
 
-<div class="cat"><h2><span class="ord">4</span>狀態儲存:三個名字,還是四個東西</h2><span class="tag">全體 · 15 分</span></div>
+<div class="cat"><h2><span class="ord">4</span>狀態儲存:兩個名字,還是三個東西</h2><span class="tag">全體 · 15 分</span></div>
 <div class="item">
   <div class="tbl"><table>
     <tr><th>誰</th><th>名字</th><th>內容</th><th>範圍</th><th>存活</th></tr>
     <tr><td>Zhexuan</td><td><code>session mapping</code></td><td>佔位符標籤一致性</td><td>單 session</td><td>有限</td></tr>
     <tr><td>Karina</td><td><code>vault</code></td><td>佔位符 → 真值</td><td>單 session</td><td>session 結束清除</td></tr>
-    <tr><td>Mark</td><td>對照表</td><td>佔位符 → 真值</td><td>單 session</td><td>session 結束</td></tr>
     <tr><td><b>Zhexuan</b></td><td><b><code>global context store</code></b></td><td><b>已知實體、私密資訊</b></td><td><b>跨 session、跨呼叫端</b></td><td><b>持久</b></td></tr>
   </table></div>
-  <p>前三列是同一個東西,只是名字不同 &mdash; <b>改個名就好,五分鐘</b>。第四列是全新的,要認真談。</p>
+  <p>前兩列是同一個東西,只是名字不同 &mdash; <b>改個名就好,五分鐘</b>。第三列是全新的,要認真談。</p>
   <div class="eg"><span class="who">在這封信上</span><b>Dana Whitfield</b> 這次被標成 <code>PERSON_1</code>。三天後另一封信又提到 Dana &mdash;<br><br>
   <code>session mapping</code>:不記得(新 session,重新編號)<br>
   <b><code>global context store</code>:記得,而且<u>跨所有呼叫端共用</u></b><br><br>
@@ -396,7 +394,7 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
 </div>
 
 <footer style="margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)">
-  團隊內部 · 2026-09-27 · 四份提案見 <code>docs/research/{yudi,karina,zhexuan}/</code> 與 <code>docs/architecture/horizontal-draft/</code>(Mark 的備案)<br>
+  團隊內部 · 2026-09-27 · 三份提案見 <code>docs/research/{yudi,karina,zhexuan}/</code><br>
   另有 A(各自技術決定)、C(需客戶回答)、D(待追文件)三類未列入今晚議程,明天會後再整理進 <code>todo/TODO.md</code>
 </footer>
 
