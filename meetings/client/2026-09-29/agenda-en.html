@@ -1190,20 +1190,28 @@ On the vendor outage, Acme’s support line is 1-800-555-0199.
   <p class="ctx">The sandbox offered on Sep 3 has been an open question since our Sep 15 meeting: provider, GPU, direct access, and who pays. <b>It is the only thing blocking one of the five workstreams entirely.</b></p>
 
   <h3>2 · NDA process</h3>
-  <p class="rec"><mark class="hl-ask">Where does the addendum with Diane at CMU stand?</mark></p>
+  <p class="rec"><mark class="hl-ask">How is the NDA addendum progressing?</mark></p>
   <p>Building a standalone service with an HTTP endpoint, rather than integrating directly, was explicitly the workaround while this is pending. Two things turn on it:</p>
   <ul>
     <li>Whether the design stays as it is, or changes once we can see your architecture</li>
     <li><b>Whether the API request can tell us where each piece of text came from</b> &mdash; body, quoted thread, the user's own words. We only need that coarse level, not anything about your internal structures, and it would measurably reduce our error rate. It may not be blocked by the NDA at all, which is worth checking.</li>
   </ul>
 
-  <h3>3 · Midterm presentation</h3>
-  <p class="rec"><mark class="hl-ask">What would you like to see at the week 7 midpoint?</mark></p>
-  <p>Our original plan predates the change of direction on Sep 21, so we would rather agree the content with you than assume. Our suggestion: a working service, with measurements of what redaction costs in answer quality.</p>
+  <h3>3 · Midterm presentation &mdash; Monday 2026-10-05</h3>
+  <p class="rec"><mark class="hl-ask">We would like the midterm to be a working session with you, not a one-way presentation.</mark></p>
+  <p>What we want to close on the day:</p>
+  <div class="tbl"><table>
+    <tr><th>To close</th><th>Why then</th></tr>
+    <tr><td><b>The project definition, as a final version</b></td><td>The direction changed on Sep 21 and has been settling since. The midterm is the point to fix it rather than keep revising</td></tr>
+    <tr><td><b>Resources, confirmed</b></td><td>GPU and sandbox, so the second phase is not still blocked halfway through the semester</td></tr>
+    <tr><td><b>The Scope of Work, signed</b></td><td>See item 6 &mdash; we revise it from what is agreed today, and ask you to sign it on the day</td></tr>
+    <tr><td><b>The timeline from there to the end</b></td><td>We bring it; we would like your agreement on the milestones rather than just informing you of them</td></tr>
+  </table></div>
+  <p class="ctx">We will also show what is running by then, with measurements of what redaction costs in answer quality.</p>
 
   <h3>4 · Google Drive</h3>
   <p class="rec"><mark class="hl-ask">Confirm the shared Drive and who has access.</mark></p>
-  <p>From the Sep 21 meeting: we use Virtual Gold's Drive, with access for Aarvin, Alex, Inderpal and Alra. We can set this up straight after this call if you confirm the list.</p>
+  <p>From the Sep 21 meeting: we use Virtual Gold's Drive, with access for Aarvin, Alex, Inderpal and Urte. We can set this up straight after this call if you confirm the list.</p>
 
   <h3>5 · Google Chat</h3>
   <p class="rec"><mark class="hl-ask">Are we moving to Google Chat?</mark></p>
@@ -1213,6 +1221,7 @@ On the vendor outage, Acme’s support line is 1-800-555-0199.
   <p class="rec"><mark class="hl-ask">Two items: the cost line, and whether section 2 still describes the work.</mark></p>
   <p>Version 2 is complete except for the cost amount, and is not yet signed.</p>
   <p><b>The second point matters more.</b> Section 2 describes a routing mechanism and confidence scoring. Since the direction changed on Sep 21, what we are building is a local redaction service &mdash; confidence scoring is still in it, but routing is not. <mark class="hl-key">Since it is unsigned, this is the moment to correct it</mark> rather than signing something that does not match the work.</p>
+  <p class="rec"><b>What we propose:</b> we revise the Scope of Work from whatever is agreed in today's meeting, send it to you in advance, and <mark class="hl-key">ask you to finalise and sign it at the midterm on 10/05</mark>. That way it is signed against the work as it actually stands, not as it stood in week 3.</p>
 
   <div class="fields">
     <div><label for="e1">Answers and decisions</label><textarea id="e1" data-store="e1" placeholder="GPU · NDA · midterm · Drive · chat · SOW"></textarea></div>
