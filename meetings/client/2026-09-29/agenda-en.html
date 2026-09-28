@@ -168,7 +168,198 @@ figure.arch svg{min-width:700px}
 .d-govlabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--local)}
 .d-bound{stroke:var(--warn);stroke-width:2;stroke-dasharray:7 5}
 .d-blabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;fill:var(--warn)}
-</style>
+
+/* ---- embedded workstream documents, namespaced ---- */
+.emb-zx,.emb-yd{display:block;margin:14px 0 4px;border:1px solid var(--line);border-radius:10px;overflow-x:auto;padding:4px 0}
+.emb-zx main,.emb-yd .page{padding-left:20px;padding-right:20px}
+.embnote{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:16px 0 0;padding:9px 13px;background:var(--soft);border-radius:6px}
+.emb-zx{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2;
+  --gold:#A8842C;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Menlo,monospace;
+  --svg-text:#1F1E1D; --svg-text2:#5F5E5A; --svg-muted:#888780;
+  --svg-surface:#FFFFFF; --svg-border:#B4B2A9; --svg-line:#5F5E5A;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .emb-zx{
+    --bg:#0F151B; --surface:#171F27; --ink:#E4E9EE; --muted:#98A5B3; --line:#2C3742; --gold:#D2AB4E;
+    --svg-text:#F1EFE8; --svg-text2:#B4B2A9; --svg-muted:#888780;
+    --svg-surface:#2C2C2A; --svg-border:#5F5E5A; --svg-line:#B4B2A9;
+  }}
+:root[data-theme="dark"] .emb-zx{
+  --bg:#0F151B; --surface:#171F27; --ink:#E4E9EE; --muted:#98A5B3; --line:#2C3742; --gold:#D2AB4E;
+  --svg-text:#F1EFE8; --svg-text2:#B4B2A9; --svg-muted:#888780;
+  --svg-surface:#2C2C2A; --svg-border:#5F5E5A; --svg-line:#B4B2A9;
+}
+.emb-zx{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0}
+.emb-zx main{max-width:860px;margin:0 auto;padding:48px 16px 64px}
+.emb-zx .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.emb-zx h1,.emb-zx h2{font-family:var(--serif);line-height:1.25;margin:0}
+.emb-zx h1{font-size:32px;font-weight:600}
+.emb-zx h2{font-size:22px;font-weight:600;margin-top:48px}
+.emb-zx .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:10px}
+.emb-zx .note{margin-top:20px;padding:12px 16px;border:1px solid var(--line);background:var(--surface);font-size:15px}
+.emb-zx .note p{margin:0 0 10px}
+.emb-zx .note p:last-child{margin-bottom:0}
+.emb-zx .note ul{margin:0 0 10px;padding-left:22px}
+.emb-zx .note ul:last-child{margin-bottom:0}
+.emb-zx .note li{margin:6px 0}
+.emb-zx .pending{margin-top:20px;padding:12px 16px;border:1px solid var(--line);border-left:4px solid var(--gold);background:var(--surface);font-size:14.5px}
+.emb-zx .pending b{color:var(--ink)}
+.emb-zx .pending p{margin:0 0 8px}
+.emb-zx .pending ul{margin:0;padding-left:20px}
+.emb-zx .pending li{margin:4px 0}
+.emb-zx figure{margin:18px 0 0;padding:20px 16px;background:var(--surface);border:1px solid var(--line)}
+.emb-zx figure svg{display:block;width:100%;max-width:760px;height:auto;margin:0 auto;font-family:var(--sans)}
+.emb-zx figcaption{margin-top:14px;font-size:14.5px;color:var(--muted);max-width:76ch}
+.emb-zx figcaption b{color:var(--ink)}
+.emb-zx footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+@media print{.emb-zx{background:#fff}.emb-zx figure{break-inside:avoid;border:none}}
+.emb-zx svg .t{font-size:14px;fill:var(--svg-text)}
+.emb-zx svg .th{font-size:14px;font-weight:500;fill:var(--svg-text)}
+.emb-zx svg .ts{font-size:12px;fill:var(--svg-text2)}
+.emb-zx svg .box{fill:var(--svg-surface);stroke:var(--svg-border)}
+.emb-zx svg .arr{stroke:var(--svg-line);stroke-width:1.2;fill:none}
+.emb-zx svg .badge{fill:var(--svg-surface);stroke:var(--svg-border);stroke-width:0.8}
+.emb-zx svg .badge-icon{color:var(--svg-text)}
+.emb-zx svg .leader{stroke:var(--svg-muted);stroke-width:0.6;stroke-dasharray:3 3;fill:none}
+.emb-zx svg .c-gray>rect,.emb-zx svg .c-gray>circle,.emb-zx svg rect.c-gray,.emb-zx svg circle.c-gray{fill:#F1EFE8;stroke:#5F5E5A}
+.emb-zx svg .c-gray>.th,.emb-zx svg .c-gray>.t{fill:#444441}
+.emb-zx svg .c-gray>.ts{fill:#5F5E5A}
+.emb-zx svg .c-amber>rect,.emb-zx svg .c-amber>circle,.emb-zx svg .c-amber>polygon,.emb-zx svg rect.c-amber,.emb-zx svg circle.c-amber,.emb-zx svg polygon.c-amber{fill:#FAEEDA;stroke:#854F0B}
+.emb-zx svg .c-amber>.th,.emb-zx svg .c-amber>.t{fill:#633806}
+.emb-zx svg .c-amber>.ts{fill:#854F0B}
+.emb-zx svg .c-teal>rect,.emb-zx svg .c-teal>circle,.emb-zx svg rect.c-teal,.emb-zx svg circle.c-teal{fill:#E1F5EE;stroke:#0F6E56}
+.emb-zx svg .c-teal>.th,.emb-zx svg .c-teal>.t{fill:#085041}
+.emb-zx svg .c-teal>.ts{fill:#0F6E56}
+.emb-zx svg .c-pink>rect,.emb-zx svg .c-pink>circle,.emb-zx svg rect.c-pink,.emb-zx svg circle.c-pink{fill:#FBEAF0;stroke:#993556}
+.emb-zx svg .c-pink>.th,.emb-zx svg .c-pink>.t{fill:#72243E}
+.emb-zx svg .c-pink>.ts{fill:#993556}
+.emb-zx svg .c-coral>rect,.emb-zx svg .c-coral>circle,.emb-zx svg rect.c-coral,.emb-zx svg circle.c-coral{fill:#FAECE7;stroke:#993C1D}
+.emb-zx svg .c-coral>.th,.emb-zx svg .c-coral>.t{fill:#712B13}
+.emb-zx svg .c-coral>.ts{fill:#993C1D}
+.emb-zx svg .c-blue>rect,.emb-zx svg .c-blue>circle,.emb-zx svg rect.c-blue,.emb-zx svg circle.c-blue{fill:#E6F1FB;stroke:#185FA5}
+.emb-zx svg .c-blue>.th,.emb-zx svg .c-blue>.t{fill:#0C447C}
+.emb-zx svg .c-blue>.ts{fill:#185FA5}
+.emb-zx svg .c-purple>rect,.emb-zx svg .c-purple>circle,.emb-zx svg rect.c-purple,.emb-zx svg circle.c-purple{fill:#EEEDFE;stroke:#534AB7}
+.emb-zx svg .c-purple>.th,.emb-zx svg .c-purple>.t{fill:#3C3489}
+.emb-zx svg .c-purple>.ts{fill:#534AB7}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .emb-zx svg .c-gray>rect,:root:not([data-theme="light"]) .emb-zx svg .c-gray>circle,:root:not([data-theme="light"]) .emb-zx svg circle.c-gray{fill:#444441;stroke:#B4B2A9}:root:not([data-theme="light"]) .emb-zx svg .c-gray>.th,:root:not([data-theme="light"]) .emb-zx svg .c-gray>.t{fill:#F1EFE8}:root:not([data-theme="light"]) .emb-zx svg .c-gray>.ts{fill:#B4B2A9}:root:not([data-theme="light"]) .emb-zx svg .c-amber>rect,:root:not([data-theme="light"]) .emb-zx svg circle.c-amber,:root:not([data-theme="light"]) .emb-zx svg .c-amber>polygon,:root:not([data-theme="light"]) .emb-zx svg polygon.c-amber{fill:#633806;stroke:#FAC775}:root:not([data-theme="light"]) .emb-zx svg .c-amber>.th,:root:not([data-theme="light"]) .emb-zx svg .c-amber>.t{fill:#FAEEDA}:root:not([data-theme="light"]) .emb-zx svg .c-amber>.ts{fill:#FAC775}:root:not([data-theme="light"]) .emb-zx svg .c-teal>rect,:root:not([data-theme="light"]) .emb-zx svg circle.c-teal{fill:#085041;stroke:#9FE1CB}:root:not([data-theme="light"]) .emb-zx svg .c-teal>.th,:root:not([data-theme="light"]) .emb-zx svg .c-teal>.t{fill:#E1F5EE}:root:not([data-theme="light"]) .emb-zx svg .c-teal>.ts{fill:#9FE1CB}:root:not([data-theme="light"]) .emb-zx svg .c-pink>rect,:root:not([data-theme="light"]) .emb-zx svg circle.c-pink{fill:#72243E;stroke:#F4C0D1}:root:not([data-theme="light"]) .emb-zx svg .c-pink>.th,:root:not([data-theme="light"]) .emb-zx svg .c-pink>.t{fill:#FBEAF0}:root:not([data-theme="light"]) .emb-zx svg .c-pink>.ts{fill:#F4C0D1}:root:not([data-theme="light"]) .emb-zx svg .c-coral>rect,:root:not([data-theme="light"]) .emb-zx svg circle.c-coral{fill:#712B13;stroke:#F5C4B3}:root:not([data-theme="light"]) .emb-zx svg .c-coral>.th,:root:not([data-theme="light"]) .emb-zx svg .c-coral>.t{fill:#FAECE7}:root:not([data-theme="light"]) .emb-zx svg .c-coral>.ts{fill:#F5C4B3}:root:not([data-theme="light"]) .emb-zx svg .c-blue>rect,:root:not([data-theme="light"]) .emb-zx svg circle.c-blue{fill:#0C447C;stroke:#B5D4F4}:root:not([data-theme="light"]) .emb-zx svg .c-blue>.th,:root:not([data-theme="light"]) .emb-zx svg .c-blue>.t{fill:#E6F1FB}:root:not([data-theme="light"]) .emb-zx svg .c-blue>.ts{fill:#B5D4F4}:root:not([data-theme="light"]) .emb-zx svg .c-purple>rect,:root:not([data-theme="light"]) .emb-zx svg circle.c-purple{fill:#3C3489;stroke:#CECBF6}:root:not([data-theme="light"]) .emb-zx svg .c-purple>.th,:root:not([data-theme="light"]) .emb-zx svg .c-purple>.t{fill:#EEEDFE}:root:not([data-theme="light"]) .emb-zx svg .c-purple>.ts{fill:#CECBF6}}
+.emb-yd{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --key:#7A5E1A;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.04em;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .emb-yd{
+    color-scheme:dark;
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --key:#E2BE62;
+  }}
+:root[data-theme="dark"] .emb-yd{
+  color-scheme:dark;
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --key:#E2BE62;
+}
+.emb-yd,.emb-yd *{box-sizing:border-box}
+.emb-yd{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;padding-inline:20px;padding-block:36px 72px}
+.emb-yd .page{max-width:840px;margin:0 auto}
+.emb-yd header{padding-bottom:22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.emb-yd .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.emb-yd h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,42px);line-height:1.12;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.emb-yd .meta{display:flex;flex-wrap:wrap;gap:10px 36px;margin:0;font-size:15px}
+.emb-yd .meta div{display:flex;flex-direction:column;gap:2px}
+.emb-yd .meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.emb-yd .meta dd{margin:0}
+.emb-yd .cat{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:46px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.emb-yd .cat h2{font-family:var(--serif);font-size:25px;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.emb-yd .cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.emb-yd .ctx{color:var(--muted);margin:6px 0 14px;font-size:15.5px}
+.emb-yd .item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.emb-yd .item > p:first-child{margin-top:0}
+.emb-yd .item > p:last-child{margin-bottom:0}
+.emb-yd h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.emb-yd .thesis{font-family:var(--serif);font-size:clamp(20px,2.6vw,24px);line-height:1.45;margin:18px 0 0;padding:18px 20px;background:var(--local-soft);border:1px solid var(--local);border-radius:8px;text-wrap:balance}
+.emb-yd .thesis b{color:var(--local)}
+.emb-yd code{font-family:var(--mono);font-size:.84em;background:var(--soft);padding:1px 6px;border-radius:4px;white-space:nowrap}
+.emb-yd .tbl{overflow-x:auto;border-radius:8px;margin:8px 0 4px}
+.emb-yd table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.emb-yd th,.emb-yd td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.emb-yd tr:last-child td{border-bottom:none}
+.emb-yd th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.emb-yd td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.emb-yd td.nowrap{white-space:nowrap}
+.emb-yd .tier{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.emb-yd .tier.h{background:var(--warn-soft);color:var(--warn)}
+.emb-yd .tier.m{background:var(--gold-soft);color:var(--key)}
+.emb-yd .tier.l{background:var(--cloud-soft);color:var(--cloud)}
+.emb-yd .tier.p{background:var(--local-soft);color:var(--local)}
+.emb-yd .act-r{color:var(--warn);font-weight:600}
+.emb-yd .act-k{color:var(--local);font-weight:600}
+.emb-yd .badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;font-weight:600;white-space:nowrap}
+.emb-yd .badge.fact{background:var(--local-soft);color:var(--local)}
+.emb-yd .badge.prop{background:var(--gold-soft);color:var(--key)}
+.emb-yd .badge.unk{background:var(--warn-soft);color:var(--warn)}
+.emb-yd .note{border-radius:6px;padding:11px 15px;margin:12px 0 0;font-size:15px;line-height:1.65;background:var(--gold-soft)}
+.emb-yd .note .h{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;display:block;margin-bottom:4px;color:var(--muted)}
+.emb-yd .note.risk{background:var(--warn-soft)}
+.emb-yd .note.ok{background:var(--local-soft)}
+.emb-yd .mail{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--cloud);border-radius:0 6px 6px 0;padding:13px 17px;margin:8px 0 12px;font-size:15px;line-height:1.8;white-space:pre-wrap}
+.emb-yd .mail .who{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;white-space:normal}
+.emb-yd .mail.out{border-left-color:var(--local)}
+.emb-yd .mail mark{background:var(--local-soft);color:var(--local);font-family:var(--mono);font-size:.88em;padding:0 4px;border-radius:3px;font-weight:600}
+.emb-yd .mail .hl{background:var(--gold-soft);border-radius:3px;padding:0 2px}
+.emb-yd .req{font-size:15px;margin:0 0 12px;padding:10px 14px;border-left:3px solid var(--gold);background:var(--soft);border-radius:0 6px 6px 0}
+.emb-yd .req .who{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+.emb-yd figure{margin:12px 0 4px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto}
+.emb-yd figure svg{display:block;width:100%;height:auto;min-width:680px;font-family:var(--sans)}
+.emb-yd figcaption{font-size:13.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+.emb-yd .d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.emb-yd .d-box.judge{fill:var(--gold-soft);stroke:var(--gold);stroke-width:1.8}
+.emb-yd .d-box.code{fill:var(--local-soft);stroke:var(--local);stroke-width:2.2}
+.emb-yd .d-box.policy{fill:var(--local-soft);stroke:var(--local);stroke-width:1.5;stroke-dasharray:5 3}
+.emb-yd .d-box.cloud{fill:var(--cloud-soft);stroke:var(--cloud);stroke-width:1.5;stroke-dasharray:5 4}
+.emb-yd .d-bound{fill:none;stroke:var(--local);stroke-width:1.6;stroke-dasharray:7 5}
+.emb-yd .d-n{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.emb-yd .d-n.g{fill:var(--local)}
+.emb-yd .d-n.y{fill:var(--key)}
+.emb-yd .d-n.c{fill:var(--cloud)}
+.emb-yd .d-name{font-size:14.5px;font-weight:600;fill:var(--ink)}
+.emb-yd .d-sub{font-size:12px;fill:var(--muted)}
+.emb-yd .d-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;fill:var(--local)}
+.emb-yd .d-in{font-family:var(--mono);font-size:11px;letter-spacing:.04em;fill:var(--muted)}
+.emb-yd .d-flow{stroke:var(--muted);stroke-width:1.7;fill:none}
+.emb-yd .d-head{fill:var(--muted)}
+.emb-yd ol.qs{margin:8px 0 0;padding-left:22px}
+.emb-yd ol.qs li{margin-bottom:10px}
+.emb-yd ol.qs li b{font-weight:600}
+.emb-yd ul.plain{margin:6px 0 0;padding-left:20px}
+.emb-yd ul.plain li{margin-bottom:6px}
+.emb-yd .src{font-size:13.5px;color:var(--muted);line-height:1.7}
+.emb-yd .src a{color:var(--cloud)}
+.emb-yd .src ol{padding-left:20px;margin:6px 0 0}
+.emb-yd ol.steps{margin:6px 0 0;padding-left:22px}
+.emb-yd ol.steps li{margin-bottom:6px}
+.emb-yd .cap{font-size:13.5px;color:var(--muted);margin:6px 0 0}
+.emb-yd a{color:var(--cloud)}
+.emb-yd a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.emb-yd footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line)}
+@media (max-width:600px){.emb-yd .item{padding:14px 14px 12px}.emb-yd th,.emb-yd td{padding:9px 10px}}
+.emb-yd details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+.emb-yd details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+.emb-yd details.more>summary::-webkit-details-marker{display:none}
+.emb-yd details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+.emb-yd details.more[open]>summary::before{transform:rotate(45deg)}
+.emb-yd details.more>summary:hover{color:var(--ink)}
+.emb-yd details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.emb-yd details.more>.body{padding:2px 0 14px}
+@media (prefers-reduced-motion:reduce){.emb-yd details.more>summary::before{transition:none}}</style>
 
 <div class="page">
 <header>
@@ -206,229 +397,746 @@ figure.arch svg{min-width:700px}
   <p class="rec"><b>Mark is your single point of contact</b>, as requested.</p>
 </div>
 
-<div class="cat" id="service"><h2>B · How the service works</h2><span class="tag">Zhexuan &amp; Anmol · 18 min</span></div>
+<div class="cat" id="service"><h2>B &middot; How the service works</h2><span class="tag">Zhexuan &amp; Anmol &middot; 18 min</span></div>
 <div class="item">
-  <p class="ctx">The service sits between your system and the cloud assistant. It never calls the cloud itself and needs no outbound network access &mdash; what happens to the redacted text afterwards is entirely your system's decision. <b>Collapsed sections are for reference after the meeting; we will walk the main line only.</b></p>
+  <p class="ctx">Zhexuan and Anmol's workflow and architecture proposal, in full. It reworks the earlier hybrid routing diagrams against the direction set on Sep 21.</p>
+  <p class="embnote">Embedded document &middot; redaction-architecture-v2-proposal &middot; Zhexuan Ye &middot; 2026-09-27</p>
+<div class="emb-zx">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-model" viewBox="-9 -9 18 18"><path d="M0 -6 C0.7 -1.6 1.6 -0.7 6 0 C1.6 0.7 0.7 1.6 0 6 C-0.7 1.6 -1.6 0.7 -6 0 C-1.6 -0.7 -0.7 -1.6 0 -6 Z" fill="currentColor"/></symbol>
+<symbol id="i-data" viewBox="-9 -9 18 18"><g fill="none" stroke="currentColor" stroke-width="1.2"><ellipse cx="0" cy="-3.5" rx="4.8" ry="1.8"/><path d="M-4.8 -3.5 V3.5 A4.8 1.8 0 0 0 4.8 3.5 V-3.5"/><path d="M-4.8 0 A4.8 1.8 0 0 0 4.8 0"/></g></symbol>
+<symbol id="i-code" viewBox="-9 -9 18 18"><path d="M-2.6 -3.8 L-6 0 L-2.6 3.8 M2.6 -3.8 L6 0 L2.6 3.8 M1 -5 L-1 5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-tool" viewBox="-9 -9 18 18"><g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M-5.5 -2.5 H5.5 M-5.5 2.5 H5.5"/><circle cx="-1.8" cy="-2.5" r="1.7" style="fill:var(--svg-surface)"/><circle cx="2.2" cy="2.5" r="1.7" style="fill:var(--svg-surface)"/></g></symbol>
+</svg>
+<main>
+<div class="eyebrow">Capstone · Virtual Gold Inc · Proposal — not yet merged</div>
+<h1>Local redaction service — workflow &amp; architecture (v2 proposal)</h1>
+<div class="meta">2026-09-27 · Zhexuan Ye · reworks the diagrams in hybrid-routing-diagrams-en.html against Aarvin George's Sep 23 email</div>
+<div class="note"><p><b>In plain terms:</b> before any text reaches an outside AI assistant, it comes through this service first.</p>
+<ul>
+<li><b>Whole-request check first.</b> A separate check looks at the request as a whole before any finer judgment matters: if it falls into a category that is not yet approved for release at all — a confidential thread, health or financial information, an unclear source — the entire request stays local, full stop, and nothing below that check ever sees it.</li>
+<li><b>Piece-by-piece judgment, once approved.</b> A local model reads the cleared request and checks it against a global, cross-session store of known-safe and known-sensitive entities, then decides, span by span, how confident it is that something is private: anything it's confident about gets redacted automatically, and anything it's unsure about is not guessed at — it's queued for a human reviewer instead. That review happens asynchronously: the caller gets an immediate "still deciding" response rather than waiting on a person, and checks back separately once it's resolved.</li>
+<li><b>Placeholders only, ever.</b> Either way, the caller only ever gets text back with the sensitive parts replaced by placeholders; the mapping back to the original words never leaves this machine.</li>
+<li><b>Restore is separate and deliberate.</b> If the caller's own system later needs the original wording — say, after getting a reply from an outside AI assistant — it can ask this service to restore it using a reference id, as a separate step, not something that happens on its own.</li>
+<li><b>No outside calls from here.</b> This service never calls an outside AI assistant itself; that decision belongs entirely to the calling application.</li>
+</ul>
+<p><code>hybrid-routing-diagrams-en.html</code> is untouched.</p>
+</div>
 
-  <h3>1 · The shape of it</h3>
-  <div class="finding">
-    <div><div class="k">Two calls, not one</div>Your system posts the user's task plus the email &mdash; subject, sender, recipients, body, quoted thread. We return the same content with private spans replaced by placeholders, plus <b>one decision for the request as a whole</b>. Later, separately, you post the cloud's reply back and we restore the real values. <mark class="hl-key">The mapping from placeholder to original never leaves our machine.</mark></div>
-    <div><div class="k">Restore is deliberate, never automatic</div>Nothing is restored unless you ask for it, by reference id, as its own call. That call bypasses detection entirely &mdash; it only scans the reply and substitutes back.</div>
-    <div><div class="k">You keep control of the cloud</div>We do not hold your API keys, we are not tied to your cloud provider, and we never make an outbound call. Whether the redacted text goes to the cloud at all is your system's decision, made after we hand it back.</div>
-  </div>
+<h2>Figure 1 (v2) · Request workflow</h2>
+<figure>
+<svg width="100%" viewBox="0 0 780 1880" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Local redaction service — request workflow, v2 proposal (lane diagram, with policy gate and asynchronous review)</title>
+<desc>Sequence diagram with nine lanes: caller, gateway, sensitivity classifier, context store, policy gate, local model, confidence gate, review queue and redact/restore. The classifier consults the local context store and the local model before compiling a sensitivity report for the new policy gate, which makes one conservative release decision for the whole request. If the policy gate blocks the request (a confidential, health, financial or credential category, or unclear provenance) it returns LOCAL_ONLY straight to the gateway, skipping every step below it — this is a deterministic policy decision, not something a per-request review can change. Otherwise it forwards the approved request to the confidence gate, which branches on per-span confidence: high confidence auto-redacts through the redact/restore module, low confidence flags the span in the review queue for a human reviewer to resolve asynchronously, without blocking the call. Either path is logged, then the result bubbles back up through the policy gate and classifier lanes to the caller. A separate section below shows the restore call, triggered later by the caller and routed directly to the redact/restore module, bypassing detection and the policy gate entirely. A band at the bottom shows the offline evaluation loop.</desc>
+<defs>
+<marker id="arrow1seq" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
 
-  <h3>2 · Five design principles</h3>
-  <div class="tbl"><table>
-    <tr><th>Principle</th><th>What it means in practice</th></tr>
-    <tr><td><strong>Fail closed</strong></td><td>Any error means the content was <b>not</b> processed. A successful response whose decision is not "ready" carries the same consequence: do not forward it. If any component fails, nothing is released.</td></tr>
-    <tr><td><strong>Regulated categories are gated by policy, not by score</strong></td><td>For medical, financial, credential and business-confidential data, <b>a confidence score never authorises release</b>, however high. Only the approved policy does.</td></tr>
-    <tr><td><strong>No request waits on a person</strong></td><td>When the model is unsure, the span is masked anyway and recorded as uncertain. Nothing blocks on human review.</td></tr>
-    <tr><td><strong>No sensitive logging</strong></td><td>Input text, detected values and restored text are never written to logs &mdash; only ids, counts, timings, decisions and error types.</td></tr>
-    <tr><td><strong>Local only</strong></td><td>No outbound network calls. Models and lists are installed at deployment; the running service does not reach the internet.</td></tr>
-  </table></div>
+<g class="c-gray">
+<rect x="34" y="518" width="740" height="96" rx="8" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="th" style="font-size:12px" x="44" y="532" dominant-baseline="central">8A · confidence ≥ threshold — auto-redact</text>
+</g>
+<g class="c-gray">
+<rect x="34" y="626" width="740" height="126" rx="8" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="th" style="font-size:12px" x="44" y="640" dominant-baseline="central">8B · confidence &lt; threshold — flag for review</text>
+</g>
+<g class="c-gray">
+<rect x="34" y="1664" width="740" height="110" rx="8" stroke-width="0.5" stroke-dasharray="2 3"/>
+<text class="th" style="font-size:12px" x="44" y="1680" dominant-baseline="central">E · Offline evaluation · test data only, never live traffic</text>
+</g>
 
-  <h3>3 · What happens inside one request</h3>
-  <div class="tbl"><table>
-    <tr><th>#</th><th>Step</th><th>Decided by</th></tr>
-    <tr><td>1</td><td>Your system posts the task and the email</td><td>—</td></tr>
-    <tr><td>2</td><td>Segment it: body, quoted thread, signature</td><td>code</td></tr>
-    <tr><td>3</td><td>Find candidates &mdash; rules and checksums, then entity recognition, then the local model</td><td>rules, then model</td></tr>
-    <tr><td>4</td><td>Judge each candidate in context, with a confidence score</td><td><b>model</b></td></tr>
-    <tr><td>5</td><td>One release decision for the whole request, against the approved policy</td><td><b>code</b></td></tr>
-    <tr><td>6</td><td>Per span: above the bar, mask; below it, mask anyway and record the uncertainty</td><td><b>code</b></td></tr>
-    <tr><td>7</td><td>Replace with typed, numbered placeholders; record the mapping locally</td><td>code</td></tr>
-    <tr><td>8</td><td>Log the decision &mdash; category, confidence, action. Never the text</td><td>code</td></tr>
-    <tr><td>9</td><td>Return the redacted content, the decision, and the span list</td><td>—</td></tr>
-  </table></div>
-  <p class="rec"><mark class="hl-key">The model proposes at step 4. Every release decision after that is plain code, against a policy you have approved.</mark> A model cannot talk its way past step 5 or 6, which matters because the email it is reading is untrusted content.</p>
+<text class="th" x="40" y="36" dominant-baseline="central">Workflow step</text>
+<rect class="box" x="228" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="272" y="36" text-anchor="middle" dominant-baseline="central">Caller</text>
+<g class="c-purple">
+<rect x="332" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="376" y="29" text-anchor="middle" dominant-baseline="central">Sensitivity</text>
+<text class="th" style="font-size:12px" x="376" y="44" text-anchor="middle" dominant-baseline="central">classifier</text>
+</g>
+<g class="c-blue">
+<rect x="436" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="480" y="29" text-anchor="middle" dominant-baseline="central">Policy</text>
+<text class="th" style="font-size:12px" x="480" y="44" text-anchor="middle" dominant-baseline="central">gate</text>
+</g>
+<g class="c-amber">
+<rect x="540" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="584" y="29" text-anchor="middle" dominant-baseline="central">Confidence</text>
+<text class="th" style="font-size:12px" x="584" y="44" text-anchor="middle" dominant-baseline="central">gate</text>
+</g>
+<g class="c-pink">
+<rect x="644" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="688" y="29" text-anchor="middle" dominant-baseline="central">Redact /</text>
+<text class="th" style="font-size:12px" x="688" y="44" text-anchor="middle" dominant-baseline="central">restore</text>
+</g>
+<rect class="box" x="280" y="66" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="324" y="86" text-anchor="middle" dominant-baseline="central">Gateway</text>
+<g class="c-purple">
+<rect x="384" y="66" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="428" y="79" text-anchor="middle" dominant-baseline="central">Context</text>
+<text class="th" style="font-size:12px" x="428" y="94" text-anchor="middle" dominant-baseline="central">store</text>
+</g>
+<g class="c-teal">
+<rect x="488" y="66" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="532" y="86" text-anchor="middle" dominant-baseline="central">Local model</text>
+</g>
+<g class="c-coral">
+<rect x="596" y="66" width="80" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="636" y="79" text-anchor="middle" dominant-baseline="central">Review</text>
+<text class="th" style="font-size:12px" x="636" y="94" text-anchor="middle" dominant-baseline="central">queue</text>
+</g>
 
-  <details class="more"><summary>Detail: the endpoints</summary><div class="body">
-  <div class="tbl"><table>
-    <tr><th>Endpoint</th><th>What it does</th></tr>
-    <tr><td><code>POST /v1/redactions</code></td><td>Detect, redact, and return one decision for the whole request</td></tr>
-    <tr><td><code>GET /v1/redactions/{id}</code></td><td>Check status, retrieve a result</td></tr>
-    <tr><td><code>POST /v1/redactions/{id}/restore</code></td><td>Scan the cloud's reply, then substitute the real values back</td></tr>
-    <tr><td><code>DELETE /v1/redactions/{id}</code></td><td>Delete a record</td></tr>
-    <tr><td><code>GET /v1/info</code></td><td>Service metadata, policy version</td></tr>
-    <tr><td><code>GET /healthz</code> · <code>GET /readyz</code></td><td>Liveness and readiness, no auth</td></tr>
-  </table></div>
-  <p>Bearer auth on everything except the health checks. All errors are RFC 9457 problem details, carrying a type, title, status and request id.</p>
-  </div></details>
+<line class="leader" x1="272" y1="56" x2="272" y2="1604"/>
+<line class="leader" x1="324" y1="106" x2="324" y2="1604"/>
+<line class="leader" x1="376" y1="56" x2="376" y2="1604"/>
+<line class="leader" x1="428" y1="106" x2="428" y2="1604"/>
+<line class="leader" x1="480" y1="56" x2="480" y2="1604"/>
+<line class="leader" x1="532" y1="106" x2="532" y2="1604"/>
+<line class="leader" x1="584" y1="56" x2="584" y2="1604"/>
+<line class="leader" x1="636" y1="106" x2="636" y2="1604"/>
+<line class="leader" x1="688" y1="56" x2="688" y2="1604"/>
 
-  <details class="more"><summary>Detail: what comes back for each span</summary><div class="body">
-  <p>Every span we act on is reported with:</p>
-  <ul>
-    <li><b>Entity type</b> &mdash; phone, person, organisation…</li>
-    <li><b>Category</b> &mdash; which sensitivity category it fell into</li>
-    <li><b>Confidence</b> &mdash; how sure the model was</li>
-    <li><b>Which detector</b> found it &mdash; a rule, entity recognition, or the model</li>
-    <li><b>A short reason</b></li>
-  </ul>
-  <p class="rec"><mark class="hl-key">Never the original value.</mark> The response tells you what was done and why, but reading it does not disclose anything.</p>
-  <p>The request-level decision is separate from the spans: it covers the whole task plus email plus thread, and it is not simply an aggregate of the individual scores.</p>
-  </div></details>
+<text class="th" x="40" y="134" dominant-baseline="central">1</text>
+<text class="t" style="font-size:12px" x="66" y="134" dominant-baseline="central">Caller sends text to redact</text>
+<line x1="272" y1="134" x2="324" y2="134" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="278" y="128">1</text>
 
-  <details class="more"><summary>Detail: what state we keep, and for how long</summary><div class="body">
-  <div class="tbl"><table>
-    <tr><th>State</th><th>What it holds</th><th>Lifetime</th></tr>
-    <tr><td>Label consistency</td><td>So the same real entity gets the same placeholder across the turns of one conversation, and labels never drift or collide</td><td>One session</td></tr>
-    <tr><td>Scan record</td><td>Created for every processed request, so the reply can later be scanned for newly introduced private content</td><td>Bounded, in memory</td></tr>
-    <tr><td>Reversible mapping</td><td><b>Opt-in.</b> Without it, restore still scans the reply but cannot substitute anything back &mdash; placeholders come back unmatched rather than silently dropped</td><td>With the record</td></tr>
-  </table></div>
-  <p>A process restart loses the records, so any restore attempted afterwards fails closed rather than guessing.</p>
-  </div></details>
+<text class="th" x="40" y="178" dominant-baseline="central">2</text>
+<text class="t" style="font-size:12px" x="66" y="170" dominant-baseline="central">Forward request to</text>
+<text class="t" style="font-size:12px" x="66" y="186" dominant-baseline="central">sensitivity classifier</text>
+<line x1="324" y1="178" x2="376" y2="178" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="330" y="172">2</text>
 
-  <details class="more"><summary>Detail: failure handling</summary><div class="body">
-  <div class="tbl"><table>
-    <tr><th>Condition</th><th>Behaviour</th></tr>
-    <tr><td>Any component errors or times out</td><td>Nothing is released. The response says the content was not processed</td></tr>
-    <tr><td>The model is unavailable</td><td>Open question 8 in the contract: fall back to rules only, or block entirely. Not yet settled &mdash; we would rather agree it with you</td></tr>
-    <tr><td>The cloud reply contains a placeholder we never issued</td><td>Flag it rather than infer a value. Prior work reports cloud models inventing placeholders of their own</td></tr>
-    <tr><td>The reply mixes placeholders from more than one request</td><td>Only that request's placeholders come back restored; the rest are reported as unmatched, never silently dropped</td></tr>
-  </table></div>
-  </div></details>
+<text class="th" x="40" y="222" dominant-baseline="central">3</text>
+<text class="t" style="font-size:12px" x="66" y="214" dominant-baseline="central">Look up known entities +</text>
+<text class="t" style="font-size:12px" x="66" y="230" dominant-baseline="central">similar labeled cases</text>
+<line x1="376" y1="222" x2="428" y2="222" class="arr" style="stroke:#7F77DD" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="382" y="216">3</text>
 
-  <details class="more"><summary>Detail: out of scope for the first version</summary><div class="body">
-  <p>Attachments and scanned documents (OCR), batched requests, streaming responses, and tuning for languages other than English. <b>Attachments in particular we would like your view on</b> &mdash; see section E.</p>
-  </div></details>
+<text class="th" x="40" y="266" dominant-baseline="central">4</text>
+<text class="t" style="font-size:12px" x="66" y="258" dominant-baseline="central">Return matches; on miss</text>
+<text class="t" style="font-size:12px" x="66" y="274" dominant-baseline="central">skip, stay cautious</text>
+<line x1="428" y1="266" x2="376" y2="266" class="arr" style="stroke:#7F77DD" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="422" y="260" text-anchor="end">4</text>
 
-  <h3>4 · What we need from you here</h3>
-  <div class="tbl"><table>
-    <tr><th>Item</th><th>What we need</th></tr>
-    <tr><td><mark class="hl-ask">The API contract</mark></td><td>We have drafted a version rather than wait. <b>We would like Aarvin to tell us where it does not match how your system would actually call it</b> &mdash; that is faster than us guessing.</td></tr>
-    <tr><td><mark class="hl-ask">Restore: ours or yours?</mark></td><td>Does your system need us to restore the real values, or do you handle that on your side?</td></tr>
-    <tr><td><mark class="hl-ask">Latency and volume</mark></td><td>What processing time per email is acceptable, and roughly how many per day? This sits in the path of every message the assistant handles.</td></tr>
-    <tr><td><mark class="hl-ask">Session id</mark></td><td>Can the request carry one, so placeholders stay consistent across the turns of a conversation?</td></tr>
-  </table></div>
+<text class="th" x="40" y="310" dominant-baseline="central">5</text>
+<text class="t" style="font-size:12px" x="66" y="302" dominant-baseline="central">Send text for detection +</text>
+<text class="t" style="font-size:12px" x="66" y="318" dominant-baseline="central">contextual judgment</text>
+<line x1="376" y1="310" x2="532" y2="310" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="382" y="304">5</text>
+
+<text class="th" x="40" y="354" dominant-baseline="central">6</text>
+<text class="t" style="font-size:12px" x="66" y="346" dominant-baseline="central">Return spans + privacy</text>
+<text class="t" style="font-size:12px" x="66" y="362" dominant-baseline="central">confidence score</text>
+<line x1="532" y1="354" x2="376" y2="354" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="526" y="348" text-anchor="end">6</text>
+
+<text class="th" x="40" y="398" dominant-baseline="central">7</text>
+<text class="t" style="font-size:12px" x="66" y="390" dominant-baseline="central">Attach sensitivity report:</text>
+<text class="t" style="font-size:12px" x="66" y="406" dominant-baseline="central">level, spans, reasons</text>
+<line x1="376" y1="398" x2="480" y2="398" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="382" y="392">7</text>
+
+<text class="th" x="40" y="442" dominant-baseline="central">7L</text>
+<text class="t" style="font-size:12px" x="66" y="434" dominant-baseline="central">Policy gate blocks the whole request —</text>
+<text class="t" style="font-size:12px" x="66" y="450" dominant-baseline="central">returns LOCAL_ONLY to gateway (deterministic)</text>
+<line x1="480" y1="442" x2="324" y2="442" class="arr" style="stroke:#B0271C" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="474" y="436" text-anchor="end">7L</text>
+
+<text class="th" x="40" y="486" dominant-baseline="central">8</text>
+<text class="t" style="font-size:12px" x="66" y="478" dominant-baseline="central">Approved: forward to</text>
+<text class="t" style="font-size:12px" x="66" y="494" dominant-baseline="central">confidence gate</text>
+<line x1="480" y1="486" x2="584" y2="486" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="486" y="480">8</text>
+
+<text class="th" x="40" y="560" dominant-baseline="central">8A</text>
+<text class="t" style="font-size:12px" x="66" y="560" dominant-baseline="central">Send high-confidence spans for auto-redaction</text>
+<line x1="584" y1="560" x2="688" y2="560" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="590" y="554">8A</text>
+
+<text class="th" x="40" y="596" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="596" dominant-baseline="central">Return text with those spans redacted</text>
+<line x1="688" y1="596" x2="584" y2="596" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="680" y="590" text-anchor="end">10</text>
+
+<text class="th" x="40" y="682" dominant-baseline="central">8B</text>
+<text class="t" style="font-size:12px" x="66" y="674" dominant-baseline="central">Flag low-confidence spans</text>
+<text class="t" style="font-size:12px" x="66" y="690" dominant-baseline="central">for review</text>
+<line x1="584" y1="682" x2="636" y2="682" class="arr" style="stroke:#D85A30" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="590" y="676">8B</text>
+
+<text class="th" x="40" y="726" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="718" dominant-baseline="central">Acknowledge only: PENDING_REVIEW,</text>
+<text class="t" style="font-size:12px" x="66" y="734" dominant-baseline="central">no content yet (async, no wait)</text>
+<line x1="636" y1="726" x2="584" y2="726" class="arr" style="stroke:#D85A30" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="628" y="720" text-anchor="end">10</text>
+
+<text class="th" x="40" y="800" dominant-baseline="central">9</text>
+<text class="t" style="font-size:12px" x="66" y="792" dominant-baseline="central">Log decision: level, confidence,</text>
+<text class="t" style="font-size:12px" x="66" y="808" dominant-baseline="central">action taken — no raw text</text>
+<path d="M584 792 H606 V808 H588" fill="none" class="arr" style="stroke:#854F0B" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="612" y="800" dominant-baseline="central">9</text>
+
+<text class="th" x="40" y="852" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="844" dominant-baseline="central">Result bubbles up through</text>
+<text class="t" style="font-size:12px" x="66" y="860" dominant-baseline="central">policy gate</text>
+<line x1="584" y1="852" x2="480" y2="852" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="576" y="846" text-anchor="end">10</text>
+
+<text class="th" x="40" y="896" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="896" dominant-baseline="central">Redacted result, or PENDING_REVIEW ack, continues up</text>
+<line x1="480" y1="896" x2="376" y2="896" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="472" y="890" text-anchor="end">10</text>
+
+<text class="th" x="40" y="940" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="940" dominant-baseline="central">Redacted text continues up</text>
+<line x1="376" y1="940" x2="324" y2="940" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="370" y="934" text-anchor="end">10</text>
+
+<text class="th" x="40" y="984" dominant-baseline="central">11</text>
+<text class="t" style="font-size:12px" x="66" y="984" dominant-baseline="central">Deliver redacted text to caller</text>
+<line x1="324" y1="984" x2="272" y2="984" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="318" y="978" text-anchor="end">11</text>
+
+<text class="ts" x="340" y="1028" text-anchor="middle" dominant-baseline="central">Later, a separate call — restore</text>
+
+<text class="th" x="40" y="1072" dominant-baseline="central">R1</text>
+<text class="t" style="font-size:12px" x="66" y="1064" dominant-baseline="central">Caller calls restore, giving</text>
+<text class="t" style="font-size:12px" x="66" y="1080" dominant-baseline="central">back the redaction id</text>
+<line x1="272" y1="1072" x2="324" y2="1072" class="arr" style="stroke:#993556" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="278" y="1066">R1</text>
+
+<text class="th" x="40" y="1124" dominant-baseline="central">R2</text>
+<text class="t" style="font-size:12px" x="66" y="1116" dominant-baseline="central">Forward restore lookup directly —</text>
+<text class="t" style="font-size:12px" x="66" y="1132" dominant-baseline="central">bypasses classifier, policy gate and model</text>
+<line x1="324" y1="1124" x2="688" y2="1124" class="arr" style="stroke:#993556" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="330" y="1118">R2</text>
+
+<text class="th" x="40" y="1176" dominant-baseline="central">R3</text>
+<text class="t" style="font-size:12px" x="66" y="1168" dominant-baseline="central">Return original text — or REVIEW_BLOCKED if</text>
+<text class="t" style="font-size:12px" x="66" y="1184" dominant-baseline="central">the leak scan / placeholder check fails</text>
+<line x1="688" y1="1176" x2="324" y2="1176" class="arr" style="stroke:#993556" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="680" y="1170" text-anchor="end">R3</text>
+
+<text class="ts" x="340" y="1236" text-anchor="middle" dominant-baseline="central">Later, a separate call — check review status</text>
+
+<text class="th" x="40" y="1280" dominant-baseline="central">V1</text>
+<text class="t" style="font-size:12px" x="66" y="1272" dominant-baseline="central">Caller checks status, giving</text>
+<text class="t" style="font-size:12px" x="66" y="1288" dominant-baseline="central">back the redaction id</text>
+<line x1="272" y1="1280" x2="324" y2="1280" class="arr" style="stroke:#1D7A96" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="278" y="1274">V1</text>
+
+<text class="th" x="40" y="1332" dominant-baseline="central">V2</text>
+<text class="t" style="font-size:12px" x="66" y="1324" dominant-baseline="central">Forward status check directly —</text>
+<text class="t" style="font-size:12px" x="66" y="1340" dominant-baseline="central">bypasses classifier and gates</text>
+<line x1="324" y1="1332" x2="688" y2="1332" class="arr" style="stroke:#1D7A96" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="330" y="1326">V2</text>
+
+<text class="th" x="40" y="1384" dominant-baseline="central">V3</text>
+<text class="t" style="font-size:12px" x="66" y="1376" dominant-baseline="central">Return resolved decision: READY + content,</text>
+<text class="t" style="font-size:12px" x="66" y="1392" dominant-baseline="central">LOCAL_ONLY, or still PENDING_REVIEW</text>
+<line x1="688" y1="1384" x2="324" y2="1384" class="arr" style="stroke:#1D7A96" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="680" y="1378" text-anchor="end">V3</text>
+
+<text class="ts" x="340" y="1436" text-anchor="middle" dominant-baseline="central">Later, a separate call — delete record</text>
+
+<text class="th" x="40" y="1480" dominant-baseline="central">D1</text>
+<text class="t" style="font-size:12px" x="66" y="1472" dominant-baseline="central">Caller deletes the record,</text>
+<text class="t" style="font-size:12px" x="66" y="1488" dominant-baseline="central">giving back the redaction id</text>
+<line x1="272" y1="1480" x2="324" y2="1480" class="arr" style="stroke:#5F5E5A" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="278" y="1474">D1</text>
+
+<text class="th" x="40" y="1532" dominant-baseline="central">D2</text>
+<text class="t" style="font-size:12px" x="66" y="1524" dominant-baseline="central">Forward delete directly —</text>
+<text class="t" style="font-size:12px" x="66" y="1540" dominant-baseline="central">bypasses classifier and gates</text>
+<line x1="324" y1="1532" x2="688" y2="1532" class="arr" style="stroke:#5F5E5A" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="330" y="1526">D2</text>
+
+<text class="th" x="40" y="1576" dominant-baseline="central">D3</text>
+<text class="t" style="font-size:12px" x="66" y="1568" dominant-baseline="central">204 No Content — record, mapping and</text>
+<text class="t" style="font-size:12px" x="66" y="1584" dominant-baseline="central">any pending review are all gone</text>
+<line x1="688" y1="1576" x2="324" y2="1576" class="arr" style="stroke:#5F5E5A" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="680" y="1570" text-anchor="end">D3</text>
+
+<rect class="box" x="44" y="1682" width="124" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="106" y="1700" text-anchor="middle" dominant-baseline="central">Test set</text>
+<text class="ts" x="106" y="1722" text-anchor="middle" dominant-baseline="central">labeled emails</text>
+<rect class="box" x="200" y="1682" width="124" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="262" y="1700" text-anchor="middle" dominant-baseline="central">Eval harness</text>
+<text class="ts" x="262" y="1722" text-anchor="middle" dominant-baseline="central">runs steps 1–11</text>
+<rect class="box" x="356" y="1682" width="124" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="418" y="1700" text-anchor="middle" dominant-baseline="central">LLM judge</text>
+<text class="ts" x="418" y="1722" text-anchor="middle" dominant-baseline="central">vs gold labels</text>
+<rect class="box" x="512" y="1682" width="152" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="588" y="1700" text-anchor="middle" dominant-baseline="central">Metrics</text>
+<text class="ts" x="588" y="1722" text-anchor="middle" dominant-baseline="central">leak, over-redact</text>
+<line x1="168" y1="1710" x2="200" y2="1710" class="arr" marker-end="url(#arrow1seq)"/>
+<line x1="324" y1="1710" x2="356" y2="1710" class="arr" marker-end="url(#arrow1seq)"/>
+<line x1="480" y1="1710" x2="512" y2="1710" class="arr" marker-end="url(#arrow1seq)"/>
+
+<line x1="40" y1="1784" x2="70" y2="1784" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="78" y="1784" dominant-baseline="central">request</text>
+<line x1="150" y1="1784" x2="180" y2="1784" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="188" y="1784" dominant-baseline="central">response</text>
+<line x1="270" y1="1784" x2="300" y2="1784" class="arr" style="stroke:#993556" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="308" y="1784" dominant-baseline="central">separate, caller-triggered call</text>
+<line x1="560" y1="1784" x2="590" y2="1784" class="arr" style="stroke:#B0271C" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="598" y="1784" dominant-baseline="central">policy-blocked (deterministic)</text>
+<line x1="40" y1="1804" x2="70" y2="1804" class="arr" style="stroke:#1D7A96" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="78" y="1804" dominant-baseline="central">poll review status</text>
+<line x1="230" y1="1804" x2="260" y2="1804" class="arr" style="stroke:#5F5E5A" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="268" y="1804" dominant-baseline="central">delete record</text>
+<text class="ts" x="24" y="1824" dominant-baseline="central">A repeated number (e.g. 10) marks several hops carrying the same result back up.</text>
+<g transform="translate(50 1846)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="64" y="1846" dominant-baseline="central">model inference</text><g transform="translate(190 1846)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="204" y="1846" dominant-baseline="central">data store</text><g transform="translate(310 1846)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="324" y="1846" dominant-baseline="central">hand-written code</text><g transform="translate(430 1846)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="444" y="1846" dominant-baseline="central">policy gate = code (approved rules table)</text>
+
+<g transform="translate(344 13)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(364 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(450 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(554 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(658 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(678 13)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(292 106)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(396 106)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(500 106)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(608 106)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g>
+</svg>
+<figcaption><b>Same lane style as the original hybrid-routing diagram, now with the merged-in policy gate and asynchronous review.</b> Steps 1–7 always run: the gateway forwards the request, the classifier consults the local context store and asks the local model to detect spans and judge context, then compiles a sensitivity report for the new <b>Policy gate</b>. The policy gate makes one conservative, deterministic release decision for the whole request: if it is a confidential, health, financial or credential category, or the source/provenance is unclear, it returns <b>LOCAL_ONLY</b> straight back to the Gateway (<b>7L</b>, red dashed) — nothing below it ever sees that request, and no per-request review can override this until the approved policy itself changes. Only an approved request continues (8) to the confidence gate, which branches once on per-span confidence (no more local-vs-cloud split): 8A auto-redacts through Redact / restore, 8B flags the span in the Review queue — which immediately acknowledges <b>PENDING_REVIEW</b> (10) without waiting for a human, so the call still returns promptly. A reviewer resolves it out-of-band, at their own pace, and writes the outcome into the same record Redact / restore holds. Either path is logged with no raw text (9), and the result (or the pending acknowledgement) bubbles back up — through the policy gate, then the classifier and gateway lanes (10) — to reach the caller (11). Three separate, id-keyed calls happen later, independent of this main flow and of each other: <b>restore</b> (R1–R3, which can itself come back <b>REVIEW_BLOCKED</b> if its own leak scan fails), <b>checking review status</b> (V1–V3, the only way a caller learns a pending review's outcome and gets the content), and <b>deleting the record</b> (D1–D3) — all three reach Redact / restore directly, bypassing the classifier and both gates. Band E at the bottom runs offline on test data only. Corner icons: sparkle = model, cylinder = data store, &lt;/&gt; = hand-written code.</figcaption>
+</figure>
+
+<h2>Figure 2 (v2) · Component architecture (numbered)</h2>
+<figure>
+<svg width="100%" viewBox="0 0 920 1000" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Local redaction service — component architecture, v2 proposal (numbered, with policy gate and asynchronous review)</title>
+<desc>Component diagram matching Figure 1's numbered steps, with a whole-request policy gate merged in from a teammate's architecture v0.6 and interim HTTP contract. The gateway (1, 11) forwards requests to the sensitivity classifier (2, 10), which queries the context store (3, 4) and the local model (5, 6) before compiling a report for the policy gate (7). The policy gate checks confidential and regulated categories and provenance for the whole request: if blocked, it deterministically returns LOCAL_ONLY straight to the gateway (L), bypassing detection entirely — no per-request review applies here; otherwise it forwards to the confidence gate (8), which auto-redacts through the redact/restore module (8A) or flags the review queue (8B). Review is asynchronous: the confidence gate immediately acknowledges PENDING_REVIEW (10) without waiting, and a human reviewer resolves it out-of-band, writing the outcome into the same record Redact/restore holds (V0). Either path logs its decision (7L, 9). A separate dashed connector family (R/V/D) shows the caller's later, separate calls to restore, poll review status, or delete the record, all reaching Redact/restore directly and bypassing detection. The cloud API and egress proxy from the original hybrid design remain removed, since the calling application decides on its own, later, whether to call an external cloud assistant.</desc>
+<defs>
+<marker id="arrow2v2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+<g class="c-gray">
+<rect x="24" y="160" width="884" height="748" rx="20" stroke-width="0.5" stroke-dasharray="6 4"/>
+<text class="th" x="40" y="180" dominant-baseline="central">Local redaction service</text>
+</g>
+<rect class="box" x="392" y="8" width="284" height="132" rx="12" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text class="th" x="404" y="28" dominant-baseline="central">Offline evaluation</text>
+<text class="ts" x="404" y="46" dominant-baseline="central">test data only, never live traffic</text>
+<rect class="box" x="404" y="64" width="120" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="464" y="82" text-anchor="middle" dominant-baseline="central">Eval harness</text>
+<text class="ts" x="464" y="104" text-anchor="middle" dominant-baseline="central">test emails</text>
+<rect class="box" x="544" y="64" width="124" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="606" y="82" text-anchor="middle" dominant-baseline="central">LLM judge</text>
+<text class="ts" x="606" y="104" text-anchor="middle" dominant-baseline="central">vs gold labels</text>
+<line x1="524" y1="92" x2="544" y2="92" class="arr" marker-end="url(#arrow2v2)"/>
+
+<rect class="box" x="225" y="60" width="150" height="44" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="82" text-anchor="middle" dominant-baseline="central">Caller</text>
+<rect class="box" x="200" y="212" width="200" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="230" text-anchor="middle" dominant-baseline="central">Gateway</text>
+<text class="ts" x="300" y="252" text-anchor="middle" dominant-baseline="central">Redact + restore API</text>
+<g class="c-purple">
+<rect x="40" y="212" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="105" y="230" text-anchor="middle" dominant-baseline="central">Context store</text>
+<text class="ts" x="105" y="252" text-anchor="middle" dominant-baseline="central">Known + similar</text>
+</g>
+<g class="c-purple">
+<rect x="190" y="328" width="220" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="346" text-anchor="middle" dominant-baseline="central">Sensitivity classifier</text>
+<text class="ts" x="300" y="368" text-anchor="middle" dominant-baseline="central">Context-aware detection</text>
+</g>
+<g class="c-blue">
+<rect x="200" y="444" width="200" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="462" text-anchor="middle" dominant-baseline="central">Policy gate</text>
+<text class="ts" x="300" y="484" text-anchor="middle" dominant-baseline="central">Category + provenance check</text>
+</g>
+<g class="c-amber">
+<rect x="200" y="560" width="200" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="578" text-anchor="middle" dominant-baseline="central">Confidence gate</text>
+<text class="ts" x="300" y="600" text-anchor="middle" dominant-baseline="central">Decides: auto or flagged</text>
+</g>
+<g class="c-teal">
+<rect x="420" y="328" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="485" y="346" text-anchor="middle" dominant-baseline="central">Local model</text>
+<text class="ts" x="485" y="368" text-anchor="middle" dominant-baseline="central">Detect + score</text>
+</g>
+<g class="c-coral">
+<rect x="235" y="708" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="726" text-anchor="middle" dominant-baseline="central">Review queue</text>
+<text class="ts" x="300" y="748" text-anchor="middle" dominant-baseline="central">Flag for review</text>
+</g>
+<g class="c-pink">
+<rect x="400" y="708" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="465" y="726" text-anchor="middle" dominant-baseline="central">Redact / restore</text>
+<text class="ts" x="465" y="748" text-anchor="middle" dominant-baseline="central">Record always · map opt-in</text>
+</g>
+<line x1="365" y1="736" x2="400" y2="736" class="arr" style="stroke:#993C1D" stroke-dasharray="2 2" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="204" y="678" dominant-baseline="central">V0 · reviewer resolves</text>
+<text class="ts" x="204" y="694" dominant-baseline="central">(out-of-band) → record</text>
+<rect class="box" x="40" y="828" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="105" y="846" text-anchor="middle" dominant-baseline="central">Audit log</text>
+<text class="ts" x="105" y="868" text-anchor="middle" dominant-baseline="central">No raw text</text>
+
+<path d="M464 120 V240 H400" fill="none" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="472" y="150" dominant-baseline="central">E · same API, offline</text>
+
+<line x1="300" y1="104" x2="300" y2="212" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="312" y="182" dominant-baseline="central">1 · text to redact ↓</text>
+<text class="ts" x="312" y="198" dominant-baseline="central">11 · redacted text + spans ↑</text>
+
+<line x1="300" y1="268" x2="300" y2="328" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="312" y="290" dominant-baseline="central">2 · request ↓</text>
+<text class="ts" x="312" y="306" dominant-baseline="central">10 · redacted text ↑</text>
+
+<path d="M190 356 H105 V268" fill="none" class="arr" style="stroke:#7F77DD" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="113" y="294" dominant-baseline="central">3 · lookup ↑</text>
+<text class="ts" x="113" y="310" dominant-baseline="central">4 · matches ↓</text>
+
+<line x1="410" y1="356" x2="420" y2="356" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="415" y="320" text-anchor="middle" dominant-baseline="central">5 ↓</text>
+<text class="ts" x="415" y="392" text-anchor="middle" dominant-baseline="central">6 ↑</text>
+
+<line x1="300" y1="384" x2="300" y2="444" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="312" y="406" dominant-baseline="central">7 · sensitivity report ↓</text>
+<text class="ts" x="312" y="424" dominant-baseline="central">10 · result ↑</text>
+
+<line x1="300" y1="500" x2="300" y2="560" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="312" y="522" dominant-baseline="central">8 · approved: forward ↓</text>
+<text class="ts" x="312" y="540" dominant-baseline="central">10 · result ↑</text>
+
+<line x1="300" y1="616" x2="300" y2="708" class="arr" style="stroke:#D85A30" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="308" y="634" dominant-baseline="central">8B · low confidence ↓</text>
+<text class="ts" x="308" y="650" dominant-baseline="central">10 · PENDING_REVIEW (async ack) ↑</text>
+
+<path d="M400 598 H500 V708" fill="none" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="492" y="674" text-anchor="end" dominant-baseline="central">8A · auto-redact ↓</text>
+<text class="ts" x="492" y="690" text-anchor="end" dominant-baseline="central">10 · redacted text ↑</text>
+
+<path d="M200 462 H32 V856 H40" fill="none" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="36" y="450" dominant-baseline="central">7L · log: category, status</text>
+<line x1="200" y1="578" x2="32" y2="578" class="arr" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="566" dominant-baseline="central">9 · log: level, action</text>
+
+<path d="M400 240 H560 V736 H530" fill="none" class="arr" style="stroke:#993556" stroke-dasharray="4 3" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="566" y="422" dominant-baseline="central">R/V/D · restore, poll status,</text>
+<text class="ts" x="566" y="438" dominant-baseline="central">or delete (separate calls,</text>
+<text class="ts" x="566" y="454" dominant-baseline="central">each bypasses detection)</text>
+
+<path d="M400 470 H800 V250 H400" fill="none" class="arr" style="stroke:#B0271C" stroke-dasharray="4 3" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="806" y="355" dominant-baseline="central">L · blocked</text>
+<text class="ts" x="806" y="371" dominant-baseline="central">(LOCAL_ONLY —</text>
+<text class="ts" x="806" y="387" dominant-baseline="central">deterministic)</text>
+<text class="ts" x="806" y="403" dominant-baseline="central">skips everything</text>
+<text class="ts" x="806" y="419" dominant-baseline="central">below</text>
+
+<text class="ts" x="24" y="944" dominant-baseline="central">7–11 match Figure 1 · 7L, L, 8 and V0 are new, merged from a teammate's architecture v0.6</text>
+<text class="ts" x="24" y="960" dominant-baseline="central">↓ request, ↑ response · dashed = logging, a blocked whole-request result, or a separate call</text>
+<g transform="translate(214 212)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(54 212)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(204 328)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(224 328)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(214 444)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(214 560)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(434 328)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(249 708)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(414 708)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(434 708)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(54 828)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(418 64)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(558 64)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(50 932)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="64" y="932" dominant-baseline="central">model inference</text><g transform="translate(190 932)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="204" y="932" dominant-baseline="central">data store</text><g transform="translate(310 932)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="324" y="932" dominant-baseline="central">hand-written code</text>
+</svg>
+<figcaption><b>New: a whole-request policy gate, merged in from a teammate's architecture v0.6 and interim HTTP contract.</b> Their design makes one conservative release decision for the entire request (confidential category, health/financial/credential data, or unknown provenance), separate from the per-span redaction decision our confidence gate already made. So the classifier's report (7) now goes to this new <b>Policy gate</b> first: if the whole request is blocked, it deterministically returns <b>LOCAL_ONLY</b> straight to the Gateway (<b>L</b>, red dashed), skipping the confidence gate, review queue and redact/restore entirely — nothing below this line ever sees that request, and this can't be resolved per-request, only by changing the approved policy. Only an approved request continues (8) to the confidence gate, which auto-redacts (8A) or flags for asynchronous human review (8B, <b>PENDING_REVIEW</b>) exactly as before. Both gates log their decision to the audit trail (7L, 9). When 8B fires, Review queue immediately acks <b>PENDING_REVIEW</b> without waiting — a human reviewer resolves it out-of-band, at their own pace, and writes the outcome straight into the record Redact / restore holds (<b>V0</b>). Local model stays next to the sensitivity classifier (5, 6); the dashed <b>R/V/D</b> connector bundles three later, independent, id-keyed calls that all reach Redact / restore directly, bypassing the classifier and both gates: <b>restore</b> (can itself come back <code>REVIEW_BLOCKED</code>), <b>poll for a pending review's outcome</b> (the only way a caller gets content after <code>PENDING_REVIEW</code>), and <b>delete the record</b>. Redact / restore's tagline now separates its two kinds of state: the scan/review <b>record always exists</b>, but the restorable <b>mapping is opt-in</b> — setting `mapping.retain` is the only thing that decides whether restore can substitute real values back in. Cloud API and egress proxy remain removed, per the client's framing that the calling application decides on its own, later, whether to call an external cloud assistant. This is a proposal for discussion — <code>hybrid-routing-diagrams-en.html</code> has not been edited. Figure 1 now shows the same policy-gate and asynchronous-review steps (7, 7L, 8, V0).</figcaption>
+</figure>
+
+<div class="pending"><p><b>Open question 1 — pending client confirmation: policy-gate granularity.</b> The policy gate's release decision is whole-request, not per-span. As merged in from the teammate's design, one confidential line, or one line of health/financial/credential data, or an unclear source anywhere in the thread is enough to keep the <i>entire</i> email local (<code>LOCAL_ONLY</code>), even if the rest of the message is ordinary business text — and because this is a deterministic policy decision, it can't be resolved by a per-request human review the way a low-confidence span can.</p>
+<ul>
+<li>This is likely to trigger often in practice — long threads and quoted history make it easy for one sensitive line to bounce back a whole email that would otherwise be fine to release.</li>
+<li>The teammate's doc treats this as a deliberate, conservative interim default (see architecture v0.6, "Apply the interim policy"), not a final design — the source/type/task policy table and category boundaries are explicitly still open for the client privacy/legal representative and system owner to approve.</li>
+<li><b>Recommendation:</b> raise this with the client as a concrete open item — whether finer-grained rules (e.g. per-paragraph or per-quoted-message release, rather than per whole thread) are worth the added complexity, or whether the coarse whole-request block is acceptable for the first release.</li>
+</ul>
+<p><b>Open question 2 — pending team decision: how the async review queue is checked, and how long it waits.</b> 8B now returns <code>PENDING_REVIEW</code> immediately and a human resolves it later (V0); this fixes the earlier problem of a synchronous call implying a blocking human wait, but it opens three mechanical questions the diagram currently answers with a single default.</p>
+<ul>
+<li><b>Poll vs. webhook.</b> This proposal has the caller poll <code>GET /v1/redactions/{id}</code> (V1–V3) until it resolves. A webhook/callback the caller registers would avoid repeated polling but adds delivery/retry/auth surface of its own — worth deciding before the API contract is final.</li>
+<li><b>Review TTL.</b> How long can a request sit as <code>PENDING_REVIEW</code> before it expires? The diagram assumes it shares the same bounded-lifetime record as everything else in Redact / restore, but that cap was originally sized for restore/scan state, not for however long a human reviewer actually takes — these may need separate limits.</li>
+<li><b>Cancel via delete.</b> D1–D3 assumes deleting a still-pending review simply cancels it. If the client instead wants pending reviews to be un-cancelable once queued (e.g. for audit completeness), that changes D's behavior.</li>
+</ul>
+</div>
+
+<footer>Local redaction service · workflow &amp; architecture proposal v2 · Virtual Gold capstone · 2026-09-27</footer>
+</main>
+</div>
   <div class="fields">
-    <div><label for="b1">Your feedback</label><textarea id="b1" data-store="b1" placeholder="Where the contract does not match your system"></textarea></div>
+    <div><label for="b1">Your feedback</label><textarea id="b1" data-store="b1" placeholder="Where the contract or the flow does not match your system"></textarea></div>
     <div><label for="b1o">Owner</label><input id="b1o" data-store="b1o" value="Zhexuan"></div>
     <div><label for="b1d">Follow-up</label><input id="b1d" data-store="b1d" placeholder="date"></div>
   </div>
 </div>
 
-<div class="cat" id="judgment"><h2>C · Deciding what to redact</h2><span class="tag">Yudi · 20 min</span></div>
+<div class="cat" id="judgment"><h2>C &middot; Deciding what to redact</h2><span class="tag">Yudi &middot; 20 min</span></div>
 <div class="item">
-  <p class="ctx">Two designs presented together, because they are not alternatives &mdash; one is the baseline the other has to beat. Seventeen papers behind this; sources on expand.</p>
+  <p class="ctx">Yudi's sensitive data classification proposal, in full, below. <b>Read it against Karina's redact-always design</b> &mdash; that one masks every span any detector finds and restores locally, which sets the ceiling on safety and the floor on usefulness. <mark class="hl-key">It is the baseline: everything below has to earn its place against it by measurement, not by argument.</mark> Karina's document is in <code>docs/research/karina/2026-09-24/</code>.</p>
+  <p class="embnote">Embedded document &middot; sensitive-data-classification-proposal &middot; Yudi Guo &middot; 2026-09-27</p>
+<div class="emb-yd">
+<div class="page">
 
-  <h3>1 · The baseline: mask everything we find</h3>
-  <p><b>Start by not deciding at all.</b> If any detector flags a span, it is replaced with a reversible placeholder. The public support line gets masked too. Nothing is judged and nothing is argued about.</p>
-  <div class="finding">
-    <div><div class="k">Why this is a serious starting point, not a straw man</div>Masking a public phone number used to be a mistake because <b>the information was lost</b>. Here it is only hidden from the cloud and comes back in the final answer. <mark class="hl-key">So over-redaction stops being a visible error and becomes a small, measurable drop in the cloud's reasoning quality.</mark> The hardest judgement call in the project turns into a tuning knob.</div>
-    <div><div class="k">The evidence it rests on</div>A September 2026 study tested five anonymisation styles on a reasoning benchmark: <b>consistent placeholders scored the same as the original text, while blanking out lost about a quarter of the score.</b> That is the whole argument for placeholders over redaction marks. The same study warns that lookup-heavy tasks degrade badly even with placeholders, which is why section E asks how often the executive asks about outside companies.</div>
-    <div><div class="k">And it is the control condition</div>Masking everything sets the ceiling on safety and the floor on usefulness. <b>Every refinement after this has to earn its place by measurement</b> &mdash; how much answer quality it buys back, and how much leakage it costs. Starting strict and loosening with evidence is easier to stand behind than starting loose.</div>
-  </div>
+  <div class="eyebrow">CMU Capstone × Virtual Gold · Proposal</div>
+  <h1>Sensitive Data Classification Proposal</h1>
+  <dl class="meta">
+    <div><dt>Scope</dt><dd>How the local service determines which content to redact, and how the approach will be validated</dd></div>
+    <div><dt>Prepared by</dt><dd>Yudi Guo · Privacy research &amp; evaluation</dd></div>
+    <div><dt>Date</dt><dd>27 Sep 2026</dd></div>
+    <div><dt>Status</dt><dd>Draft proposal; not yet validated on data</dd></div>
+  </dl>
 
-  <h3>2 · Why one judgement is not enough</h3>
+
+<div class="cat"><h2>Overview</h2></div>
+<p class="thesis">Each detected item is assessed on two dimensions: its <b>category</b>, which determines the severity of a potential leak, and its <b>context</b>, which determines the confidence that it is private. A <b>rule-based decision layer</b> combines the two. Where confidence is insufficient, the item is redacted by default and replaced with a reversible placeholder, so the assistant’s task is unaffected.</p>
+
+<div class="tbl"><table>
+  <tr><th>Requirement</th><th>Approach</th></tr>
+  <tr><td>Local execution on an open-source model</td><td>All detectors and the model run on project hardware. The service has no outbound network access.</td></tr>
+  <tr><td>Contextual judgment by the model</td><td>The model assesses each candidate span within its surrounding text, for example “my cell” versus “our support line”.</td></tr>
+  <tr><td>Confidence score output</td><td>The model scores each span; the score is calibrated against labelled emails before use.</td></tr>
+</table></div>
+
+<div class="cat"><h2>System Architecture</h2></div>
+<figure>
+  <svg viewBox="0 0 900 470" role="img" aria-label="Pipeline. Within the local service: split the email, identify candidate spans with rules, Presidio and the local model, assess each span in context with a confidence score, decide in code against the client-approved tier table, and replace spans with placeholders. The cloud assistant receives placeholders only. Its response returns to the local service, where placeholders are restored before delivery to the executive.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-head" d="M0 0 L10 5 L0 10 z"/></marker>
+    </defs>
+    <rect class="d-bound" x="8" y="16" width="624" height="440" rx="6"/>
+    <text class="d-label" x="24" y="444">LOCAL SERVICE · NO OUTBOUND NETWORK ACCESS</text>
+
+    <text class="d-in" x="24" y="44">INPUT: EMAIL + EXECUTIVE’S REQUEST</text>
+    <line class="d-flow" x1="109" y1="50" x2="109" y2="66" marker-end="url(#ah)"/>
+
+    <rect class="d-box" x="24" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n" x="36" y="89">01</text>
+    <text class="d-name" x="36" y="110">Segmentation</text>
+    <text class="d-sub" x="36" y="128">body · quotes · signature</text>
+
+    <rect class="d-box" x="230" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="89">02</text>
+    <text class="d-name" x="242" y="110">Candidate detection</text>
+    <text class="d-sub" x="242" y="128">rules ∪ Presidio ∪ model</text>
+
+    <rect class="d-box judge" x="436" y="70" width="178" height="68" rx="3"/>
+    <text class="d-n y" x="448" y="89">03 · MODEL</text>
+    <text class="d-name" x="448" y="110">Context assessment</text>
+    <text class="d-sub" x="448" y="128">private? + confidence</text>
+
+    <line class="d-flow" x1="202" y1="104" x2="226" y2="104" marker-end="url(#ah)"/>
+    <line class="d-flow" x1="408" y1="104" x2="432" y2="104" marker-end="url(#ah)"/>
+    <path class="d-flow" d="M525 138 L525 172 L113 172 L113 206" marker-end="url(#ah)"/>
+
+    <rect class="d-box code" x="24" y="210" width="178" height="68" rx="3"/>
+    <text class="d-n g" x="36" y="229">04 · CODE</text>
+    <text class="d-name" x="36" y="250">Decision</text>
+    <text class="d-sub" x="36" y="268">tier × threshold</text>
+
+    <rect class="d-box" x="230" y="210" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="229">05</text>
+    <text class="d-name" x="242" y="250">Pseudonymisation</text>
+    <text class="d-sub" x="242" y="268">[PHONE_1]; map kept local</text>
+
+    <line class="d-flow" x1="202" y1="244" x2="226" y2="244" marker-end="url(#ah)"/>
+    <line class="d-flow" x1="408" y1="244" x2="686" y2="244" marker-end="url(#ah)"/>
+
+    <rect class="d-box cloud" x="690" y="210" width="190" height="68" rx="3"/>
+    <text class="d-n c" x="702" y="229">EXTERNAL</text>
+    <text class="d-name" x="702" y="250">Cloud assistant</text>
+    <text class="d-sub" x="702" y="268">receives placeholders only</text>
+
+    <path class="d-flow" d="M785 278 L785 384 L618 384" marker-end="url(#ah)"/>
+
+    <rect class="d-box policy" x="24" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n g" x="36" y="369">POLICY</text>
+    <text class="d-name" x="36" y="390">Tier table</text>
+    <text class="d-sub" x="36" y="408">client-approved</text>
+    <line class="d-flow" x1="113" y1="350" x2="113" y2="282" marker-end="url(#ah)"/>
+
+    <rect class="d-box" x="436" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n" x="448" y="369">06</text>
+    <text class="d-name" x="448" y="390">Restoration</text>
+    <text class="d-sub" x="448" y="408">placeholders → originals</text>
+
+    <rect class="d-box" x="230" y="350" width="178" height="68" rx="3"/>
+    <text class="d-n" x="242" y="369">OUTPUT</text>
+    <text class="d-name" x="242" y="390">Executive</text>
+    <text class="d-sub" x="242" y="408">original values restored</text>
+    <line class="d-flow" x1="436" y1="384" x2="412" y2="384" marker-end="url(#ah)"/>
+  </svg>
+  <figcaption>The model produces assessments (step 03); decisions are made by code (step 04) against a client-approved table. All components other than the cloud assistant run within the local service.</figcaption>
+</figure>
+
+<div class="cat"><h2>Technical Feasibility</h2><span class="tag">Implementation</span></div>
+<p class="ctx">Every stage is built on existing open-source tools. The only substantial custom component is the merging of detector outputs.</p>
+<div class="tbl"><table>
+  <tr><th>Component</th><th>Implementation</th><th>Effort</th></tr>
+  <tr><td>Rule-based detection</td><td>Regular expressions with checksum validation for phone numbers, email addresses, card and ID numbers. Presidio includes a set of such recognisers.</td><td class="nowrap">Low</td></tr>
+  <tr><td>Presidio</td><td>The <code>presidio-analyzer</code> package with a spaCy language model [2]</td><td class="nowrap">Low</td></tr>
+  <tr><td>Local model</td><td>Served through Ollama with Rescriber’s open-source detection prompt [1]; OpenAI Privacy Filter as an alternative [3]</td><td class="nowrap">Low to medium</td></tr>
+  <tr><td>Merging outputs (union)</td><td>Custom code that aligns results by character position; overlapping spans are counted once</td><td class="nowrap">Medium, approx. 50–100 lines</td></tr>
+</table></div>
+<details class="more"><summary>Integration considerations</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>Issue</th><th>Resolution</th></tr>
+  <tr><td>The model returns text rather than character positions</td><td>Each returned string is located in the source text. Rescriber’s prompt requires verbatim substrings for this reason [1].</td></tr>
+  <tr><td>Detectors use different category names</td><td>All outputs are mapped to a single category list. Rescriber’s <code>presidio_server.py</code> provides a reference mapping [1].</td></tr>
+  <tr><td>Latency accumulates across detectors</td><td>Detectors run in parallel. The model is the bottleneck: on an Apple M2 machine with 24 GB of memory, Rescriber reports a mean of 0.73 s for Presidio and 3.40 s for Llama3-8B [1].</td></tr>
+</table></div>
+</div></details>
+
+<div class="cat"><h2>Sensitivity Tiers</h2><span class="tag">For client review</span></div>
+<p class="ctx">Each category is assigned to a tier. The tier determines the confidence required before redaction: the more severe the potential harm, the lower the threshold.</p>
+<div class="tbl"><table>
+  <tr><th>Tier</th><th>Categories</th><th>Redaction rule</th></tr>
+  <tr><td><span class="tier h">High</span></td><td>Government IDs, passwords and keys, bank and card numbers, health information</td><td>Redact at confidence ≥ 0.2</td></tr>
+  <tr><td><span class="tier h">High</span></td><td>Business-confidential information: unreleased financial results, deal and M&amp;A terms, project code names, legal matters</td><td>Redact at confidence ≥ 0.2; see below</td></tr>
+  <tr><td><span class="tier m">Medium</span></td><td>Names of private individuals, personal phone numbers, personal email addresses, home addresses</td><td>Redact at confidence ≥ 0.5</td></tr>
+  <tr><td><span class="tier l">Low</span></td><td>City, dates, organisation names, age, gender</td><td>Retain when isolated; redact when several items together could identify an individual</td></tr>
+  <tr><td><span class="tier p">Public</span></td><td>Public figures, published support lines, company names in a public context</td><td>Retain only when the model is confident the item is public</td></tr>
+</table></div>
+<h3>Business-confidential information</h3>
+<p style="margin:0 0 8px">This category cannot be listed exhaustively and has no fixed format, so rules and Presidio do not detect it. Coverage relies on three layers:</p>
+<div class="tbl"><table>
+  <tr><th>Layer</th><th>Mechanism</th><th>Covers</th></tr>
+  <tr><td class="nowrap">1. Term list</td><td>The client supplies project code names, deal names and key counterparties; any match is redacted</td><td>Confidential items the client already knows</td></tr>
+  <tr><td class="nowrap">2. Explicit markers</td><td>Phrases such as “confidential”, “board only”, “do not forward” or “privileged” place the surrounding passage in the High tier</td><td>Content the sender has marked as confidential</td></tr>
+  <tr><td class="nowrap">3. Default placeholder</td><td>Proper nouns and amounts the model cannot classify are replaced with reversible placeholders</td><td>Items missed by the first two layers</td></tr>
+</table></div>
+<div class="note risk"><span class="h">Known limitation</span>NIST SP 800-122 covers personal data only, so tiering for business information will follow the client’s internal data classification. This category depends on the model’s contextual judgment and is the principal recall risk; its leak rate will be reported separately. <span class="badge prop">Proposed</span></div>
+<details class="more"><summary>Basis for the tiers and threshold selection</summary><div class="body">
+<div class="note"><span class="h">Basis for the tiers</span>NIST SP 800-122 classifies personal data by low, moderate and high confidentiality impact, taking into account the sensitivity of each field and its context of use, and notes that combinations of fields may be more sensitive than individual fields [5]. The Low-tier combination rule reflects Sweeney’s finding that ZIP code, gender and date of birth together uniquely identify an estimated 87% of the US population [6]. The category list is adapted from Rescriber’s taxonomy [1].</div>
+
+<h3>Threshold selection</h3>
+<p style="margin:0 0 6px">The thresholds above are initial values. Final values will be determined empirically:</p>
+<ol class="steps">
+  <li>The client sets an acceptable leak rate for each tier. This is a business decision.</li>
+  <li>A range of thresholds is evaluated on labelled emails, recording the leak rate and the over-redaction rate at each.</li>
+  <li>For each tier, the highest threshold that meets its leak-rate target is selected, which minimises unnecessary redaction.</li>
+</ol>
+<div class="tbl"><table>
+  <tr><th>Threshold</th><th>Leak rate</th><th>Over-redaction rate</th></tr>
+  <tr><td class="num">0.2</td><td class="num">1%</td><td class="num">40%</td></tr>
+  <tr><td class="num">0.3</td><td class="num">2%</td><td class="num">25%</td></tr>
+  <tr><td class="num">0.5</td><td class="num">5%</td><td class="num">12%</td></tr>
+  <tr><td class="num">0.7</td><td class="num">12%</td><td class="num">5%</td></tr>
+</table></div>
+<p class="cap">Illustrative values for the Medium tier. With a 2% leak-rate target, the selected threshold would be 0.3.</p>
+<div class="note risk"><span class="h">Validation and sign-off</span>Given the dataset size (100 emails), thresholds will be tuned and evaluated on separate subsets, or by cross-validation, to avoid optimistic results. Tier assignments are a business decision and require client confirmation.</div>
+</div></details>
+
+<div class="cat"><h2>Worked Example</h2></div>
+<p class="ctx">The example includes the case raised in the client’s email: a personal mobile number and a public support number in the same message.</p>
+<div class="mail"><span class="who">Incoming · from Dana Whitfield to Tom Reyes</span>Hi Tom,
+Before Thursday’s board call: my <span class="hl">oncologist</span> moved my appointment, so I’ll dial in from home. Reach me on my cell, <span class="hl">412-555-0182</span>.
+On the vendor outage, Acme’s support line is <span class="hl">1-800-555-0199</span>.
+— Dana</div>
+<div class="req"><span class="who">Executive’s request to the assistant</span>Draft a reply to Dana and summarise the vendor issue.</div>
+
+<div class="tbl"><table>
+  <tr><th>Span</th><th>Category · tier</th><th>Contextual evidence</th><th>Confidence (private)</th><th>Decision</th></tr>
+  <tr><td>Dana, Dana Whitfield</td><td>Name · <span class="tier m">Med</span></td><td>Private individual; sender</td><td class="num">0.90</td><td class="act-r">[PERSON_1]</td></tr>
+  <tr><td>Tom</td><td>Name · <span class="tier m">Med</span></td><td>Private individual; recipient</td><td class="num">0.85</td><td class="act-r">[PERSON_2]</td></tr>
+  <tr><td>oncologist</td><td>Health · <span class="tier h">High</span></td><td>“my … appointment”</td><td class="num">0.95</td><td class="act-r">[HEALTH_1]</td></tr>
+  <tr><td class="nowrap">412-555-0182</td><td>Phone · <span class="tier m">Med</span></td><td>“my cell”</td><td class="num">0.95</td><td class="act-r">[PHONE_1]</td></tr>
+  <tr><td class="nowrap">1-800-555-0199</td><td>Phone · <span class="tier m">Med</span></td><td>Toll-free prefix; “Acme’s support line”</td><td class="num">0.15</td><td class="act-k">Retain</td></tr>
+  <tr><td>Acme, Thursday</td><td>Organisation, date · <span class="tier l">Low</span></td><td>Isolated; insufficient to identify an individual</td><td class="num">n/a</td><td class="act-k">Retain</td></tr>
+</table></div>
+<p class="cap">Confidence values are illustrative.</p>
+
+<div class="mail out"><span class="who">Text sent to the cloud assistant</span>Hi <mark>[PERSON_2]</mark>,
+Before Thursday’s board call: my <mark>[HEALTH_1]</mark> moved my appointment, so I’ll dial in from home. Reach me on my cell, <mark>[PHONE_1]</mark>.
+On the vendor outage, Acme’s support line is 1-800-555-0199.
+— <mark>[PERSON_1]</mark></div>
+<div class="note ok"><span class="h">Outcome</span>The assistant can still draft the reply to [PERSON_1] and summarise the Acme outage. The cloud service does not receive the diagnosis, the personal number or either name. Placeholders are restored locally before the draft is returned to the executive.</div>
+
+<div class="cat"><h2>Confidence Scoring</h2></div>
+<p class="ctx">The model scores each span. Because language models tend to be overconfident [7], the raw score is calibrated against labelled emails before thresholds are applied.</p>
+<details class="more"><summary>Calibration procedure and alternative method</summary><div class="body">
+<h3 style="margin-top:0">Version 1: model score with calibration</h3>
+  <p style="margin:0">The model assigns a raw score to each span. Language models tend to be overconfident when stating their own confidence [7], so the raw score is calibrated against labelled emails before use:</p>
+  <ol class="steps">
+    <li>Run the system on labelled emails, recording each span’s raw score and its true label.</li>
+    <li>Group spans by raw score and compute the proportion in each group that is actually private.</li>
+    <li>At run time, convert each raw score to the corresponding observed proportion.</li>
+  </ol>
   <div class="tbl"><table>
-    <tr><th>What the research found</th><th>So we</th></tr>
-    <tr><td><mark class="hl-key">Sensitive is not the same as personal.</mark> "Exit the regional-bank book before the Fed meeting" names no person and discloses the whole strategy</td><td>Protect what the executive is doing, not only who is named</td></tr>
-    <tr><td><mark class="hl-key">One on/off gate breaks the assistant.</mark> Sensitivity alone kept 4% of the content a task needs; adding a second judgement kept 95%</td><td>Two judgements, not one threshold</td></tr>
-    <tr><td><mark class="hl-key">Detection scores are not privacy scores.</mark> 9% of records were re-identified after every detected identifier had been masked</td><td>Report leak rate, never plain detector accuracy</td></tr>
-    <tr><td><mark class="hl-key">Context cannot be scored reliably.</mark> Human reviewers agree only 48% of the time on context-dependent sensitivity</td><td>Fix as much as possible by written policy, and keep the judging surface small</td></tr>
-    <tr><td><mark class="hl-key">No single detector is good enough.</mark> The best open-source detector averaged 0.54 across four datasets, and each failed on a different kind of text</td><td>Run several and take the union</td></tr>
+    <tr><th>Raw score</th><th>Spans</th><th>Actually private</th><th>Calibrated score</th></tr>
+    <tr><td class="num">0.9–1.0</td><td class="num">200</td><td class="num">140</td><td class="num">0.70</td></tr>
+    <tr><td class="num">0.7–0.9</td><td class="num">100</td><td class="num">50</td><td class="num">0.50</td></tr>
+    <tr><td class="num">0.5–0.7</td><td class="num">50</td><td class="num">15</td><td class="num">0.30</td></tr>
+    <tr><td class="num">0.0–0.5</td><td class="num">150</td><td class="num">15</td><td class="num">0.10</td></tr>
   </table></div>
-  <p class="ctx">That 48% figure is why the design pushes as much as possible onto things that cannot be wrong &mdash; where the text came from, whether it matches a checksum, and what a written policy says &mdash; and leaves the model only what genuinely needs reading.</p>
+  <p class="cap">Illustrative values. A raw score of 0.95 would be reported as 0.70.</p>
+  <p style="margin:12px 0 0">Calibration corrects a raw score; it is not a separate source of scores. It ensures that a threshold of 0.5 corresponds to an observed 50% likelihood.</p>
+  <h3>Version 2: agreement-based scoring</h3>
+  <p style="margin:0">If calibration shows that the model’s scores discriminate poorly, for example with most spans scored near 0.9, the raw score will instead be derived from agreement: the share of detectors that flag a span, and the share of 3–5 repeated model runs that label it private. Agreement across repeated answers has been shown to be a more reliable uncertainty signal than stated confidence [7]. Both methods will be compared on the same data.</p>
+</div></details>
 
-  <h3>3 · The refinement: two judgements, three actions</h3>
-  <div class="tbl"><table>
-    <tr><th>Judgement</th><th>What it asks</th><th>Where the answer comes from</th></tr>
-    <tr><td><b>Category</b></td><td>What kind of thing is this?</td><td>Rules, checksums, entity recognition, then the model</td></tr>
-    <tr><td><b>May a score release it?</b></td><td>Can confidence alone authorise sending this?</td><td>The approved policy. For five categories the answer is never</td></tr>
-  </table></div>
-  <p>The five that a score may never release: <b>medical</b>, <b>financial accounts</b>, <b>government IDs</b>, <b>credentials</b>, <b>business-confidential</b>. Everything else is score-driven, with a strict bar for personal details and a looser one for public ones.</p>
+<div class="cat"><h2>Related Work and Contributions</h2></div>
+<p class="ctx">No individual component is novel. Each has a published source or an industry precedent.</p>
+<div class="note ok"><span class="h">Contributions of this project</span><b>1.</b> Integration of these components for executive email, without per-item human review. Rescriber, the closest prior system, requires the user to confirm each item.<br><b>2.</b> A labelled email benchmark and an ablation study quantifying the contribution of each component.</div>
+<details class="more"><summary>Sources for each component</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>Component</th><th>Source</th><th>Reported finding or capability</th></tr>
+  <tr><td>Local detection, placeholders sent to the cloud, restoration of the response</td><td>Rescriber, CHI 2025 [1]</td><td>On 240 test samples: Llama3-8B precision 0.94, recall 0.63; GPT-4o recall 0.88; Presidio 0.69 / 0.68. MIT-licensed code.</td></tr>
+  <tr><td>Rule-based and NER detection; allow-lists</td><td>Microsoft Presidio [2]</td><td>Widely used open-source toolkit; <code>allow_list</code> excludes known-safe values</td></tr>
+  <tr><td>Local PII detection model</td><td>OpenAI Privacy Filter [3]</td><td>Open-weight, Apache 2.0, deployable on-premises</td></tr>
+  <tr><td>Per-category thresholds</td><td>Google Cloud Sensitive Data Protection [4]</td><td>Five likelihood levels; minimum likelihood configurable per data type</td></tr>
+  <tr><td>Sensitivity tiers</td><td>NIST SP 800-122 [5]</td><td>Low / moderate / high impact levels; context of use can change the level</td></tr>
+  <tr><td>Automated decisions from scores and thresholds</td><td>MINIM, ICML 2026 [8]; OCELOT, 2026 [9]</td><td>Scored, rule-based decisions in place of human review</td></tr>
+</table></div>
+</div></details>
 
-  <details class="more"><summary>Detail: the full category list, and where it comes from</summary><div class="body">
-  <div class="tbl"><table>
-    <tr><th>Category</th><th>Covers</th><th>Score may release?</th></tr>
-    <tr><td><code>medical</code></td><td>conditions, diagnoses, appointments, prescriptions</td><td><b>No</b></td></tr>
-    <tr><td><code>financial_account</code></td><td>account numbers, cards, routing, IBAN</td><td><b>No</b></td></tr>
-    <tr><td><code>government_id</code></td><td>national ID, passport, licence</td><td><b>No</b></td></tr>
-    <tr><td><code>credential</code></td><td>passwords, keys, tokens</td><td><b>No</b></td></tr>
-    <tr><td><code>business_confidential</code></td><td>unreleased results, deal and M&amp;A terms, project code names, legal matters</td><td><b>No</b></td></tr>
-    <tr><td><code>person_private</code></td><td>names of private individuals</td><td>Yes · strict bar</td></tr>
-    <tr><td><code>contact_personal</code></td><td>personal phone, email, home address</td><td>Yes · strict bar</td></tr>
-    <tr><td><code>person_public</code></td><td>public figures</td><td>Yes · loose bar</td></tr>
-    <tr><td><code>contact_public</code></td><td>published support lines, switchboards</td><td>Yes · loose bar</td></tr>
-    <tr><td><code>org</code> · <code>location</code> · <code>date_time</code> · <code>demographic</code> · <code>quantity</code></td><td>companies, places, dates, age and gender, amounts</td><td>Yes · loose bar</td></tr>
-    <tr><td><code>confidential_marking</code></td><td colspan="2">Not a span &mdash; a marking on the whole message, such as "keep this confidential", "board only", "do not forward"</td></tr>
-  </table></div>
-  <p><b>Basis.</b> Impact levels follow NIST SP 800-122, which classifies personal data by the harm disclosure would cause and notes that combinations of fields can be more sensitive than any single field. The rule that loose-bar items tighten when several appear together follows Sweeney's finding that ZIP code, gender and date of birth uniquely identify an estimated 87% of the US population.</p>
-  <p class="ctx"><b>Known limitation:</b> NIST SP 800-122 covers personal data only, so the tiering for business information will follow your own internal data classification rather than an external standard.</p>
-  </div></details>
+<div class="cat"><h2>Improving Recall</h2><span class="tag">Principal risk</span></div>
+<p class="ctx">Rescriber’s 8B model missed approximately one third of personal data (recall 0.63) [1]. Its users reviewed every message; here, a missed item reaches the cloud directly. A baseline will first be measured on email, and the measures below added one at a time.</p>
+<details class="more"><summary>Measures and supporting evidence</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>Measure</th><th>Rationale</th><th>Evidence</th></tr>
+  <tr><td>Union of all detectors</td><td>The union’s recall is at least that of its best member; the cost is additional over-redaction.</td><td><span class="badge fact">Holds by definition</span></td></tr>
+  <tr><td>Entity propagation</td><td>Once a name is detected, every occurrence in the text is marked. Rescriber reports missed variants of the same name.</td><td><span class="badge fact">Failure mode in [1]</span></td></tr>
+  <tr><td>Repeated model runs</td><td>Spans flagged in any run become candidates.</td><td><span class="badge fact">Holds by definition</span></td></tr>
+  <tr><td>Email-specific prompt examples</td><td>Rescriber’s prompt examples are chat messages, not email threads.</td><td><span class="badge prop">Proposed</span></td></tr>
+  <tr><td>One category per pass</td><td>A shorter category list per pass may reduce omissions.</td><td><span class="badge unk">Untested</span></td></tr>
+</table></div>
+</div></details>
 
-  <details class="more"><summary>Detail: business-confidential, the one category we cannot detect</summary><div class="body">
-  <p>The other four regulated categories have a format or a clear meaning. This one has neither &mdash; a project code name looks like an ordinary word. Coverage rests on three layers:</p>
-  <div class="tbl"><table>
-    <tr><th>Layer</th><th>How it works</th><th>Catches</th></tr>
-    <tr><td><b>1 · Term list</b></td><td>You supply project code names, deal names and key counterparties; any match is redacted</td><td>What you already know is confidential</td></tr>
-    <tr><td><b>2 · Explicit markers</b></td><td>Phrases such as "confidential", "board only", "do not forward" or "privileged" raise the surrounding passage to the highest tier</td><td>What the sender marked</td></tr>
-    <tr><td><b>3 · Default placeholder</b></td><td>Proper nouns and amounts the model cannot classify are replaced with a reversible placeholder rather than sent</td><td>What the first two layers missed</td></tr>
-  </table></div>
-  <p class="rec"><mark class="hl-ask">Layer 1 needs the term list from you.</mark> This category depends most on the model's judgement and is therefore the main recall risk; its leak rate will be reported separately rather than averaged into the others.</p>
-  </div></details>
-
-  <h3>4 · How the bar gets set</h3>
-  <p>The thresholds are not ours to pick. <b>You set an acceptable leak rate per category &mdash; that is a business decision.</b> We then measure leak rate and over-redaction across a range of thresholds on the labelled emails, and take the highest threshold that still meets your target, so nothing is redacted unnecessarily.</p>
-  <div class="tbl"><table>
-    <tr><th>Threshold</th><th>Leak rate</th><th>Over-redaction</th></tr>
-    <tr><td>0.2</td><td>1%</td><td>40%</td></tr>
-    <tr><td>0.3</td><td>2%</td><td>25%</td></tr>
-    <tr><td>0.5</td><td>5%</td><td>12%</td></tr>
-    <tr><td>0.7</td><td>12%</td><td>5%</td></tr>
-  </table></div>
-  <p class="ctx">Illustrative shape only, not measured results. With a 2% target the selected threshold would be 0.3. <b>This table is what we will hand you once the dataset exists</b>, with real numbers, so the trade-off is yours to make rather than ours.</p>
-
-  <details class="more"><summary>Detail: the confidence score, and why it has to be calibrated</summary><div class="body">
-  <p>Language models are consistently overconfident when asked how sure they are, so the raw score is not used directly.</p>
-  <p><b>Method 1, calibration.</b> Run the system on the labelled emails, group spans by raw score, and measure what proportion in each group was actually private. At run time the raw score is converted to that observed proportion. A raw 0.95 might be reported as 0.70. <mark class="hl-key">This makes a threshold of 0.5 mean an observed 50% likelihood, rather than whatever the model felt.</mark></p>
-  <p><b>Method 2, agreement &mdash; the fallback.</b> If calibration shows the scores barely discriminate, for instance if nearly everything comes back near 0.9, the score is derived instead from agreement: what share of detectors flagged the span, and what share of repeated model runs called it private. Agreement across repeated answers is a more reliable uncertainty signal than a stated confidence. <b>Both will be compared on the same data.</b></p>
-  </div></details>
-
-  <details class="more"><summary>Detail: when the model is unsure</summary><div class="body">
-  <p><b>It masks anyway, and records that it was unsure.</b> No request waits on a person.</p>
-  <p>The reasoning: human review exists because masking the wrong thing is expensive. With reversible placeholders it is cheap &mdash; the value comes back in the final answer. Since it is cheap, it does not justify a person's time, and an assistant used dozens of times a day cannot pause for one.</p>
-  <p class="rec">Those uncertainty records are also <mark class="hl-key">how we measure over-redaction</mark>, so the cost of caution is a number rather than a guess.</p>
-  </div></details>
-
-  <details class="more"><summary>Detail: how we will prove it works</summary><div class="body">
-  <div class="tbl"><table>
-    <tr><th>What we measure</th><th>How</th></tr>
-    <tr><td><b>Leak rate</b> &mdash; the headline</td><td>Share of private spans that reached the cloud, reported per category rather than averaged</td></tr>
-    <tr><td>Over-redaction</td><td>Share of public spans masked unnecessarily</td></tr>
-    <tr><td><b>Usability cost</b></td><td>Answer quality with redaction on versus off &mdash; this is what privacy costs, as a number</td></tr>
-    <tr><td>Calibration</td><td>Whether a reported confidence matches the observed proportion</td></tr>
+<div class="cat"><h2>Evaluation Plan</h2></div>
+<p class="ctx">100 realistic emails, as requested, with each private span labelled by category and by whether it is private or public in context. Public labelled datasets will supplement this set [10]. The primary metric is the <b>leak rate</b>: the proportion of private spans sent to the cloud, reported per tier.</p>
+<details class="more"><summary>Full metric set and ablation study</summary><div class="body">
+<h3 style="margin-top:4px">Metrics</h3>
+<div class="tbl"><table>
+    <tr><th>Metric</th><th>Definition</th></tr>
+    <tr><td><b>Leak rate</b> (primary)</td><td>Proportion of private spans sent to the cloud, reported per tier</td></tr>
+    <tr><td>Over-redaction rate</td><td>Proportion of public spans redacted unnecessarily</td></tr>
+    <tr><td>Calibration</td><td>Agreement between calibrated scores and observed proportions</td></tr>
     <tr><td>Latency</td><td>Processing time per email on the confirmed hardware</td></tr>
   </table></div>
-  <p><b>Ablation.</b> Starting from the baseline, components are added one at a time &mdash; detector union, then entity propagation, then repeated runs, then the category bars &mdash; so each one's contribution is visible separately. Thresholds are tuned on one subset and reported on a held-out subset, so the numbers are not flattered.</p>
-  <p><b>Evasion tests.</b> Look-alike characters and zero-width characters inside identifiers, encoded account numbers, values split across lines, values inside tables where recognition degrades. Plus one test specific to this design: a message carrying hidden text that instructs the assistant to include the contact list.</p>
-  </div></details>
+<h3>Ablation study</h3>
+<p style="margin:0">Starting from a Rescriber-style baseline, components are added one at a time: detector union → entity propagation → repeated runs → tier thresholds. Thresholds are tuned on one subset and results are reported on a held-out subset.</p>
+</div></details>
 
-  <details class="more"><summary>Detail: what is ours and what is borrowed</summary><div class="body">
-  <p>No individual component here is novel; each has a published source or an industry precedent. What is ours is the integration for executive email <b>without per-item human review</b> &mdash; the closest prior system requires the user to confirm every item, which an assistant used daily cannot do &mdash; plus a labelled email benchmark and the ablation that quantifies each component.</p>
-  <div class="tbl"><table>
-    <tr><th>Component</th><th>Source</th></tr>
-    <tr><td>Local detection, placeholders to the cloud, restoration</td><td>Rescriber, CHI 2025. MIT-licensed code. Reports 0.94 precision and 0.63 recall for an 8B model on 240 samples</td></tr>
-    <tr><td>Rule and entity detection, allow-lists</td><td>Microsoft Presidio</td></tr>
-    <tr><td>Local privacy-detection model</td><td>OpenAI Privacy Filter, open weights, deployable on premises</td></tr>
-    <tr><td>Per-category thresholds</td><td>Google Cloud Sensitive Data Protection</td></tr>
-    <tr><td>Sensitivity tiers</td><td>NIST SP 800-122</td></tr>
-    <tr><td>Decisions from scores and thresholds instead of human review</td><td>MINIM (ICML 2026), OCELOT (2026)</td></tr>
-  </table></div>
-  <p class="ctx"><b>The honest risk:</b> that 0.63 recall figure means an 8B model missed roughly a third of personal data. Rescriber's users reviewed every message; here a miss reaches the cloud directly. Raising recall is therefore the main engineering effort, measured from a baseline rather than assumed.</p>
-  </div></details>
+<div class="cat"><h2>Failure Handling</h2></div>
+<p class="ctx">The service fails safe: if any component fails, every candidate span is redacted.</p>
+<details class="more"><summary>Failure-handling rules</summary><div class="body">
+<div class="tbl"><table>
+  <tr><th>Condition</th><th>Behaviour</th></tr>
+  <tr><td>Model unavailable or output unparseable</td><td>Fall back to rule-based detection, redact all candidates, and flag the response as degraded</td></tr>
+  <tr><td>Response contains a placeholder that was not issued</td><td>Flag the placeholder rather than infer a value. Rescriber observed GPT-4o generating placeholders such as “[Your Full Name]” [1].</td></tr>
+  <tr><td>Logging</td><td>Record category and score only; original text is never logged</td></tr>
+  <tr><td>Model and list updates</td><td>Installed at deployment; the running service does not access the internet</td></tr>
+</table></div>
+</div></details>
 
-  <h3>5 · What we need from you here</h3>
-  <div class="tbl"><table>
-    <tr><th>Item</th><th>What we need</th></tr>
-    <tr><td><mark class="hl-ask">The question that decides the design</mark></td><td><b>If an email contains health or financial information and we replace it with a placeholder, can the rest of the message go to the cloud? Or must the whole message stay local?</b><br>If it is the whole message &mdash; given that executive email is mostly long forwarded threads &mdash; that likely means most requests get blocked. We want to know whether that is what you expect.</td></tr>
-    <tr><td><mark class="hl-ask">Confidential term list</mark></td><td>Project code names, deal names, key counterparties. The one category we cannot detect on our own.</td></tr>
-    <tr><td><mark class="hl-ask">Acceptable leak rate</mark></td><td>Per category, as a business decision. We then pick the thresholds from measurement.</td></tr>
-    <tr><td><mark class="hl-ask">When a passage is sensitive but has nothing to mask</mark></td><td>"We are closing the Austin office" has no name or number to replace. Should the service warn, block, or hand it back for local handling?</td></tr>
-    <tr><td><mark class="hl-ask">The mix of daily tasks</mark></td><td>Roughly: summarising, drafting, scheduling, research on outside companies? Scheduling and lookups are the two cases where redaction costs real quality, so the mix decides how much that matters.</td></tr>
-  </table></div>
+<div class="cat"><h2>Next Steps</h2><span class="tag">With the client</span></div>
+<p class="ctx">The following items will be finalised with the client once the prototype is demonstrated, using measured results rather than assumptions.</p>
+<div class="tbl"><table>
+  <tr><th>Item</th><th>How it will be determined</th><th>Timing</th></tr>
+  <tr><td><b>Input scope</b></td><td>Plain text only, or also attachments and scanned documents. This defines what the prototype must handle.</td><td class="nowrap">Before prototyping</td></tr>
+  <tr><td><b>Confidential term list</b></td><td>The client supplies project code names, deal names and key counterparties for the business-confidential term list.</td><td class="nowrap">Before prototyping</td></tr>
+  <tr><td><b>Tier assignments</b></td><td>The prototype’s redactions on sample emails are reviewed with the client, who adjusts the tier table accordingly.</td><td class="nowrap">After the demo</td></tr>
+  <tr><td><b>Thresholds</b></td><td>The client sets an acceptable leak rate per tier; thresholds are then selected from experimental results.</td><td class="nowrap">After the demo</td></tr>
+  <tr><td><b>Latency</b></td><td>Processing time is measured on the confirmed hardware and compared with the client’s expectations.</td><td class="nowrap">After the demo</td></tr>
+  <tr><td><b>Optional context fields</b></td><td>Over-redaction is compared with and without fields such as internal or external sender, to show whether they are worth providing.</td><td class="nowrap">After the demo</td></tr>
+</table></div>
+
+<footer>
+  <div class="src"><details class="more"><summary>Sources (verified 24–27 Sep 2026; figures are taken from each source’s own experiments)</summary><div class="body">
+<ol>
+    <li>Zhou, Xu, Wu, Li. <a href="https://arxiv.org/abs/2410.11876">Rescriber: Smaller-LLM-Powered User-Led Data Minimization for LLM-Based Chatbots</a>. CHI 2025. Code: <a href="https://github.com/PEACH-Research-Lab/Rescriber">github.com/PEACH-Research-Lab/Rescriber</a></li>
+    <li><a href="https://microsoft.github.io/presidio/tutorial/13_allow_list/">Microsoft Presidio, allow-lists</a></li>
+    <li><a href="https://github.com/openai/privacy-filter">OpenAI Privacy Filter</a> (April 2026)</li>
+    <li><a href="https://docs.cloud.google.com/sensitive-data-protection/docs/likelihood">Google Cloud Sensitive Data Protection, match likelihood</a></li>
+    <li>NIST <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-122.pdf">SP 800-122</a>, Guide to Protecting the Confidentiality of PII (2010), §3.2</li>
+    <li>Sweeney. <a href="https://dataprivacylab.org/projects/identifiability/paper1.pdf">Simple Demographics Often Identify People Uniquely</a>. CMU Data Privacy Working Paper 3, 2000</li>
+    <li>Xiong et al. <a href="https://arxiv.org/abs/2306.13063">Can LLMs Express Their Uncertainty?</a> ICLR 2024</li>
+    <li>Yu et al. <a href="https://arxiv.org/abs/2606.13949">MINIM: Privacy-Aware Minimal View for Agents via Trusted Local Sanitization</a>. ICML 2026</li>
+    <li>Xie, Li. <a href="https://arxiv.org/abs/2606.12341">OCELOT: Inference-Leakage Budgets for Privacy-Preserving LLM Agents</a>. 2026</li>
+    <li>Agyemang et al. <a href="https://arxiv.org/abs/2604.12064">LLM-Redactor</a>. 2026. Benchmark on Hugging Face: jayluxferro/llm-redactor-leak-benchmark</li>
+  </ol>
+</div></details></div>
+</footer>
+</div>
+</div>
   <div class="fields">
-    <div><label for="c1">Your feedback</label><textarea id="c1" data-store="c1" placeholder="Objections, corrections, what the categories and bars should be"></textarea></div>
+    <div><label for="c1">Your feedback</label><textarea id="c1" data-store="c1" placeholder="Objections, corrections, what the tiers and thresholds should be"></textarea></div>
     <div><label for="c1o">Owner</label><input id="c1o" data-store="c1o" value="Yudi"></div>
     <div><label for="c1d">Follow-up</label><input id="c1d" data-store="c1d" placeholder="date"></div>
   </div>
