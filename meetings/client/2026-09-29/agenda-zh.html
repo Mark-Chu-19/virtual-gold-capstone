@@ -169,6 +169,33 @@ figure.arch svg{min-width:700px}
 .d-bound{stroke:var(--warn);stroke-width:2;stroke-dasharray:7 5}
 .d-blabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;fill:var(--warn)}
 
+
+/* ---- stop the agenda's bare element rules bleeding into the embeds ---- */
+.emb-zx h1,.emb-yd h1,.emb-zx h2,.emb-yd h2,.emb-zx h3,.emb-yd h3,
+.emb-zx h4,.emb-yd h4,.emb-zx h5,.emb-yd h5{
+  font-family:inherit;font-size:revert;font-weight:revert;line-height:revert;
+  margin:revert;letter-spacing:normal;text-transform:none;color:inherit;
+  display:block;align-items:normal;gap:normal;text-wrap:wrap}
+.emb-zx table,.emb-yd table{border-collapse:revert;width:auto;font-size:inherit;
+  margin:revert;background:none;border:0;border-radius:0;overflow:visible}
+.emb-zx th,.emb-yd th,.emb-zx td,.emb-yd td{text-align:revert;padding:revert;
+  border-bottom:0;vertical-align:revert;font-family:inherit;font-size:inherit;
+  letter-spacing:normal;text-transform:none;color:inherit;font-weight:revert;background:none}
+.emb-zx tr:last-child td,.emb-yd tr:last-child td{border-bottom:revert}
+.emb-zx figure,.emb-yd figure{margin:revert;padding:0;background:none;border:0;border-radius:0}
+.emb-zx svg,.emb-yd svg,.emb-zx figure svg,.emb-yd figure svg{min-width:0;font-family:inherit;color:inherit;fill:inherit}
+.emb-zx mark,.emb-yd mark{background:revert;color:revert;font-weight:revert;padding:revert}
+.emb-zx header,.emb-yd header{padding:revert;margin:revert;border-bottom:0}
+.emb-zx section,.emb-yd section{margin:revert;scroll-margin-top:0}
+.emb-zx p,.emb-yd p,.emb-zx li,.emb-yd li{max-width:revert}
+.emb-zx button,.emb-yd button{font:revert;font-size:revert;padding:revert;
+  border-radius:revert;border:revert;background:revert;color:revert;cursor:revert}
+.emb-zx details,.emb-yd details{margin:revert;border-top:0}
+.emb-zx summary,.emb-yd summary{cursor:pointer;list-style:revert;display:list-item;
+  padding:revert;font-family:inherit;font-size:revert;letter-spacing:normal;
+  text-transform:none;color:inherit;font-weight:revert;gap:normal}
+.emb-zx summary::before,.emb-yd summary::before{content:none}
+
 /* ---- embedded workstream documents, namespaced ---- */
 .emb-zx,.emb-yd{display:block;margin:14px 0 4px;border:1px solid var(--line);border-radius:10px;overflow-x:auto;padding:4px 0}
 .emb-zx main,.emb-yd .page{padding-left:20px;padding-right:20px}
@@ -409,21 +436,21 @@ figure.arch svg{min-width:700px}
 <symbol id="i-tool" viewBox="-9 -9 18 18"><g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M-5.5 -2.5 H5.5 M-5.5 2.5 H5.5"/><circle cx="-1.8" cy="-2.5" r="1.7" style="fill:var(--svg-surface)"/><circle cx="2.2" cy="2.5" r="1.7" style="fill:var(--svg-surface)"/></g></symbol>
 </svg>
 <main>
-<div class="eyebrow">Capstone · Virtual Gold Inc · Proposal — not yet merged</div>
-<h1>Local redaction service — workflow &amp; architecture (v2 proposal)</h1>
-<div class="meta">2026-09-27 · Zhexuan Ye · reworks the diagrams in hybrid-routing-diagrams-en.html against Aarvin George's Sep 23 email</div>
-<div class="note"><p><b>In plain terms:</b> before any text reaches an outside AI assistant, it comes through this service first.</p>
+<div class="eyebrow">Capstone · Virtual Gold Inc · 提案 — 尚未合併</div>
+<h1>本地脫敏服務 — 工作流與架構(v2 提案)</h1>
+<div class="meta">2026-09-27 · Zhexuan Ye · 依 Aarvin George 9/23 的信件,重做 hybrid-routing-diagrams-en.html 裡的圖</div>
+<div class="note"><p><b>白話說:</b> 任何文字在抵達外部 AI 助理之前,都會先經過這個服務。</p>
 <ul>
-<li><b>Whole-request check first.</b> A separate check looks at the request as a whole before any finer judgment matters: if it falls into a category that is not yet approved for release at all — a confidential thread, health or financial information, an unclear source — the entire request stays local, full stop, and nothing below that check ever sees it.</li>
-<li><b>Piece-by-piece judgment, once approved.</b> A local model reads the cleared request and checks it against a global, cross-session store of known-safe and known-sensitive entities, then decides, span by span, how confident it is that something is private: anything it's confident about gets redacted automatically, and anything it's unsure about is not guessed at — it's queued for a human reviewer instead. That review happens asynchronously: the caller gets an immediate "still deciding" response rather than waiting on a person, and checks back separately once it's resolved.</li>
-<li><b>Placeholders only, ever.</b> Either way, the caller only ever gets text back with the sensitive parts replaced by placeholders; the mapping back to the original words never leaves this machine.</li>
-<li><b>Restore is separate and deliberate.</b> If the caller's own system later needs the original wording — say, after getting a reply from an outside AI assistant — it can ask this service to restore it using a reference id, as a separate step, not something that happens on its own.</li>
-<li><b>No outside calls from here.</b> This service never calls an outside AI assistant itself; that decision belongs entirely to the calling application.</li>
+<li><b>先做整體請求檢查。</b> 在任何細部判斷生效之前,有一道獨立的檢查先看整個請求:如果它落在尚未核可放行的類別 — 機密信件串、健康或財務資訊、來源不明 — 整個請求就留在本地,到此為止,這道檢查底下的任何環節都不會看到它。</li>
+<li><b>通過之後,才逐段判斷。</b> 本地模型讀取通過的請求,對照一份跨 session 的全域儲存(記錄已知安全與已知敏感的實體),然後逐段判斷它有多確定某個片段是私密的:有把握的自動遮蔽,沒把握的不去猜 — 改為排入人工審查佇列。該審查是非同步的:呼叫端會立刻收到「仍在判定中」的回應,不必等人,之後再另外查詢結果。</li>
+<li><b>永遠只回傳佔位符。</b> 無論走哪條路,呼叫端拿回去的一律是敏感部分已換成佔位符的文字;佔位符對應回原始字詞的那張表,從不離開這台機器。</li>
+<li><b>還原是獨立且刻意的動作。</b> 如果呼叫端自己的系統之後需要原始字詞 — 例如拿到外部 AI 助理的回覆之後 — 它可以用參考 id 請這個服務還原,那是獨立的一步,不會自己發生。</li>
+<li><b>這裡不會對外呼叫。</b> 這個服務從不自行呼叫外部 AI 助理;那個決定完全屬於呼叫端的應用程式。</li>
 </ul>
-<p><code>hybrid-routing-diagrams-en.html</code> is untouched.</p>
+<p><code>hybrid-routing-diagrams-en.html</code> 未被更動。</p>
 </div>
 
-<h2>Figure 1 (v2) · Request workflow</h2>
+<h2>圖 1(v2)· 請求工作流</h2>
 <figure>
 <svg width="100%" viewBox="0 0 780 1880" xmlns="http://www.w3.org/2000/svg" role="img">
 <title>Local redaction service — request workflow, v2 proposal (lane diagram, with policy gate and asynchronous review)</title>
@@ -690,10 +717,10 @@ figure.arch svg{min-width:700px}
 
 <g transform="translate(344 13)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(364 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(450 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(554 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(658 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(678 13)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(292 106)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(396 106)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(500 106)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(608 106)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g>
 </svg>
-<figcaption><b>Same lane style as the original hybrid-routing diagram, now with the merged-in policy gate and asynchronous review.</b> Steps 1–7 always run: the gateway forwards the request, the classifier consults the local context store and asks the local model to detect spans and judge context, then compiles a sensitivity report for the new <b>Policy gate</b>. The policy gate makes one conservative, deterministic release decision for the whole request: if it is a confidential, health, financial or credential category, or the source/provenance is unclear, it returns <b>LOCAL_ONLY</b> straight back to the Gateway (<b>7L</b>, red dashed) — nothing below it ever sees that request, and no per-request review can override this until the approved policy itself changes. Only an approved request continues (8) to the confidence gate, which branches once on per-span confidence (no more local-vs-cloud split): 8A auto-redacts through Redact / restore, 8B flags the span in the Review queue — which immediately acknowledges <b>PENDING_REVIEW</b> (10) without waiting for a human, so the call still returns promptly. A reviewer resolves it out-of-band, at their own pace, and writes the outcome into the same record Redact / restore holds. Either path is logged with no raw text (9), and the result (or the pending acknowledgement) bubbles back up — through the policy gate, then the classifier and gateway lanes (10) — to reach the caller (11). Three separate, id-keyed calls happen later, independent of this main flow and of each other: <b>restore</b> (R1–R3, which can itself come back <b>REVIEW_BLOCKED</b> if its own leak scan fails), <b>checking review status</b> (V1–V3, the only way a caller learns a pending review's outcome and gets the content), and <b>deleting the record</b> (D1–D3) — all three reach Redact / restore directly, bypassing the classifier and both gates. Band E at the bottom runs offline on test data only. Corner icons: sparkle = model, cylinder = data store, &lt;/&gt; = hand-written code.</figcaption>
+<figcaption><b>沿用原本 hybrid-routing 圖的泳道樣式,現在加上了合併進來的政策閘門與非同步審查。</b> 第 1 到 7 步一定會跑:gateway 轉送請求,分類器查詢本地 context store,並請本地模型偵測片段與判斷情境,接著彙整一份敏感度報告,交給新的 <b>Policy gate</b>。政策閘門對整個請求做一次保守、確定性的放行決定:如果屬於機密、健康、財務或憑證類別,或來源不明,它會回傳 <b>LOCAL_ONLY</b> 直接回到 Gateway(<b>7L</b>,紅色虛線)— 底下的任何環節都不會看到該請求,而且在核可政策本身改變之前,任何單次請求的人工審查都無法推翻它。只有通過的請求才會繼續(8)進入信心閘門,該閘門依逐段信心分一次流(不再有本地與雲端之分):8A 經由 Redact / restore 自動遮蔽,8B 把該片段標記進審查佇列 — 佇列會立即回覆 <b>PENDING_REVIEW</b> (10)而不等待人工,所以呼叫仍會即時返回。審查員在流程外、以自己的步調處理,並把結果寫進 Redact / restore 持有的同一筆紀錄。兩條路徑都會記錄(9)且不含原始文字,結果(或待審回執)再往上冒 — 經過政策閘門,再經分類器與 gateway 泳道(10)— 抵達呼叫端(11)。之後還有三個獨立、以 id 為索引的呼叫,與主流程及彼此都互不相干: <b>restore</b> (R1–R3,它本身也可能回傳 <b>REVIEW_BLOCKED</b> ,如果它自己的外洩掃描沒過), <b>查詢審查狀態</b> (V1–V3,這是呼叫端得知待審結果並取得內容的唯一途徑),以及 <b>刪除紀錄</b> (D1–D3)— 這三個都直接抵達 Redact / restore,略過分類器與兩道閘門。底部的 E 帶只在測試資料上離線執行。角落圖示:星芒 = 模型,圓柱 = 資料儲存,&lt;/&gt; = 手寫程式碼。</figcaption>
 </figure>
 
-<h2>Figure 2 (v2) · Component architecture (numbered)</h2>
+<h2>圖 2(v2)· 元件架構(附編號)</h2>
 <figure>
 <svg width="100%" viewBox="0 0 920 1000" xmlns="http://www.w3.org/2000/svg" role="img">
 <title>Local redaction service — component architecture, v2 proposal (numbered, with policy gate and asynchronous review)</title>
@@ -819,24 +846,24 @@ figure.arch svg{min-width:700px}
 <text class="ts" x="24" y="960" dominant-baseline="central">↓ request, ↑ response · dashed = logging, a blocked whole-request result, or a separate call</text>
 <g transform="translate(214 212)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(54 212)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(204 328)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(224 328)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(214 444)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(214 560)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(434 328)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(249 708)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(414 708)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(434 708)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(54 828)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(418 64)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(558 64)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(50 932)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="64" y="932" dominant-baseline="central">model inference</text><g transform="translate(190 932)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="204" y="932" dominant-baseline="central">data store</text><g transform="translate(310 932)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="324" y="932" dominant-baseline="central">hand-written code</text>
 </svg>
-<figcaption><b>New: a whole-request policy gate, merged in from a teammate's architecture v0.6 and interim HTTP contract.</b> Their design makes one conservative release decision for the entire request (confidential category, health/financial/credential data, or unknown provenance), separate from the per-span redaction decision our confidence gate already made. So the classifier's report (7) now goes to this new <b>Policy gate</b> first: if the whole request is blocked, it deterministically returns <b>LOCAL_ONLY</b> straight to the Gateway (<b>L</b>, red dashed), skipping the confidence gate, review queue and redact/restore entirely — nothing below this line ever sees that request, and this can't be resolved per-request, only by changing the approved policy. Only an approved request continues (8) to the confidence gate, which auto-redacts (8A) or flags for asynchronous human review (8B, <b>PENDING_REVIEW</b>) exactly as before. Both gates log their decision to the audit trail (7L, 9). When 8B fires, Review queue immediately acks <b>PENDING_REVIEW</b> without waiting — a human reviewer resolves it out-of-band, at their own pace, and writes the outcome straight into the record Redact / restore holds (<b>V0</b>). Local model stays next to the sensitivity classifier (5, 6); the dashed <b>R/V/D</b> connector bundles three later, independent, id-keyed calls that all reach Redact / restore directly, bypassing the classifier and both gates: <b>restore</b> (can itself come back <code>REVIEW_BLOCKED</code>), <b>poll for a pending review's outcome</b> (the only way a caller gets content after <code>PENDING_REVIEW</code>), and <b>delete the record</b>. Redact / restore's tagline now separates its two kinds of state: the scan/review <b>record always exists</b>, but the restorable <b>mapping is opt-in</b> — setting `mapping.retain` is the only thing that decides whether restore can substitute real values back in. Cloud API and egress proxy remain removed, per the client's framing that the calling application decides on its own, later, whether to call an external cloud assistant. This is a proposal for discussion — <code>hybrid-routing-diagrams-en.html</code> has not been edited. Figure 1 now shows the same policy-gate and asynchronous-review steps (7, 7L, 8, V0).</figcaption>
+<figcaption><b>新增:整體請求層級的政策閘門,由隊友的架構 v0.6 與過渡版 HTTP 契約合併而來。</b> 他們的設計對整個請求做一次保守的放行決定(機密類別、健康/財務/憑證資料,或來源不明),與我們信心閘門原本做的逐段遮蔽決定分開。所以分類器的報告(7)現在先送到這個新的 <b>Policy gate</b> 這裡:如果整個請求被擋下,它會確定性地回傳 <b>LOCAL_ONLY</b> straight to the Gateway (<b>L</b>,紅色虛線),完全跳過信心閘門、審查佇列與 redact/restore — 這條線以下的任何環節都不會看到該請求,而且這無法靠單次請求解決,只能靠修改核可政策。只有通過的請求才會繼續(8)進入信心閘門,由它自動遮蔽(8A)或標記為非同步人工審查(8B, <b>PENDING_REVIEW</b>)— 與先前完全相同。兩道閘門都會把決定寫入稽核軌跡(7L、9)。8B 觸發時,審查佇列會立即回覆 <b>PENDING_REVIEW</b> 而不等待 — 人工審查員在流程外、以自己的步調處理,並把結果直接寫進 Redact / restore 持有的紀錄(<b>V0</b>)。本地模型仍留在敏感度分類器旁邊(5、6);虛線的 <b>R/V/D</b> 連接線收攏了三個後續的、獨立的、以 id 為索引的呼叫,它們都直接抵達 Redact / restore,略過分類器與兩道閘門: <b>restore</b> (它本身也可能回傳 <code>REVIEW_BLOCKED</code>), <b>輪詢待審結果</b> (這是呼叫端在 <code>PENDING_REVIEW</code>之後取得內容的唯一途徑),以及 <b>delete the record</b>。Redact / restore 的標示現在把兩種狀態分開:掃描與審查的 <b>紀錄一定存在</b>,但可還原的 <b>對照表是選配</b> — 設定 `mapping.retain` 是唯一決定「還原能不能換回真值」的東西。雲端 API 與 egress proxy 仍然移除,依客戶的定位:是否呼叫外部雲端助理,由呼叫端應用程式自己稍後決定。這是供討論的提案 — <code>hybrid-routing-diagrams-en.html</code> 未被編輯。圖 1 現在也顯示同樣的政策閘門與非同步審查步驟(7、7L、8、V0)。</figcaption>
 </figure>
 
-<div class="pending"><p><b>Open question 1 — pending client confirmation: policy-gate granularity.</b> The policy gate's release decision is whole-request, not per-span. As merged in from the teammate's design, one confidential line, or one line of health/financial/credential data, or an unclear source anywhere in the thread is enough to keep the <i>entire</i> email local (<code>LOCAL_ONLY</code>), even if the rest of the message is ordinary business text — and because this is a deterministic policy decision, it can't be resolved by a per-request human review the way a low-confidence span can.</p>
+<div class="pending"><p><b>待決問題 1 — 待客戶確認:政策閘門的顆粒度。</b> 政策閘門的放行決定是整個請求層級,不是逐段。依隊友設計合併進來的版本,信件串裡任何一行機密內容、一行健康/財務/憑證資料,或任何一處來源不明,就足以讓 <i>entire</i> 整封信留在本地(<code>LOCAL_ONLY</code>),即使信件其餘部分只是一般商務內容 — 而且因為這是確定性的政策決定,它無法像低信心片段那樣靠單次請求的人工審查解決。</p>
 <ul>
-<li>This is likely to trigger often in practice — long threads and quoted history make it easy for one sensitive line to bounce back a whole email that would otherwise be fine to release.</li>
-<li>The teammate's doc treats this as a deliberate, conservative interim default (see architecture v0.6, "Apply the interim policy"), not a final design — the source/type/task policy table and category boundaries are explicitly still open for the client privacy/legal representative and system owner to approve.</li>
-<li><b>Recommendation:</b> raise this with the client as a concrete open item — whether finer-grained rules (e.g. per-paragraph or per-quoted-message release, rather than per whole thread) are worth the added complexity, or whether the coarse whole-request block is acceptable for the first release.</li>
+<li>這在實務上很可能經常觸發 — 長串信件與引用歷史,讓一行敏感內容很容易把一封原本可以放行的信整封退回。</li>
+<li>隊友的文件把這當成刻意保守的過渡預設(見架構 v0.6「Apply the interim policy」),不是最終設計 — 來源/型態/任務的政策表與類別界線,明確仍待客戶的隱私/法務代表與系統負責人核可。</li>
+<li><b>建議:</b> 把這件事當成具體的待決事項向客戶提出 — 更細的規則(例如逐段或逐則引用放行,而不是整串一起)是否值得多出來的複雜度,還是粗顆粒的整體請求擋下,對第一版而言可以接受。</li>
 </ul>
-<p><b>Open question 2 — pending team decision: how the async review queue is checked, and how long it waits.</b> 8B now returns <code>PENDING_REVIEW</code> immediately and a human resolves it later (V0); this fixes the earlier problem of a synchronous call implying a blocking human wait, but it opens three mechanical questions the diagram currently answers with a single default.</p>
+<p><b>待決問題 2 — 待團隊決定:非同步審查佇列如何查詢,以及等待多久。</b> 8B 現在會立即回傳 <code>PENDING_REVIEW</code> ,由人稍後處理(V0);這修正了先前「同步呼叫等於阻塞等人」的問題,但也帶出三個機制上的問題,而圖上目前只用一個預設值回答。</p>
 <ul>
-<li><b>Poll vs. webhook.</b> This proposal has the caller poll <code>GET /v1/redactions/{id}</code> (V1–V3) until it resolves. A webhook/callback the caller registers would avoid repeated polling but adds delivery/retry/auth surface of its own — worth deciding before the API contract is final.</li>
-<li><b>Review TTL.</b> How long can a request sit as <code>PENDING_REVIEW</code> before it expires? The diagram assumes it shares the same bounded-lifetime record as everything else in Redact / restore, but that cap was originally sized for restore/scan state, not for however long a human reviewer actually takes — these may need separate limits.</li>
-<li><b>Cancel via delete.</b> D1–D3 assumes deleting a still-pending review simply cancels it. If the client instead wants pending reviews to be un-cancelable once queued (e.g. for audit completeness), that changes D's behavior.</li>
+<li><b>輪詢 vs. webhook。</b> 本提案讓呼叫端輪詢 <code>GET /v1/redactions/{id}</code> (V1–V3)直到有結果。由呼叫端註冊的 webhook/callback 可以免除重複輪詢,但也多出投遞、重試與認證的面向 — 值得在 API 契約定案前決定。</li>
+<li><b>審查存活時間。</b> 一個請求可以停在 <code>PENDING_REVIEW</code> 多久才過期?圖上假設它與 Redact / restore 裡其他東西共用同一份有限存活的紀錄,但那個上限原本是為還原與掃描狀態設計的,不是為了人工審查員實際會花多久 — 這兩者可能需要分開的上限。</li>
+<li><b>用刪除來取消。</b> D1–D3 假設刪除一個仍在待審的請求就等於取消它。如果客戶希望待審項目一旦排入就不可取消(例如為了稽核完整性),D 的行為就要改。</li>
 </ul>
 </div>
 
-<footer>Local redaction service · workflow &amp; architecture proposal v2 · Virtual Gold capstone · 2026-09-27</footer>
+<footer>本地脫敏服務 · 工作流與架構提案 v2 · Virtual Gold capstone · 2026-09-27</footer>
 </main>
 </div>
   <div class="fields">
@@ -853,283 +880,283 @@ figure.arch svg{min-width:700px}
 <div class="emb-yd">
 <div class="page">
 
-  <div class="eyebrow">CMU Capstone × Virtual Gold · Proposal</div>
-  <h1>Sensitive Data Classification Proposal</h1>
+  <div class="eyebrow">CMU Capstone × Virtual Gold · 提案</div>
+  <h1>敏感資訊判定方案</h1>
   <dl class="meta">
-    <div><dt>Scope</dt><dd>How the local service determines which content to redact, and how the approach will be validated</dd></div>
-    <div><dt>Prepared by</dt><dd>Yudi Guo · Privacy research &amp; evaluation</dd></div>
-    <div><dt>Date</dt><dd>27 Sep 2026</dd></div>
-    <div><dt>Status</dt><dd>Draft proposal; not yet validated on data</dd></div>
+    <div><dt>範圍</dt><dd>本地服務判定脫敏內容的方法，以及該方法的驗證方案</dd></div>
+    <div><dt>撰寫</dt><dd>Yudi Guo · 隱私研究與評估</dd></div>
+    <div><dt>日期</dt><dd>2026 年 9 月 27 日</dd></div>
+    <div><dt>狀態</dt><dd>提案草稿，尚未經資料驗證</dd></div>
   </dl>
 
 
-<div class="cat"><h2>Overview</h2></div>
-<p class="thesis">Each detected item is assessed on two dimensions: its <b>category</b>, which determines the severity of a potential leak, and its <b>context</b>, which determines the confidence that it is private. A <b>rule-based decision layer</b> combines the two. Where confidence is insufficient, the item is redacted by default and replaced with a reversible placeholder, so the assistant’s task is unaffected.</p>
+<div class="cat"><h2>方案概述</h2></div>
+<p class="thesis">系統從兩個維度評估每個檢測到的片段：<b>類別</b>決定洩漏後果的嚴重程度，<b>上下文</b>決定該片段屬於隱私的置信度。兩者由<b>基於規則的決策層</b>綜合判定。置信度不足時預設脫敏，並以可還原的佔位符替換，不影響助手完成任務。</p>
 
 <div class="tbl"><table>
-  <tr><th>Requirement</th><th>Approach</th></tr>
-  <tr><td>Local execution on an open-source model</td><td>All detectors and the model run on project hardware. The service has no outbound network access.</td></tr>
-  <tr><td>Contextual judgment by the model</td><td>The model assesses each candidate span within its surrounding text, for example “my cell” versus “our support line”.</td></tr>
-  <tr><td>Confidence score output</td><td>The model scores each span; the score is calibrated against labelled emails before use.</td></tr>
+  <tr><th>客戶需求</th><th>實現方式</th></tr>
+  <tr><td>基於開源模型本地執行</td><td>所有檢測器與模型均部署在專案硬體上，服務不具備外網訪問許可權</td></tr>
+  <tr><td>由模型進行情境判斷</td><td>模型結合上下文評估每個候選片段，例如區分“my cell”（個人手機）與“our support line”（客服熱線）</td></tr>
+  <tr><td>輸出置信度</td><td>模型為每個片段打分，分數經標註郵件校準後使用</td></tr>
 </table></div>
 
-<div class="cat"><h2>System Architecture</h2></div>
+<div class="cat"><h2>系統架構</h2></div>
 <figure>
-  <svg viewBox="0 0 900 470" role="img" aria-label="Pipeline. Within the local service: split the email, identify candidate spans with rules, Presidio and the local model, assess each span in context with a confidence score, decide in code against the client-approved tier table, and replace spans with placeholders. The cloud assistant receives placeholders only. Its response returns to the local service, where placeholders are restored before delivery to the executive.">
+  <svg viewBox="0 0 900 470" role="img" aria-label="流程圖。在本地服務內：郵件分段；以規則、Presidio 和本地模型檢測候選片段；結合上下文評估每個片段並給出置信度；由程式碼依據客戶批准的分檔表作出決策；以佔位符替換片段。雲端助手僅接收佔位符。其回覆返回本地服務，還原佔位符後交付高管。">
     <defs>
       <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="d-head" d="M0 0 L10 5 L0 10 z"/></marker>
     </defs>
     <rect class="d-bound" x="8" y="16" width="624" height="440" rx="6"/>
-    <text class="d-label" x="24" y="444">LOCAL SERVICE · NO OUTBOUND NETWORK ACCESS</text>
+    <text class="d-label" x="24" y="444">本地服務 · 無外網訪問許可權</text>
 
-    <text class="d-in" x="24" y="44">INPUT: EMAIL + EXECUTIVE’S REQUEST</text>
+    <text class="d-in" x="24" y="44">輸入：郵件 + 高管請求</text>
     <line class="d-flow" x1="109" y1="50" x2="109" y2="66" marker-end="url(#ah)"/>
 
     <rect class="d-box" x="24" y="70" width="178" height="68" rx="3"/>
     <text class="d-n" x="36" y="89">01</text>
-    <text class="d-name" x="36" y="110">Segmentation</text>
-    <text class="d-sub" x="36" y="128">body · quotes · signature</text>
+    <text class="d-name" x="36" y="110">郵件分段</text>
+    <text class="d-sub" x="36" y="128">正文 · 引用 · 簽名</text>
 
     <rect class="d-box" x="230" y="70" width="178" height="68" rx="3"/>
     <text class="d-n" x="242" y="89">02</text>
-    <text class="d-name" x="242" y="110">Candidate detection</text>
-    <text class="d-sub" x="242" y="128">rules ∪ Presidio ∪ model</text>
+    <text class="d-name" x="242" y="110">候選片段檢測</text>
+    <text class="d-sub" x="242" y="128">規則 ∪ Presidio ∪ 模型</text>
 
     <rect class="d-box judge" x="436" y="70" width="178" height="68" rx="3"/>
-    <text class="d-n y" x="448" y="89">03 · MODEL</text>
-    <text class="d-name" x="448" y="110">Context assessment</text>
-    <text class="d-sub" x="448" y="128">private? + confidence</text>
+    <text class="d-n y" x="448" y="89">03 · 模型</text>
+    <text class="d-name" x="448" y="110">情境評估</text>
+    <text class="d-sub" x="448" y="128">是否隱私 + 置信度</text>
 
     <line class="d-flow" x1="202" y1="104" x2="226" y2="104" marker-end="url(#ah)"/>
     <line class="d-flow" x1="408" y1="104" x2="432" y2="104" marker-end="url(#ah)"/>
     <path class="d-flow" d="M525 138 L525 172 L113 172 L113 206" marker-end="url(#ah)"/>
 
     <rect class="d-box code" x="24" y="210" width="178" height="68" rx="3"/>
-    <text class="d-n g" x="36" y="229">04 · CODE</text>
-    <text class="d-name" x="36" y="250">Decision</text>
-    <text class="d-sub" x="36" y="268">tier × threshold</text>
+    <text class="d-n g" x="36" y="229">04 · 程式碼</text>
+    <text class="d-name" x="36" y="250">決策</text>
+    <text class="d-sub" x="36" y="268">檔位 × 閾值</text>
 
     <rect class="d-box" x="230" y="210" width="178" height="68" rx="3"/>
     <text class="d-n" x="242" y="229">05</text>
-    <text class="d-name" x="242" y="250">Pseudonymisation</text>
-    <text class="d-sub" x="242" y="268">[PHONE_1]; map kept local</text>
+    <text class="d-name" x="242" y="250">假名化替換</text>
+    <text class="d-sub" x="242" y="268">[PHONE_1]，對映表本地儲存</text>
 
     <line class="d-flow" x1="202" y1="244" x2="226" y2="244" marker-end="url(#ah)"/>
     <line class="d-flow" x1="408" y1="244" x2="686" y2="244" marker-end="url(#ah)"/>
 
     <rect class="d-box cloud" x="690" y="210" width="190" height="68" rx="3"/>
-    <text class="d-n c" x="702" y="229">EXTERNAL</text>
-    <text class="d-name" x="702" y="250">Cloud assistant</text>
-    <text class="d-sub" x="702" y="268">receives placeholders only</text>
+    <text class="d-n c" x="702" y="229">外部</text>
+    <text class="d-name" x="702" y="250">雲端助手</text>
+    <text class="d-sub" x="702" y="268">僅接收佔位符</text>
 
     <path class="d-flow" d="M785 278 L785 384 L618 384" marker-end="url(#ah)"/>
 
     <rect class="d-box policy" x="24" y="350" width="178" height="68" rx="3"/>
-    <text class="d-n g" x="36" y="369">POLICY</text>
-    <text class="d-name" x="36" y="390">Tier table</text>
-    <text class="d-sub" x="36" y="408">client-approved</text>
+    <text class="d-n g" x="36" y="369">策略</text>
+    <text class="d-name" x="36" y="390">分檔表</text>
+    <text class="d-sub" x="36" y="408">經客戶批准</text>
     <line class="d-flow" x1="113" y1="350" x2="113" y2="282" marker-end="url(#ah)"/>
 
     <rect class="d-box" x="436" y="350" width="178" height="68" rx="3"/>
     <text class="d-n" x="448" y="369">06</text>
-    <text class="d-name" x="448" y="390">Restoration</text>
-    <text class="d-sub" x="448" y="408">placeholders → originals</text>
+    <text class="d-name" x="448" y="390">還原</text>
+    <text class="d-sub" x="448" y="408">佔位符 → 原值</text>
 
     <rect class="d-box" x="230" y="350" width="178" height="68" rx="3"/>
-    <text class="d-n" x="242" y="369">OUTPUT</text>
-    <text class="d-name" x="242" y="390">Executive</text>
-    <text class="d-sub" x="242" y="408">original values restored</text>
+    <text class="d-n" x="242" y="369">輸出</text>
+    <text class="d-name" x="242" y="390">高管</text>
+    <text class="d-sub" x="242" y="408">原始資訊已還原</text>
     <line class="d-flow" x1="436" y1="384" x2="412" y2="384" marker-end="url(#ah)"/>
   </svg>
-  <figcaption>The model produces assessments (step 03); decisions are made by code (step 04) against a client-approved table. All components other than the cloud assistant run within the local service.</figcaption>
+  <figcaption>模型負責評估（第 03 步），決策由程式碼依據客戶批准的分檔表作出（第 04 步）。除雲端助手外，所有元件均在本地服務內執行。</figcaption>
 </figure>
 
-<div class="cat"><h2>Technical Feasibility</h2><span class="tag">Implementation</span></div>
-<p class="ctx">Every stage is built on existing open-source tools. The only substantial custom component is the merging of detector outputs.</p>
+<div class="cat"><h2>技術可行性</h2><span class="tag">實現</span></div>
+<p class="ctx">各環節均基於現有開源工具實現，唯一需要較多自行開發的是多個檢測器結果的合併。</p>
 <div class="tbl"><table>
-  <tr><th>Component</th><th>Implementation</th><th>Effort</th></tr>
-  <tr><td>Rule-based detection</td><td>Regular expressions with checksum validation for phone numbers, email addresses, card and ID numbers. Presidio includes a set of such recognisers.</td><td class="nowrap">Low</td></tr>
-  <tr><td>Presidio</td><td>The <code>presidio-analyzer</code> package with a spaCy language model [2]</td><td class="nowrap">Low</td></tr>
-  <tr><td>Local model</td><td>Served through Ollama with Rescriber’s open-source detection prompt [1]; OpenAI Privacy Filter as an alternative [3]</td><td class="nowrap">Low to medium</td></tr>
-  <tr><td>Merging outputs (union)</td><td>Custom code that aligns results by character position; overlapping spans are counted once</td><td class="nowrap">Medium, approx. 50–100 lines</td></tr>
+  <tr><th>元件</th><th>實現方式</th><th>工作量</th></tr>
+  <tr><td>規則檢測</td><td>正規表示式加校驗位驗證，覆蓋電話、郵箱、卡號、證件號。Presidio 已內建一批此類識別器</td><td class="nowrap">低</td></tr>
+  <tr><td>Presidio</td><td><code>presidio-analyzer</code> 軟體包加一個 spaCy 語言模型 [2]</td><td class="nowrap">低</td></tr>
+  <tr><td>本地模型</td><td>透過 Ollama 部署，採用 Rescriber 開源的檢測提示詞 [1]；也可採用 OpenAI Privacy Filter [3]</td><td class="nowrap">低至中</td></tr>
+  <tr><td>結果合併（並集）</td><td>自行開發：按字元位置對齊各檢測器結果，重疊片段只計一次</td><td class="nowrap">中，約 50–100 行</td></tr>
 </table></div>
-<details class="more"><summary>Integration considerations</summary><div class="body">
+<details class="more"><summary>整合要點</summary><div class="body">
 <div class="tbl"><table>
-  <tr><th>Issue</th><th>Resolution</th></tr>
-  <tr><td>The model returns text rather than character positions</td><td>Each returned string is located in the source text. Rescriber’s prompt requires verbatim substrings for this reason [1].</td></tr>
-  <tr><td>Detectors use different category names</td><td>All outputs are mapped to a single category list. Rescriber’s <code>presidio_server.py</code> provides a reference mapping [1].</td></tr>
-  <tr><td>Latency accumulates across detectors</td><td>Detectors run in parallel. The model is the bottleneck: on an Apple M2 machine with 24 GB of memory, Rescriber reports a mean of 0.73 s for Presidio and 3.40 s for Llama3-8B [1].</td></tr>
+  <tr><th>問題</th><th>解決方式</th></tr>
+  <tr><td>模型返回的是文字，而非字元位置</td><td>在原文中檢索返回的字串以確定位置。Rescriber 的提示詞要求模型原樣摘錄原文，正是為此 [1]</td></tr>
+  <tr><td>各檢測器的類別名稱不統一</td><td>統一對映至同一類別表。Rescriber 的 <code>presidio_server.py</code> 提供了可參考的對映 [1]</td></tr>
+  <tr><td>多個檢測器的延遲疊加</td><td>各檢測器並行執行，瓶頸在模型。Rescriber 在 Apple M2（24 GB 記憶體）上測得 Presidio 平均 0.73 秒、Llama3-8B 平均 3.40 秒 [1]</td></tr>
 </table></div>
 </div></details>
 
-<div class="cat"><h2>Sensitivity Tiers</h2><span class="tag">For client review</span></div>
-<p class="ctx">Each category is assigned to a tier. The tier determines the confidence required before redaction: the more severe the potential harm, the lower the threshold.</p>
+<div class="cat"><h2>敏感資訊分級</h2><span class="tag">待客戶稽核</span></div>
+<p class="ctx">每個類別歸入一個檔位，檔位決定脫敏所需的置信度：潛在危害越嚴重，閾值越低。</p>
 <div class="tbl"><table>
-  <tr><th>Tier</th><th>Categories</th><th>Redaction rule</th></tr>
-  <tr><td><span class="tier h">High</span></td><td>Government IDs, passwords and keys, bank and card numbers, health information</td><td>Redact at confidence ≥ 0.2</td></tr>
-  <tr><td><span class="tier h">High</span></td><td>Business-confidential information: unreleased financial results, deal and M&amp;A terms, project code names, legal matters</td><td>Redact at confidence ≥ 0.2; see below</td></tr>
-  <tr><td><span class="tier m">Medium</span></td><td>Names of private individuals, personal phone numbers, personal email addresses, home addresses</td><td>Redact at confidence ≥ 0.5</td></tr>
-  <tr><td><span class="tier l">Low</span></td><td>City, dates, organisation names, age, gender</td><td>Retain when isolated; redact when several items together could identify an individual</td></tr>
-  <tr><td><span class="tier p">Public</span></td><td>Public figures, published support lines, company names in a public context</td><td>Retain only when the model is confident the item is public</td></tr>
+  <tr><th>檔位</th><th>類別</th><th>脫敏規則</th></tr>
+  <tr><td><span class="tier h">高</span></td><td>政府證件號、密碼與金鑰、銀行賬號與卡號、健康資訊</td><td>置信度 ≥ 0.2 即脫敏</td></tr>
+  <tr><td><span class="tier h">高</span></td><td>商業機密：未公開的財務資料、交易與併購條款、專案代號、法律事務</td><td>置信度 ≥ 0.2 即脫敏；詳見下文</td></tr>
+  <tr><td><span class="tier m">中</span></td><td>非公眾人物的姓名、個人電話、個人郵箱、住址</td><td>置信度 ≥ 0.5 即脫敏</td></tr>
+  <tr><td><span class="tier l">低</span></td><td>城市、日期、機構名稱、年齡、性別</td><td>單獨出現時保留；多項組合足以識別個人時脫敏</td></tr>
+  <tr><td><span class="tier p">公開</span></td><td>公眾人物、公開的客服熱線、公開場合使用的公司名稱</td><td>僅在模型確信其為公開資訊時保留</td></tr>
 </table></div>
-<h3>Business-confidential information</h3>
-<p style="margin:0 0 8px">This category cannot be listed exhaustively and has no fixed format, so rules and Presidio do not detect it. Coverage relies on three layers:</p>
+<h3>商業機密</h3>
+<p style="margin:0 0 8px">此類資訊無法窮舉，也沒有固定格式，規則與 Presidio 均無法檢測，因此採用三層覆蓋：</p>
 <div class="tbl"><table>
-  <tr><th>Layer</th><th>Mechanism</th><th>Covers</th></tr>
-  <tr><td class="nowrap">1. Term list</td><td>The client supplies project code names, deal names and key counterparties; any match is redacted</td><td>Confidential items the client already knows</td></tr>
-  <tr><td class="nowrap">2. Explicit markers</td><td>Phrases such as “confidential”, “board only”, “do not forward” or “privileged” place the surrounding passage in the High tier</td><td>Content the sender has marked as confidential</td></tr>
-  <tr><td class="nowrap">3. Default placeholder</td><td>Proper nouns and amounts the model cannot classify are replaced with reversible placeholders</td><td>Items missed by the first two layers</td></tr>
+  <tr><th>層級</th><th>機制</th><th>覆蓋範圍</th></tr>
+  <tr><td class="nowrap">1. 術語表</td><td>由客戶提供專案代號、交易名稱與重要交易對手，命中即脫敏</td><td>客戶已知的機密事項</td></tr>
+  <tr><td class="nowrap">2. 顯式標記</td><td>出現“confidential”“board only”“do not forward”“privileged”等表述時，所在段落按高檔處理</td><td>發件人已標註為機密的內容</td></tr>
+  <tr><td class="nowrap">3. 預設佔位符</td><td>模型無法歸類的專有名詞與金額，預設以可還原的佔位符替換</td><td>前兩層遺漏的內容</td></tr>
 </table></div>
-<div class="note risk"><span class="h">Known limitation</span>NIST SP 800-122 covers personal data only, so tiering for business information will follow the client’s internal data classification. This category depends on the model’s contextual judgment and is the principal recall risk; its leak rate will be reported separately. <span class="badge prop">Proposed</span></div>
-<details class="more"><summary>Basis for the tiers and threshold selection</summary><div class="body">
-<div class="note"><span class="h">Basis for the tiers</span>NIST SP 800-122 classifies personal data by low, moderate and high confidentiality impact, taking into account the sensitivity of each field and its context of use, and notes that combinations of fields may be more sensitive than individual fields [5]. The Low-tier combination rule reflects Sweeney’s finding that ZIP code, gender and date of birth together uniquely identify an estimated 87% of the US population [6]. The category list is adapted from Rescriber’s taxonomy [1].</div>
+<div class="note risk"><span class="h">已知侷限</span>NIST SP 800-122 僅涵蓋個人資訊，商業資訊的分級將依據客戶內部的資料分級制度。此類別依賴模型的情境判斷，是召回率的主要風險，其洩漏率將單獨統計。<span class="badge prop">本專案提案</span></div>
+<details class="more"><summary>分級依據與閾值確定方法</summary><div class="body">
+<div class="note"><span class="h">分級依據</span>NIST SP 800-122 按低、中、高三級保密影響對個人資料分類，考慮因素包括各欄位的敏感程度與使用情境，並指出欄位組合可能比單個欄位更敏感 [5]。低檔的組合規則依據 Sweeney 的研究：郵編、性別與出生日期三項組合，估計可唯一識別 87% 的美國人口 [6]。類別列表改編自 Rescriber 的分類法 [1]。</div>
 
-<h3>Threshold selection</h3>
-<p style="margin:0 0 6px">The thresholds above are initial values. Final values will be determined empirically:</p>
+<h3>閾值確定方法</h3>
+<p style="margin:0 0 6px">上表閾值為初始值，最終數值透過實驗確定：</p>
 <ol class="steps">
-  <li>The client sets an acceptable leak rate for each tier. This is a business decision.</li>
-  <li>A range of thresholds is evaluated on labelled emails, recording the leak rate and the over-redaction rate at each.</li>
-  <li>For each tier, the highest threshold that meets its leak-rate target is selected, which minimises unnecessary redaction.</li>
+  <li>由客戶設定各檔位可接受的洩漏率，此為業務決策。</li>
+  <li>在標註郵件上評估一系列閾值，記錄每個閾值下的洩漏率與過度脫敏率。</li>
+  <li>對每個檔位，選取滿足洩漏率目標的最高閾值，以儘量減少不必要的脫敏。</li>
 </ol>
 <div class="tbl"><table>
-  <tr><th>Threshold</th><th>Leak rate</th><th>Over-redaction rate</th></tr>
+  <tr><th>閾值</th><th>洩漏率</th><th>過度脫敏率</th></tr>
   <tr><td class="num">0.2</td><td class="num">1%</td><td class="num">40%</td></tr>
   <tr><td class="num">0.3</td><td class="num">2%</td><td class="num">25%</td></tr>
   <tr><td class="num">0.5</td><td class="num">5%</td><td class="num">12%</td></tr>
   <tr><td class="num">0.7</td><td class="num">12%</td><td class="num">5%</td></tr>
 </table></div>
-<p class="cap">Illustrative values for the Medium tier. With a 2% leak-rate target, the selected threshold would be 0.3.</p>
-<div class="note risk"><span class="h">Validation and sign-off</span>Given the dataset size (100 emails), thresholds will be tuned and evaluated on separate subsets, or by cross-validation, to avoid optimistic results. Tier assignments are a business decision and require client confirmation.</div>
+<p class="cap">中檔的示意資料。若洩漏率目標為 2%，則選定閾值為 0.3。</p>
+<div class="note risk"><span class="h">驗證與審批</span>鑑於資料規模（100 封郵件），閾值的調整與評估將在不同子集上進行，或採用交叉驗證，以避免結果偏於樂觀。各類別的檔位歸屬屬於業務決策，需經客戶確認。</div>
 </div></details>
 
-<div class="cat"><h2>Worked Example</h2></div>
-<p class="ctx">The example includes the case raised in the client’s email: a personal mobile number and a public support number in the same message.</p>
-<div class="mail"><span class="who">Incoming · from Dana Whitfield to Tom Reyes</span>Hi Tom,
+<div class="cat"><h2>示例分析</h2></div>
+<p class="ctx">本例包含客戶來信中提及的情形：同一封郵件中同時出現個人手機號與公開客服號。</p>
+<div class="mail"><span class="who">收到的郵件 · Dana Whitfield 發給 Tom Reyes</span>Hi Tom,
 Before Thursday’s board call: my <span class="hl">oncologist</span> moved my appointment, so I’ll dial in from home. Reach me on my cell, <span class="hl">412-555-0182</span>.
 On the vendor outage, Acme’s support line is <span class="hl">1-800-555-0199</span>.
 — Dana</div>
-<div class="req"><span class="who">Executive’s request to the assistant</span>Draft a reply to Dana and summarise the vendor issue.</div>
+<div class="req"><span class="who">高管對助手的請求</span>Draft a reply to Dana and summarise the vendor issue.（為 Dana 起草回覆，並總結供應商問題。）</div>
 
 <div class="tbl"><table>
-  <tr><th>Span</th><th>Category · tier</th><th>Contextual evidence</th><th>Confidence (private)</th><th>Decision</th></tr>
-  <tr><td>Dana, Dana Whitfield</td><td>Name · <span class="tier m">Med</span></td><td>Private individual; sender</td><td class="num">0.90</td><td class="act-r">[PERSON_1]</td></tr>
-  <tr><td>Tom</td><td>Name · <span class="tier m">Med</span></td><td>Private individual; recipient</td><td class="num">0.85</td><td class="act-r">[PERSON_2]</td></tr>
-  <tr><td>oncologist</td><td>Health · <span class="tier h">High</span></td><td>“my … appointment”</td><td class="num">0.95</td><td class="act-r">[HEALTH_1]</td></tr>
-  <tr><td class="nowrap">412-555-0182</td><td>Phone · <span class="tier m">Med</span></td><td>“my cell”</td><td class="num">0.95</td><td class="act-r">[PHONE_1]</td></tr>
-  <tr><td class="nowrap">1-800-555-0199</td><td>Phone · <span class="tier m">Med</span></td><td>Toll-free prefix; “Acme’s support line”</td><td class="num">0.15</td><td class="act-k">Retain</td></tr>
-  <tr><td>Acme, Thursday</td><td>Organisation, date · <span class="tier l">Low</span></td><td>Isolated; insufficient to identify an individual</td><td class="num">n/a</td><td class="act-k">Retain</td></tr>
+  <tr><th>片段</th><th>類別 · 檔位</th><th>上下文依據</th><th>隱私置信度</th><th>決策</th></tr>
+  <tr><td>Dana、Dana Whitfield</td><td>姓名 · <span class="tier m">中</span></td><td>非公眾人物；發件人</td><td class="num">0.90</td><td class="act-r">[PERSON_1]</td></tr>
+  <tr><td>Tom</td><td>姓名 · <span class="tier m">中</span></td><td>非公眾人物；收件人</td><td class="num">0.85</td><td class="act-r">[PERSON_2]</td></tr>
+  <tr><td>oncologist（腫瘤科醫生）</td><td>健康 · <span class="tier h">高</span></td><td>“my … appointment”（本人就診預約）</td><td class="num">0.95</td><td class="act-r">[HEALTH_1]</td></tr>
+  <tr><td class="nowrap">412-555-0182</td><td>電話 · <span class="tier m">中</span></td><td>“my cell”（個人手機）</td><td class="num">0.95</td><td class="act-r">[PHONE_1]</td></tr>
+  <tr><td class="nowrap">1-800-555-0199</td><td>電話 · <span class="tier m">中</span></td><td>免費熱線號段；“Acme’s support line”</td><td class="num">0.15</td><td class="act-k">保留</td></tr>
+  <tr><td>Acme、Thursday</td><td>機構、日期 · <span class="tier l">低</span></td><td>單獨出現，不足以識別個人</td><td class="num">不適用</td><td class="act-k">保留</td></tr>
 </table></div>
-<p class="cap">Confidence values are illustrative.</p>
+<p class="cap">置信度數值僅作示意。</p>
 
-<div class="mail out"><span class="who">Text sent to the cloud assistant</span>Hi <mark>[PERSON_2]</mark>,
+<div class="mail out"><span class="who">傳送至雲端助手的文字</span>Hi <mark>[PERSON_2]</mark>,
 Before Thursday’s board call: my <mark>[HEALTH_1]</mark> moved my appointment, so I’ll dial in from home. Reach me on my cell, <mark>[PHONE_1]</mark>.
 On the vendor outage, Acme’s support line is 1-800-555-0199.
 — <mark>[PERSON_1]</mark></div>
-<div class="note ok"><span class="h">Outcome</span>The assistant can still draft the reply to [PERSON_1] and summarise the Acme outage. The cloud service does not receive the diagnosis, the personal number or either name. Placeholders are restored locally before the draft is returned to the executive.</div>
+<div class="note ok"><span class="h">結果</span>助手仍可為 [PERSON_1] 起草回覆並總結 Acme 的故障。雲端服務無法獲取病情、個人號碼及雙方姓名。草稿返回高管之前，佔位符在本地還原。</div>
 
-<div class="cat"><h2>Confidence Scoring</h2></div>
-<p class="ctx">The model scores each span. Because language models tend to be overconfident [7], the raw score is calibrated against labelled emails before thresholds are applied.</p>
-<details class="more"><summary>Calibration procedure and alternative method</summary><div class="body">
-<h3 style="margin-top:0">Version 1: model score with calibration</h3>
-  <p style="margin:0">The model assigns a raw score to each span. Language models tend to be overconfident when stating their own confidence [7], so the raw score is calibrated against labelled emails before use:</p>
+<div class="cat"><h2>置信度評估方法</h2></div>
+<p class="ctx">由模型為每個片段打分。鑑於語言模型自報的置信度普遍偏高 [7]，原始分數須經標註郵件校準後，再與閾值比較。</p>
+<details class="more"><summary>校準步驟與替代方法</summary><div class="body">
+<h3 style="margin-top:0">第一版：模型打分加校準</h3>
+  <p style="margin:0">模型為每個片段給出原始分數。由於語言模型自報的置信度普遍偏高 [7]，原始分數須經標註郵件校準後方可使用：</p>
   <ol class="steps">
-    <li>Run the system on labelled emails, recording each span’s raw score and its true label.</li>
-    <li>Group spans by raw score and compute the proportion in each group that is actually private.</li>
-    <li>At run time, convert each raw score to the corresponding observed proportion.</li>
+    <li>在標註郵件上執行系統，記錄每個片段的原始分數及其真實標籤。</li>
+    <li>按原始分數分組，統計每組中實際為隱私的比例。</li>
+    <li>執行時將原始分數換算為對應的實際比例。</li>
   </ol>
   <div class="tbl"><table>
-    <tr><th>Raw score</th><th>Spans</th><th>Actually private</th><th>Calibrated score</th></tr>
+    <tr><th>原始分數</th><th>片段數</th><th>實際為隱私</th><th>校準後分數</th></tr>
     <tr><td class="num">0.9–1.0</td><td class="num">200</td><td class="num">140</td><td class="num">0.70</td></tr>
     <tr><td class="num">0.7–0.9</td><td class="num">100</td><td class="num">50</td><td class="num">0.50</td></tr>
     <tr><td class="num">0.5–0.7</td><td class="num">50</td><td class="num">15</td><td class="num">0.30</td></tr>
     <tr><td class="num">0.0–0.5</td><td class="num">150</td><td class="num">15</td><td class="num">0.10</td></tr>
   </table></div>
-  <p class="cap">Illustrative values. A raw score of 0.95 would be reported as 0.70.</p>
-  <p style="margin:12px 0 0">Calibration corrects a raw score; it is not a separate source of scores. It ensures that a threshold of 0.5 corresponds to an observed 50% likelihood.</p>
-  <h3>Version 2: agreement-based scoring</h3>
-  <p style="margin:0">If calibration shows that the model’s scores discriminate poorly, for example with most spans scored near 0.9, the raw score will instead be derived from agreement: the share of detectors that flag a span, and the share of 3–5 repeated model runs that label it private. Agreement across repeated answers has been shown to be a more reliable uncertainty signal than stated confidence [7]. Both methods will be compared on the same data.</p>
+  <p class="cap">示意資料。原始分數 0.95 將被換算為 0.70。</p>
+  <p style="margin:12px 0 0">校準是對原始分數的修正，並非獨立的打分來源。其作用是確保閾值 0.5 對應實際觀測到的 50% 可能性。</p>
+  <h3>第二版：基於一致性的打分</h3>
+  <p style="margin:0">若校準結果顯示模型打分割槽分度不足（例如大多數片段均被打為 0.9 左右），則改為以一致性作為原始分數：標出該片段的檢測器所佔比例，以及 3–5 次重複執行中判定其為隱私的次數比例。研究表明，多次回答之間的一致性是比自報置信度更可靠的不確定性訊號 [7]。兩種方法將在同一資料上進行對比。</p>
 </div></details>
 
-<div class="cat"><h2>Related Work and Contributions</h2></div>
-<p class="ctx">No individual component is novel. Each has a published source or an industry precedent.</p>
-<div class="note ok"><span class="h">Contributions of this project</span><b>1.</b> Integration of these components for executive email, without per-item human review. Rescriber, the closest prior system, requires the user to confirm each item.<br><b>2.</b> A labelled email benchmark and an ablation study quantifying the contribution of each component.</div>
-<details class="more"><summary>Sources for each component</summary><div class="body">
+<div class="cat"><h2>相關工作與本專案貢獻</h2></div>
+<p class="ctx">單獨而言，各元件均非首創，每一部分都有已發表的來源或業界先例。</p>
+<div class="note ok"><span class="h">本專案貢獻</span><b>1.</b> 將上述元件整合應用於高管郵件場景，且無需逐條人工稽核。最接近的前作 Rescriber 需由使用者逐條確認。<br><b>2.</b> 構建標註郵件基準資料集，並透過消融實驗量化各元件的貢獻。</div>
+<details class="more"><summary>各元件的來源</summary><div class="body">
 <div class="tbl"><table>
-  <tr><th>Component</th><th>Source</th><th>Reported finding or capability</th></tr>
-  <tr><td>Local detection, placeholders sent to the cloud, restoration of the response</td><td>Rescriber, CHI 2025 [1]</td><td>On 240 test samples: Llama3-8B precision 0.94, recall 0.63; GPT-4o recall 0.88; Presidio 0.69 / 0.68. MIT-licensed code.</td></tr>
-  <tr><td>Rule-based and NER detection; allow-lists</td><td>Microsoft Presidio [2]</td><td>Widely used open-source toolkit; <code>allow_list</code> excludes known-safe values</td></tr>
-  <tr><td>Local PII detection model</td><td>OpenAI Privacy Filter [3]</td><td>Open-weight, Apache 2.0, deployable on-premises</td></tr>
-  <tr><td>Per-category thresholds</td><td>Google Cloud Sensitive Data Protection [4]</td><td>Five likelihood levels; minimum likelihood configurable per data type</td></tr>
-  <tr><td>Sensitivity tiers</td><td>NIST SP 800-122 [5]</td><td>Low / moderate / high impact levels; context of use can change the level</td></tr>
-  <tr><td>Automated decisions from scores and thresholds</td><td>MINIM, ICML 2026 [8]; OCELOT, 2026 [9]</td><td>Scored, rule-based decisions in place of human review</td></tr>
+  <tr><th>元件</th><th>來源</th><th>來源中的結論或功能</th></tr>
+  <tr><td>本地檢測、佔位符發往雲端、回覆還原</td><td>Rescriber，CHI 2025 [1]</td><td>在 240 條測試樣本上：Llama3-8B 精確率 0.94、召回率 0.63；GPT-4o 召回率 0.88；Presidio 0.69 / 0.68。程式碼採用 MIT 許可</td></tr>
+  <tr><td>規則與命名實體識別檢測；白名單</td><td>Microsoft Presidio [2]</td><td>廣泛使用的開源工具包；<code>allow_list</code> 可排除已知安全的值</td></tr>
+  <tr><td>本地 PII 檢測模型</td><td>OpenAI Privacy Filter [3]</td><td>開放權重，Apache 2.0 許可，可本地部署</td></tr>
+  <tr><td>按類別設定閾值</td><td>Google Cloud Sensitive Data Protection [4]</td><td>五級可能性，可按資料型別分別設定最低閾值</td></tr>
+  <tr><td>敏感度分級</td><td>NIST SP 800-122 [5]</td><td>低 / 中 / 高三級影響；使用情境可改變級別</td></tr>
+  <tr><td>基於分數與閾值的自動決策</td><td>MINIM，ICML 2026 [8]；OCELOT，2026 [9]</td><td>以打分加規則的自動決策取代人工稽核</td></tr>
 </table></div>
 </div></details>
 
-<div class="cat"><h2>Improving Recall</h2><span class="tag">Principal risk</span></div>
-<p class="ctx">Rescriber’s 8B model missed approximately one third of personal data (recall 0.63) [1]. Its users reviewed every message; here, a missed item reaches the cloud directly. A baseline will first be measured on email, and the measures below added one at a time.</p>
-<details class="more"><summary>Measures and supporting evidence</summary><div class="body">
+<div class="cat"><h2>召回率提升方案</h2><span class="tag">主要風險</span></div>
+<p class="ctx">Rescriber 的 8B 模型漏檢了約三分之一的個人資訊（召回率 0.63）[1]。其使用者會審閱每條訊息；在本專案中，漏檢內容將直接傳送至雲端。將首先在郵件資料上建立基線，再逐項加入以下措施。</p>
+<details class="more"><summary>措施與依據</summary><div class="body">
 <div class="tbl"><table>
-  <tr><th>Measure</th><th>Rationale</th><th>Evidence</th></tr>
-  <tr><td>Union of all detectors</td><td>The union’s recall is at least that of its best member; the cost is additional over-redaction.</td><td><span class="badge fact">Holds by definition</span></td></tr>
-  <tr><td>Entity propagation</td><td>Once a name is detected, every occurrence in the text is marked. Rescriber reports missed variants of the same name.</td><td><span class="badge fact">Failure mode in [1]</span></td></tr>
-  <tr><td>Repeated model runs</td><td>Spans flagged in any run become candidates.</td><td><span class="badge fact">Holds by definition</span></td></tr>
-  <tr><td>Email-specific prompt examples</td><td>Rescriber’s prompt examples are chat messages, not email threads.</td><td><span class="badge prop">Proposed</span></td></tr>
-  <tr><td>One category per pass</td><td>A shorter category list per pass may reduce omissions.</td><td><span class="badge unk">Untested</span></td></tr>
+  <tr><th>措施</th><th>依據</th><th>證據</th></tr>
+  <tr><td>合併所有檢測器（並集）</td><td>並集的召回率不低於其中最優的單個檢測器，代價是過度脫敏增加</td><td><span class="badge fact">定義上成立</span></td></tr>
+  <tr><td>實體傳播</td><td>檢測到某個名字後，標記其在全文中的所有出現位置。Rescriber 報告過同一名字的不同寫法被漏檢</td><td><span class="badge fact">[1] 中的失敗案例</span></td></tr>
+  <tr><td>多次執行模型</td><td>任一次執行中被標出的片段均納入候選</td><td><span class="badge fact">定義上成立</span></td></tr>
+  <tr><td>提示詞采用郵件示例</td><td>Rescriber 的提示詞示例為聊天訊息，而非郵件往來</td><td><span class="badge prop">本專案提案</span></td></tr>
+  <tr><td>每次只檢測一個類別</td><td>每次檢測的類別較少，可能減少遺漏</td><td><span class="badge unk">尚未驗證</span></td></tr>
 </table></div>
 </div></details>
 
-<div class="cat"><h2>Evaluation Plan</h2></div>
-<p class="ctx">100 realistic emails, as requested, with each private span labelled by category and by whether it is private or public in context. Public labelled datasets will supplement this set [10]. The primary metric is the <b>leak rate</b>: the proportion of private spans sent to the cloud, reported per tier.</p>
-<details class="more"><summary>Full metric set and ablation study</summary><div class="body">
-<h3 style="margin-top:4px">Metrics</h3>
+<div class="cat"><h2>評估方案</h2></div>
+<p class="ctx">按客戶要求構建 100 封貼近真實的郵件，每個隱私片段均標註其類別，以及在上下文中屬於隱私還是公開資訊，並以公開標註資料集作為補充 [10]。首要指標為<b>洩漏率</b>：傳送至雲端的隱私片段所佔比例，按檔位分別統計。</p>
+<details class="more"><summary>完整指標與消融實驗</summary><div class="body">
+<h3 style="margin-top:4px">指標</h3>
 <div class="tbl"><table>
-    <tr><th>Metric</th><th>Definition</th></tr>
-    <tr><td><b>Leak rate</b> (primary)</td><td>Proportion of private spans sent to the cloud, reported per tier</td></tr>
-    <tr><td>Over-redaction rate</td><td>Proportion of public spans redacted unnecessarily</td></tr>
-    <tr><td>Calibration</td><td>Agreement between calibrated scores and observed proportions</td></tr>
-    <tr><td>Latency</td><td>Processing time per email on the confirmed hardware</td></tr>
+    <tr><th>指標</th><th>定義</th></tr>
+    <tr><td><b>洩漏率</b>（首要指標）</td><td>傳送至雲端的隱私片段所佔比例，按檔位分別統計</td></tr>
+    <tr><td>過度脫敏率</td><td>被不必要脫敏的公開片段所佔比例</td></tr>
+    <tr><td>校準度</td><td>校準後分數與實際觀測比例的吻合程度</td></tr>
+    <tr><td>延遲</td><td>在確認的硬體上處理每封郵件所需時間</td></tr>
   </table></div>
-<h3>Ablation study</h3>
-<p style="margin:0">Starting from a Rescriber-style baseline, components are added one at a time: detector union → entity propagation → repeated runs → tier thresholds. Thresholds are tuned on one subset and results are reported on a held-out subset.</p>
+<h3>消融實驗</h3>
+<p style="margin:0">以 Rescriber 式基線為起點，逐項加入各元件：檢測器並集 → 實體傳播 → 多次執行 → 分檔閾值。閾值在一個子集上調整，結果在另一獨立子集上報告。</p>
 </div></details>
 
-<div class="cat"><h2>Failure Handling</h2></div>
-<p class="ctx">The service fails safe: if any component fails, every candidate span is redacted.</p>
-<details class="more"><summary>Failure-handling rules</summary><div class="body">
+<div class="cat"><h2>異常處理</h2></div>
+<p class="ctx">服務採用故障安全設計：任一元件發生故障時，所有候選片段一律脫敏。</p>
+<details class="more"><summary>異常處理規則</summary><div class="body">
 <div class="tbl"><table>
-  <tr><th>Condition</th><th>Behaviour</th></tr>
-  <tr><td>Model unavailable or output unparseable</td><td>Fall back to rule-based detection, redact all candidates, and flag the response as degraded</td></tr>
-  <tr><td>Response contains a placeholder that was not issued</td><td>Flag the placeholder rather than infer a value. Rescriber observed GPT-4o generating placeholders such as “[Your Full Name]” [1].</td></tr>
-  <tr><td>Logging</td><td>Record category and score only; original text is never logged</td></tr>
-  <tr><td>Model and list updates</td><td>Installed at deployment; the running service does not access the internet</td></tr>
+  <tr><th>情形</th><th>處理方式</th></tr>
+  <tr><td>模型不可用或輸出無法解析</td><td>降級為僅使用規則檢測，所有候選片段一律脫敏，並在響應中標註“降級”</td></tr>
+  <tr><td>回覆中出現未經簽發的佔位符</td><td>予以標記，不推測其取值。Rescriber 觀察到 GPT-4o 會自行生成 “[Your Full Name]” 等佔位符 [1]</td></tr>
+  <tr><td>日誌</td><td>僅記錄類別與分數，不記錄原文</td></tr>
+  <tr><td>模型與名單更新</td><td>於部署時安裝；執行中的服務不訪問網際網路</td></tr>
 </table></div>
 </div></details>
 
-<div class="cat"><h2>Next Steps</h2><span class="tag">With the client</span></div>
-<p class="ctx">The following items will be finalised with the client once the prototype is demonstrated, using measured results rather than assumptions.</p>
+<div class="cat"><h2>後續計劃</h2><span class="tag">與客戶共同確定</span></div>
+<p class="ctx">以下事項將在原型演示後，依據實測結果而非假設，與客戶共同確定。</p>
 <div class="tbl"><table>
-  <tr><th>Item</th><th>How it will be determined</th><th>Timing</th></tr>
-  <tr><td><b>Input scope</b></td><td>Plain text only, or also attachments and scanned documents. This defines what the prototype must handle.</td><td class="nowrap">Before prototyping</td></tr>
-  <tr><td><b>Confidential term list</b></td><td>The client supplies project code names, deal names and key counterparties for the business-confidential term list.</td><td class="nowrap">Before prototyping</td></tr>
-  <tr><td><b>Tier assignments</b></td><td>The prototype’s redactions on sample emails are reviewed with the client, who adjusts the tier table accordingly.</td><td class="nowrap">After the demo</td></tr>
-  <tr><td><b>Thresholds</b></td><td>The client sets an acceptable leak rate per tier; thresholds are then selected from experimental results.</td><td class="nowrap">After the demo</td></tr>
-  <tr><td><b>Latency</b></td><td>Processing time is measured on the confirmed hardware and compared with the client’s expectations.</td><td class="nowrap">After the demo</td></tr>
-  <tr><td><b>Optional context fields</b></td><td>Over-redaction is compared with and without fields such as internal or external sender, to show whether they are worth providing.</td><td class="nowrap">After the demo</td></tr>
+  <tr><th>事項</th><th>確定方式</th><th>時間</th></tr>
+  <tr><td><b>輸入範圍</b></td><td>僅限純文字，還是也包括附件與掃描件。此項決定原型需覆蓋的範圍</td><td class="nowrap">原型開發前</td></tr>
+  <tr><td><b>機密術語表</b></td><td>由客戶提供專案代號、交易名稱與重要交易對手，用於商業機密術語表</td><td class="nowrap">原型開發前</td></tr>
+  <tr><td><b>檔位歸屬</b></td><td>與客戶共同審閱原型在示例郵件上的脫敏結果，由客戶據此調整分檔表</td><td class="nowrap">原型演示後</td></tr>
+  <tr><td><b>閾值</b></td><td>客戶設定各檔位可接受的洩漏率，據實驗結果選定閾值</td><td class="nowrap">原型演示後</td></tr>
+  <tr><td><b>延遲</b></td><td>在確認的硬體上實測處理時間，與客戶預期對照</td><td class="nowrap">原型演示後</td></tr>
+  <tr><td><b>可選上下文欄位</b></td><td>對比有無“發件人為內部或外部”等欄位時的過度脫敏率，以判斷是否值得提供</td><td class="nowrap">原型演示後</td></tr>
 </table></div>
 
 <footer>
-  <div class="src"><details class="more"><summary>Sources (verified 24–27 Sep 2026; figures are taken from each source’s own experiments)</summary><div class="body">
+  <div class="src"><details class="more"><summary>參考來源（核實於 2026 年 9 月 24–27 日；資料均取自各來源自身的實驗）</summary><div class="body">
 <ol>
-    <li>Zhou, Xu, Wu, Li. <a href="https://arxiv.org/abs/2410.11876">Rescriber: Smaller-LLM-Powered User-Led Data Minimization for LLM-Based Chatbots</a>. CHI 2025. Code: <a href="https://github.com/PEACH-Research-Lab/Rescriber">github.com/PEACH-Research-Lab/Rescriber</a></li>
+    <li>Zhou, Xu, Wu, Li. <a href="https://arxiv.org/abs/2410.11876">Rescriber: Smaller-LLM-Powered User-Led Data Minimization for LLM-Based Chatbots</a>. CHI 2025. 程式碼：<a href="https://github.com/PEACH-Research-Lab/Rescriber">github.com/PEACH-Research-Lab/Rescriber</a></li>
     <li><a href="https://microsoft.github.io/presidio/tutorial/13_allow_list/">Microsoft Presidio, allow-lists</a></li>
-    <li><a href="https://github.com/openai/privacy-filter">OpenAI Privacy Filter</a> (April 2026)</li>
+    <li><a href="https://github.com/openai/privacy-filter">OpenAI Privacy Filter</a>（2026 年 4 月）</li>
     <li><a href="https://docs.cloud.google.com/sensitive-data-protection/docs/likelihood">Google Cloud Sensitive Data Protection, match likelihood</a></li>
-    <li>NIST <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-122.pdf">SP 800-122</a>, Guide to Protecting the Confidentiality of PII (2010), §3.2</li>
+    <li>NIST <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-122.pdf">SP 800-122</a>, Guide to Protecting the Confidentiality of PII（2010），§3.2</li>
     <li>Sweeney. <a href="https://dataprivacylab.org/projects/identifiability/paper1.pdf">Simple Demographics Often Identify People Uniquely</a>. CMU Data Privacy Working Paper 3, 2000</li>
     <li>Xiong et al. <a href="https://arxiv.org/abs/2306.13063">Can LLMs Express Their Uncertainty?</a> ICLR 2024</li>
     <li>Yu et al. <a href="https://arxiv.org/abs/2606.13949">MINIM: Privacy-Aware Minimal View for Agents via Trusted Local Sanitization</a>. ICML 2026</li>
     <li>Xie, Li. <a href="https://arxiv.org/abs/2606.12341">OCELOT: Inference-Leakage Budgets for Privacy-Preserving LLM Agents</a>. 2026</li>
-    <li>Agyemang et al. <a href="https://arxiv.org/abs/2604.12064">LLM-Redactor</a>. 2026. Benchmark on Hugging Face: jayluxferro/llm-redactor-leak-benchmark</li>
+    <li>Agyemang et al. <a href="https://arxiv.org/abs/2604.12064">LLM-Redactor</a>. 2026。Hugging Face 上的基準資料：jayluxferro/llm-redactor-leak-benchmark</li>
   </ol>
 </div></details></div>
 </footer>
@@ -1194,16 +1221,6 @@ On the vendor outage, Acme’s support line is 1-800-555-0199.
   </div>
 </div>
 
-<div class="cat"><h2>文件位置</h2><span class="tag">參考</span></div>
-<div class="item">
-  <div class="tbl"><table>
-    <tr><th>內容</th><th>位置</th></tr>
-    <tr><td>API 契約與架構(B 節)</td><td><code>docs/research/zhexuan/2026-09-27/</code></td></tr>
-    <tr><td>敏感資訊分類(C 節)</td><td><code>docs/research/yudi/2026-09-27/</code></td></tr>
-    <tr><td>全遮基準(C 節)</td><td><code>docs/research/karina/2026-09-24/</code></td></tr>
-    <tr><td>評測資料集(D 節)</td><td>另出文件</td></tr>
-  </table></div>
-</div>
 </div>
 
 <script>

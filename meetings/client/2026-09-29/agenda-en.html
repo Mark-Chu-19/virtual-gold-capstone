@@ -169,6 +169,33 @@ figure.arch svg{min-width:700px}
 .d-bound{stroke:var(--warn);stroke-width:2;stroke-dasharray:7 5}
 .d-blabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;fill:var(--warn)}
 
+
+/* ---- stop the agenda's bare element rules bleeding into the embeds ---- */
+.emb-zx h1,.emb-yd h1,.emb-zx h2,.emb-yd h2,.emb-zx h3,.emb-yd h3,
+.emb-zx h4,.emb-yd h4,.emb-zx h5,.emb-yd h5{
+  font-family:inherit;font-size:revert;font-weight:revert;line-height:revert;
+  margin:revert;letter-spacing:normal;text-transform:none;color:inherit;
+  display:block;align-items:normal;gap:normal;text-wrap:wrap}
+.emb-zx table,.emb-yd table{border-collapse:revert;width:auto;font-size:inherit;
+  margin:revert;background:none;border:0;border-radius:0;overflow:visible}
+.emb-zx th,.emb-yd th,.emb-zx td,.emb-yd td{text-align:revert;padding:revert;
+  border-bottom:0;vertical-align:revert;font-family:inherit;font-size:inherit;
+  letter-spacing:normal;text-transform:none;color:inherit;font-weight:revert;background:none}
+.emb-zx tr:last-child td,.emb-yd tr:last-child td{border-bottom:revert}
+.emb-zx figure,.emb-yd figure{margin:revert;padding:0;background:none;border:0;border-radius:0}
+.emb-zx svg,.emb-yd svg,.emb-zx figure svg,.emb-yd figure svg{min-width:0;font-family:inherit;color:inherit;fill:inherit}
+.emb-zx mark,.emb-yd mark{background:revert;color:revert;font-weight:revert;padding:revert}
+.emb-zx header,.emb-yd header{padding:revert;margin:revert;border-bottom:0}
+.emb-zx section,.emb-yd section{margin:revert;scroll-margin-top:0}
+.emb-zx p,.emb-yd p,.emb-zx li,.emb-yd li{max-width:revert}
+.emb-zx button,.emb-yd button{font:revert;font-size:revert;padding:revert;
+  border-radius:revert;border:revert;background:revert;color:revert;cursor:revert}
+.emb-zx details,.emb-yd details{margin:revert;border-top:0}
+.emb-zx summary,.emb-yd summary{cursor:pointer;list-style:revert;display:list-item;
+  padding:revert;font-family:inherit;font-size:revert;letter-spacing:normal;
+  text-transform:none;color:inherit;font-weight:revert;gap:normal}
+.emb-zx summary::before,.emb-yd summary::before{content:none}
+
 /* ---- embedded workstream documents, namespaced ---- */
 .emb-zx,.emb-yd{display:block;margin:14px 0 4px;border:1px solid var(--line);border-radius:10px;overflow-x:auto;padding:4px 0}
 .emb-zx main,.emb-yd .page{padding-left:20px;padding-right:20px}
@@ -1194,16 +1221,6 @@ On the vendor outage, Acme’s support line is 1-800-555-0199.
   </div>
 </div>
 
-<div class="cat"><h2>Where the documents are</h2><span class="tag">Reference</span></div>
-<div class="item">
-  <div class="tbl"><table>
-    <tr><th>What</th><th>Where</th></tr>
-    <tr><td>API contract and architecture (section B)</td><td><code>docs/research/zhexuan/2026-09-27/</code></td></tr>
-    <tr><td>Sensitive data classification (section C)</td><td><code>docs/research/yudi/2026-09-27/</code></td></tr>
-    <tr><td>Redact-always baseline (section C)</td><td><code>docs/research/karina/2026-09-24/</code></td></tr>
-    <tr><td>Evaluation dataset (section D)</td><td>separate document, to follow</td></tr>
-  </table></div>
-</div>
 </div>
 
 <script>
