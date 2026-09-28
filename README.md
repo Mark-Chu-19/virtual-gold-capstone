@@ -3,7 +3,9 @@
 CMU MISM Capstone, Fall 2026, for **Virtual Gold Inc** (AI consulting, Brooklyn NY).
 Client contact: Urte Jesina. Team: 5 people.
 
-We are designing and evaluating a **local-first enterprise AI assistant**: open-source models running locally are the primary intelligence layer, every response gets a measured confidence score, and requests escalate to a cloud model only when confidence is low **and** data sensitivity allows. Sensitive data stays local.
+We are building and evaluating a **local sanitization service**: a standalone HTTP service, running an open-source model on our own hardware, that strips private information out of text before it reaches a cloud AI model. The client's own assistant calls it automatically, before any text leaves for the cloud. Deciding what counts as private — reliably enough to measure, in a setting where the same string is confidential in one context and public in another — is the research problem.
+
+> **Direction set at the Sep 21 client meeting:** the horizontal scenario (this service) first; the vertical scenario (a trading assistant over public filings) deferred to time-permitting status. Anything in this repository written before that date describes the earlier design, a hybrid assistant with confidence-based escalation. The architecture document has not yet been revised — see the note below.
 
 ## Current status (Week 5, updated 2026-09-27)
 
