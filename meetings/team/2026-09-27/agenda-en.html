@@ -194,7 +194,7 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
   <h1>Four things to settle tonight</h1>
   <dl class="meta">
     <div><dt>When</dt><dd>Sunday 2026-09-27, 22:00 · client meeting tomorrow at 18:00</dd></div>
-    <div><dt>How to use it</dt><dd>The first three come with a <b>suggested answer (green box)</b> &mdash; just say yes or no to it. The fourth has none, because only the client can answer it</dd></div>
+    <div><dt>How to use it</dt><dd><b>All four come with a recommended answer (green box)</b> &mdash; just say yes or no to it. Do not start from nothing</dd></div>
     <div><dt>Two more</dt><dd>State storage and who owns the confidence score have moved to <code>deferred-en.md</code>. Neither affects tomorrow; we take them after the meeting</dd></div>
   </dl>
 </header>
@@ -209,7 +209,7 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
     <tr><td>1</td><td>The same thing has two different names</td><td>Yudi ↔ Zhexuan</td><td>Yes</td></tr>
     <tr><td>2</td><td>What gets written down for the 100 emails</td><td>Karina ↔ the other two</td><td>Yes, and it <b>has to be</b></td></tr>
     <tr><td>3</td><td>What to do when the model is unsure</td><td>Zhexuan ↔ Yudi</td><td>Yes</td></tr>
-    <tr><td>4</td><td><b>Once it is masked, has it still left?</b></td><td>Zhexuan ↔ Karina</td><td><mark class="hl-no">No &mdash; only the client can answer</mark></td></tr>
+    <tr><td>4</td><td><b>Once it is masked, has it still left?</b></td><td>Zhexuan ↔ Karina</td><td><b>Yes</b> &mdash; there is an answer that does not depend on the client</td></tr>
   </table></div>
 </div>
 
@@ -238,7 +238,7 @@ account <b>4532-1178-9902</b>.
   <p class="rec"><b>The problem:</b> "oncologist" in this email is <code>High (health)</code> in Yudi's document and <code>regulated:health</code> in Zhexuan's. Same thing, two names.</p>
   <p><b>Karina starts labelling 100 emails tomorrow. What does she write in the category column?</b> There is no answer right now, so she would invent a third set.</p>
 
-  <div class="prop"><span class="h">Suggested</span>
+  <div class="prop"><span class="h">Recommended</span>
   <b>They are not actually arguing about the same thing.</b><br><br>
   Yudi is asking: <b>"how bad is it if this leaks?"</b> &mdash; the worse it is, the lower the bar for masking it.<br>
   Zhexuan is asking: <b>"can we let the model decide this one?"</b> &mdash; for some things, no, however sure it is.<br><br>
@@ -287,7 +287,7 @@ account <b>4532-1178-9902</b>.
   <b>Karina records:</b> it is a phone, either way is fine<br>
   <b>Zhexuan also needs:</b> it is inside a quoted thread &mdash; <mark class="hl-no">and if "quoted thread" counts as "source unclear", the whole email gets blocked</mark></div>
 
-  <div class="prop"><span class="h">Suggested</span>
+  <div class="prop"><span class="h">Recommended</span>
   <b>For each thing found, record six items:</b>
   <div class="tbl"><table>
     <tr><th>What</th><th>Values</th></tr>
@@ -332,7 +332,7 @@ account <b>4532-1178-9902</b>.
 
   <div class="risk"><span class="h">Why this is a conflict, not just a preference</span><b>Yudi's whole selling point is "no person has to check each item".</b> His words: Rescriber, the closest prior system, makes the user confirm every item, and we do not.<br><br><b>What Zhexuan added is exactly that.</b> The two claims cancel each other out.</div>
 
-  <div class="prop"><span class="h">Suggested</span>
+  <div class="prop"><span class="h">Recommended</span>
   <b>Start from why you would want a person to look.</b><br><br>
   Because you are <b>afraid of masking the wrong thing</b>.<br><br>
   <mark class="hl-key">But Karina's whole argument is that masking the wrong thing gets restored, so it costs almost nothing.</mark><br><br>
@@ -355,7 +355,7 @@ account <b>4532-1178-9902</b>.
   </div>
 </div>
 
-<div class="cat"><h2><span class="ord">4</span>Once it is masked, has it still left</h2><span class="tag">Zhexuan ↔ Karina · 20 min · cannot be settled tonight</span></div>
+<div class="cat"><h2><span class="ord">4</span>Once it is masked, has it still left</h2><span class="tag">Zhexuan ↔ Karina · 20 min</span></div>
 <div class="item">
   <p class="rec"><b>The problem:</b> this email contains health information. Once we replace it with <code>[health]</code>, <b>can the rest go to the cloud?</b></p>
   <div class="tbl"><table>
@@ -368,12 +368,39 @@ account <b>4532-1178-9902</b>.
   <b>Karina's way:</b> those two get masked, the rest goes. <mark class="hl-key">The executive gets a normal summary and draft</mark>, and the cloud never learns it was an oncologist or what the account number is.</div>
   <div class="risk"><span class="h">And Zhexuan says himself this will happen a lot</span>From his own document: <b>"likely to trigger often in practice &mdash; long threads and quoted history make it easy for one sensitive line to bounce back a whole email that would otherwise be fine to release"</b>.<br><br>This email is exactly that: two levels of quoting, one line about health. And executive email is <b>mostly long forwarded threads</b>.</div>
   <div class="why"><span class="h">But Zhexuan is not wrong either</span>If the client's legal team says health information cannot leave the network <b>even masked</b>, then no amount of masking helps.<br><br><mark class="hl-key">That is a legal question, not a technical one. It is not ours to decide.</mark></div>
-  <div class="sell"><span class="h">So tonight we only decide how to ask</span><b>Suggested wording for Aarvin:</b><br><br>
+
+  <div class="prop"><span class="h">Recommended &middot; there is a third option</span>
+  <b>This is not a choice between two things. It is a choice between three.</b>
+  <div class="tbl"><table>
+    <tr><th></th><th>What gets held back</th><th>What the executive gets</th></tr>
+    <tr><td><b>A</b> Zhexuan</td><td>The whole email</td><td><mark class="hl-no">Nothing</mark></td></tr>
+    <tr><td><b>B</b> in between</td><td><b>Only the part that contains the regulated item</b></td><td>A summary and draft of everything else</td></tr>
+    <tr><td><b>C</b> Karina</td><td>Nothing held back; mask and send</td><td>A full summary and draft</td></tr>
+  </table></div>
+  <b>B is the answer, for one reason, and it is a hard one:</b><br><br>
+  <mark class="hl-key">A and C differ on a legal question we cannot answer. B holds under either answer.</mark><br><br>
+  &bull; Client says "masked is fine" → B is simply more conservative than C, and the cost is one lost section, which is measurable<br>
+  &bull; Client says "regulated data may never leave, even masked" → <b>B still complies</b> (that section never left at all), C does not<br><br>
+  <b>So B can be built without waiting for the client's answer.</b> That is why it beats A and C &mdash; not because it splits the difference.
+  <br><br>
+  <b>On this email:</b><br><br>
+  The oncologist section and the wire-account section → <b>stay local, not sent</b><br>
+  The quoted thread (Acme support, Harborview clause) → nothing regulated → <b>sent</b><br>
+  The rest of the body → <b>sent</b><br><br>
+  Result: the executive gets a summary and a draft reply. The summary will not mention the appointment or the account &mdash; <b>and neither was relevant to "draft a reply to Dana" in the first place.</b>
+  <br><br>
+  <b>Zhexuan has already thought of this</b> &mdash; Open Question 1 in his v2 asks whether to go per-paragraph or per-quoted-message instead of per whole thread. <mark class="hl-key">He knows whole-email is too coarse; he just has not decided. Decide it tonight.</mark>
+  <br><br>
+  <b>Two costs to state alongside it:</b><br><br>
+  <b>1.</b> The summary will have a gap and the executive <b>cannot see what is missing</b>. → The response needs a line saying "1 section kept local".<br>
+  <b>2.</b> If the regulated content <b>is the subject of the email</b> (say the whole thing is about deal terms), B degrades to A. <b>That is correct behaviour, not a flaw</b> &mdash; but we should track how often it happens.
+  </div>
+  <div class="sell"><span class="h">Even with B, we still ask</span>B exists so that we can build <b>whatever the client answers</b>, not to replace the answer. The answer decides whether we later loosen to C.<br><br><b>Suggested wording for Aarvin:</b><br><br>
   "If an email has health or financial information in it and we <b>replace it with placeholders</b>, can the rest of the message go to the cloud? Or must the <b>whole message</b> stay local?"<br><br>
   Then add:<br><br>
   "If it is the whole message &mdash; given that executive email is mostly long forwarded threads &mdash; that probably means <b>most requests get blocked</b>. Is that what you expect?"<br><br>
   <b>The answer decides whether Karina's design works at all.</b></div>
-  <p class="rec"><b>Tonight:</b> who asks, in what words, and what we do next if the answer is "the whole message".</p>
+  <p class="rec"><b>Tonight:</b> adopt B or not; who asks the client, and in what words.</p>
   <div class="fields">
     <div><label for="d4">Outcome</label><textarea id="d4" data-store="d4" placeholder="how we ask / what follows from each answer"></textarea></div>
     <div><label for="d4o">Owner</label><input id="d4o" data-store="d4o" value="Mark"></div>
@@ -389,10 +416,10 @@ account <b>4532-1178-9902</b>.
     <tr><td>1</td><td>Category list</td><td>15</td><td>One list, marking which the model cannot decide</td></tr>
     <tr><td>2</td><td>What to record when labelling</td><td>20</td><td>Six fields, and whether quoted thread counts as unclear</td></tr>
     <tr><td>3</td><td>What to do when unsure</td><td>20</td><td>The rule; if human review stays, who the person is</td></tr>
-    <tr><td>4</td><td>Masked vs left</td><td>20</td><td><b>No decision</b> &mdash; only how we ask tomorrow</td></tr>
+    <tr><td>4</td><td>Masked vs left</td><td>20</td><td>Adopt B (per-section) or not, plus how we ask</td></tr>
     <tr><td>—</td><td>Who presents what tomorrow</td><td>15</td><td>—</td></tr>
   </table></div>
-  <div class="why"><span class="h">If we run short</span><b>1 and 2 cannot be cut</b> &mdash; Karina starts tomorrow and cannot move without them.<br><br><b>3 cannot be cut</b> &mdash; it decides whether our selling point survives.<br><br><b>4 cannot be cut</b> &mdash; it decides what we ask tomorrow.<br><br>So all four have to happen. If time is tight, squeeze 3, since the suggested answer is already written down and may not need much arguing.</div>
+  <div class="why"><span class="h">If we run short</span><b>1 and 2 cannot be cut</b> &mdash; Karina starts tomorrow and cannot move without them.<br><br><b>3 cannot be cut</b> &mdash; it decides whether our selling point survives.<br><br><b>4 cannot be cut</b> &mdash; it decides the shape of the architecture as well as what we ask tomorrow.<br><br>So all four have to happen. If time is tight, squeeze 3, since the suggested answer is already written down and may not need much arguing.</div>
   <p class="rec"><b>Suggested opening tomorrow:</b> "The three of us researched this separately and landed on the same principle &mdash; <mark class="hl-key">the model may propose, but code decides what is released.</mark>"<br>More convincing than presenting one design, and it is true.</p>
   <div class="fields">
     <div><label for="d5">Unfinished / for tomorrow</label><textarea id="d5" data-store="d5" placeholder="what we did not settle, what Aarvin must answer"></textarea></div>
