@@ -4,7 +4,7 @@
 **Present:** (to fill in)
 **Agenda:** [`agenda-en.html`](agenda-en.html) · the two items moved out are in [`deferred-en.md`](deferred-en.md)
 
-Four items: three settled, item 4 not adopted and carried forward.
+Four items: three settled, item 4 not adopted and taken to today's client meeting.
 
 ---
 
@@ -67,9 +67,9 @@ Plus one field for the whole message: `marked confidential`.
 
 **Effect:** Yudi's "without per-item human review" contribution claim survives, and Zhexuan's mechanism is not discarded — only switched off, so the contract does not change if the client later wants it.
 
-## 4. Once masked, has it still left — not adopted, carried forward
+## 4. Once masked, has it still left — not adopted, taken to the client
 
-**Outcome: option B is not taken.** The topic is carried to the next meeting.
+**Outcome: option B is not taken.** The topic stays open and **goes to the client meeting on Monday 2026-09-28 at 18:00, to be discussed with them directly.**
 
 The agenda recommended B — hold back only the **section** containing the regulated item rather than the whole email — on the grounds that A (hold the whole email) and C (mask and send everything) differ on a legal question while B holds under either answer. The team decided against it.
 
@@ -93,7 +93,7 @@ The agenda recommended B — hold back only the **section** containing the regul
 | 4 | Add the single bar and the "not sure" tag to the API spec; mark `PENDING_REVIEW` disabled | Zhexuan | (to fill in) |
 | 5 | Ask the client for the confidential term list | Yudi | client meeting |
 | 6 | **Ask the client: once replaced with placeholders, can the rest of the email go to the cloud** — item 4 turns on this | Mark | client meeting |
-| 7 | Carry item 4 (policy-gate granularity) to the next meeting | everyone | next meeting |
+| 7 | Take item 4 (policy-gate granularity) to the client for discussion | Mark | 2026-09-28 client meeting |
 
 ## Not yet recorded
 
