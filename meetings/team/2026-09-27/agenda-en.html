@@ -191,35 +191,31 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
 <div class="page">
 <header>
   <div class="eyebrow">CMU Capstone · Virtual Gold Inc · Internal</div>
-  <h1>Tonight's alignment: six conflicts between the four proposals</h1>
+  <h1>Four things to settle tonight</h1>
   <dl class="meta">
-    <div><dt>When</dt><dd>Sunday 2026-09-27, 22:00 · last session before the client meeting on Monday 9/28 at 18:00</dd></div>
-    <div><dt>Goal</dt><dd>Settle five of the six. The sixth cannot be settled by us, so we settle how to ask the client instead</dd></div>
-    <div><dt>Out of scope</dt><dd>Technical detail inside anyone's own proposal. That may change again after tomorrow; tonight is only for <b>where two documents contradict each other</b></dd></div>
-    <div><dt>How to use it</dt><dd><b>Items 1 to 5 each carry a draft proposal (green box)</b> &mdash; argue with it or amend it rather than starting from nothing. Item 6 has none, because only the client can answer it</dd></div>
+    <div><dt>When</dt><dd>Sunday 2026-09-27, 22:00 · client meeting tomorrow at 18:00</dd></div>
+    <div><dt>How to use it</dt><dd>The first three come with a <b>suggested answer (green box)</b> &mdash; just say yes or no to it. The fourth has none, because only the client can answer it</dd></div>
+    <div><dt>Two more</dt><dd>State storage and who owns the confidence score have moved to <code>deferred-en.md</code>. Neither affects tomorrow; we take them after the meeting</dd></div>
   </dl>
 </header>
 
-<div class="cat"><h2>Why these six</h2><span class="tag">Framing</span></div>
+<div class="cat"><h2>The background, briefly</h2><span class="tag">2 min</span></div>
 <div class="item">
-  <p>We have three proposals: <b>Yudi</b>'s tiered classification, <b>Karina</b>'s redact-always, and <b>Zhexuan and Anmol</b>'s API contract and architecture v2.</p>
-  <p class="rec"><b>The good news:</b> all three converged independently on the same principle &mdash; <mark class="hl-key">the model may propose, but only code may release</mark>. All three also use reversible placeholders and all three fail closed.</p>
-  <p>What is left is six places where <b>two documents give different answers to the same question</b>. Ordered by dependency: the later ones cannot be settled until the earlier ones are.</p>
+  <p>We have three proposals: <b>Yudi</b>, <b>Karina</b>, and <b>Zhexuan + Anmol</b>.</p>
+  <p class="rec"><b>The good news:</b> all three say the same thing &mdash; <mark class="hl-key">the model may propose, but code decides what is released.</mark> All three use reversible placeholders, and all three stop everything when something goes wrong.</p>
+  <p>Tonight is only about the places where <b>the three documents answer the same question differently</b>. Details inside each proposal are out &mdash; those may change again after tomorrow.</p>
   <div class="tbl"><table>
-    <tr><th>#</th><th>Conflict</th><th>Between</th><th>Settle tonight?</th></tr>
-    <tr><td>1</td><td>The category lists do not match</td><td>Yudi ↔ Zhexuan</td><td>Yes</td></tr>
-    <tr><td>2</td><td>What fields the 100 emails get labelled with</td><td>Karina ↔ Yudi ↔ Zhexuan</td><td>Yes, and it <b>must</b> be</td></tr>
-    <tr><td>3</td><td>What happens when confidence lands in the middle</td><td>Zhexuan ↔ Yudi</td><td>Yes</td></tr>
-    <tr><td>4</td><td>State storage: three names, or four things</td><td>Everyone</td><td>Yes</td></tr>
-    <tr><td>5</td><td>Who owns the confidence score, and whose version</td><td>Three wrote one ↔ it is Anmol's area</td><td>Yes</td></tr>
-    <tr><td>6</td><td><b>Does redacted still count as having left</b></td><td>Zhexuan ↔ Karina</td><td><mark class="hl-no">No &mdash; only the client can answer</mark></td></tr>
+    <tr><th>#</th><th>What to settle</th><th>Between</th><th>Tonight?</th></tr>
+    <tr><td>1</td><td>The same thing has two different names</td><td>Yudi ↔ Zhexuan</td><td>Yes</td></tr>
+    <tr><td>2</td><td>What gets written down for the 100 emails</td><td>Karina ↔ the other two</td><td>Yes, and it <b>has to be</b></td></tr>
+    <tr><td>3</td><td>What to do when the model is unsure</td><td>Zhexuan ↔ Yudi</td><td>Yes</td></tr>
+    <tr><td>4</td><td><b>Once it is masked, has it still left?</b></td><td>Zhexuan ↔ Karina</td><td><mark class="hl-no">No &mdash; only the client can answer</mark></td></tr>
   </table></div>
 </div>
 
-<div class="cat"><h2>The shared example</h2><span class="tag">All six use this one email</span></div>
+<div class="cat"><h2>One email, used for all four</h2><span class="tag">Shared example</span></div>
 <div class="item">
-  <p class="ctx">Rather than a new example per topic, all six sections below use this message. It happens to touch every one of the conflicts.</p>
-  <div class="mail"><span class="who">From Dana Whitfield (external partner) · Subject RE: RE: Blue Harbor — Q4 numbers</span>Tom,
+  <div class="mail"><span class="who">From Dana (outside partner) · Subject RE: RE: Blue Harbor</span>Tom,
 
 Before Thursday's board call &mdash; my <b>oncologist</b> moved my appointment,
 so I'll dial in from home. Reach me on my cell, <b>412-555-0182</b>.
@@ -234,256 +230,180 @@ account <b>4532-1178-9902</b>.
 &gt; <b>Sarah</b> from Legal flagged the <b>Harborview</b> clause.
 &gt;&gt; On Sep 18, <b>Sarah Chen</b> wrote:
 &gt;&gt; I'll review by Friday.</div>
-  <div class="eg"><span class="who">What the executive asks the assistant</span>Summarize this and draft a reply to Dana.</div>
-  <p class="ctx">This message contains: <b>health information</b> (oncologist), a <b>bank account</b>, a <b>personal mobile</b>, a <b>public support line inside a quoted thread</b>, <b>two proper nouns of unclear type</b> (Blue Harbor, Harborview), <b>one person written two ways</b> (Sarah / Sarah Chen), and <b>two levels of quoted history</b>.</p>
+  <div class="eg"><span class="who">The executive says</span>Summarize this and draft a reply to Dana.</div>
 </div>
 
-<div class="cat"><h2><span class="ord">1</span>The category lists do not match</h2><span class="tag">Yudi ↔ Zhexuan · 15 min</span></div>
+<div class="cat"><h2><span class="ord">1</span>The same thing has two different names</h2><span class="tag">Yudi ↔ Zhexuan · 15 min</span></div>
 <div class="item">
-  <p class="dep">Without this, the labelling fields in item 2 cannot be defined.</p>
+  <p class="rec"><b>The problem:</b> "oncologist" in this email is <code>High (health)</code> in Yudi's document and <code>regulated:health</code> in Zhexuan's. Same thing, two names.</p>
+  <p><b>Karina starts labelling 100 emails tomorrow. What does she write in the category column?</b> There is no answer right now, so she would invent a third set.</p>
+
+  <div class="prop"><span class="h">Suggested</span>
+  <b>They are not actually arguing about the same thing.</b><br><br>
+  Yudi is asking: <b>"how bad is it if this leaks?"</b> &mdash; the worse it is, the lower the bar for masking it.<br>
+  Zhexuan is asking: <b>"can we let the model decide this one?"</b> &mdash; for some things, no, however sure it is.<br><br>
+  <mark class="hl-key">Two different questions. Both answers can sit on the same category.</mark><br><br>
+  And they have already circled the same set of things &mdash; what is in Yudi's two High tiers is very close to Zhexuan's five "model cannot decide" categories.
   <div class="tbl"><table>
-    <tr><th>Yudi's tiers</th><th>Zhexuan's categories</th></tr>
-    <tr><td>High (personal): government IDs, passwords and keys, bank and card numbers, health information</td><td>regulated: health, financial, credential/secret</td></tr>
-    <tr><td>High (business): unreleased results, deal terms, project code names, legal matters</td><td>regulated: confidential-business, confidential-email/thread</td></tr>
-    <tr><td>Medium / Low / Public</td><td>standard (everything else)</td></tr>
+    <tr><th>Category</th><th>What it is</th><th>In this email</th><th>Model decides?</th></tr>
+    <tr><td><code>health</code></td><td>conditions, diagnoses, appointments</td><td>oncologist</td><td><b>No</b></td></tr>
+    <tr><td><code>financial_account</code></td><td>account and card numbers</td><td>4532-1178-9902</td><td><b>No</b></td></tr>
+    <tr><td><code>government_id</code></td><td>national ID, passport</td><td>—</td><td><b>No</b></td></tr>
+    <tr><td><code>credential</code></td><td>passwords, keys</td><td>—</td><td><b>No</b></td></tr>
+    <tr><td><code>business_confidential</code></td><td>unreleased figures, deal terms, project code names</td><td>Blue Harbor, Harborview</td><td><b>No</b></td></tr>
+    <tr><td><code>person_private</code></td><td>names of private people</td><td>Dana, Sarah Chen</td><td>Yes · strict bar</td></tr>
+    <tr><td><code>contact_personal</code></td><td>personal phone, email, address</td><td>412-555-0182</td><td>Yes · strict bar</td></tr>
+    <tr><td><code>person_public</code></td><td>public figures</td><td>—</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>contact_public</code></td><td>published support lines</td><td>1-800-555-0199</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>org</code></td><td>companies, organisations</td><td>Acme</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>location</code></td><td>cities, regions</td><td>—</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>date_time</code></td><td>dates and times</td><td>Thursday, Sep 20</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>demographic</code></td><td>age, gender</td><td>—</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>quantity</code></td><td>amounts, percentages</td><td>18%</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>confidential_marking</code></td><td colspan="3"><b>not a word in the text &mdash; a marking on the whole message</b>, like "keep this confidential" or "board only"</td></tr>
   </table></div>
-  <div class="eg"><span class="who">On this email</span><b>"oncologist"</b> &mdash; Yudi labels it <code>High (health)</code>, Zhexuan labels it <code>regulated:health</code>. Same thing, two names.<br><br><b>"Harborview clause"</b> &mdash; Yudi would probably say <code>High (business, legal matters)</code>, Zhexuan <code>regulated:confidential-business</code>. <b>Or they might each pick something else</b>, because there is no shared list to look it up in.</div>
-  <div class="risk"><span class="h">If we do not settle it</span>When Karina starts labelling she <b>will not know what to write in the category field</b>. She will invent a third list, and then none of the three will line up.</div>
-  <p class="rec"><b>Decide:</b> one category list, marking which are regulated (a confidence score alone may never release them) and which are standard.</p>
-  
-  <div class="prop"><span class="h">Proposed · one list, three attributes per category</span>
-  <b>The key point: the two lists are not competing, they are two different axes.</b> Yudi's tier asks "how severe is a leak" (it sets the threshold); Zhexuan's regulated/standard asks "may a confidence score authorise release at all" (a binary gate). <b>A category needs both.</b> And the two already point at the same set &mdash; Yudi's two High rows are close to Zhexuan's five regulated categories.
-  <div class="tbl"><table>
-    <tr><th>id</th><th>gate</th><th>tier</th><th>Covers</th><th>In this email</th><th>Detected by</th></tr>
-    <tr><td><code>health</code></td><td>regulated</td><td>High</td><td>conditions, diagnoses, appointments</td><td>oncologist</td><td>NER + model</td></tr>
-    <tr><td><code>financial_account</code></td><td>regulated</td><td>High</td><td>account, card, routing, IBAN</td><td>4532-1178-9902</td><td>rules + checksum</td></tr>
-    <tr><td><code>government_id</code></td><td>regulated</td><td>High</td><td>national ID, passport, licence</td><td>—</td><td>rules + checksum</td></tr>
-    <tr><td><code>credential</code></td><td>regulated</td><td>High</td><td>passwords, API keys, private keys</td><td>—</td><td>rules</td></tr>
-    <tr><td><code>business_confidential</code></td><td>regulated</td><td>High</td><td>unreleased results, deal terms, code names, legal matters</td><td>Blue Harbor, Harborview</td><td><mark class="hl-no">needs client term list</mark></td></tr>
-    <tr><td><code>person_private</code></td><td>standard</td><td>Medium</td><td>names of private individuals</td><td>Dana, Sarah Chen</td><td>NER</td></tr>
-    <tr><td><code>contact_personal</code></td><td>standard</td><td>Medium</td><td>personal phone / email / address</td><td>412-555-0182</td><td>rules + context</td></tr>
-    <tr><td><code>person_public</code></td><td>standard</td><td>Public</td><td>public figures</td><td>—</td><td>NER + model</td></tr>
-    <tr><td><code>contact_public</code></td><td>standard</td><td>Public</td><td>published support or switchboard lines</td><td>1-800-555-0199</td><td>rules + context</td></tr>
-    <tr><td><code>org</code></td><td>standard</td><td>Low</td><td>organisations, company names</td><td>Acme</td><td>NER</td></tr>
-    <tr><td><code>location</code></td><td>standard</td><td>Low</td><td>cities, regions</td><td>—</td><td>NER</td></tr>
-    <tr><td><code>date_time</code></td><td>standard</td><td>Low</td><td>dates and times</td><td>Thursday, Sep 20</td><td>rules</td></tr>
-    <tr><td><code>demographic</code></td><td>standard</td><td>Low</td><td>age, gender</td><td>—</td><td>NER</td></tr>
-    <tr><td><code>quantity</code></td><td>standard</td><td>Low</td><td>amounts, percentages, counts</td><td>18%</td><td>rules</td></tr>
-    <tr><td><code>confidential_marking</code></td><td colspan="2"><b>message level</b></td><td>"keep this confidential", "board only", "do not forward"</td><td>(not in this one)</td><td>rules</td></tr>
-  </table></div>
-  <b>Three rules to settle alongside it:</b><br>
-  <b>1.</b> The <code>Low</code> combination rule &mdash; retained individually, escalated when several appear together (Yudi cites Sweeney: ZIP, gender and date of birth uniquely identify 87%).<br>
-  <b>2.</b> Amounts are a boundary case &mdash; <code>$2.4M</code> attached to a deal is <code>business_confidential</code>, a bare <code>18%</code> is <code>quantity</code>. <b>That is exactly what the model is for; do not try to make it a rule.</b><br>
-  <b>3.</b> <code>confidential_marking</code> <b>is not a span category, it is a property of the whole message</b> &mdash; that distinction has to carry into the schema in conflict 2. What it should then <em>do</em> is conflict 6, not tonight.
+  <b>Three things to agree alongside it:</b><br><br>
+  <b>1. Loose-bar items tighten up when they cluster.</b> City plus gender plus date of birth identifies 87% of people (the study Yudi cites). Fine alone, masked together.<br><br>
+  <b>2. Amounts are genuinely hard.</b> <code>$2.4M</code> attached to a deal is business confidential; a bare <code>18%</code> is just a number. <mark class="hl-key">This is what the model is for &mdash; do not try to write a rule.</mark><br><br>
+  <b>3. The last row is a marking on the message, not a word in it.</b> That difference gets used tomorrow when labelling (item 2). What should <em>happen</em> when a message is marked confidential is item 4, not tonight.<br><br>
+  <mark class="hl-no">One thing to know now:</mark> <code>business_confidential</code> is the only one of the five we <b>cannot detect</b>. The other four have a format or a clear meaning; this one has neither &mdash; <code>Blue Harbor</code> just looks like a place name. <b>We need a list of terms from the client</b>, which Yudi already has on his list of things to ask for.
   </div>
+  <div class="risk"><span class="h">If we skip it</span>Karina starts tomorrow, does not know what to put in the category column, invents her own &mdash; and then none of the three line up.</div>
   <div class="fields">
-    <div><label for="d1">Outcome</label><textarea id="d1" data-store="d1" placeholder="the list / who writes it / by when"></textarea></div>
+    <div><label for="d1">Outcome</label><textarea id="d1" data-store="d1" placeholder="is the list agreed / who writes it up / by when"></textarea></div>
     <div><label for="d1o">Owner</label><input id="d1o" data-store="d1o" value="Yudi"></div>
     <div><label for="d1d">Due</label><input id="d1d" data-store="d1d" placeholder="date"></div>
   </div>
 </div>
 
-<div class="cat"><h2><span class="ord">2</span>What the 100 emails get labelled with</h2><span class="tag">Karina ↔ Yudi ↔ Zhexuan · 20 min</span></div>
+<div class="cat"><h2><span class="ord">2</span>What gets written down for the 100 emails</h2><span class="tag">Karina ↔ the other two · 20 min</span></div>
 <div class="item">
-  <p class="dep">Depends on item 1. Karina starts labelling tomorrow, so this <b>has</b> to be finished tonight.</p>
+  <p class="rec"><b>The problem:</b> Karina has worked out what to record. But what she records, <b>neither Yudi nor Zhexuan can use.</b></p>
+  <div class="eg"><span class="who">One phone number, three different needs</span><b>412-555-0182</b> (Dana's own mobile)<br><br>
+  <b>Karina records:</b> it is a phone, mask it<br>
+  <b>Yudi also needs:</b> which category it belongs to (personal contact details)<br>
+  <b>Zhexuan also needs:</b> where it came from (the sender's own text)<br><br>
+  <b>1-800-555-0199</b> (Acme support, in the quoted thread)<br><br>
+  <b>Karina records:</b> it is a phone, either way is fine<br>
+  <b>Zhexuan also needs:</b> it is inside a quoted thread &mdash; <mark class="hl-no">and if "quoted thread" counts as "source unclear", the whole email gets blocked</mark></div>
+
+  <div class="prop"><span class="h">Suggested</span>
+  <b>For each thing found, record six items:</b>
   <div class="tbl"><table>
-    <tr><th>Field</th><th>Karina</th><th>Yudi</th><th>Zhexuan</th></tr>
-    <tr><td><code>type</code> entity type</td><td>✓</td><td>—</td><td>✓</td></tr>
-    <tr><td><code>category</code> sensitivity category</td><td><mark class="hl-no">✗</mark></td><td>✓ his tiers need it</td><td>✓ his policy gate needs it</td></tr>
-    <tr><td>ground truth</td><td><code>must_mask: yes/ok_either_way</code></td><td><code>private/public in context</code></td><td>—</td></tr>
-    <tr><td><code>provenance</code></td><td><mark class="hl-no">✗</mark></td><td>✓</td><td>✓ "unclear source" triggers LOCAL_ONLY</td></tr>
+    <tr><th>What</th><th>Values</th></tr>
+    <tr><td>Where it is</td><td>start and end position</td></tr>
+    <tr><td>What kind of thing</td><td><code>phone</code> / <code>person</code> / <code>company</code>…</td></tr>
+    <tr><td>Which category</td><td>a name from the item-1 list</td></tr>
+    <tr><td><b>The right answer</b></td><td><b>must mask</b> / <b>either way is fine</b> / <b>must not mask</b></td></tr>
+    <tr><td>Where it came from</td><td>executive typed it / body / quoted thread / signature / not sure</td></tr>
+    <tr><td>Same person?</td><td>Sarah and Sarah Chen share one number</td></tr>
   </table></div>
-  <div class="eg"><span class="who">On this email · one phone number, three different needs</span><b><code>412-555-0182</code> (Dana's mobile, in the body)</b><br>
-  Karina needs: <code>{type: PHONE, must_mask: yes}</code><br>
-  Yudi needs: <code>{category: Medium-personal-phone, private_in_context: true}</code><br>
-  Zhexuan needs: <code>{category: standard, provenance: external-sender-body}</code><br><br>
-  <b><code>1-800-555-0199</code> (Acme support, inside the quoted thread)</b><br>
-  Karina needs: <code>{type: PHONE, must_mask: ok_either_way}</code><br>
-  Yudi needs: <code>{category: Public, private_in_context: false}</code><br>
-  Zhexuan needs: <code>{provenance: quoted-thread}</code> &mdash; <mark class="hl-no">and "quoted thread" may itself count as unclear provenance, which would put the whole email in LOCAL_ONLY</mark></div>
-  <p class="ctx">The two binary labels also do not mean the same thing: Karina's <code>ok_either_way</code> covers both "this is public" and "private but it does not matter either way"; Yudi's <code>public in context</code> covers only the first.</p>
-  <div class="risk"><span class="h">If we do not settle it</span>Karina labels 100 emails → Yudi cannot use them (no category) → Zhexuan cannot either (no category, no provenance) → <b>relabel</b>. On her own plan that is a full week, and this is the one item Aarvin actually pushed on.</div>
-  <p class="rec"><b>Decide:</b> one schema with four fields &mdash; <code>type</code>, <code>category</code>, <code>ground_truth</code>, <code>provenance</code> &mdash; and which of the two binary meanings the ground truth takes.</p>
-  
-  <div class="prop"><span class="h">Proposed · four fields, and ground truth becomes three-valued</span>
-  <b>The important change: ground truth should not be binary.</b> Neither Karina's <code>yes/ok_either_way</code> nor Yudi's <code>private/public</code> can express the third case &mdash; <b>some things break the task if masked</b> (Karina's own red-flagged scenarios: 7 scheduling needs real dates, 9 lookups need the real company name).
-  <div class="tbl"><table>
-    <tr><th>Field</th><th>Values</th><th>Who needs it</th></tr>
-    <tr><td><code>span</code></td><td>start / end offsets</td><td>everyone</td></tr>
-    <tr><td><code>type</code></td><td>what the detector emits: <code>PHONE</code> / <code>PERSON</code> / <code>ORG</code>…</td><td>Karina, Zhexuan</td></tr>
-    <tr><td><code>category</code></td><td>an id from the conflict-1 list</td><td>Yudi (tiers), Zhexuan (policy gate)</td></tr>
-    <tr><td><code>ground_truth</code></td><td><code>must_mask</code> missing it is a failure<br><code>may_mask</code> safe either way<br><b><code>must_not_mask</code> masking breaks the task</b></td><td>everyone</td></tr>
-    <tr><td><code>provenance</code></td><td><code>user_request</code> / <code>email_body</code> / <code>quoted_thread</code> / <code>signature</code> / <code>unknown</code></td><td>Yudi, Zhexuan</td></tr>
-    <tr><td><code>entity_id</code></td><td>variants of one entity share an id</td><td>Sarah / Sarah Chen</td></tr>
-  </table></div>
-  <b>Plus one message-level field:</b> <code>message.confidential_marking: true/false</code>, because conflict 1 establishes that it is not a span.
+  Plus one field for the whole message: <b>is this message marked confidential</b> (because item 1 established that is not a word in the text).
   <br><br>
-  <b>One more thing to settle on the spot: does <code>quoted_thread</code> count as unclear provenance?</b><br>
-  <mark class="hl-key">Proposed: no.</mark> A quoted thread has <b>clear</b> provenance &mdash; it came from a known message. <code>unknown</code> should be reserved for cases we genuinely cannot place. <b>Otherwise almost every executive email is LOCAL_ONLY simply for having quoted history</b>, which multiplies the problem in conflict 6.
+  <b>The change that matters: the right answer needs three values, not two.</b><br><br>
+  Karina had two (mask / either way). Yudi had two (private / public). <mark class="hl-key">Neither can say the third thing: some items break the job if you mask them.</mark><br><br>
+  <b>Example:</b> the executive says "find me time with Acme next week". Mask the <b>dates</b> and the cloud has no idea when, so the job cannot be done. Dates are <b>"must not mask"</b>, not "either way is fine".<br><br>
+  Same with "how much did Acme raise" &mdash; mask the company name and there is nothing to look up.<br><br>
+  <b>Both of these are cases Karina flagged in red in her own document</b> &mdash; her label format just cannot express them.
+  <br><br>
+  <b>One more to settle on the spot:</b><br>
+  <mark class="hl-ask">Does "quoted thread" count as "source unclear"?</mark><br><br>
+  <b>Suggested: no.</b> A quoted thread has a perfectly clear source &mdash; the previous message. "Not sure" should be for things we genuinely cannot place.<br>
+  <b>Why it matters:</b> almost every executive email has quoted history. If quoted history counts as unclear, <b>almost every email gets blocked entirely</b> &mdash; which multiplies the problem in item 4.
   </div>
+  <div class="risk"><span class="h">If we skip it</span>Karina labels 100 emails → Yudi cannot use them, Zhexuan cannot either → <b>label them again</b>. On her own plan that is a full week, and this is the one thing Aarvin actually pushed on.</div>
   <div class="fields">
-    <div><label for="d2">Outcome</label><textarea id="d2" data-store="d2" placeholder="schema / who writes the labelling guide"></textarea></div>
+    <div><label for="d2">Outcome</label><textarea id="d2" data-store="d2" placeholder="six fields agreed / does quoted thread count as unclear"></textarea></div>
     <div><label for="d2o">Owner</label><input id="d2o" data-store="d2o" value="Karina"></div>
     <div><label for="d2d">Due</label><input id="d2d" data-store="d2d" placeholder="date"></div>
   </div>
 </div>
 
-<div class="cat"><h2><span class="ord">3</span>What happens when confidence lands in the middle</h2><span class="tag">Zhexuan ↔ Yudi · 20 min</span></div>
+<div class="cat"><h2><span class="ord">3</span>What to do when the model is unsure</h2><span class="tag">Zhexuan ↔ Yudi · 20 min</span></div>
 <div class="item">
-  <p class="dep">Depends on items 1 and 2 &mdash; you need the categories and the ground truth before you know what "the middle" looks like.</p>
+  <p class="rec"><b>The problem:</b> the model says "I'm <b>55%</b> sure <code>Harborview</code> is a confidential project code name". What happens to that?</p>
   <div class="tbl"><table>
-    <tr><th>Who</th><th>Answer</th></tr>
-    <tr><td><b>Yudi</b></td><td>Use thresholds, err toward caution (High tier drops to 0.2)</td></tr>
-    <tr><td><b>Karina</b></td><td>Mask it anyway; it comes back on restore</td></tr>
-    <tr><td><b>Zhexuan</b></td><td>Return <code>PENDING_REVIEW</code>, <b>hand it to a person</b>, caller polls</td></tr>
+    <tr><th>Who</th><th>What they do</th></tr>
+    <tr><td><b>Yudi</b></td><td>Lower the bar, err on the safe side → mask it</td></tr>
+    <tr><td><b>Karina</b></td><td>It gets restored anyway → mask it</td></tr>
+    <tr><td><b>Zhexuan</b></td><td><b>Get a person to look</b>; the system says "still working on it"</td></tr>
   </table></div>
-  <div class="eg"><span class="who">On this email</span><b><code>Harborview</code></b> &mdash; a project code name (sensitive) or a place name (not)? The model returns <b>0.55</b>.<br><br>
-  Yudi: above the Medium threshold of 0.5 → mask<br>
-  Karina: detected, so mask<br>
-  <b>Zhexuan: between auto-redact and reject → <code>PENDING_REVIEW</code></b><br>
-<br>
-  <mark class="hl-no">Under Zhexuan's design the executive hits "draft me a reply" and gets back "still processing", then waits for a person to go and decide what Harborview is.</mark></div>
-  <div class="risk"><span class="h">Why this is a conflict, not just a preference</span>Yudi states "<b>without per-item human review</b>" as this project's research contribution &mdash; on the grounds that Rescriber, the closest prior system, requires the user to confirm every item, and we cannot.<br><br><b>What Zhexuan added is exactly that mechanism.</b> The two contribution claims cancel out.</div>
-  <div class="why"><span class="h">The observation that resolves it</span>Human review exists because <b>getting it wrong is expensive</b>.<br><br>Karina's entire argument is that <b>getting it wrong is cheap</b>, because everything is restored. <mark class="hl-key">If that argument holds, the reason for human review disappears.</mark></div>
-  <div class="sell"><span class="h">Suggestion</span>Take "<b>mask anyway, and log the low-confidence spans for later analysis</b>".<br><br>It does three things at once: keeps Yudi's contribution claim, matches Karina's reversibility, and does not require a reviewer who does not exist.<br><br>And Zhexuan's <code>PENDING_REVIEW</code> <b>need not be thrown away</b> &mdash; keep it in the API, disabled in v0, as a future option. Leaving the interface in place also reads well to the client.</div>
-  <p class="rec"><b>Decide:</b> what happens in the middle band. If human review stays, we must also answer <b>who the reviewer is</b>.</p>
-  
-  <div class="prop"><span class="h">Proposed · one threshold plus logging; PENDING_REVIEW stays in the spec, off in v0</span>
-  <b>Concretely:</b><br>
-  <b>1.</b> Drop the threshold pair (auto-redact / reject); keep <b>one</b>.<br>
-  <b>2.</b> Below the threshold, <b>mask anyway</b> &mdash; masking is reversible, so the cost of being wrong is already small &mdash; but tag it <code>low_confidence</code> and log it.<br>
-  <b>3.</b> That log <b>is the over-masking measurement</b>. Karina's metric set already includes over-mask rate; this gives it a data source instead of needing a second mechanism.<br>
-  <b>4.</b> Keep <code>PENDING_REVIEW</code> <b>in the API decision enum but never return it in v0</b>. The interface stays, so if the client later does want human review, the contract does not change.
+  <div class="eg"><span class="who">On this email</span>The executive hits "draft me a reply" and <mark class="hl-no">gets back "still processing". Then waits for someone to go and work out what Harborview is.</mark></div>
+
+  <div class="risk"><span class="h">Why this is a conflict, not just a preference</span><b>Yudi's whole selling point is "no person has to check each item".</b> His words: Rescriber, the closest prior system, makes the user confirm every item, and we do not.<br><br><b>What Zhexuan added is exactly that.</b> The two claims cancel each other out.</div>
+
+  <div class="prop"><span class="h">Suggested</span>
+  <b>Start from why you would want a person to look.</b><br><br>
+  Because you are <b>afraid of masking the wrong thing</b>.<br><br>
+  <mark class="hl-key">But Karina's whole argument is that masking the wrong thing gets restored, so it costs almost nothing.</mark><br><br>
+  If it costs almost nothing, it is not worth a person's time.
   <br><br>
-  <b>Why this satisfies all three:</b> Yudi's "without per-item human review" contribution claim survives; Karina's reversibility argument is exactly what justifies it; Zhexuan's mechanism is not discarded, only deferred.<br><br>
-  <mark class="hl-no">If the meeting decides to keep human review, it must answer "who reviews" in the same breath</mark> &mdash; one executive, dozens of times a day. Without an answer we cannot present this design to the client.
+  <b>Concretely:</b><br><br>
+  <b>1.</b> Keep <b>one</b> bar, not two.<br>
+  <b>2.</b> Below the bar, <b>mask it anyway</b>, but tag it &mdash; <code>not sure</code>.<br>
+  <b>3.</b> Those tags <b>are the data on how much we over-masked</b>. Karina's metrics already ask for that number; now it has a source instead of needing a second mechanism.<br>
+  <b>4.</b> Do <b>not</b> delete Zhexuan's "get a person to look" &mdash; leave it in the API spec, switched off in this version. If the client later wants it, the interface does not change.
+  <br><br>
+  <b>This covers all three:</b> Yudi's selling point survives, Karina's argument is exactly the reason for doing it this way, and Zhexuan's work is not thrown out, just switched off for now.
+  <br><br>
+  <mark class="hl-no">If we decide tonight to keep human review, we have to answer right there: who is the person?</mark> One executive, dozens of times a day. Without an answer we cannot put this design in front of the client tomorrow.
   </div>
   <div class="fields">
-    <div><label for="d3">Outcome</label><textarea id="d3" data-store="d3" placeholder="middle-band handling / keep PENDING_REVIEW?"></textarea></div>
+    <div><label for="d3">Outcome</label><textarea id="d3" data-store="d3" placeholder="what happens below the bar / keep human review?"></textarea></div>
     <div><label for="d3o">Owner</label><input id="d3o" data-store="d3o" value="Zhexuan + Yudi"></div>
     <div><label for="d3d">Due</label><input id="d3d" data-store="d3d" placeholder="date"></div>
   </div>
 </div>
 
-<div class="cat"><h2><span class="ord">4</span>State storage: two names, or three things</h2><span class="tag">Everyone · 15 min</span></div>
+<div class="cat"><h2><span class="ord">4</span>Once it is masked, has it still left</h2><span class="tag">Zhexuan ↔ Karina · 20 min · cannot be settled tonight</span></div>
 <div class="item">
+  <p class="rec"><b>The problem:</b> this email contains health information. Once we replace it with <code>[health]</code>, <b>can the rest go to the cloud?</b></p>
   <div class="tbl"><table>
-    <tr><th>Who</th><th>Name</th><th>Holds</th><th>Scope</th><th>Lifetime</th></tr>
-    <tr><td>Zhexuan</td><td><code>session mapping</code></td><td>placeholder label consistency</td><td>one session</td><td>bounded</td></tr>
-    <tr><td>Karina</td><td><code>vault</code></td><td>placeholder → real value</td><td>one session</td><td>cleared at session end</td></tr>
-    <tr><td><b>Zhexuan</b></td><td><b><code>global context store</code></b></td><td><b>known entities, private information</b></td><td><b>across sessions and callers</b></td><td><b>persistent</b></td></tr>
+    <tr><th></th><th>Zhexuan</th><th>Karina</th></tr>
+    <tr><td><b>What happens</b></td><td>The whole email stays put. No person can override it</td><td>Those few words get masked, the rest goes, and it is swapped back on return</td></tr>
+    <tr><td><b>The belief behind it</b></td><td><b>Some things cannot be sent even masked</b></td><td><b>Masked things are safe to send</b></td></tr>
   </table></div>
-  <p>The first two are the same thing under two names &mdash; <b>rename and move on, five minutes</b>. The third is new and needs a real discussion.</p>
-  <div class="eg"><span class="who">On this email</span><b>Dana Whitfield</b> becomes <code>PERSON_1</code> this time. Three days later another email mentions Dana &mdash;<br><br>
-  <code>session mapping</code>: does not remember (new session, new numbering)<br>
-  <b><code>global context store</code>: remembers, and <u>shares it across all callers</u></b><br><br>
-  <mark class="hl-no">If the CEO's assistant and the CFO's assistant share one context store, does a lookup on Dana from the CFO side return what was recorded on the CEO side?</mark></div>
-  <div class="risk"><span class="h">Why it needs a real discussion</span>Zhexuan's API document says the global context store "<b>holds known private information persistently</b>" and is "<b>shared across all callers and sessions</b>".<br><br>That makes it a higher-value target than the vault (<b>it is never cleared</b>), and it sits in direct tension with the same document's own principle that sensitive content is never logged. Encryption, retention and access control are not specified.</div>
-  <p class="rec"><b>Decide:</b> (a) one name for the first three. (b) whether the global context store exists at all; if it does, who protects it, and whether cross-caller sharing is intended.</p>
-  
-  <div class="prop"><span class="h">Proposed · call it the vault; drop the context store from v0</span>
-  <b>(a) Naming:</b> the first two become <code>vault</code> (Karina's word, the most descriptive, and unambiguously session-scoped). <code>session mapping</code> and "mapping table" stop being separate components. <b>Five minutes, then move on.</b>
-  <br><br>
-  <b>(b) The global context store: proposed not to build it in v0.</b> Four reasons:
-  <br>
-  <b>1.</b> It is the highest-value target in the system &mdash; it holds private information persistently and, <b>unlike the vault, is never cleared</b>.<br>
-  <b>2.</b> Encryption, retention and access control are <b>entirely unspecified</b>, and specifying them takes time we do not have this week.<br>
-  <b>3.</b> <b>Cross-caller sharing is a privacy problem nobody asked for</b> &mdash; an entity labelled on the CEO's side becoming visible on the CFO's side is not requested anywhere in the client material.<br>
-  <b>4.</b> The core flow <b>does not need it</b> &mdash; without it every request still detects, masks and restores correctly; what is lost is a cross-session memory optimisation.
-  <br><br>
-  <mark class="hl-key">Proposed: move it to a later phase as a standalone optimisation with its own security design.</mark> Dropping it now is cheap and adding it back later is easy; carrying it now makes it a liability in every security conversation from here on.
-  </div>
+  <div class="eg"><span class="who">On this email · very different outcomes</span>This one has an <b>oncologist</b> and a <b>wire account</b> &mdash; both in the "model cannot decide" group.<br><br>
+  <b>Zhexuan's way:</b> the whole email bounces. The executive asked for a summary and a draft and <mark class="hl-no">gets "cannot process this message". The assistant is no help at all.</mark><br><br>
+  <b>Karina's way:</b> those two get masked, the rest goes. <mark class="hl-key">The executive gets a normal summary and draft</mark>, and the cloud never learns it was an oncologist or what the account number is.</div>
+  <div class="risk"><span class="h">And Zhexuan says himself this will happen a lot</span>From his own document: <b>"likely to trigger often in practice &mdash; long threads and quoted history make it easy for one sensitive line to bounce back a whole email that would otherwise be fine to release"</b>.<br><br>This email is exactly that: two levels of quoting, one line about health. And executive email is <b>mostly long forwarded threads</b>.</div>
+  <div class="why"><span class="h">But Zhexuan is not wrong either</span>If the client's legal team says health information cannot leave the network <b>even masked</b>, then no amount of masking helps.<br><br><mark class="hl-key">That is a legal question, not a technical one. It is not ours to decide.</mark></div>
+  <div class="sell"><span class="h">So tonight we only decide how to ask</span><b>Suggested wording for Aarvin:</b><br><br>
+  "If an email has health or financial information in it and we <b>replace it with placeholders</b>, can the rest of the message go to the cloud? Or must the <b>whole message</b> stay local?"<br><br>
+  Then add:<br><br>
+  "If it is the whole message &mdash; given that executive email is mostly long forwarded threads &mdash; that probably means <b>most requests get blocked</b>. Is that what you expect?"<br><br>
+  <b>The answer decides whether Karina's design works at all.</b></div>
+  <p class="rec"><b>Tonight:</b> who asks, in what words, and what we do next if the answer is "the whole message".</p>
   <div class="fields">
-    <div><label for="d4">Outcome</label><textarea id="d4" data-store="d4" placeholder="naming / context store keep or drop, and its protection"></textarea></div>
-    <div><label for="d4o">Owner</label><input id="d4o" data-store="d4o" value="Zhexuan"></div>
-    <div><label for="d4d">Due</label><input id="d4d" data-store="d4d" placeholder="date"></div>
+    <div><label for="d4">Outcome</label><textarea id="d4" data-store="d4" placeholder="how we ask / what follows from each answer"></textarea></div>
+    <div><label for="d4o">Owner</label><input id="d4o" data-store="d4o" value="Mark"></div>
+    <div><label for="d4d">Due</label><input id="d4d" data-store="d4d" value="9/28 meeting"></div>
   </div>
 </div>
 
-<div class="cat"><h2><span class="ord">5</span>Who owns the confidence score, and whose version</h2><span class="tag">Three wrote one ↔ it is Anmol's area · 15 min</span></div>
+<div class="cat"><h2>Timing</h2><span class="tag">Suggested</span></div>
 <div class="item">
   <div class="tbl"><table>
-    <tr><th>Who</th><th>Wrote</th></tr>
-    <tr><td><b>Yudi</b></td><td>A full calibration procedure (v1 score calibration, v2 agreement) plus threshold selection: the client sets a leak-rate target, thresholds follow from the experiment</td></tr>
-    <tr><td><b>Zhexuan</b></td><td>The API's <code>confidence</code> field and the auto-redact / reject threshold pair; OQ 5 assigns calibration to Evaluation</td></tr>
-    <tr><td><b>Karina</b></td><td>"The lowest threshold that still hits recall ≥ 0.95"</td></tr>
-    <tr><td><b>Anmol</b></td><td><mark class="hl-no">—</mark></td></tr>
+    <tr><th>#</th><th>What</th><th>Min</th><th>What comes out of it</th></tr>
+    <tr><td>—</td><td>Background</td><td>2</td><td>—</td></tr>
+    <tr><td>1</td><td>Category list</td><td>15</td><td>One list, marking which the model cannot decide</td></tr>
+    <tr><td>2</td><td>What to record when labelling</td><td>20</td><td>Six fields, and whether quoted thread counts as unclear</td></tr>
+    <tr><td>3</td><td>What to do when unsure</td><td>20</td><td>The rule; if human review stays, who the person is</td></tr>
+    <tr><td>4</td><td>Masked vs left</td><td>20</td><td><b>No decision</b> &mdash; only how we ask tomorrow</td></tr>
+    <tr><td>—</td><td>Who presents what tomorrow</td><td>15</td><td>—</td></tr>
   </table></div>
-  <p>And per <code>TODO.md</code> A9, "generating confidence scores" is <b>Anmol's area 3</b>.</p>
-  <div class="eg"><span class="who">On this email</span>Where does that <b>0.55</b> on <code>Harborview</code> come from?<br><br>
-  Yudi's v1: raw 0.55 → calibration table → <b>reported as 0.30</b><br>
-  Karina: share of detectors that flagged it → one of three → <b>0.33</b><br>
-  Zhexuan: the API field simply says <code>confidence: 0.55</code>, with no method attached<br><br>
-  <mark class="hl-no">One span, three methods, three numbers &mdash; and the API has one field.</mark></div>
-  <div class="risk"><span class="h">How this happened</span>Anmol is the only one who has not produced a document, because he is blocked on hardware (<code>TODO.md</code> D24, waiting on Virtual Gold). <b>So his area got written three times by other people.</b></div>
-  <p class="rec"><b>Decide:</b> which version Anmol takes over, or how the three merge. This also widens <code>TODO.md</code> <b>B33</b>: the handover is no longer just Zhexuan's PR #2, but Yudi's and Karina's threshold schemes as well.</p>
-  
-  <div class="prop"><span class="h">Proposed · split it along the workstream boundaries, not one owner for all of it</span>
-  <div class="tbl"><table>
-    <tr><th>Step</th><th>Owner</th><th>Whose version</th></tr>
-    <tr><td><b>Produce the raw score</b></td><td><b>Anmol</b> (area 3)</td><td>His own implementation, following PR #2's signal priority (token logprob → SEP → sampling ensemble)</td></tr>
-    <tr><td><b>Calibration procedure</b></td><td><b>Yudi</b> supplies, <b>Anmol</b> implements</td><td><b>Take Yudi's</b> &mdash; the most complete of the three, and it has the v2 agreement method as a fallback</td></tr>
-    <tr><td><b>Choosing the threshold</b></td><td><b>Karina</b> (area 1)</td><td>A threshold is an evaluation output, not a model output. Client sets a leak-rate target, she picks the threshold from the experiment</td></tr>
-    <tr><td><b>The API field</b></td><td><b>Zhexuan</b> (area 4)</td><td>The field carries the <b>calibrated</b> score, and the spec should say so</td></tr>
-  </table></div>
-  <b>One field to add:</b> each span in the API needs <code>score_method</code>, otherwise nobody reading a 0.55 can tell whether it is raw or calibrated, model-stated or a detector vote share.
-  <br><br>
-  <b>Why split it this way:</b> three people wrote a version because Anmol is blocked on hardware (D24) and produced no document, not because three people want to own it. <mark class="hl-key">Splitting on workstream boundaries gives each person the part inside their own area, instead of asking anyone to give theirs up.</mark><br><br>
-  <b>Knock-on:</b> <code>TODO.md</code> B33's handover widens &mdash; not only Zhexuan's PR #2, but Yudi's calibration procedure too.
-  </div>
+  <div class="why"><span class="h">If we run short</span><b>1 and 2 cannot be cut</b> &mdash; Karina starts tomorrow and cannot move without them.<br><br><b>3 cannot be cut</b> &mdash; it decides whether our selling point survives.<br><br><b>4 cannot be cut</b> &mdash; it decides what we ask tomorrow.<br><br>So all four have to happen. If time is tight, squeeze 3, since the suggested answer is already written down and may not need much arguing.</div>
+  <p class="rec"><b>Suggested opening tomorrow:</b> "The three of us researched this separately and landed on the same principle &mdash; <mark class="hl-key">the model may propose, but code decides what is released.</mark>"<br>More convincing than presenting one design, and it is true.</p>
   <div class="fields">
-    <div><label for="d5">Outcome</label><textarea id="d5" data-store="d5" placeholder="which version / scope of the B33 handover"></textarea></div>
-    <div><label for="d5o">Owner</label><input id="d5o" data-store="d5o" value="Anmol"></div>
-    <div><label for="d5d">Due</label><input id="d5d" data-store="d5d" placeholder="date"></div>
-  </div>
-</div>
-
-<div class="cat"><h2><span class="ord">6</span>Does redacted still count as having left</h2><span class="tag">Zhexuan ↔ Karina · 20 min · cannot be settled tonight</span></div>
-<div class="item">
-  <p class="dep">The largest of the six, and <b>only the client can answer it</b>. Tonight's goal is not a decision but <b>agreeing how to ask</b>.</p>
-  <div class="tbl"><table>
-    <tr><th></th><th>Zhexuan (policy gate)</th><th>Karina (redact always)</th></tr>
-    <tr><td><b>Behaviour</b></td><td>Any regulated category or unclear provenance anywhere → <code>LOCAL_ONLY</code>, the whole email stays local, and no human review can override it</td><td>Mask everything into placeholders → send → restore on the way back</td></tr>
-    <tr><td><b>Implicit premise</b></td><td><b>Some things cannot be sent even redacted</b></td><td><b>Redacted content is safe to send</b></td></tr>
-  </table></div>
-  <div class="eg"><span class="who">On this email · the outcomes are very far apart</span>This message contains an <b>oncologist</b> (health) and a <b>wire account</b> (financial). Both are regulated.<br><br>
-  <b>Under Zhexuan's design:</b> <code>LOCAL_ONLY</code>, whole email bounced. The executive asked for a summary and a draft and <mark class="hl-no">gets "this message cannot be processed". The assistant is of no help at all.</mark><br><br>
-  <b>Under Karina's design:</b> <code>[HEALTH_1]</code> and <code>[ACCOUNT_1]</code> are masked, the rest goes. <mark class="hl-key">The executive gets a normal summary and draft</mark>, and the cloud never learns it was an oncologist or what the account number is.</div>
-  <div class="risk"><span class="h">And Zhexuan's own document says this will fire often</span>From his v2: "<b>likely to trigger often in practice &mdash; long threads and quoted history make it easy for one sensitive line to bounce back a whole email that would otherwise be fine to release</b>".<br><br>This email is exactly that shape: two levels of quoting, one line of health information. Put next to Karina's ten scenarios (long forwarded threads, HR performance notes, board memos), <b>most of the executive's mail could be blocked, which makes the assistant useless.</b></div>
-  <div class="why"><span class="h">But Zhexuan's position is defensible</span>If the client's legal team says health information may never leave the network <b>even redacted</b>, then no amount of masking makes it sendable. <mark class="hl-key">That is a compliance question, not a technical one, and not ours to decide.</mark></div>
-  <div class="sell"><span class="h">Suggested wording for Aarvin tomorrow</span>"If an email contains health or financial information and we <b>replace it with placeholders</b>, can the rest of the message go to the cloud? Or must the <b>whole message</b> stay local?"<br><br>Then follow with: "If it is the whole message, then given how executive email looks &mdash; mostly long forwarded threads &mdash; that may mean <b>most requests get blocked</b>. Is that what you expect?"<br><br><b>The answer decides whether Karina's design is viable at all.</b></div>
-  <p class="rec"><b>Decide tonight:</b> who asks, in what words, and what our fallback is if the answer is "the whole message".</p>
-  <div class="fields">
-    <div><label for="d6">Outcome</label><textarea id="d6" data-store="d6" placeholder="how we ask / what follows from each answer"></textarea></div>
-    <div><label for="d6o">Owner</label><input id="d6o" data-store="d6o" value="Mark"></div>
-    <div><label for="d6d">Due</label><input id="d6d" data-store="d6d" value="9/28 meeting"></div>
-  </div>
-</div>
-
-<div class="cat"><h2>Timing and close</h2><span class="tag">Suggested</span></div>
-<div class="item">
-  <div class="tbl"><table>
-    <tr><th>#</th><th>Item</th><th>Min</th><th>Output</th></tr>
-    <tr><td>1</td><td>Category list</td><td>15</td><td>One list, marked regulated / standard</td></tr>
-    <tr><td>2</td><td>Labelling schema</td><td>20</td><td>Four fields defined, and who writes the labelling guide</td></tr>
-    <tr><td>3</td><td>Middle-band handling</td><td>20</td><td>The rule; if review stays, who reviews</td></tr>
-    <tr><td>4</td><td>State storage</td><td>15</td><td>One name, and the context store kept or dropped</td></tr>
-    <tr><td>5</td><td>Confidence ownership</td><td>15</td><td>Which version Anmol takes</td></tr>
-    <tr><td>6</td><td>Redacted vs left</td><td>20</td><td><b>No decision</b>, only how we ask tomorrow</td></tr>
-    <tr><td>—</td><td>Tomorrow's running order</td><td>15</td><td>Who presents what</td></tr>
-  </table></div>
-  <div class="why"><span class="h">If time runs short, cut these</span>Items 4 and 5 can wait until after tomorrow &mdash; they do not change what we say to the client.<br><br><mark class="hl-no">Items 1, 2, 3 and 6 cannot be cut.</mark> 1 and 2 block Karina's work tomorrow; 3 decides whether our research contribution still stands; 6 decides what we ask.</div>
-  <p class="rec"><b>Suggested opening with the client:</b> "The three of us researched this separately and converged on the same principle &mdash; <mark class="hl-key">the model may propose, but only code may release</mark>." That is more persuasive than presenting one design, and it is true.</p>
-  <div class="fields">
-    <div><label for="d7">Unresolved / carried to tomorrow</label><textarea id="d7" data-store="d7" placeholder="what we did not finish, what Aarvin must answer"></textarea></div>
-    <div><label for="d7o">Notes</label><input id="d7o" data-store="d7o" value="Mark"></div>
-    <div><label for="d7d">Next</label><input id="d7d" data-store="d7d" value="9/28 18:00"></div>
+    <div><label for="d5">Unfinished / for tomorrow</label><textarea id="d5" data-store="d5" placeholder="what we did not settle, what Aarvin must answer"></textarea></div>
+    <div><label for="d5o">Notes</label><input id="d5o" data-store="d5o" value="Mark"></div>
+    <div><label for="d5d">Next</label><input id="d5d" data-store="d5d" value="9/28 18:00"></div>
   </div>
 </div>
 
 <footer style="margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)">
   Internal · 2026-09-27 · The three proposals are in <code>docs/research/{yudi,karina,zhexuan}/</code><br>
-  Three further groups &mdash; A (each author's own technical decisions), C (questions for the client), D (documents to chase) &mdash; are deliberately not on tonight's agenda and go into <code>todo/TODO.md</code> after tomorrow
+  The two items moved out (state storage, confidence-score ownership) are in <code>deferred-en.md</code>, for after the meeting
 </footer>
 
 </div>
