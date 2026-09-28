@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local redaction service — workflow &amp; architecture (v2)</title>
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2;
+  --gold:#A8842C;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Menlo,monospace;
+  --svg-text:#1F1E1D; --svg-text2:#5F5E5A; --svg-muted:#888780;
+  --svg-surface:#FFFFFF; --svg-border:#B4B2A9; --svg-line:#5F5E5A;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F151B; --surface:#171F27; --ink:#E4E9EE; --muted:#98A5B3; --line:#2C3742; --gold:#D2AB4E;
+    --svg-text:#F1EFE8; --svg-text2:#B4B2A9; --svg-muted:#888780;
+    --svg-surface:#2C2C2A; --svg-border:#5F5E5A; --svg-line:#B4B2A9;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F151B; --surface:#171F27; --ink:#E4E9EE; --muted:#98A5B3; --line:#2C3742; --gold:#D2AB4E;
+  --svg-text:#F1EFE8; --svg-text2:#B4B2A9; --svg-muted:#888780;
+  --svg-surface:#2C2C2A; --svg-border:#5F5E5A; --svg-line:#B4B2A9;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;margin:0}
+main{max-width:860px;margin:0 auto;padding:48px 16px 64px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+h1,h2{font-family:var(--serif);line-height:1.25;margin:0}
+h1{font-size:32px;font-weight:600}
+h2{font-size:22px;font-weight:600;margin-top:48px}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:10px}
+.note{margin-top:20px;padding:12px 16px;border:1px solid var(--line);background:var(--surface);font-size:15px}
+.note p{margin:0 0 10px}
+.note p:last-child{margin-bottom:0}
+.note ul{margin:0 0 10px;padding-left:22px}
+.note ul:last-child{margin-bottom:0}
+.note li{margin:6px 0}
+.pending{margin-top:20px;padding:12px 16px;border:1px solid var(--line);border-left:4px solid var(--gold);background:var(--surface);font-size:14.5px}
+.pending b{color:var(--ink)}
+.pending p{margin:0 0 8px}
+.pending ul{margin:0;padding-left:20px}
+.pending li{margin:4px 0}
+figure{margin:18px 0 0;padding:20px 16px;background:var(--surface);border:1px solid var(--line)}
+figure svg{display:block;width:100%;max-width:760px;height:auto;margin:0 auto;font-family:var(--sans)}
+figcaption{margin-top:14px;font-size:14.5px;color:var(--muted);max-width:76ch}
+figcaption b{color:var(--ink)}
+footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+@media print{body{background:#fff}figure{break-inside:avoid;border:none}}
+
+svg .t{font-size:14px;fill:var(--svg-text)}
+svg .th{font-size:14px;font-weight:500;fill:var(--svg-text)}
+svg .ts{font-size:12px;fill:var(--svg-text2)}
+svg .box{fill:var(--svg-surface);stroke:var(--svg-border)}
+svg .arr{stroke:var(--svg-line);stroke-width:1.2;fill:none}
+svg .badge{fill:var(--svg-surface);stroke:var(--svg-border);stroke-width:0.8}
+svg .badge-icon{color:var(--svg-text)}
+svg .leader{stroke:var(--svg-muted);stroke-width:0.6;stroke-dasharray:3 3;fill:none}
+
+svg .c-gray>rect,svg .c-gray>circle,svg rect.c-gray,svg circle.c-gray{fill:#F1EFE8;stroke:#5F5E5A}
+svg .c-gray>.th,svg .c-gray>.t{fill:#444441} svg .c-gray>.ts{fill:#5F5E5A}
+svg .c-amber>rect,svg .c-amber>circle,svg .c-amber>polygon,svg rect.c-amber,svg circle.c-amber,svg polygon.c-amber{fill:#FAEEDA;stroke:#854F0B}
+svg .c-amber>.th,svg .c-amber>.t{fill:#633806} svg .c-amber>.ts{fill:#854F0B}
+svg .c-teal>rect,svg .c-teal>circle,svg rect.c-teal,svg circle.c-teal{fill:#E1F5EE;stroke:#0F6E56}
+svg .c-teal>.th,svg .c-teal>.t{fill:#085041} svg .c-teal>.ts{fill:#0F6E56}
+svg .c-pink>rect,svg .c-pink>circle,svg rect.c-pink,svg circle.c-pink{fill:#FBEAF0;stroke:#993556}
+svg .c-pink>.th,svg .c-pink>.t{fill:#72243E} svg .c-pink>.ts{fill:#993556}
+svg .c-coral>rect,svg .c-coral>circle,svg rect.c-coral,svg circle.c-coral{fill:#FAECE7;stroke:#993C1D}
+svg .c-coral>.th,svg .c-coral>.t{fill:#712B13} svg .c-coral>.ts{fill:#993C1D}
+svg .c-blue>rect,svg .c-blue>circle,svg rect.c-blue,svg circle.c-blue{fill:#E6F1FB;stroke:#185FA5}
+svg .c-blue>.th,svg .c-blue>.t{fill:#0C447C} svg .c-blue>.ts{fill:#185FA5}
+svg .c-purple>rect,svg .c-purple>circle,svg rect.c-purple,svg circle.c-purple{fill:#EEEDFE;stroke:#534AB7}
+svg .c-purple>.th,svg .c-purple>.t{fill:#3C3489} svg .c-purple>.ts{fill:#534AB7}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) svg .c-gray>rect,:root:not([data-theme="light"]) svg .c-gray>circle,:root:not([data-theme="light"]) svg circle.c-gray{fill:#444441;stroke:#B4B2A9}
+  :root:not([data-theme="light"]) svg .c-gray>.th,:root:not([data-theme="light"]) svg .c-gray>.t{fill:#F1EFE8}
+  :root:not([data-theme="light"]) svg .c-gray>.ts{fill:#B4B2A9}
+  :root:not([data-theme="light"]) svg .c-amber>rect,:root:not([data-theme="light"]) svg circle.c-amber,:root:not([data-theme="light"]) svg .c-amber>polygon,:root:not([data-theme="light"]) svg polygon.c-amber{fill:#633806;stroke:#FAC775}
+  :root:not([data-theme="light"]) svg .c-amber>.th,:root:not([data-theme="light"]) svg .c-amber>.t{fill:#FAEEDA}
+  :root:not([data-theme="light"]) svg .c-amber>.ts{fill:#FAC775}
+  :root:not([data-theme="light"]) svg .c-teal>rect,:root:not([data-theme="light"]) svg circle.c-teal{fill:#085041;stroke:#9FE1CB}
+  :root:not([data-theme="light"]) svg .c-teal>.th,:root:not([data-theme="light"]) svg .c-teal>.t{fill:#E1F5EE}
+  :root:not([data-theme="light"]) svg .c-teal>.ts{fill:#9FE1CB}
+  :root:not([data-theme="light"]) svg .c-pink>rect,:root:not([data-theme="light"]) svg circle.c-pink{fill:#72243E;stroke:#F4C0D1}
+  :root:not([data-theme="light"]) svg .c-pink>.th,:root:not([data-theme="light"]) svg .c-pink>.t{fill:#FBEAF0}
+  :root:not([data-theme="light"]) svg .c-pink>.ts{fill:#F4C0D1}
+  :root:not([data-theme="light"]) svg .c-coral>rect,:root:not([data-theme="light"]) svg circle.c-coral{fill:#712B13;stroke:#F5C4B3}
+  :root:not([data-theme="light"]) svg .c-coral>.th,:root:not([data-theme="light"]) svg .c-coral>.t{fill:#FAECE7}
+  :root:not([data-theme="light"]) svg .c-coral>.ts{fill:#F5C4B3}
+  :root:not([data-theme="light"]) svg .c-blue>rect,:root:not([data-theme="light"]) svg circle.c-blue{fill:#0C447C;stroke:#B5D4F4}
+  :root:not([data-theme="light"]) svg .c-blue>.th,:root:not([data-theme="light"]) svg .c-blue>.t{fill:#E6F1FB}
+  :root:not([data-theme="light"]) svg .c-blue>.ts{fill:#B5D4F4}
+  :root:not([data-theme="light"]) svg .c-purple>rect,:root:not([data-theme="light"]) svg circle.c-purple{fill:#3C3489;stroke:#CECBF6}
+  :root:not([data-theme="light"]) svg .c-purple>.th,:root:not([data-theme="light"]) svg .c-purple>.t{fill:#EEEDFE}
+  :root:not([data-theme="light"]) svg .c-purple>.ts{fill:#CECBF6}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-model" viewBox="-9 -9 18 18"><path d="M0 -6 C0.7 -1.6 1.6 -0.7 6 0 C1.6 0.7 0.7 1.6 0 6 C-0.7 1.6 -1.6 0.7 -6 0 C-1.6 -0.7 -0.7 -1.6 0 -6 Z" fill="currentColor"/></symbol>
+<symbol id="i-data" viewBox="-9 -9 18 18"><g fill="none" stroke="currentColor" stroke-width="1.2"><ellipse cx="0" cy="-3.5" rx="4.8" ry="1.8"/><path d="M-4.8 -3.5 V3.5 A4.8 1.8 0 0 0 4.8 3.5 V-3.5"/><path d="M-4.8 0 A4.8 1.8 0 0 0 4.8 0"/></g></symbol>
+<symbol id="i-code" viewBox="-9 -9 18 18"><path d="M-2.6 -3.8 L-6 0 L-2.6 3.8 M2.6 -3.8 L6 0 L2.6 3.8 M1 -5 L-1 5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-tool" viewBox="-9 -9 18 18"><g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M-5.5 -2.5 H5.5 M-5.5 2.5 H5.5"/><circle cx="-1.8" cy="-2.5" r="1.7" style="fill:var(--svg-surface)"/><circle cx="2.2" cy="2.5" r="1.7" style="fill:var(--svg-surface)"/></g></symbol>
+</svg>
+<main>
+<div class="eyebrow">Capstone · Virtual Gold Inc · Proposal — not yet merged</div>
+<h1>Local redaction service — workflow &amp; architecture (v2 proposal)</h1>
+<div class="meta">2026-09-27 · Zhexuan Ye · reworks the diagrams in hybrid-routing-diagrams-en.html against Aarvin George's Sep 23 email</div>
+<div class="note"><p><b>In plain terms:</b> before any text reaches an outside AI assistant, it comes through this service first.</p>
+<ul>
+<li><b>Whole-request check first.</b> A separate check looks at the request as a whole before any finer judgment matters: if it falls into a category that is not yet approved for release at all — a confidential thread, health or financial information, an unclear source — the entire request stays local, full stop, and nothing below that check ever sees it.</li>
+<li><b>Piece-by-piece judgment, once approved.</b> A local model reads the cleared request and checks it against a global, cross-session store of known-safe and known-sensitive entities, then decides, span by span, how confident it is that something is private: anything it's confident about gets redacted automatically, and anything it's unsure about is not guessed at — it's queued for a human reviewer instead. That review happens asynchronously: the caller gets an immediate "still deciding" response rather than waiting on a person, and checks back separately once it's resolved.</li>
+<li><b>Placeholders only, ever.</b> Either way, the caller only ever gets text back with the sensitive parts replaced by placeholders; the mapping back to the original words never leaves this machine.</li>
+<li><b>Restore is separate and deliberate.</b> If the caller's own system later needs the original wording — say, after getting a reply from an outside AI assistant — it can ask this service to restore it using a reference id, as a separate step, not something that happens on its own.</li>
+<li><b>No outside calls from here.</b> This service never calls an outside AI assistant itself; that decision belongs entirely to the calling application.</li>
+</ul>
+<p><code>hybrid-routing-diagrams-en.html</code> is untouched.</p>
+</div>
+
+<h2>Figure 1 (v2) · Request workflow</h2>
+<figure>
+<svg width="100%" viewBox="0 0 780 1880" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Local redaction service — request workflow, v2 proposal (lane diagram, with policy gate and asynchronous review)</title>
+<desc>Sequence diagram with nine lanes: caller, gateway, sensitivity classifier, context store, policy gate, local model, confidence gate, review queue and redact/restore. The classifier consults the local context store and the local model before compiling a sensitivity report for the new policy gate, which makes one conservative release decision for the whole request. If the policy gate blocks the request (a confidential, health, financial or credential category, or unclear provenance) it returns LOCAL_ONLY straight to the gateway, skipping every step below it — this is a deterministic policy decision, not something a per-request review can change. Otherwise it forwards the approved request to the confidence gate, which branches on per-span confidence: high confidence auto-redacts through the redact/restore module, low confidence flags the span in the review queue for a human reviewer to resolve asynchronously, without blocking the call. Either path is logged, then the result bubbles back up through the policy gate and classifier lanes to the caller. A separate section below shows the restore call, triggered later by the caller and routed directly to the redact/restore module, bypassing detection and the policy gate entirely. A band at the bottom shows the offline evaluation loop.</desc>
+<defs>
+<marker id="arrow1seq" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<g class="c-gray">
+<rect x="34" y="518" width="740" height="96" rx="8" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="th" style="font-size:12px" x="44" y="532" dominant-baseline="central">8A · confidence ≥ threshold — auto-redact</text>
+</g>
+<g class="c-gray">
+<rect x="34" y="626" width="740" height="126" rx="8" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="th" style="font-size:12px" x="44" y="640" dominant-baseline="central">8B · confidence &lt; threshold — flag for review</text>
+</g>
+<g class="c-gray">
+<rect x="34" y="1664" width="740" height="110" rx="8" stroke-width="0.5" stroke-dasharray="2 3"/>
+<text class="th" style="font-size:12px" x="44" y="1680" dominant-baseline="central">E · Offline evaluation · test data only, never live traffic</text>
+</g>
+
+<text class="th" x="40" y="36" dominant-baseline="central">Workflow step</text>
+<rect class="box" x="228" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="272" y="36" text-anchor="middle" dominant-baseline="central">Caller</text>
+<g class="c-purple">
+<rect x="332" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="376" y="29" text-anchor="middle" dominant-baseline="central">Sensitivity</text>
+<text class="th" style="font-size:12px" x="376" y="44" text-anchor="middle" dominant-baseline="central">classifier</text>
+</g>
+<g class="c-blue">
+<rect x="436" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="480" y="29" text-anchor="middle" dominant-baseline="central">Policy</text>
+<text class="th" style="font-size:12px" x="480" y="44" text-anchor="middle" dominant-baseline="central">gate</text>
+</g>
+<g class="c-amber">
+<rect x="540" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="584" y="29" text-anchor="middle" dominant-baseline="central">Confidence</text>
+<text class="th" style="font-size:12px" x="584" y="44" text-anchor="middle" dominant-baseline="central">gate</text>
+</g>
+<g class="c-pink">
+<rect x="644" y="16" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="688" y="29" text-anchor="middle" dominant-baseline="central">Redact /</text>
+<text class="th" style="font-size:12px" x="688" y="44" text-anchor="middle" dominant-baseline="central">restore</text>
+</g>
+<rect class="box" x="280" y="66" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="324" y="86" text-anchor="middle" dominant-baseline="central">Gateway</text>
+<g class="c-purple">
+<rect x="384" y="66" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="428" y="79" text-anchor="middle" dominant-baseline="central">Context</text>
+<text class="th" style="font-size:12px" x="428" y="94" text-anchor="middle" dominant-baseline="central">store</text>
+</g>
+<g class="c-teal">
+<rect x="488" y="66" width="88" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="532" y="86" text-anchor="middle" dominant-baseline="central">Local model</text>
+</g>
+<g class="c-coral">
+<rect x="596" y="66" width="80" height="40" rx="8" stroke-width="0.5"/>
+<text class="th" style="font-size:12px" x="636" y="79" text-anchor="middle" dominant-baseline="central">Review</text>
+<text class="th" style="font-size:12px" x="636" y="94" text-anchor="middle" dominant-baseline="central">queue</text>
+</g>
+
+<line class="leader" x1="272" y1="56" x2="272" y2="1604"/>
+<line class="leader" x1="324" y1="106" x2="324" y2="1604"/>
+<line class="leader" x1="376" y1="56" x2="376" y2="1604"/>
+<line class="leader" x1="428" y1="106" x2="428" y2="1604"/>
+<line class="leader" x1="480" y1="56" x2="480" y2="1604"/>
+<line class="leader" x1="532" y1="106" x2="532" y2="1604"/>
+<line class="leader" x1="584" y1="56" x2="584" y2="1604"/>
+<line class="leader" x1="636" y1="106" x2="636" y2="1604"/>
+<line class="leader" x1="688" y1="56" x2="688" y2="1604"/>
+
+<text class="th" x="40" y="134" dominant-baseline="central">1</text>
+<text class="t" style="font-size:12px" x="66" y="134" dominant-baseline="central">Caller sends text to redact</text>
+<line x1="272" y1="134" x2="324" y2="134" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="278" y="128">1</text>
+
+<text class="th" x="40" y="178" dominant-baseline="central">2</text>
+<text class="t" style="font-size:12px" x="66" y="170" dominant-baseline="central">Forward request to</text>
+<text class="t" style="font-size:12px" x="66" y="186" dominant-baseline="central">sensitivity classifier</text>
+<line x1="324" y1="178" x2="376" y2="178" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="330" y="172">2</text>
+
+<text class="th" x="40" y="222" dominant-baseline="central">3</text>
+<text class="t" style="font-size:12px" x="66" y="214" dominant-baseline="central">Look up known entities +</text>
+<text class="t" style="font-size:12px" x="66" y="230" dominant-baseline="central">similar labeled cases</text>
+<line x1="376" y1="222" x2="428" y2="222" class="arr" style="stroke:#7F77DD" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="382" y="216">3</text>
+
+<text class="th" x="40" y="266" dominant-baseline="central">4</text>
+<text class="t" style="font-size:12px" x="66" y="258" dominant-baseline="central">Return matches; on miss</text>
+<text class="t" style="font-size:12px" x="66" y="274" dominant-baseline="central">skip, stay cautious</text>
+<line x1="428" y1="266" x2="376" y2="266" class="arr" style="stroke:#7F77DD" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="422" y="260" text-anchor="end">4</text>
+
+<text class="th" x="40" y="310" dominant-baseline="central">5</text>
+<text class="t" style="font-size:12px" x="66" y="302" dominant-baseline="central">Send text for detection +</text>
+<text class="t" style="font-size:12px" x="66" y="318" dominant-baseline="central">contextual judgment</text>
+<line x1="376" y1="310" x2="532" y2="310" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="382" y="304">5</text>
+
+<text class="th" x="40" y="354" dominant-baseline="central">6</text>
+<text class="t" style="font-size:12px" x="66" y="346" dominant-baseline="central">Return spans + privacy</text>
+<text class="t" style="font-size:12px" x="66" y="362" dominant-baseline="central">confidence score</text>
+<line x1="532" y1="354" x2="376" y2="354" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="526" y="348" text-anchor="end">6</text>
+
+<text class="th" x="40" y="398" dominant-baseline="central">7</text>
+<text class="t" style="font-size:12px" x="66" y="390" dominant-baseline="central">Attach sensitivity report:</text>
+<text class="t" style="font-size:12px" x="66" y="406" dominant-baseline="central">level, spans, reasons</text>
+<line x1="376" y1="398" x2="480" y2="398" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="382" y="392">7</text>
+
+<text class="th" x="40" y="442" dominant-baseline="central">7L</text>
+<text class="t" style="font-size:12px" x="66" y="434" dominant-baseline="central">Policy gate blocks the whole request —</text>
+<text class="t" style="font-size:12px" x="66" y="450" dominant-baseline="central">returns LOCAL_ONLY to gateway (deterministic)</text>
+<line x1="480" y1="442" x2="324" y2="442" class="arr" style="stroke:#B0271C" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="474" y="436" text-anchor="end">7L</text>
+
+<text class="th" x="40" y="486" dominant-baseline="central">8</text>
+<text class="t" style="font-size:12px" x="66" y="478" dominant-baseline="central">Approved: forward to</text>
+<text class="t" style="font-size:12px" x="66" y="494" dominant-baseline="central">confidence gate</text>
+<line x1="480" y1="486" x2="584" y2="486" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="486" y="480">8</text>
+
+<text class="th" x="40" y="560" dominant-baseline="central">8A</text>
+<text class="t" style="font-size:12px" x="66" y="560" dominant-baseline="central">Send high-confidence spans for auto-redaction</text>
+<line x1="584" y1="560" x2="688" y2="560" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="590" y="554">8A</text>
+
+<text class="th" x="40" y="596" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="596" dominant-baseline="central">Return text with those spans redacted</text>
+<line x1="688" y1="596" x2="584" y2="596" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="680" y="590" text-anchor="end">10</text>
+
+<text class="th" x="40" y="682" dominant-baseline="central">8B</text>
+<text class="t" style="font-size:12px" x="66" y="674" dominant-baseline="central">Flag low-confidence spans</text>
+<text class="t" style="font-size:12px" x="66" y="690" dominant-baseline="central">for review</text>
+<line x1="584" y1="682" x2="636" y2="682" class="arr" style="stroke:#D85A30" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="590" y="676">8B</text>
+
+<text class="th" x="40" y="726" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="718" dominant-baseline="central">Acknowledge only: PENDING_REVIEW,</text>
+<text class="t" style="font-size:12px" x="66" y="734" dominant-baseline="central">no content yet (async, no wait)</text>
+<line x1="636" y1="726" x2="584" y2="726" class="arr" style="stroke:#D85A30" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="628" y="720" text-anchor="end">10</text>
+
+<text class="th" x="40" y="800" dominant-baseline="central">9</text>
+<text class="t" style="font-size:12px" x="66" y="792" dominant-baseline="central">Log decision: level, confidence,</text>
+<text class="t" style="font-size:12px" x="66" y="808" dominant-baseline="central">action taken — no raw text</text>
+<path d="M584 792 H606 V808 H588" fill="none" class="arr" style="stroke:#854F0B" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="612" y="800" dominant-baseline="central">9</text>
+
+<text class="th" x="40" y="852" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="844" dominant-baseline="central">Result bubbles up through</text>
+<text class="t" style="font-size:12px" x="66" y="860" dominant-baseline="central">policy gate</text>
+<line x1="584" y1="852" x2="480" y2="852" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="576" y="846" text-anchor="end">10</text>
+
+<text class="th" x="40" y="896" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="896" dominant-baseline="central">Redacted result, or PENDING_REVIEW ack, continues up</text>
+<line x1="480" y1="896" x2="376" y2="896" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="472" y="890" text-anchor="end">10</text>
+
+<text class="th" x="40" y="940" dominant-baseline="central">10</text>
+<text class="t" style="font-size:12px" x="66" y="940" dominant-baseline="central">Redacted text continues up</text>
+<line x1="376" y1="940" x2="324" y2="940" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="370" y="934" text-anchor="end">10</text>
+
+<text class="th" x="40" y="984" dominant-baseline="central">11</text>
+<text class="t" style="font-size:12px" x="66" y="984" dominant-baseline="central">Deliver redacted text to caller</text>
+<line x1="324" y1="984" x2="272" y2="984" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="318" y="978" text-anchor="end">11</text>
+
+<text class="ts" x="340" y="1028" text-anchor="middle" dominant-baseline="central">Later, a separate call — restore</text>
+
+<text class="th" x="40" y="1072" dominant-baseline="central">R1</text>
+<text class="t" style="font-size:12px" x="66" y="1064" dominant-baseline="central">Caller calls restore, giving</text>
+<text class="t" style="font-size:12px" x="66" y="1080" dominant-baseline="central">back the redaction id</text>
+<line x1="272" y1="1072" x2="324" y2="1072" class="arr" style="stroke:#993556" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="278" y="1066">R1</text>
+
+<text class="th" x="40" y="1124" dominant-baseline="central">R2</text>
+<text class="t" style="font-size:12px" x="66" y="1116" dominant-baseline="central">Forward restore lookup directly —</text>
+<text class="t" style="font-size:12px" x="66" y="1132" dominant-baseline="central">bypasses classifier, policy gate and model</text>
+<line x1="324" y1="1124" x2="688" y2="1124" class="arr" style="stroke:#993556" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="330" y="1118">R2</text>
+
+<text class="th" x="40" y="1176" dominant-baseline="central">R3</text>
+<text class="t" style="font-size:12px" x="66" y="1168" dominant-baseline="central">Return original text — or REVIEW_BLOCKED if</text>
+<text class="t" style="font-size:12px" x="66" y="1184" dominant-baseline="central">the leak scan / placeholder check fails</text>
+<line x1="688" y1="1176" x2="324" y2="1176" class="arr" style="stroke:#993556" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="680" y="1170" text-anchor="end">R3</text>
+
+<text class="ts" x="340" y="1236" text-anchor="middle" dominant-baseline="central">Later, a separate call — check review status</text>
+
+<text class="th" x="40" y="1280" dominant-baseline="central">V1</text>
+<text class="t" style="font-size:12px" x="66" y="1272" dominant-baseline="central">Caller checks status, giving</text>
+<text class="t" style="font-size:12px" x="66" y="1288" dominant-baseline="central">back the redaction id</text>
+<line x1="272" y1="1280" x2="324" y2="1280" class="arr" style="stroke:#1D7A96" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="278" y="1274">V1</text>
+
+<text class="th" x="40" y="1332" dominant-baseline="central">V2</text>
+<text class="t" style="font-size:12px" x="66" y="1324" dominant-baseline="central">Forward status check directly —</text>
+<text class="t" style="font-size:12px" x="66" y="1340" dominant-baseline="central">bypasses classifier and gates</text>
+<line x1="324" y1="1332" x2="688" y2="1332" class="arr" style="stroke:#1D7A96" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="330" y="1326">V2</text>
+
+<text class="th" x="40" y="1384" dominant-baseline="central">V3</text>
+<text class="t" style="font-size:12px" x="66" y="1376" dominant-baseline="central">Return resolved decision: READY + content,</text>
+<text class="t" style="font-size:12px" x="66" y="1392" dominant-baseline="central">LOCAL_ONLY, or still PENDING_REVIEW</text>
+<line x1="688" y1="1384" x2="324" y2="1384" class="arr" style="stroke:#1D7A96" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="680" y="1378" text-anchor="end">V3</text>
+
+<text class="ts" x="340" y="1436" text-anchor="middle" dominant-baseline="central">Later, a separate call — delete record</text>
+
+<text class="th" x="40" y="1480" dominant-baseline="central">D1</text>
+<text class="t" style="font-size:12px" x="66" y="1472" dominant-baseline="central">Caller deletes the record,</text>
+<text class="t" style="font-size:12px" x="66" y="1488" dominant-baseline="central">giving back the redaction id</text>
+<line x1="272" y1="1480" x2="324" y2="1480" class="arr" style="stroke:#5F5E5A" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="278" y="1474">D1</text>
+
+<text class="th" x="40" y="1532" dominant-baseline="central">D2</text>
+<text class="t" style="font-size:12px" x="66" y="1524" dominant-baseline="central">Forward delete directly —</text>
+<text class="t" style="font-size:12px" x="66" y="1540" dominant-baseline="central">bypasses classifier and gates</text>
+<line x1="324" y1="1532" x2="688" y2="1532" class="arr" style="stroke:#5F5E5A" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="330" y="1526">D2</text>
+
+<text class="th" x="40" y="1576" dominant-baseline="central">D3</text>
+<text class="t" style="font-size:12px" x="66" y="1568" dominant-baseline="central">204 No Content — record, mapping and</text>
+<text class="t" style="font-size:12px" x="66" y="1584" dominant-baseline="central">any pending review are all gone</text>
+<line x1="688" y1="1576" x2="324" y2="1576" class="arr" style="stroke:#5F5E5A" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="680" y="1570" text-anchor="end">D3</text>
+
+<rect class="box" x="44" y="1682" width="124" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="106" y="1700" text-anchor="middle" dominant-baseline="central">Test set</text>
+<text class="ts" x="106" y="1722" text-anchor="middle" dominant-baseline="central">labeled emails</text>
+<rect class="box" x="200" y="1682" width="124" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="262" y="1700" text-anchor="middle" dominant-baseline="central">Eval harness</text>
+<text class="ts" x="262" y="1722" text-anchor="middle" dominant-baseline="central">runs steps 1–11</text>
+<rect class="box" x="356" y="1682" width="124" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="418" y="1700" text-anchor="middle" dominant-baseline="central">LLM judge</text>
+<text class="ts" x="418" y="1722" text-anchor="middle" dominant-baseline="central">vs gold labels</text>
+<rect class="box" x="512" y="1682" width="152" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="588" y="1700" text-anchor="middle" dominant-baseline="central">Metrics</text>
+<text class="ts" x="588" y="1722" text-anchor="middle" dominant-baseline="central">leak, over-redact</text>
+<line x1="168" y1="1710" x2="200" y2="1710" class="arr" marker-end="url(#arrow1seq)"/>
+<line x1="324" y1="1710" x2="356" y2="1710" class="arr" marker-end="url(#arrow1seq)"/>
+<line x1="480" y1="1710" x2="512" y2="1710" class="arr" marker-end="url(#arrow1seq)"/>
+
+<line x1="40" y1="1784" x2="70" y2="1784" class="arr" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="78" y="1784" dominant-baseline="central">request</text>
+<line x1="150" y1="1784" x2="180" y2="1784" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="188" y="1784" dominant-baseline="central">response</text>
+<line x1="270" y1="1784" x2="300" y2="1784" class="arr" style="stroke:#993556" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="308" y="1784" dominant-baseline="central">separate, caller-triggered call</text>
+<line x1="560" y1="1784" x2="590" y2="1784" class="arr" style="stroke:#B0271C" stroke-dasharray="4 3" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="598" y="1784" dominant-baseline="central">policy-blocked (deterministic)</text>
+<line x1="40" y1="1804" x2="70" y2="1804" class="arr" style="stroke:#1D7A96" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="78" y="1804" dominant-baseline="central">poll review status</text>
+<line x1="230" y1="1804" x2="260" y2="1804" class="arr" style="stroke:#5F5E5A" marker-end="url(#arrow1seq)"/>
+<text class="ts" x="268" y="1804" dominant-baseline="central">delete record</text>
+<text class="ts" x="24" y="1824" dominant-baseline="central">A repeated number (e.g. 10) marks several hops carrying the same result back up.</text>
+<g transform="translate(50 1846)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="64" y="1846" dominant-baseline="central">model inference</text><g transform="translate(190 1846)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="204" y="1846" dominant-baseline="central">data store</text><g transform="translate(310 1846)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="324" y="1846" dominant-baseline="central">hand-written code</text><g transform="translate(430 1846)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="444" y="1846" dominant-baseline="central">policy gate = code (approved rules table)</text>
+
+<g transform="translate(344 13)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(364 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(450 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(554 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(658 13)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(678 13)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(292 106)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(396 106)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(500 106)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(608 106)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g>
+</svg>
+<figcaption><b>Same lane style as the original hybrid-routing diagram, now with the merged-in policy gate and asynchronous review.</b> Steps 1–7 always run: the gateway forwards the request, the classifier consults the local context store and asks the local model to detect spans and judge context, then compiles a sensitivity report for the new <b>Policy gate</b>. The policy gate makes one conservative, deterministic release decision for the whole request: if it is a confidential, health, financial or credential category, or the source/provenance is unclear, it returns <b>LOCAL_ONLY</b> straight back to the Gateway (<b>7L</b>, red dashed) — nothing below it ever sees that request, and no per-request review can override this until the approved policy itself changes. Only an approved request continues (8) to the confidence gate, which branches once on per-span confidence (no more local-vs-cloud split): 8A auto-redacts through Redact / restore, 8B flags the span in the Review queue — which immediately acknowledges <b>PENDING_REVIEW</b> (10) without waiting for a human, so the call still returns promptly. A reviewer resolves it out-of-band, at their own pace, and writes the outcome into the same record Redact / restore holds. Either path is logged with no raw text (9), and the result (or the pending acknowledgement) bubbles back up — through the policy gate, then the classifier and gateway lanes (10) — to reach the caller (11). Three separate, id-keyed calls happen later, independent of this main flow and of each other: <b>restore</b> (R1–R3, which can itself come back <b>REVIEW_BLOCKED</b> if its own leak scan fails), <b>checking review status</b> (V1–V3, the only way a caller learns a pending review's outcome and gets the content), and <b>deleting the record</b> (D1–D3) — all three reach Redact / restore directly, bypassing the classifier and both gates. Band E at the bottom runs offline on test data only. Corner icons: sparkle = model, cylinder = data store, &lt;/&gt; = hand-written code.</figcaption>
+</figure>
+
+<h2>Figure 2 (v2) · Component architecture (numbered)</h2>
+<figure>
+<svg width="100%" viewBox="0 0 920 1000" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Local redaction service — component architecture, v2 proposal (numbered, with policy gate and asynchronous review)</title>
+<desc>Component diagram matching Figure 1's numbered steps, with a whole-request policy gate merged in from a teammate's architecture v0.6 and interim HTTP contract. The gateway (1, 11) forwards requests to the sensitivity classifier (2, 10), which queries the context store (3, 4) and the local model (5, 6) before compiling a report for the policy gate (7). The policy gate checks confidential and regulated categories and provenance for the whole request: if blocked, it deterministically returns LOCAL_ONLY straight to the gateway (L), bypassing detection entirely — no per-request review applies here; otherwise it forwards to the confidence gate (8), which auto-redacts through the redact/restore module (8A) or flags the review queue (8B). Review is asynchronous: the confidence gate immediately acknowledges PENDING_REVIEW (10) without waiting, and a human reviewer resolves it out-of-band, writing the outcome into the same record Redact/restore holds (V0). Either path logs its decision (7L, 9). A separate dashed connector family (R/V/D) shows the caller's later, separate calls to restore, poll review status, or delete the record, all reaching Redact/restore directly and bypassing detection. The cloud API and egress proxy from the original hybrid design remain removed, since the calling application decides on its own, later, whether to call an external cloud assistant.</desc>
+<defs>
+<marker id="arrow2v2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+<g class="c-gray">
+<rect x="24" y="160" width="884" height="748" rx="20" stroke-width="0.5" stroke-dasharray="6 4"/>
+<text class="th" x="40" y="180" dominant-baseline="central">Local redaction service</text>
+</g>
+<rect class="box" x="392" y="8" width="284" height="132" rx="12" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text class="th" x="404" y="28" dominant-baseline="central">Offline evaluation</text>
+<text class="ts" x="404" y="46" dominant-baseline="central">test data only, never live traffic</text>
+<rect class="box" x="404" y="64" width="120" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="464" y="82" text-anchor="middle" dominant-baseline="central">Eval harness</text>
+<text class="ts" x="464" y="104" text-anchor="middle" dominant-baseline="central">test emails</text>
+<rect class="box" x="544" y="64" width="124" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="606" y="82" text-anchor="middle" dominant-baseline="central">LLM judge</text>
+<text class="ts" x="606" y="104" text-anchor="middle" dominant-baseline="central">vs gold labels</text>
+<line x1="524" y1="92" x2="544" y2="92" class="arr" marker-end="url(#arrow2v2)"/>
+
+<rect class="box" x="225" y="60" width="150" height="44" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="82" text-anchor="middle" dominant-baseline="central">Caller</text>
+<rect class="box" x="200" y="212" width="200" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="230" text-anchor="middle" dominant-baseline="central">Gateway</text>
+<text class="ts" x="300" y="252" text-anchor="middle" dominant-baseline="central">Redact + restore API</text>
+<g class="c-purple">
+<rect x="40" y="212" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="105" y="230" text-anchor="middle" dominant-baseline="central">Context store</text>
+<text class="ts" x="105" y="252" text-anchor="middle" dominant-baseline="central">Known + similar</text>
+</g>
+<g class="c-purple">
+<rect x="190" y="328" width="220" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="346" text-anchor="middle" dominant-baseline="central">Sensitivity classifier</text>
+<text class="ts" x="300" y="368" text-anchor="middle" dominant-baseline="central">Context-aware detection</text>
+</g>
+<g class="c-blue">
+<rect x="200" y="444" width="200" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="462" text-anchor="middle" dominant-baseline="central">Policy gate</text>
+<text class="ts" x="300" y="484" text-anchor="middle" dominant-baseline="central">Category + provenance check</text>
+</g>
+<g class="c-amber">
+<rect x="200" y="560" width="200" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="578" text-anchor="middle" dominant-baseline="central">Confidence gate</text>
+<text class="ts" x="300" y="600" text-anchor="middle" dominant-baseline="central">Decides: auto or flagged</text>
+</g>
+<g class="c-teal">
+<rect x="420" y="328" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="485" y="346" text-anchor="middle" dominant-baseline="central">Local model</text>
+<text class="ts" x="485" y="368" text-anchor="middle" dominant-baseline="central">Detect + score</text>
+</g>
+<g class="c-coral">
+<rect x="235" y="708" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="300" y="726" text-anchor="middle" dominant-baseline="central">Review queue</text>
+<text class="ts" x="300" y="748" text-anchor="middle" dominant-baseline="central">Flag for review</text>
+</g>
+<g class="c-pink">
+<rect x="400" y="708" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="465" y="726" text-anchor="middle" dominant-baseline="central">Redact / restore</text>
+<text class="ts" x="465" y="748" text-anchor="middle" dominant-baseline="central">Record always · map opt-in</text>
+</g>
+<line x1="365" y1="736" x2="400" y2="736" class="arr" style="stroke:#993C1D" stroke-dasharray="2 2" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="204" y="678" dominant-baseline="central">V0 · reviewer resolves</text>
+<text class="ts" x="204" y="694" dominant-baseline="central">(out-of-band) → record</text>
+<rect class="box" x="40" y="828" width="130" height="56" rx="8" stroke-width="0.5"/>
+<text class="th" x="105" y="846" text-anchor="middle" dominant-baseline="central">Audit log</text>
+<text class="ts" x="105" y="868" text-anchor="middle" dominant-baseline="central">No raw text</text>
+
+<path d="M464 120 V240 H400" fill="none" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="472" y="150" dominant-baseline="central">E · same API, offline</text>
+
+<line x1="300" y1="104" x2="300" y2="212" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="312" y="182" dominant-baseline="central">1 · text to redact ↓</text>
+<text class="ts" x="312" y="198" dominant-baseline="central">11 · redacted text + spans ↑</text>
+
+<line x1="300" y1="268" x2="300" y2="328" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="312" y="290" dominant-baseline="central">2 · request ↓</text>
+<text class="ts" x="312" y="306" dominant-baseline="central">10 · redacted text ↑</text>
+
+<path d="M190 356 H105 V268" fill="none" class="arr" style="stroke:#7F77DD" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="113" y="294" dominant-baseline="central">3 · lookup ↑</text>
+<text class="ts" x="113" y="310" dominant-baseline="central">4 · matches ↓</text>
+
+<line x1="410" y1="356" x2="420" y2="356" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="415" y="320" text-anchor="middle" dominant-baseline="central">5 ↓</text>
+<text class="ts" x="415" y="392" text-anchor="middle" dominant-baseline="central">6 ↑</text>
+
+<line x1="300" y1="384" x2="300" y2="444" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="312" y="406" dominant-baseline="central">7 · sensitivity report ↓</text>
+<text class="ts" x="312" y="424" dominant-baseline="central">10 · result ↑</text>
+
+<line x1="300" y1="500" x2="300" y2="560" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="312" y="522" dominant-baseline="central">8 · approved: forward ↓</text>
+<text class="ts" x="312" y="540" dominant-baseline="central">10 · result ↑</text>
+
+<line x1="300" y1="616" x2="300" y2="708" class="arr" style="stroke:#D85A30" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="308" y="634" dominant-baseline="central">8B · low confidence ↓</text>
+<text class="ts" x="308" y="650" dominant-baseline="central">10 · PENDING_REVIEW (async ack) ↑</text>
+
+<path d="M400 598 H500 V708" fill="none" class="arr" marker-start="url(#arrow2v2)" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="492" y="674" text-anchor="end" dominant-baseline="central">8A · auto-redact ↓</text>
+<text class="ts" x="492" y="690" text-anchor="end" dominant-baseline="central">10 · redacted text ↑</text>
+
+<path d="M200 462 H32 V856 H40" fill="none" class="arr" stroke-dasharray="4 3" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="36" y="450" dominant-baseline="central">7L · log: category, status</text>
+<line x1="200" y1="578" x2="32" y2="578" class="arr" stroke-dasharray="4 3"/>
+<text class="ts" x="36" y="566" dominant-baseline="central">9 · log: level, action</text>
+
+<path d="M400 240 H560 V736 H530" fill="none" class="arr" style="stroke:#993556" stroke-dasharray="4 3" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="566" y="422" dominant-baseline="central">R/V/D · restore, poll status,</text>
+<text class="ts" x="566" y="438" dominant-baseline="central">or delete (separate calls,</text>
+<text class="ts" x="566" y="454" dominant-baseline="central">each bypasses detection)</text>
+
+<path d="M400 470 H800 V250 H400" fill="none" class="arr" style="stroke:#B0271C" stroke-dasharray="4 3" marker-end="url(#arrow2v2)"/>
+<text class="ts" x="806" y="355" dominant-baseline="central">L · blocked</text>
+<text class="ts" x="806" y="371" dominant-baseline="central">(LOCAL_ONLY —</text>
+<text class="ts" x="806" y="387" dominant-baseline="central">deterministic)</text>
+<text class="ts" x="806" y="403" dominant-baseline="central">skips everything</text>
+<text class="ts" x="806" y="419" dominant-baseline="central">below</text>
+
+<text class="ts" x="24" y="944" dominant-baseline="central">7–11 match Figure 1 · 7L, L, 8 and V0 are new, merged from a teammate's architecture v0.6</text>
+<text class="ts" x="24" y="960" dominant-baseline="central">↓ request, ↑ response · dashed = logging, a blocked whole-request result, or a separate call</text>
+<g transform="translate(214 212)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(54 212)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(204 328)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(224 328)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(214 444)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(214 560)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(434 328)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(249 708)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(414 708)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(434 708)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(54 828)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(418 64)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(558 64)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><g transform="translate(50 932)"><circle r="9" class="badge"/><use href="#i-model" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="64" y="932" dominant-baseline="central">model inference</text><g transform="translate(190 932)"><circle r="9" class="badge"/><use href="#i-data" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="204" y="932" dominant-baseline="central">data store</text><g transform="translate(310 932)"><circle r="9" class="badge"/><use href="#i-code" x="-9" y="-9" width="18" height="18" class="badge-icon"/></g><text class="ts" x="324" y="932" dominant-baseline="central">hand-written code</text>
+</svg>
+<figcaption><b>New: a whole-request policy gate, merged in from a teammate's architecture v0.6 and interim HTTP contract.</b> Their design makes one conservative release decision for the entire request (confidential category, health/financial/credential data, or unknown provenance), separate from the per-span redaction decision our confidence gate already made. So the classifier's report (7) now goes to this new <b>Policy gate</b> first: if the whole request is blocked, it deterministically returns <b>LOCAL_ONLY</b> straight to the Gateway (<b>L</b>, red dashed), skipping the confidence gate, review queue and redact/restore entirely — nothing below this line ever sees that request, and this can't be resolved per-request, only by changing the approved policy. Only an approved request continues (8) to the confidence gate, which auto-redacts (8A) or flags for asynchronous human review (8B, <b>PENDING_REVIEW</b>) exactly as before. Both gates log their decision to the audit trail (7L, 9). When 8B fires, Review queue immediately acks <b>PENDING_REVIEW</b> without waiting — a human reviewer resolves it out-of-band, at their own pace, and writes the outcome straight into the record Redact / restore holds (<b>V0</b>). Local model stays next to the sensitivity classifier (5, 6); the dashed <b>R/V/D</b> connector bundles three later, independent, id-keyed calls that all reach Redact / restore directly, bypassing the classifier and both gates: <b>restore</b> (can itself come back <code>REVIEW_BLOCKED</code>), <b>poll for a pending review's outcome</b> (the only way a caller gets content after <code>PENDING_REVIEW</code>), and <b>delete the record</b>. Redact / restore's tagline now separates its two kinds of state: the scan/review <b>record always exists</b>, but the restorable <b>mapping is opt-in</b> — setting `mapping.retain` is the only thing that decides whether restore can substitute real values back in. Cloud API and egress proxy remain removed, per the client's framing that the calling application decides on its own, later, whether to call an external cloud assistant. This is a proposal for discussion — <code>hybrid-routing-diagrams-en.html</code> has not been edited. Figure 1 now shows the same policy-gate and asynchronous-review steps (7, 7L, 8, V0).</figcaption>
+</figure>
+
+<div class="pending"><p><b>Open question 1 — pending client confirmation: policy-gate granularity.</b> The policy gate's release decision is whole-request, not per-span. As merged in from the teammate's design, one confidential line, or one line of health/financial/credential data, or an unclear source anywhere in the thread is enough to keep the <i>entire</i> email local (<code>LOCAL_ONLY</code>), even if the rest of the message is ordinary business text — and because this is a deterministic policy decision, it can't be resolved by a per-request human review the way a low-confidence span can.</p>
+<ul>
+<li>This is likely to trigger often in practice — long threads and quoted history make it easy for one sensitive line to bounce back a whole email that would otherwise be fine to release.</li>
+<li>The teammate's doc treats this as a deliberate, conservative interim default (see architecture v0.6, "Apply the interim policy"), not a final design — the source/type/task policy table and category boundaries are explicitly still open for the client privacy/legal representative and system owner to approve.</li>
+<li><b>Recommendation:</b> raise this with the client as a concrete open item — whether finer-grained rules (e.g. per-paragraph or per-quoted-message release, rather than per whole thread) are worth the added complexity, or whether the coarse whole-request block is acceptable for the first release.</li>
+</ul>
+<p><b>Open question 2 — pending team decision: how the async review queue is checked, and how long it waits.</b> 8B now returns <code>PENDING_REVIEW</code> immediately and a human resolves it later (V0); this fixes the earlier problem of a synchronous call implying a blocking human wait, but it opens three mechanical questions the diagram currently answers with a single default.</p>
+<ul>
+<li><b>Poll vs. webhook.</b> This proposal has the caller poll <code>GET /v1/redactions/{id}</code> (V1–V3) until it resolves. A webhook/callback the caller registers would avoid repeated polling but adds delivery/retry/auth surface of its own — worth deciding before the API contract is final.</li>
+<li><b>Review TTL.</b> How long can a request sit as <code>PENDING_REVIEW</code> before it expires? The diagram assumes it shares the same bounded-lifetime record as everything else in Redact / restore, but that cap was originally sized for restore/scan state, not for however long a human reviewer actually takes — these may need separate limits.</li>
+<li><b>Cancel via delete.</b> D1–D3 assumes deleting a still-pending review simply cancels it. If the client instead wants pending reviews to be un-cancelable once queued (e.g. for audit completeness), that changes D's behavior.</li>
+</ul>
+</div>
+
+<footer>Local redaction service · workflow &amp; architecture proposal v2 · Virtual Gold capstone · 2026-09-27</footer>
+</main>
+</body>
+</html>

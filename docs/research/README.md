@@ -26,6 +26,8 @@ A document belongs to whoever wrote it, not to whoever the topic now belongs to.
 | Zhexuan | 2026-09-13 | `confidence-scoring-harness-report-{en,zh}.md` — literature review behind the confidence harness |
 | Zhexuan | 2026-09-15 | `confidence-harness-design-{en,zh}.md` — harness design, v0.2 |
 | Zhexuan | 2026-09-21 | `confidence-gating-design-draft-zh.pdf` — confidence scheduling and the confidentiality gate |
+| Zhexuan | 2026-09-27 | `redaction-api-contract-en.md` — HTTP contract v0.3.0-draft: endpoints, release decisions, asynchronous review, 11 open questions |
+| Zhexuan | 2026-09-27 | `redaction-architecture-v2-proposal-en.html` — workflow and architecture v2, adds a whole-request policy gate and an asynchronous review queue |
 
 ## What belongs here
 
