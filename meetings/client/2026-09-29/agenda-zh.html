@@ -185,14 +185,14 @@ figure.arch svg{min-width:700px}
 </header>
 
 <ol class="agenda">
-  <li><a href="#team"><span class="n">A</span><span class="t">分工</span><span class="m">5 分</span></a></li>
-  <li><a href="#service"><span class="n">B</span><span class="t">服務怎麼運作</span><span class="m">Zhexuan &amp; Anmol · 12 分</span></a></li>
-  <li><a href="#judgment"><span class="n">C</span><span class="t">怎麼決定要遮什麼</span><span class="m">Yudi · 18 分</span></a></li>
-  <li><a href="#data"><span class="n">D</span><span class="t">評測資料集</span><span class="m">Karina · 5 分</span></a></li>
-  <li><a href="#asks"><span class="n">E</span><span class="t">六件要確認的事</span><span class="m">15 分</span></a></li>
+  <li><a href="#team"><span class="n">A</span><span class="t">分工</span><span class="m">4 分</span></a></li>
+  <li><a href="#service"><span class="n">B</span><span class="t">服務怎麼運作</span><span class="m">Zhexuan &amp; Anmol · 18 分</span></a></li>
+  <li><a href="#judgment"><span class="n">C</span><span class="t">怎麼決定要遮什麼</span><span class="m">Yudi · 20 分</span></a></li>
+  <li><a href="#data"><span class="n">D</span><span class="t">評測資料集</span><span class="m">Karina · 4 分</span></a></li>
+  <li><a href="#asks"><span class="n">E</span><span class="t">六件要確認的事</span><span class="m">14 分</span></a></li>
 </ol>
 
-<div class="cat" id="team"><h2>A · 分工</h2><span class="tag">5 分</span></div>
+<div class="cat" id="team"><h2>A · 分工</h2><span class="tag">4 分</span></div>
 <div class="item">
   <p class="ctx">一人負責一個領域,對應 Aarvin 提出的五個責任範圍。2026-09-25 團隊會議確認。</p>
   <div class="tbl"><table>
@@ -206,85 +206,235 @@ figure.arch svg{min-width:700px}
   <p class="rec"><b>Mark 為單一對口窗口</b>,依貴方要求。</p>
 </div>
 
-<div class="cat" id="service"><h2>B · 服務怎麼運作</h2><span class="tag">Zhexuan &amp; Anmol · 12 分</span></div>
+<div class="cat" id="service"><h2>B · 服務怎麼運作</h2><span class="tag">Zhexuan &amp; Anmol · 18 分</span></div>
 <div class="item">
-  <p class="ctx">這個服務夾在貴方系統與雲端助理之間。<b>它自己不呼叫雲端</b>,也不需要對外網路 &mdash; 脫敏後的文字要怎麼處理,完全由貴方系統決定。</p>
+  <p class="ctx">這個服務夾在貴方系統與雲端助理之間。<b>它自己不呼叫雲端</b>,也不需要對外網路 &mdash; 脫敏後的文字要怎麼處理,完全由貴方系統決定。<b>折疊的內容是給貴方會後參考的,會議上只走主幹。</b></p>
+
+  <h3>1 · 大致形狀</h3>
   <div class="finding">
-    <div><div class="k">大致形狀</div>貴方系統把使用者的任務加上信件送進來,我們回傳同樣的內容,但私密部分換成佔位符,並附上整個請求的處置決定。之後在另一次呼叫裡,貴方把雲端的回覆送回來,我們還原成真值。<mark class="hl-key">佔位符對應真值的那張表,從頭到尾沒離開過我們的機器。</mark></div>
-    <div><div class="k">出錯一律擋下</div>任何錯誤都代表內容<b>沒有</b>被處理。就算回傳成功但狀態不是「可放行」,後果一樣:不得送往雲端。任何一個環節失效,什麼都不會放出去。</div>
-    <div><div class="k">敏感內容不進日誌</div>輸入文字、偵測到的值、還原後的文字<b>一律不寫入日誌</b> &mdash; 只記 id、數量、耗時、決定與錯誤類型。</div>
+    <div><div class="k">兩次呼叫,不是一次</div>貴方系統把使用者的任務加上信件送進來 &mdash; 主旨、寄件者、收件者、本文、引用串。我們回傳同樣的內容,但私密部分換成佔位符,並附上<b>整個請求的一個處置決定</b>。之後在另一次呼叫裡,貴方把雲端的回覆送回來,我們還原成真值。<mark class="hl-key">佔位符對應真值的那張表,從頭到尾沒離開過我們的機器。</mark></div>
+    <div><div class="k">還原是刻意的動作,不會自己發生</div>除非貴方用參考 id 明確要求,否則不會還原任何東西,而且那是獨立的一次呼叫。該呼叫完全跳過偵測 &mdash; 只掃描回覆並換回真值。</div>
+    <div><div class="k">雲端仍然由貴方掌控</div>我們不持有貴方的 API 金鑰、不綁定貴方的雲端供應商、也從不發出對外呼叫。脫敏後的文字要不要送雲端,是貴方系統在我們交還之後自己的決定。</div>
   </div>
-  <details class="more"><summary>細節:端點與各自的回傳</summary><div class="body">
+
+  <h3>2 · 五條設計原則</h3>
+  <div class="tbl"><table>
+    <tr><th>原則</th><th>實際上代表什麼</th></tr>
+    <tr><td><strong>出錯一律擋下</strong></td><td>任何錯誤都代表內容<b>沒有</b>被處理。就算回傳成功但狀態不是「可放行」,後果一樣:不得轉送。任何環節失效,什麼都不會放出去。</td></tr>
+    <tr><td><strong>管制類別由政策把關,不由分數</strong></td><td>醫療、金融、憑證、商業機密這幾類,<b>信心分數再高也不構成放行依據</b>。只有經核可的政策可以。</td></tr>
+    <tr><td><strong>沒有任何請求需要等人</strong></td><td>模型不確定時,該片段照樣遮蔽並記錄為不確定。不會卡在人工審查上。</td></tr>
+    <tr><td><strong>敏感內容不進日誌</strong></td><td>輸入文字、偵測到的值、還原後的文字一律不寫入日誌 &mdash; 只記 id、數量、耗時、決定與錯誤類型。</td></tr>
+    <tr><td><strong>只在本地</strong></td><td>沒有對外網路呼叫。模型與清單在部署時安裝,運行中的服務不連網際網路。</td></tr>
+  </table></div>
+
+  <h3>3 · 一次請求裡發生什麼事</h3>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>步驟</th><th>誰決定</th></tr>
+    <tr><td>1</td><td>貴方系統送進任務與信件</td><td>—</td></tr>
+    <tr><td>2</td><td>切分:本文、引用串、簽名檔</td><td>程式碼</td></tr>
+    <tr><td>3</td><td>找候選 &mdash; 先規則與檢查碼,再實體辨識,最後本地模型</td><td>規則,再模型</td></tr>
+    <tr><td>4</td><td>依上下文判斷每個候選,並給信心分數</td><td><b>模型</b></td></tr>
+    <tr><td>5</td><td>依核可政策,對整個請求做一次放行決定</td><td><b>程式碼</b></td></tr>
+    <tr><td>6</td><td>逐片段:高於門檻就遮;低於門檻照樣遮,並記錄不確定</td><td><b>程式碼</b></td></tr>
+    <tr><td>7</td><td>換成有型態、有編號的佔位符;對照關係存在本地</td><td>程式碼</td></tr>
+    <tr><td>8</td><td>記錄決定 &mdash; 類別、信心、動作。<b>不記文字</b></td><td>程式碼</td></tr>
+    <tr><td>9</td><td>回傳脫敏後內容、處置決定、片段清單</td><td>—</td></tr>
+  </table></div>
+  <p class="rec"><mark class="hl-key">模型只在第 4 步提議。之後每一個放行決定都是純程式碼,依據貴方核可過的政策。</mark>模型無法說服第 5 或第 6 步 &mdash; 這一點很重要,因為它正在讀的信件是不可信的內容。</p>
+
+  <details class="more"><summary>細節:端點</summary><div class="body">
   <div class="tbl"><table>
     <tr><th>端點</th><th>做什麼</th></tr>
-    <tr><td><code>POST /v1/redactions</code></td><td>偵測、遮蔽,並回傳整個請求的處置決定</td></tr>
+    <tr><td><code>POST /v1/redactions</code></td><td>偵測、遮蔽,並回傳整個請求的一個處置決定</td></tr>
     <tr><td><code>GET /v1/redactions/{id}</code></td><td>查詢狀態、取回結果</td></tr>
-    <tr><td><code>POST /v1/redactions/{id}/restore</code></td><td>掃描雲端回覆,再還原真值</td></tr>
+    <tr><td><code>POST /v1/redactions/{id}/restore</code></td><td>掃描雲端回覆,再換回真值</td></tr>
     <tr><td><code>DELETE /v1/redactions/{id}</code></td><td>刪除紀錄</td></tr>
-    <tr><td><code>GET /v1/info</code> · <code>/healthz</code> · <code>/readyz</code></td><td>服務資訊與健康檢查</td></tr>
+    <tr><td><code>GET /v1/info</code></td><td>服務資訊、政策版本</td></tr>
+    <tr><td><code>GET /healthz</code> · <code>GET /readyz</code></td><td>存活與就緒檢查,不需認證</td></tr>
   </table></div>
-  <p>除健康檢查外全部需要 bearer 認證。錯誤格式採 RFC 9457。完整契約見 <code>docs/research/zhexuan/2026-09-27/</code>。</p>
+  <p>除健康檢查外全部需要 bearer 認證。錯誤一律採 RFC 9457 格式,帶有 type、title、status 與 request id。</p>
   </div></details>
+
+  <details class="more"><summary>細節:每個片段回傳什麼</summary><div class="body">
+  <p>每個我們處理過的片段都會回報:</p>
+  <ul>
+    <li><b>實體型態</b> &mdash; 電話、人名、組織……</li>
+    <li><b>類別</b> &mdash; 落在哪一個敏感度類別</li>
+    <li><b>信心</b> &mdash; 模型有多確定</li>
+    <li><b>哪個偵測器</b>找到的 &mdash; 規則、實體辨識,還是模型</li>
+    <li><b>一句簡短理由</b></li>
+  </ul>
+  <p class="rec"><mark class="hl-key">絕不包含原始值。</mark>回應告訴貴方做了什麼、為什麼,但讀它本身不會洩漏任何東西。</p>
+  <p>整個請求的處置決定與片段是分開的:它涵蓋任務加信件加引用串的整體,<b>不只是個別分數的加總</b>。</p>
+  </div></details>
+
+  <details class="more"><summary>細節:我們保留哪些狀態、保留多久</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>狀態</th><th>內容</th><th>存活</th></tr>
+    <tr><td>標籤一致性</td><td>讓同一個真實實體在一段對話的每一輪都拿到同一個佔位符,標籤不會漂移或撞號</td><td>單一 session</td></tr>
+    <tr><td>掃描紀錄</td><td>每個處理過的請求都會建立,讓之後能掃描回覆裡新出現的私密內容</td><td>有限,存在記憶體</td></tr>
+    <tr><td>可還原對照</td><td><b>選配。</b>不開啟的話,還原仍會掃描回覆但無法換回任何值 &mdash; 佔位符會被標為「未對應」,而不是默默丟掉</td><td>與紀錄同存</td></tr>
+  </table></div>
+  <p>行程重啟會遺失這些紀錄,之後任何還原請求一律擋下,而不是猜測。</p>
+  </div></details>
+
+  <details class="more"><summary>細節:失效處理</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>情況</th><th>行為</th></tr>
+    <tr><td>任何元件出錯或逾時</td><td>什麼都不放出去。回應會說明內容未被處理</td></tr>
+    <tr><td>模型無法使用</td><td>契約裡的待決問題 8:退回純規則,還是整個擋下。<b>尚未定案 &mdash; 我們希望跟貴方談定</b></td></tr>
+    <tr><td>雲端回覆裡出現我們沒發過的佔位符</td><td>標記出來,不去推測它是什麼。前人研究觀察到雲端模型會自行編造佔位符</td></tr>
+    <tr><td>回覆混雜了多次請求的佔位符</td><td>只有該次請求的佔位符會被還原,其餘標為未對應,絕不默默丟棄</td></tr>
+  </table></div>
+  </div></details>
+
+  <details class="more"><summary>細節:第一版不做的</summary><div class="body">
+  <p>附件與掃描件(OCR)、批次請求、串流回應,以及英文以外語言的調校。<b>附件這一項我們特別想聽貴方的想法</b> &mdash; 見 E 節。</p>
+  </div></details>
+
+  <h3>4 · 這一節需要貴方回答的</h3>
+  <div class="tbl"><table>
+    <tr><th>項目</th><th>我們需要什麼</th></tr>
+    <tr><td><mark class="hl-ask">API 契約</mark></td><td>我們沒有乾等,先擬了一版。<b>希望 Aarvin 告訴我們哪裡跟貴方系統實際的呼叫方式對不上</b> &mdash; 這比我們猜快得多。</td></tr>
+    <tr><td><mark class="hl-ask">還原由誰做</mark></td><td>貴方系統需要我們還原真值,還是貴方自己處理?</td></tr>
+    <tr><td><mark class="hl-ask">延遲與量</mark></td><td>每封信可接受的處理時間是多久,每天大約幾封?這個服務在助理處理的每一封信路徑上。</td></tr>
+    <tr><td><mark class="hl-ask">session id</mark></td><td>請求能不能帶一個,讓佔位符在對話的多輪之間保持一致?</td></tr>
+  </table></div>
   <div class="fields">
-    <div><label for="b1">貴方回饋</label><textarea id="b1" data-store="b1" placeholder="這個形狀符合貴方系統的呼叫方式嗎"></textarea></div>
+    <div><label for="b1">貴方回饋</label><textarea id="b1" data-store="b1" placeholder="契約哪裡跟貴方系統對不上"></textarea></div>
     <div><label for="b1o">負責</label><input id="b1o" data-store="b1o" value="Zhexuan"></div>
     <div><label for="b1d">後續</label><input id="b1d" data-store="b1d" placeholder="日期"></div>
   </div>
 </div>
 
-<div class="cat" id="judgment"><h2>C · 怎麼決定要遮什麼</h2><span class="tag">Yudi · 18 分</span></div>
+<div class="cat" id="judgment"><h2>C · 怎麼決定要遮什麼</h2><span class="tag">Yudi · 20 分</span></div>
 <div class="item">
-  <p class="ctx">兩個設計一起講,因為它們不是二選一 &mdash; 其中一個是另一個必須超越的基準。</p>
+  <p class="ctx">兩個設計一起講,因為它們不是二選一 &mdash; 其中一個是另一個必須超越的基準。背後有十七篇文獻,來源在折疊處。</p>
 
   <h3>1 · 基準:偵測到的全部遮掉</h3>
   <p><b>先從「完全不做判斷」開始。</b>任何一個偵測器標到的片段,一律換成可還原的佔位符。公開的客服電話也照遮。不判斷,也不爭論。</p>
   <div class="finding">
-    <div><div class="k">為什麼這能當起點</div>遮掉一支公開電話以前之所以算錯誤,是因為<b>資訊就此消失</b>。在這裡它只是對雲端隱藏,最後還是會回到主管手上。<mark class="hl-key">所以過度遮蔽不再是看得見的錯誤,而是雲端推理品質的一點下降 &mdash; 而那是量得出來的。</mark>整個專案最難的判斷題,變成一個可以調的旋鈕。</div>
+    <div><div class="k">為什麼這是認真的起點,不是陪襯</div>遮掉一支公開電話以前之所以算錯誤,是因為<b>資訊就此消失</b>。在這裡它只是對雲端隱藏,最後還是會回到主管手上。<mark class="hl-key">所以過度遮蔽不再是看得見的錯誤,而是雲端推理品質的一點下降 &mdash; 而那是量得出來的。</mark>整個專案最難的判斷題,變成一個可以調的旋鈕。</div>
+    <div><div class="k">它依據的證據</div>2026 年 9 月一份研究在推理基準上比較五種匿名化方式:<b>一致的佔位符與原文得分相同,而整段塗黑損失約四分之一的分數。</b>這就是「用佔位符而不是塗黑」的全部理由。同一份研究也警告:需要外部查詢的任務,即使用佔位符也會嚴重退化 &mdash; 這也是 E 節要問「主管多常查外部公司」的原因。</div>
     <div><div class="k">而且它是對照組</div>全部遮掉,定義了安全的上限和可用性的下限。<b>之後每一項改良都必須用量測證明自己值得</b> &mdash; 買回多少答案品質,付出多少外洩風險。先嚴再依證據放寬,比先寬鬆再收緊好交代。</div>
   </div>
 
-  <h3>2 · 改良:讓更多東西通過,但只在安全的地方</h3>
-  <p>全部遮掉安全但粗糙。改良是在上面加兩個判斷,讓公開與低風險的內容可以原樣通過。</p>
+  <h3>2 · 為什麼一個判斷不夠</h3>
   <div class="tbl"><table>
-    <tr><th>判斷</th><th>在問什麼</th><th>作用</th></tr>
-    <tr><td><b>類別</b></td><td>這是什麼種類的東西?</td><td>決定我們對它多謹慎</td></tr>
-    <tr><td><b>能不能讓模型決定</b></td><td>信心分數有沒有資格放行它?</td><td>五個類別:永遠不行,只能靠政策</td></tr>
+    <tr><th>研究發現</th><th>所以我們</th></tr>
+    <tr><td><mark class="hl-key">敏感不等於個資。</mark>「在 Fed 會議前出清區域銀行那部分」沒有任何人名,卻揭露了整個策略</td><td>保護主管在做什麼,不只是誰被點名</td></tr>
+    <tr><td><mark class="hl-key">單一開關閘門會讓助理失能。</mark>只看敏感度只留下 4% 該留的內容;加上第二個判斷後留下 95%</td><td>用兩個判斷,不是一個門檻</td></tr>
+    <tr><td><mark class="hl-key">偵測分數不是隱私分數。</mark>所有偵測到的識別碼都遮蔽後,仍有 9% 的紀錄被重新識別</td><td>回報外洩率,絕不用單純的偵測準確率</td></tr>
+    <tr><td><mark class="hl-key">情境無法可靠評分。</mark>人類審閱者對情境相關敏感度的一致率只有 48%</td><td>盡量用書面政策固定,並把需要判斷的範圍壓到最小</td></tr>
+    <tr><td><mark class="hl-key">沒有單一偵測器夠好。</mark>最好的開源偵測器在四個資料集上平均 0.54,而且各自死在不同類型的文字上</td><td>跑多個,取聯集</td></tr>
   </table></div>
-  <p class="ctx">分數永遠不能放行的五個類別:<b>醫療</b>、<b>金融帳號</b>、<b>政府識別碼</b>、<b>密碼金鑰</b>、<b>商業機密</b>。其餘由分數決定,個人資訊標準較嚴,公開資訊較鬆。</p>
+  <p class="ctx">那個 48% 就是為什麼這個設計盡量把工作推給「不會錯」的東西 &mdash; 文字從哪來、有沒有通過檢查碼、書面政策怎麼寫 &mdash; 只把真正需要閱讀理解的部分留給模型。</p>
 
-  <details class="more"><summary>細節:類別清單與依據</summary><div class="body">
+  <h3>3 · 改良:兩個判斷,三種動作</h3>
+  <div class="tbl"><table>
+    <tr><th>判斷</th><th>在問什麼</th><th>答案從哪來</th></tr>
+    <tr><td><b>類別</b></td><td>這是什麼種類的東西?</td><td>規則、檢查碼、實體辨識,最後才是模型</td></tr>
+    <tr><td><b>分數能放行嗎</b></td><td>信心分數可不可以構成放行依據?</td><td>核可過的政策。五個類別的答案是「永遠不行」</td></tr>
+  </table></div>
+  <p>分數永遠不能放行的五個:<b>醫療</b>、<b>金融帳號</b>、<b>政府識別碼</b>、<b>密碼金鑰</b>、<b>商業機密</b>。其餘由分數決定,個人資訊標準嚴,公開資訊標準鬆。</p>
+
+  <details class="more"><summary>細節:完整類別清單與依據</summary><div class="body">
   <div class="tbl"><table>
     <tr><th>類別</th><th>涵蓋</th><th>分數能放行嗎</th></tr>
-    <tr><td><code>medical</code></td><td>病情、診斷、就診</td><td><b>不行</b></td></tr>
-    <tr><td><code>financial_account</code></td><td>帳號、卡號</td><td><b>不行</b></td></tr>
+    <tr><td><code>medical</code></td><td>病情、診斷、就診、處方</td><td><b>不行</b></td></tr>
+    <tr><td><code>financial_account</code></td><td>帳號、卡號、routing、IBAN</td><td><b>不行</b></td></tr>
     <tr><td><code>government_id</code></td><td>身分證、護照、駕照</td><td><b>不行</b></td></tr>
     <tr><td><code>credential</code></td><td>密碼、金鑰、token</td><td><b>不行</b></td></tr>
-    <tr><td><code>business_confidential</code></td><td>未公開財務、交易條款、專案代號、法律事項</td><td><b>不行</b></td></tr>
-    <tr><td><code>person_private</code> · <code>contact_personal</code></td><td>私人個體及其電話、email、住址</td><td>可以 · 標準嚴</td></tr>
-    <tr><td><code>person_public</code> · <code>contact_public</code></td><td>公眾人物、已公開的客服專線</td><td>可以 · 標準鬆</td></tr>
+    <tr><td><code>business_confidential</code></td><td>未公開財報、交易與併購條款、專案代號、法律事項</td><td><b>不行</b></td></tr>
+    <tr><td><code>person_private</code></td><td>私人個體的姓名</td><td>可以 · 標準嚴</td></tr>
+    <tr><td><code>contact_personal</code></td><td>私人電話、email、住址</td><td>可以 · 標準嚴</td></tr>
+    <tr><td><code>person_public</code></td><td>公眾人物</td><td>可以 · 標準鬆</td></tr>
+    <tr><td><code>contact_public</code></td><td>已公開的客服專線、總機</td><td>可以 · 標準鬆</td></tr>
     <tr><td><code>org</code> · <code>location</code> · <code>date_time</code> · <code>demographic</code> · <code>quantity</code></td><td>公司、地點、日期、年齡性別、金額</td><td>可以 · 標準鬆</td></tr>
+    <tr><td><code>confidential_marking</code></td><td colspan="2">不是某個片段 &mdash; 是整封信的標記,像「請務必保密」「board only」「do not forward」</td></tr>
   </table></div>
-  <p>影響等級依 <b>NIST SP 800-122</b>。低風險項目湊在一起要收緊,依據是 Sweeney 的研究:郵遞區號、性別與出生日期合起來可唯一識別約 87% 的美國人口。商業機密是唯一既無格式也無固定語意的類別,這也是我們在下面要詞表的原因。</p>
+  <p><b>依據。</b>影響等級依 NIST SP 800-122,該標準依「揭露會造成多大損害」分類個人資料,並指出多個欄位合起來可能比任一單獨欄位更敏感。「標準鬆的項目湊在一起要收緊」則依據 Sweeney 的研究:郵遞區號、性別與出生日期合起來可唯一識別約 87% 的美國人口。</p>
+  <p class="ctx"><b>已知限制:</b>NIST SP 800-122 只涵蓋個人資料,所以商業資訊的分級會依貴方自己的內部資料分類,而非外部標準。</p>
   </div></details>
 
-  <h3>3 · 模型不確定的時候</h3>
-  <p><b>照樣遮,並記下它不確定。</b>沒有任何請求需要等人處理。那些記錄就是我們量測過度遮蔽的資料 &mdash; 所以「謹慎的代價」是一個數字,不是猜測。</p>
+  <details class="more"><summary>細節:商業機密 &mdash; 唯一偵測不到的類別</summary><div class="body">
+  <p>另外四個管制類別有格式或明確語意,這一個兩者皆無 &mdash; 專案代號看起來就是個普通字詞。涵蓋依賴三層:</p>
+  <div class="tbl"><table>
+    <tr><th>層</th><th>怎麼運作</th><th>抓到什麼</th></tr>
+    <tr><td><b>1 · 詞表</b></td><td>貴方提供專案代號、交易名稱、主要往來對象;任何符合即遮蔽</td><td>貴方已知是機密的東西</td></tr>
+    <tr><td><b>2 · 明示標記</b></td><td>「confidential」「board only」「do not forward」「privileged」之類的字眼,把周圍段落提升到最高級</td><td>寄件者自己標記的</td></tr>
+    <tr><td><b>3 · 預設佔位符</b></td><td>模型無法分類的專有名詞與金額,換成可還原的佔位符而不是原樣送出</td><td>前兩層漏掉的</td></tr>
+  </table></div>
+  <p class="rec"><mark class="hl-ask">第 1 層需要貴方提供詞表。</mark>這個類別最依賴模型判斷,因此也是主要的漏抓風險;它的外洩率會單獨回報,不會混進其他類別平均。</p>
+  </div></details>
 
-  <h3>4 · 這一節需要貴方回答的</h3>
+  <h3>4 · 門檻怎麼定</h3>
+  <p>門檻不是我們定的。<b>貴方設定每一類可接受的外洩率 &mdash; 那是商業決策。</b>我們則在標註過的信件上,測量一系列門檻下的外洩率與過度遮蔽率,取「仍能達成貴方目標的最高門檻」,以免遮蔽超過必要。</p>
+  <div class="tbl"><table>
+    <tr><th>門檻</th><th>外洩率</th><th>過度遮蔽率</th></tr>
+    <tr><td>0.2</td><td>1%</td><td>40%</td></tr>
+    <tr><td>0.3</td><td>2%</td><td>25%</td></tr>
+    <tr><td>0.5</td><td>5%</td><td>12%</td></tr>
+    <tr><td>0.7</td><td>12%</td><td>5%</td></tr>
+  </table></div>
+  <p class="ctx">僅為示意形狀,不是實測結果。若目標為 2%,選定的門檻會是 0.3。<b>資料集做出來之後,我們會把這張表填上真實數字交給貴方</b>,讓取捨由貴方來做,而不是我們。</p>
+
+  <details class="more"><summary>細節:信心分數,以及為什麼必須校準</summary><div class="body">
+  <p>語言模型被問到「你有多確定」時,一貫過度自信,所以原始分數不會直接使用。</p>
+  <p><b>方法一:校準。</b>在標註過的信件上跑一遍,依原始分數分組,量測每一組實際上有多少比例確實是私密的。執行時把原始分數換算成那個實測比例。原始 0.95 可能上報為 0.70。<mark class="hl-key">這讓「門檻 0.5」代表實測 50% 的可能性,而不是模型自己的感覺。</mark></p>
+  <p><b>方法二:一致性 &mdash; 備案。</b>如果校準顯示分數的鑑別力不足,例如幾乎全部落在 0.9 附近,那就改由一致性推導:有多少比例的偵測器標到這個片段、重複跑幾次模型有多少次判為私密。重複作答之間的一致性,比模型自述的信心更可靠。<b>兩種方法會在同一批資料上比較。</b></p>
+  </div></details>
+
+  <details class="more"><summary>細節:模型不確定的時候</summary><div class="body">
+  <p><b>照樣遮,並記下它不確定。</b>沒有任何請求需要等人處理。</p>
+  <p>理由:人工審查存在的前提是「遮錯的代價很大」。有了可還原的佔位符,代價很小 &mdash; 值會在最終答案裡回來。既然代價小,就不值得佔用一個人的時間,而一個每天用幾十次的助理也不可能為此暫停。</p>
+  <p class="rec">那些「不確定」的紀錄同時也是<mark class="hl-key">我們量測過度遮蔽的依據</mark>,所以「謹慎的代價」是一個數字,不是猜測。</p>
+  </div></details>
+
+  <details class="more"><summary>細節:我們怎麼證明它有效</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>量什麼</th><th>怎麼量</th></tr>
+    <tr><td><b>外洩率</b> &mdash; 頭號指標</td><td>私密片段被送到雲端的比例,<b>分類別回報</b>,不取平均</td></tr>
+    <tr><td>過度遮蔽率</td><td>公開片段被不必要遮蔽的比例</td></tr>
+    <tr><td><b>可用性代價</b></td><td>開啟與關閉脫敏的答案品質差距 &mdash; 這就是「隱私要付多少代價」,以數字呈現</td></tr>
+    <tr><td>校準</td><td>回報的信心是否符合實測比例</td></tr>
+    <tr><td>延遲</td><td>在確認的硬體上,每封信的處理時間</td></tr>
+  </table></div>
+  <p><b>逐項拆解。</b>從基準開始,一次加一個元件 &mdash; 偵測器聯集、實體傳播、重複執行、類別門檻 &mdash; 讓每一項的貢獻分開可見。門檻在一個子集上調,結果在另一個保留子集上回報,數字不會被美化。</p>
+  <p><b>規避測試。</b>識別碼裡的同形字與零寬字元、編碼過的帳號、跨行拆開的數值、放在表格裡導致辨識率下降的值。另外還有一項是這個設計專屬的:一封夾帶隱藏文字、指示助理一併附上聯絡人清單的信。</p>
+  </div></details>
+
+  <details class="more"><summary>細節:哪些是我們的,哪些是借來的</summary><div class="body">
+  <p>這裡沒有任何單一元件是新的,每一個都有已發表的來源或業界先例。屬於我們的是:為主管信件做的整合,<b>而且不需要逐項人工審查</b> &mdash; 最接近的前人系統要求使用者確認每一項,一個每天在用的助理做不到 &mdash; 加上一份標註過的信件基準集,以及量化每個元件貢獻的拆解實驗。</p>
+  <div class="tbl"><table>
+    <tr><th>元件</th><th>來源</th></tr>
+    <tr><td>本地偵測、送佔位符上雲、回傳後還原</td><td>Rescriber,CHI 2025。MIT 授權程式碼。8B 模型在 240 個樣本上精確率 0.94、召回率 0.63</td></tr>
+    <tr><td>規則與實體辨識、白名單</td><td>Microsoft Presidio</td></tr>
+    <tr><td>本地隱私偵測模型</td><td>OpenAI Privacy Filter,開放權重,可地端部署</td></tr>
+    <tr><td>依類別設定門檻</td><td>Google Cloud Sensitive Data Protection</td></tr>
+    <tr><td>敏感度分級</td><td>NIST SP 800-122</td></tr>
+    <tr><td>用分數與門檻取代人工審查</td><td>MINIM(ICML 2026)、OCELOT(2026)</td></tr>
+  </table></div>
+  <p class="ctx"><b>誠實面對的風險:</b>那個 0.63 召回率代表 8B 模型漏掉約三分之一的個人資料。Rescriber 的使用者會逐封檢視;在這裡,漏掉一項就直接進了雲端。<b>所以提升召回率是主要的工程投入</b>,而且是從一個量測過的基準往上做,不是憑假設。</p>
+  </div></details>
+
+  <h3>5 · 這一節需要貴方回答的</h3>
   <div class="tbl"><table>
     <tr><th>項目</th><th>我們需要什麼</th></tr>
     <tr><td><mark class="hl-ask">決定整個設計的那一題</mark></td><td><b>一封信裡如果有健康或財務資訊,我們把它換成佔位符之後,剩下的部分可以送雲端嗎?還是整封都不能送?</b><br>如果是整封都不能送 &mdash; 以主管信件大多是長串轉寄來看,這可能代表大部分請求都會被擋下。我們想知道這是不是貴方預期的結果。</td></tr>
-    <tr><td><mark class="hl-ask">機密詞表</mark></td><td>專案代號、交易名稱、主要往來對象。這是唯一我們自己偵測不到的類別 &mdash; 代號看起來就是個普通字詞。</td></tr>
-    <tr><td><mark class="hl-ask">輸入範圍</mark></td><td>只有純文字,還是也包含附件與掃描件?這決定第一版原型要處理到什麼程度。</td></tr>
+    <tr><td><mark class="hl-ask">機密詞表</mark></td><td>專案代號、交易名稱、主要往來對象。這是唯一我們自己偵測不到的類別。</td></tr>
+    <tr><td><mark class="hl-ask">可接受的外洩率</mark></td><td>分類別設定,這是商業決策。我們再依量測結果選出門檻。</td></tr>
+    <tr><td><mark class="hl-ask">一段話敏感但沒有東西可遮時</mark></td><td>「我們要把 Austin 辦公室收掉」沒有任何姓名或號碼可以替換。服務應該警告、擋下,還是退回給本地處理?</td></tr>
+    <tr><td><mark class="hl-ask">日常任務的大致比例</mark></td><td>摘要、擬信、排程、查外部公司,各佔多少?排程與查詢正是脫敏會付出實質品質代價的兩種情況,所以比例決定這件事有多嚴重。</td></tr>
   </table></div>
   <div class="fields">
-    <div><label for="c1">貴方回饋</label><textarea id="c1" data-store="c1" placeholder="反對、修正、等級應該怎麼定"></textarea></div>
+    <div><label for="c1">貴方回饋</label><textarea id="c1" data-store="c1" placeholder="反對、修正、類別與標準應該怎麼定"></textarea></div>
     <div><label for="c1o">負責</label><input id="c1o" data-store="c1o" value="Yudi"></div>
     <div><label for="c1d">後續</label><input id="c1d" data-store="c1d" placeholder="日期"></div>
   </div>
 </div>
 
-<div class="cat" id="data"><h2>D · 評測資料集</h2><span class="tag">Karina · 5 分</span></div>
+<div class="cat" id="data"><h2>D · 評測資料集</h2><span class="tag">Karina · 4 分</span></div>
 <div class="item">
   <p class="ctx">僅做簡短介紹,細節另出文件。</p>
   <p>Aarvin 要求的 100 封標註信件:從哪裡來、每一封要記什麼、以及在拿它評分之前,我們怎麼確認這些標註本身可信。</p>
@@ -295,7 +445,7 @@ figure.arch svg{min-width:700px}
   </div>
 </div>
 
-<div class="cat" id="asks"><h2>E · 六件要確認的事</h2><span class="tag">15 分</span></div>
+<div class="cat" id="asks"><h2>E · 六件要確認的事</h2><span class="tag">14 分</span></div>
 <div class="item">
   <p class="ctx">依「最先卡住我們」的順序排列。</p>
 

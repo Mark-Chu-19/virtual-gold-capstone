@@ -185,14 +185,14 @@ figure.arch svg{min-width:700px}
 </header>
 
 <ol class="agenda">
-  <li><a href="#team"><span class="n">A</span><span class="t">Who does what</span><span class="m">5 min</span></a></li>
-  <li><a href="#service"><span class="n">B</span><span class="t">How the service works</span><span class="m">Zhexuan &amp; Anmol · 12 min</span></a></li>
-  <li><a href="#judgment"><span class="n">C</span><span class="t">Deciding what to redact</span><span class="m">Yudi · 18 min</span></a></li>
-  <li><a href="#data"><span class="n">D</span><span class="t">Evaluation dataset</span><span class="m">Karina · 5 min</span></a></li>
-  <li><a href="#asks"><span class="n">E</span><span class="t">Six things we need</span><span class="m">15 min</span></a></li>
+  <li><a href="#team"><span class="n">A</span><span class="t">Who does what</span><span class="m">4 min</span></a></li>
+  <li><a href="#service"><span class="n">B</span><span class="t">How the service works</span><span class="m">Zhexuan &amp; Anmol · 18 min</span></a></li>
+  <li><a href="#judgment"><span class="n">C</span><span class="t">Deciding what to redact</span><span class="m">Yudi · 20 min</span></a></li>
+  <li><a href="#data"><span class="n">D</span><span class="t">Evaluation dataset</span><span class="m">Karina · 4 min</span></a></li>
+  <li><a href="#asks"><span class="n">E</span><span class="t">Six things we need</span><span class="m">14 min</span></a></li>
 </ol>
 
-<div class="cat" id="team"><h2>A · Who does what</h2><span class="tag">5 min</span></div>
+<div class="cat" id="team"><h2>A · Who does what</h2><span class="tag">4 min</span></div>
 <div class="item">
   <p class="ctx">One person per area, matching the five responsibilities Aarvin set out. Confirmed at our team meeting on 2026-09-25.</p>
   <div class="tbl"><table>
@@ -206,85 +206,235 @@ figure.arch svg{min-width:700px}
   <p class="rec"><b>Mark is your single point of contact</b>, as requested.</p>
 </div>
 
-<div class="cat" id="service"><h2>B · How the service works</h2><span class="tag">Zhexuan &amp; Anmol · 12 min</span></div>
+<div class="cat" id="service"><h2>B · How the service works</h2><span class="tag">Zhexuan &amp; Anmol · 18 min</span></div>
 <div class="item">
-  <p class="ctx">The service sits between your system and the cloud assistant. It never calls the cloud itself and needs no outbound network access &mdash; what happens to the redacted text afterwards is entirely your system's decision.</p>
+  <p class="ctx">The service sits between your system and the cloud assistant. It never calls the cloud itself and needs no outbound network access &mdash; what happens to the redacted text afterwards is entirely your system's decision. <b>Collapsed sections are for reference after the meeting; we will walk the main line only.</b></p>
+
+  <h3>1 · The shape of it</h3>
   <div class="finding">
-    <div><div class="k">The shape of it</div>Your system posts the user's task plus the email. We return the same content with private spans replaced by placeholders, plus a decision for the request as a whole. Later, separately, you can post the cloud's reply back and we restore the real values. <mark class="hl-key">The mapping from placeholder to original never leaves our machine.</mark></div>
-    <div><div class="k">Fail closed, everywhere</div>Any error means the content was <b>not</b> processed. A successful response that is not marked ready carries the same consequence: it must not be forwarded to the cloud. If a component fails, nothing is released.</div>
-    <div><div class="k">Nothing sensitive is logged</div>Input text, detected values and restored text are never written to logs &mdash; only ids, counts, timings, decisions and error types.</div>
+    <div><div class="k">Two calls, not one</div>Your system posts the user's task plus the email &mdash; subject, sender, recipients, body, quoted thread. We return the same content with private spans replaced by placeholders, plus <b>one decision for the request as a whole</b>. Later, separately, you post the cloud's reply back and we restore the real values. <mark class="hl-key">The mapping from placeholder to original never leaves our machine.</mark></div>
+    <div><div class="k">Restore is deliberate, never automatic</div>Nothing is restored unless you ask for it, by reference id, as its own call. That call bypasses detection entirely &mdash; it only scans the reply and substitutes back.</div>
+    <div><div class="k">You keep control of the cloud</div>We do not hold your API keys, we are not tied to your cloud provider, and we never make an outbound call. Whether the redacted text goes to the cloud at all is your system's decision, made after we hand it back.</div>
   </div>
-  <details class="more"><summary>Detail: the endpoints and what each returns</summary><div class="body">
+
+  <h3>2 · Five design principles</h3>
+  <div class="tbl"><table>
+    <tr><th>Principle</th><th>What it means in practice</th></tr>
+    <tr><td><strong>Fail closed</strong></td><td>Any error means the content was <b>not</b> processed. A successful response whose decision is not "ready" carries the same consequence: do not forward it. If any component fails, nothing is released.</td></tr>
+    <tr><td><strong>Regulated categories are gated by policy, not by score</strong></td><td>For medical, financial, credential and business-confidential data, <b>a confidence score never authorises release</b>, however high. Only the approved policy does.</td></tr>
+    <tr><td><strong>No request waits on a person</strong></td><td>When the model is unsure, the span is masked anyway and recorded as uncertain. Nothing blocks on human review.</td></tr>
+    <tr><td><strong>No sensitive logging</strong></td><td>Input text, detected values and restored text are never written to logs &mdash; only ids, counts, timings, decisions and error types.</td></tr>
+    <tr><td><strong>Local only</strong></td><td>No outbound network calls. Models and lists are installed at deployment; the running service does not reach the internet.</td></tr>
+  </table></div>
+
+  <h3>3 · What happens inside one request</h3>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>Step</th><th>Decided by</th></tr>
+    <tr><td>1</td><td>Your system posts the task and the email</td><td>—</td></tr>
+    <tr><td>2</td><td>Segment it: body, quoted thread, signature</td><td>code</td></tr>
+    <tr><td>3</td><td>Find candidates &mdash; rules and checksums, then entity recognition, then the local model</td><td>rules, then model</td></tr>
+    <tr><td>4</td><td>Judge each candidate in context, with a confidence score</td><td><b>model</b></td></tr>
+    <tr><td>5</td><td>One release decision for the whole request, against the approved policy</td><td><b>code</b></td></tr>
+    <tr><td>6</td><td>Per span: above the bar, mask; below it, mask anyway and record the uncertainty</td><td><b>code</b></td></tr>
+    <tr><td>7</td><td>Replace with typed, numbered placeholders; record the mapping locally</td><td>code</td></tr>
+    <tr><td>8</td><td>Log the decision &mdash; category, confidence, action. Never the text</td><td>code</td></tr>
+    <tr><td>9</td><td>Return the redacted content, the decision, and the span list</td><td>—</td></tr>
+  </table></div>
+  <p class="rec"><mark class="hl-key">The model proposes at step 4. Every release decision after that is plain code, against a policy you have approved.</mark> A model cannot talk its way past step 5 or 6, which matters because the email it is reading is untrusted content.</p>
+
+  <details class="more"><summary>Detail: the endpoints</summary><div class="body">
   <div class="tbl"><table>
     <tr><th>Endpoint</th><th>What it does</th></tr>
-    <tr><td><code>POST /v1/redactions</code></td><td>Detect, redact, and return a decision for the whole request</td></tr>
+    <tr><td><code>POST /v1/redactions</code></td><td>Detect, redact, and return one decision for the whole request</td></tr>
     <tr><td><code>GET /v1/redactions/{id}</code></td><td>Check status, retrieve a result</td></tr>
-    <tr><td><code>POST /v1/redactions/{id}/restore</code></td><td>Scan the cloud's reply, then restore the real values</td></tr>
+    <tr><td><code>POST /v1/redactions/{id}/restore</code></td><td>Scan the cloud's reply, then substitute the real values back</td></tr>
     <tr><td><code>DELETE /v1/redactions/{id}</code></td><td>Delete a record</td></tr>
-    <tr><td><code>GET /v1/info</code> · <code>/healthz</code> · <code>/readyz</code></td><td>Service metadata and health checks</td></tr>
+    <tr><td><code>GET /v1/info</code></td><td>Service metadata, policy version</td></tr>
+    <tr><td><code>GET /healthz</code> · <code>GET /readyz</code></td><td>Liveness and readiness, no auth</td></tr>
   </table></div>
-  <p>Bearer auth on everything except the health checks. Errors are RFC 9457 problem details. Full contract in <code>docs/research/zhexuan/2026-09-27/</code>.</p>
+  <p>Bearer auth on everything except the health checks. All errors are RFC 9457 problem details, carrying a type, title, status and request id.</p>
   </div></details>
+
+  <details class="more"><summary>Detail: what comes back for each span</summary><div class="body">
+  <p>Every span we act on is reported with:</p>
+  <ul>
+    <li><b>Entity type</b> &mdash; phone, person, organisation…</li>
+    <li><b>Category</b> &mdash; which sensitivity category it fell into</li>
+    <li><b>Confidence</b> &mdash; how sure the model was</li>
+    <li><b>Which detector</b> found it &mdash; a rule, entity recognition, or the model</li>
+    <li><b>A short reason</b></li>
+  </ul>
+  <p class="rec"><mark class="hl-key">Never the original value.</mark> The response tells you what was done and why, but reading it does not disclose anything.</p>
+  <p>The request-level decision is separate from the spans: it covers the whole task plus email plus thread, and it is not simply an aggregate of the individual scores.</p>
+  </div></details>
+
+  <details class="more"><summary>Detail: what state we keep, and for how long</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>State</th><th>What it holds</th><th>Lifetime</th></tr>
+    <tr><td>Label consistency</td><td>So the same real entity gets the same placeholder across the turns of one conversation, and labels never drift or collide</td><td>One session</td></tr>
+    <tr><td>Scan record</td><td>Created for every processed request, so the reply can later be scanned for newly introduced private content</td><td>Bounded, in memory</td></tr>
+    <tr><td>Reversible mapping</td><td><b>Opt-in.</b> Without it, restore still scans the reply but cannot substitute anything back &mdash; placeholders come back unmatched rather than silently dropped</td><td>With the record</td></tr>
+  </table></div>
+  <p>A process restart loses the records, so any restore attempted afterwards fails closed rather than guessing.</p>
+  </div></details>
+
+  <details class="more"><summary>Detail: failure handling</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>Condition</th><th>Behaviour</th></tr>
+    <tr><td>Any component errors or times out</td><td>Nothing is released. The response says the content was not processed</td></tr>
+    <tr><td>The model is unavailable</td><td>Open question 8 in the contract: fall back to rules only, or block entirely. Not yet settled &mdash; we would rather agree it with you</td></tr>
+    <tr><td>The cloud reply contains a placeholder we never issued</td><td>Flag it rather than infer a value. Prior work reports cloud models inventing placeholders of their own</td></tr>
+    <tr><td>The reply mixes placeholders from more than one request</td><td>Only that request's placeholders come back restored; the rest are reported as unmatched, never silently dropped</td></tr>
+  </table></div>
+  </div></details>
+
+  <details class="more"><summary>Detail: out of scope for the first version</summary><div class="body">
+  <p>Attachments and scanned documents (OCR), batched requests, streaming responses, and tuning for languages other than English. <b>Attachments in particular we would like your view on</b> &mdash; see section E.</p>
+  </div></details>
+
+  <h3>4 · What we need from you here</h3>
+  <div class="tbl"><table>
+    <tr><th>Item</th><th>What we need</th></tr>
+    <tr><td><mark class="hl-ask">The API contract</mark></td><td>We have drafted a version rather than wait. <b>We would like Aarvin to tell us where it does not match how your system would actually call it</b> &mdash; that is faster than us guessing.</td></tr>
+    <tr><td><mark class="hl-ask">Restore: ours or yours?</mark></td><td>Does your system need us to restore the real values, or do you handle that on your side?</td></tr>
+    <tr><td><mark class="hl-ask">Latency and volume</mark></td><td>What processing time per email is acceptable, and roughly how many per day? This sits in the path of every message the assistant handles.</td></tr>
+    <tr><td><mark class="hl-ask">Session id</mark></td><td>Can the request carry one, so placeholders stay consistent across the turns of a conversation?</td></tr>
+  </table></div>
   <div class="fields">
-    <div><label for="b1">Your feedback</label><textarea id="b1" data-store="b1" placeholder="Does this fit how your system would call it?"></textarea></div>
+    <div><label for="b1">Your feedback</label><textarea id="b1" data-store="b1" placeholder="Where the contract does not match your system"></textarea></div>
     <div><label for="b1o">Owner</label><input id="b1o" data-store="b1o" value="Zhexuan"></div>
     <div><label for="b1d">Follow-up</label><input id="b1d" data-store="b1d" placeholder="date"></div>
   </div>
 </div>
 
-<div class="cat" id="judgment"><h2>C · Deciding what to redact</h2><span class="tag">Yudi · 18 min</span></div>
+<div class="cat" id="judgment"><h2>C · Deciding what to redact</h2><span class="tag">Yudi · 20 min</span></div>
 <div class="item">
-  <p class="ctx">Two designs, presented together, because they are not alternatives &mdash; one is the baseline the other has to beat.</p>
+  <p class="ctx">Two designs presented together, because they are not alternatives &mdash; one is the baseline the other has to beat. Seventeen papers behind this; sources on expand.</p>
 
   <h3>1 · The baseline: mask everything we find</h3>
-  <p><b>Start by not deciding at all.</b> If any detector flags a span, it is replaced with a reversible placeholder. The public support line gets masked too. Nothing is judged, nothing is argued about.</p>
+  <p><b>Start by not deciding at all.</b> If any detector flags a span, it is replaced with a reversible placeholder. The public support line gets masked too. Nothing is judged and nothing is argued about.</p>
   <div class="finding">
-    <div><div class="k">Why this works as a starting point</div>Masking a public phone number used to be a mistake because <b>the information was lost</b>. Here it is only hidden from the cloud and comes back in the final answer. <mark class="hl-key">So over-redaction stops being a visible error and becomes a small, measurable drop in the cloud's reasoning quality.</mark> The hardest judgment call in the project turns into a tuning knob.</div>
+    <div><div class="k">Why this is a serious starting point, not a straw man</div>Masking a public phone number used to be a mistake because <b>the information was lost</b>. Here it is only hidden from the cloud and comes back in the final answer. <mark class="hl-key">So over-redaction stops being a visible error and becomes a small, measurable drop in the cloud's reasoning quality.</mark> The hardest judgement call in the project turns into a tuning knob.</div>
+    <div><div class="k">The evidence it rests on</div>A September 2026 study tested five anonymisation styles on a reasoning benchmark: <b>consistent placeholders scored the same as the original text, while blanking out lost about a quarter of the score.</b> That is the whole argument for placeholders over redaction marks. The same study warns that lookup-heavy tasks degrade badly even with placeholders, which is why section E asks how often the executive asks about outside companies.</div>
     <div><div class="k">And it is the control condition</div>Masking everything sets the ceiling on safety and the floor on usefulness. <b>Every refinement after this has to earn its place by measurement</b> &mdash; how much answer quality it buys back, and how much leakage it costs. Starting strict and loosening with evidence is easier to stand behind than starting loose.</div>
   </div>
 
-  <h3>2 · The refinement: let more through, but only where it is safe</h3>
-  <p>Masking everything is safe but blunt. The refinement adds two judgements on top, so that public and low-risk content can pass through intact.</p>
+  <h3>2 · Why one judgement is not enough</h3>
   <div class="tbl"><table>
-    <tr><th>Judgement</th><th>What it asks</th><th>Effect</th></tr>
-    <tr><td><b>Category</b></td><td>What kind of thing is this?</td><td>Sets how careful we are with it</td></tr>
-    <tr><td><b>Can the model decide?</b></td><td>May a confidence score release this at all?</td><td>For five categories: never. Policy only</td></tr>
+    <tr><th>What the research found</th><th>So we</th></tr>
+    <tr><td><mark class="hl-key">Sensitive is not the same as personal.</mark> "Exit the regional-bank book before the Fed meeting" names no person and discloses the whole strategy</td><td>Protect what the executive is doing, not only who is named</td></tr>
+    <tr><td><mark class="hl-key">One on/off gate breaks the assistant.</mark> Sensitivity alone kept 4% of the content a task needs; adding a second judgement kept 95%</td><td>Two judgements, not one threshold</td></tr>
+    <tr><td><mark class="hl-key">Detection scores are not privacy scores.</mark> 9% of records were re-identified after every detected identifier had been masked</td><td>Report leak rate, never plain detector accuracy</td></tr>
+    <tr><td><mark class="hl-key">Context cannot be scored reliably.</mark> Human reviewers agree only 48% of the time on context-dependent sensitivity</td><td>Fix as much as possible by written policy, and keep the judging surface small</td></tr>
+    <tr><td><mark class="hl-key">No single detector is good enough.</mark> The best open-source detector averaged 0.54 across four datasets, and each failed on a different kind of text</td><td>Run several and take the union</td></tr>
   </table></div>
-  <p class="ctx">The five that a score may never release: <b>medical</b>, <b>financial accounts</b>, <b>government IDs</b>, <b>credentials</b>, <b>business-confidential</b>. Everything else is score-driven, with a stricter bar for personal details and a looser one for public ones.</p>
+  <p class="ctx">That 48% figure is why the design pushes as much as possible onto things that cannot be wrong &mdash; where the text came from, whether it matches a checksum, and what a written policy says &mdash; and leaves the model only what genuinely needs reading.</p>
 
-  <details class="more"><summary>Detail: the category list, and where it comes from</summary><div class="body">
+  <h3>3 · The refinement: two judgements, three actions</h3>
+  <div class="tbl"><table>
+    <tr><th>Judgement</th><th>What it asks</th><th>Where the answer comes from</th></tr>
+    <tr><td><b>Category</b></td><td>What kind of thing is this?</td><td>Rules, checksums, entity recognition, then the model</td></tr>
+    <tr><td><b>May a score release it?</b></td><td>Can confidence alone authorise sending this?</td><td>The approved policy. For five categories the answer is never</td></tr>
+  </table></div>
+  <p>The five that a score may never release: <b>medical</b>, <b>financial accounts</b>, <b>government IDs</b>, <b>credentials</b>, <b>business-confidential</b>. Everything else is score-driven, with a strict bar for personal details and a looser one for public ones.</p>
+
+  <details class="more"><summary>Detail: the full category list, and where it comes from</summary><div class="body">
   <div class="tbl"><table>
     <tr><th>Category</th><th>Covers</th><th>Score may release?</th></tr>
-    <tr><td><code>medical</code></td><td>conditions, diagnoses, appointments</td><td><b>No</b></td></tr>
-    <tr><td><code>financial_account</code></td><td>account and card numbers</td><td><b>No</b></td></tr>
+    <tr><td><code>medical</code></td><td>conditions, diagnoses, appointments, prescriptions</td><td><b>No</b></td></tr>
+    <tr><td><code>financial_account</code></td><td>account numbers, cards, routing, IBAN</td><td><b>No</b></td></tr>
     <tr><td><code>government_id</code></td><td>national ID, passport, licence</td><td><b>No</b></td></tr>
     <tr><td><code>credential</code></td><td>passwords, keys, tokens</td><td><b>No</b></td></tr>
-    <tr><td><code>business_confidential</code></td><td>unreleased figures, deal terms, project code names, legal matters</td><td><b>No</b></td></tr>
-    <tr><td><code>person_private</code> · <code>contact_personal</code></td><td>private individuals, their phone, email, address</td><td>Yes · strict bar</td></tr>
-    <tr><td><code>person_public</code> · <code>contact_public</code></td><td>public figures, published support lines</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>business_confidential</code></td><td>unreleased results, deal and M&amp;A terms, project code names, legal matters</td><td><b>No</b></td></tr>
+    <tr><td><code>person_private</code></td><td>names of private individuals</td><td>Yes · strict bar</td></tr>
+    <tr><td><code>contact_personal</code></td><td>personal phone, email, home address</td><td>Yes · strict bar</td></tr>
+    <tr><td><code>person_public</code></td><td>public figures</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>contact_public</code></td><td>published support lines, switchboards</td><td>Yes · loose bar</td></tr>
     <tr><td><code>org</code> · <code>location</code> · <code>date_time</code> · <code>demographic</code> · <code>quantity</code></td><td>companies, places, dates, age and gender, amounts</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>confidential_marking</code></td><td colspan="2">Not a span &mdash; a marking on the whole message, such as "keep this confidential", "board only", "do not forward"</td></tr>
   </table></div>
-  <p>Impact levels follow <b>NIST SP 800-122</b>. The rule that low-risk items tighten up when several appear together follows Sweeney's finding that ZIP code, gender and date of birth uniquely identify an estimated 87% of the US population. Business-confidential is the one category with neither a format nor a fixed meaning, which is why we ask for a term list below.</p>
+  <p><b>Basis.</b> Impact levels follow NIST SP 800-122, which classifies personal data by the harm disclosure would cause and notes that combinations of fields can be more sensitive than any single field. The rule that loose-bar items tighten when several appear together follows Sweeney's finding that ZIP code, gender and date of birth uniquely identify an estimated 87% of the US population.</p>
+  <p class="ctx"><b>Known limitation:</b> NIST SP 800-122 covers personal data only, so the tiering for business information will follow your own internal data classification rather than an external standard.</p>
   </div></details>
 
-  <h3>3 · When the model is unsure</h3>
-  <p><b>It masks anyway, and records that it was unsure.</b> No request waits on a person. Those records are how we measure over-redaction, so the cost of caution is a number rather than a guess.</p>
+  <details class="more"><summary>Detail: business-confidential, the one category we cannot detect</summary><div class="body">
+  <p>The other four regulated categories have a format or a clear meaning. This one has neither &mdash; a project code name looks like an ordinary word. Coverage rests on three layers:</p>
+  <div class="tbl"><table>
+    <tr><th>Layer</th><th>How it works</th><th>Catches</th></tr>
+    <tr><td><b>1 · Term list</b></td><td>You supply project code names, deal names and key counterparties; any match is redacted</td><td>What you already know is confidential</td></tr>
+    <tr><td><b>2 · Explicit markers</b></td><td>Phrases such as "confidential", "board only", "do not forward" or "privileged" raise the surrounding passage to the highest tier</td><td>What the sender marked</td></tr>
+    <tr><td><b>3 · Default placeholder</b></td><td>Proper nouns and amounts the model cannot classify are replaced with a reversible placeholder rather than sent</td><td>What the first two layers missed</td></tr>
+  </table></div>
+  <p class="rec"><mark class="hl-ask">Layer 1 needs the term list from you.</mark> This category depends most on the model's judgement and is therefore the main recall risk; its leak rate will be reported separately rather than averaged into the others.</p>
+  </div></details>
 
-  <h3>4 · What we need from you here</h3>
+  <h3>4 · How the bar gets set</h3>
+  <p>The thresholds are not ours to pick. <b>You set an acceptable leak rate per category &mdash; that is a business decision.</b> We then measure leak rate and over-redaction across a range of thresholds on the labelled emails, and take the highest threshold that still meets your target, so nothing is redacted unnecessarily.</p>
+  <div class="tbl"><table>
+    <tr><th>Threshold</th><th>Leak rate</th><th>Over-redaction</th></tr>
+    <tr><td>0.2</td><td>1%</td><td>40%</td></tr>
+    <tr><td>0.3</td><td>2%</td><td>25%</td></tr>
+    <tr><td>0.5</td><td>5%</td><td>12%</td></tr>
+    <tr><td>0.7</td><td>12%</td><td>5%</td></tr>
+  </table></div>
+  <p class="ctx">Illustrative shape only, not measured results. With a 2% target the selected threshold would be 0.3. <b>This table is what we will hand you once the dataset exists</b>, with real numbers, so the trade-off is yours to make rather than ours.</p>
+
+  <details class="more"><summary>Detail: the confidence score, and why it has to be calibrated</summary><div class="body">
+  <p>Language models are consistently overconfident when asked how sure they are, so the raw score is not used directly.</p>
+  <p><b>Method 1, calibration.</b> Run the system on the labelled emails, group spans by raw score, and measure what proportion in each group was actually private. At run time the raw score is converted to that observed proportion. A raw 0.95 might be reported as 0.70. <mark class="hl-key">This makes a threshold of 0.5 mean an observed 50% likelihood, rather than whatever the model felt.</mark></p>
+  <p><b>Method 2, agreement &mdash; the fallback.</b> If calibration shows the scores barely discriminate, for instance if nearly everything comes back near 0.9, the score is derived instead from agreement: what share of detectors flagged the span, and what share of repeated model runs called it private. Agreement across repeated answers is a more reliable uncertainty signal than a stated confidence. <b>Both will be compared on the same data.</b></p>
+  </div></details>
+
+  <details class="more"><summary>Detail: when the model is unsure</summary><div class="body">
+  <p><b>It masks anyway, and records that it was unsure.</b> No request waits on a person.</p>
+  <p>The reasoning: human review exists because masking the wrong thing is expensive. With reversible placeholders it is cheap &mdash; the value comes back in the final answer. Since it is cheap, it does not justify a person's time, and an assistant used dozens of times a day cannot pause for one.</p>
+  <p class="rec">Those uncertainty records are also <mark class="hl-key">how we measure over-redaction</mark>, so the cost of caution is a number rather than a guess.</p>
+  </div></details>
+
+  <details class="more"><summary>Detail: how we will prove it works</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>What we measure</th><th>How</th></tr>
+    <tr><td><b>Leak rate</b> &mdash; the headline</td><td>Share of private spans that reached the cloud, reported per category rather than averaged</td></tr>
+    <tr><td>Over-redaction</td><td>Share of public spans masked unnecessarily</td></tr>
+    <tr><td><b>Usability cost</b></td><td>Answer quality with redaction on versus off &mdash; this is what privacy costs, as a number</td></tr>
+    <tr><td>Calibration</td><td>Whether a reported confidence matches the observed proportion</td></tr>
+    <tr><td>Latency</td><td>Processing time per email on the confirmed hardware</td></tr>
+  </table></div>
+  <p><b>Ablation.</b> Starting from the baseline, components are added one at a time &mdash; detector union, then entity propagation, then repeated runs, then the category bars &mdash; so each one's contribution is visible separately. Thresholds are tuned on one subset and reported on a held-out subset, so the numbers are not flattered.</p>
+  <p><b>Evasion tests.</b> Look-alike characters and zero-width characters inside identifiers, encoded account numbers, values split across lines, values inside tables where recognition degrades. Plus one test specific to this design: a message carrying hidden text that instructs the assistant to include the contact list.</p>
+  </div></details>
+
+  <details class="more"><summary>Detail: what is ours and what is borrowed</summary><div class="body">
+  <p>No individual component here is novel; each has a published source or an industry precedent. What is ours is the integration for executive email <b>without per-item human review</b> &mdash; the closest prior system requires the user to confirm every item, which an assistant used daily cannot do &mdash; plus a labelled email benchmark and the ablation that quantifies each component.</p>
+  <div class="tbl"><table>
+    <tr><th>Component</th><th>Source</th></tr>
+    <tr><td>Local detection, placeholders to the cloud, restoration</td><td>Rescriber, CHI 2025. MIT-licensed code. Reports 0.94 precision and 0.63 recall for an 8B model on 240 samples</td></tr>
+    <tr><td>Rule and entity detection, allow-lists</td><td>Microsoft Presidio</td></tr>
+    <tr><td>Local privacy-detection model</td><td>OpenAI Privacy Filter, open weights, deployable on premises</td></tr>
+    <tr><td>Per-category thresholds</td><td>Google Cloud Sensitive Data Protection</td></tr>
+    <tr><td>Sensitivity tiers</td><td>NIST SP 800-122</td></tr>
+    <tr><td>Decisions from scores and thresholds instead of human review</td><td>MINIM (ICML 2026), OCELOT (2026)</td></tr>
+  </table></div>
+  <p class="ctx"><b>The honest risk:</b> that 0.63 recall figure means an 8B model missed roughly a third of personal data. Rescriber's users reviewed every message; here a miss reaches the cloud directly. Raising recall is therefore the main engineering effort, measured from a baseline rather than assumed.</p>
+  </div></details>
+
+  <h3>5 · What we need from you here</h3>
   <div class="tbl"><table>
     <tr><th>Item</th><th>What we need</th></tr>
     <tr><td><mark class="hl-ask">The question that decides the design</mark></td><td><b>If an email contains health or financial information and we replace it with a placeholder, can the rest of the message go to the cloud? Or must the whole message stay local?</b><br>If it is the whole message &mdash; given that executive email is mostly long forwarded threads &mdash; that likely means most requests get blocked. We want to know whether that is what you expect.</td></tr>
-    <tr><td><mark class="hl-ask">Confidential term list</mark></td><td>Project code names, deal names, key counterparties. This is the one category we cannot detect on our own &mdash; a code name looks like an ordinary word.</td></tr>
-    <tr><td><mark class="hl-ask">Input scope</mark></td><td>Plain text only, or attachments and scanned documents too? This decides what the first prototype has to handle.</td></tr>
+    <tr><td><mark class="hl-ask">Confidential term list</mark></td><td>Project code names, deal names, key counterparties. The one category we cannot detect on our own.</td></tr>
+    <tr><td><mark class="hl-ask">Acceptable leak rate</mark></td><td>Per category, as a business decision. We then pick the thresholds from measurement.</td></tr>
+    <tr><td><mark class="hl-ask">When a passage is sensitive but has nothing to mask</mark></td><td>"We are closing the Austin office" has no name or number to replace. Should the service warn, block, or hand it back for local handling?</td></tr>
+    <tr><td><mark class="hl-ask">The mix of daily tasks</mark></td><td>Roughly: summarising, drafting, scheduling, research on outside companies? Scheduling and lookups are the two cases where redaction costs real quality, so the mix decides how much that matters.</td></tr>
   </table></div>
   <div class="fields">
-    <div><label for="c1">Your feedback</label><textarea id="c1" data-store="c1" placeholder="Objections, corrections, what the tiers should be"></textarea></div>
+    <div><label for="c1">Your feedback</label><textarea id="c1" data-store="c1" placeholder="Objections, corrections, what the categories and bars should be"></textarea></div>
     <div><label for="c1o">Owner</label><input id="c1o" data-store="c1o" value="Yudi"></div>
     <div><label for="c1d">Follow-up</label><input id="c1d" data-store="c1d" placeholder="date"></div>
   </div>
 </div>
 
-<div class="cat" id="data"><h2>D · Evaluation dataset</h2><span class="tag">Karina · 5 min</span></div>
+<div class="cat" id="data"><h2>D · Evaluation dataset</h2><span class="tag">Karina · 4 min</span></div>
 <div class="item">
   <p class="ctx">A short introduction only. The detail goes in its own document.</p>
   <p>The 100 labelled emails Aarvin asked for: where they come from, what gets recorded on each one, and how we check the labels are trustworthy before scoring anything against them.</p>
@@ -295,7 +445,7 @@ figure.arch svg{min-width:700px}
   </div>
 </div>
 
-<div class="cat" id="asks"><h2>E · Six things we need from you</h2><span class="tag">15 min</span></div>
+<div class="cat" id="asks"><h2>E · Six things we need from you</h2><span class="tag">14 min</span></div>
 <div class="item">
   <p class="ctx">Ordered by what blocks us soonest.</p>
 
