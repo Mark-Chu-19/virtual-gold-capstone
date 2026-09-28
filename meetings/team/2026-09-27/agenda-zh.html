@@ -235,23 +235,35 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
 <div class="cat"><h2><span class="ord">1</span>同一個東西,兩個人叫不同名字</h2><span class="tag">Yudi ↔ Zhexuan · 15 分</span></div>
 <div class="item">
   <p class="rec"><b>問題:</b>信裡的「腫瘤科醫師」,Yudi 的文件叫它 <code>High(健康)</code>,Zhexuan 的文件叫它 <code>regulated:health</code>。同一個東西,兩個名字。</p>
+  <p class="ctx"><b>順帶改掉一個誤讀:</b>底下統一用 <code>medical</code>,不用 <code>health</code>。因為 Zhexuan 的 API 契約裡<b>同時</b>有 <code>regulated:health</code>(醫療資訊)和 <code>/healthz</code>(服務活著沒),同一份文件兩個 health 意思完全不同。</p>
   <p><b>Karina 明天要標 100 封信。她要在「類別」那一欄寫什麼?</b>現在沒有答案,她只能自己編第三套。</p>
 
-  <div class="prop"><span class="h">最佳解</span>
-  <b>他們兩個其實不是在吵同一件事。</b><br><br>
-  Yudi 在問:<b>「這東西洩漏出去,有多嚴重?」</b> &mdash; 嚴重的,門檻壓低一點,寧可錯殺。<br>
-  Zhexuan 在問:<b>「這東西可不可以讓模型自己決定?」</b> &mdash; 有些東西不行,再有把握也不行。<br><br>
-  <mark class="hl-key">這是兩個不同的問題,答案可以並存。一個類別同時有這兩個標籤就好。</mark><br><br>
-  而且他們其實已經圈出同一批東西了 &mdash; Yudi 兩個 High 等級裡的內容,幾乎就是 Zhexuan 那五個「不能讓模型決定」的類別。
+
+  <div class="prop"><span class="h">決定 &middot; 採用 Yudi 的清單</span>
+  <b>類別本來就是隱私研究的範圍,所以直接用 Yudi 文件裡那五個等級。</b>下面兩件是格式調整,不是另一份提案。
+  <div class="tbl"><table>
+    <tr><th>Yudi 的等級</th><th>拆成的 id</th></tr>
+    <tr><td>High(個資):政府識別碼、密碼金鑰、銀行卡號、健康資訊</td><td><code>government_id</code> <code>credential</code> <code>financial_account</code> <code>medical</code></td></tr>
+    <tr><td>High(商業機密):未公開財報、交易條款、專案代號、法律事項</td><td><code>business_confidential</code>(維持一整包)</td></tr>
+    <tr><td>Medium:私人姓名、私人電話、私人 email、住址</td><td><code>person_private</code> <code>contact_personal</code></td></tr>
+    <tr><td>Low:城市、日期、組織名、年齡、性別</td><td><code>location</code> <code>date_time</code> <code>org</code> <code>demographic</code></td></tr>
+    <tr><td>Public:公眾人物、公開客服專線、公開場合的公司名</td><td><code>person_public</code> <code>contact_public</code></td></tr>
+  </table></div>
+  <b>格式調整一:把等級那一列拆成單一 id。</b>Yudi 的 Medium 是「私人姓名、私人電話、私人 email、住址」四樣寫在一起,但 <b>Karina 標註時一個 span 只能填一個值</b>,所以必須拆開。純粹是格式,不是內容爭議。
+  <br><br>
+  <b>格式調整二:加一欄「能不能讓模型決定」。</b>這是 Zhexuan 的貢獻,Yudi 的表沒有,而且<mark class="hl-key">兩者不一樣</mark>:<br><br>
+  &bull; Yudi 的 High = 門檻 0.2 → 模型有 0.2 把握就遮,<b>但低於 0.2 就不遮</b><br>
+  &bull; Zhexuan 的「不能讓模型決定」= <b>不管幾分都不放行</b>,只能靠政策<br><br>
+  所以健康資訊如果模型只有 0.1 把握,照 Yudi 的規則<b>會原樣送出去</b> &mdash; 這正是要擋的。<b>而這一欄也是第 4 件 B 方案的基礎</b>,沒有它就不知道哪一段該留本地。
   <div class="tbl"><table>
     <tr><th>類別</th><th>是什麼</th><th>這封信裡</th><th>能讓模型決定嗎</th></tr>
-    <tr><td><code>health</code></td><td>病情、診斷、就診</td><td>腫瘤科醫師</td><td><b>不行</b></td></tr>
+    <tr><td><code>medical</code></td><td>病情、診斷、就診</td><td>腫瘤科醫師</td><td><b>不行</b></td></tr>
     <tr><td><code>financial_account</code></td><td>帳號、卡號</td><td>4532-1178-9902</td><td><b>不行</b></td></tr>
     <tr><td><code>government_id</code></td><td>身分證、護照</td><td>—</td><td><b>不行</b></td></tr>
     <tr><td><code>credential</code></td><td>密碼、金鑰</td><td>—</td><td><b>不行</b></td></tr>
     <tr><td><code>business_confidential</code></td><td>沒公開的財務、交易、專案代號</td><td>Blue Harbor、Harborview</td><td><b>不行</b></td></tr>
-    <tr><td><code>person_private</code></td><td>私人的姓名</td><td>Dana、Sarah Chen</td><td>可以 · 遮的標準嚴</td></tr>
-    <tr><td><code>contact_personal</code></td><td>私人電話、email、住址</td><td>412-555-0182</td><td>可以 · 遮的標準嚴</td></tr>
+    <tr><td><code>person_private</code></td><td>私人的姓名</td><td>Dana、Sarah Chen</td><td>可以 · 標準嚴</td></tr>
+    <tr><td><code>contact_personal</code></td><td>私人電話、email、住址</td><td>412-555-0182</td><td>可以 · 標準嚴</td></tr>
     <tr><td><code>person_public</code></td><td>公眾人物</td><td>—</td><td>可以 · 標準鬆</td></tr>
     <tr><td><code>contact_public</code></td><td>公開的客服電話</td><td>1-800-555-0199</td><td>可以 · 標準鬆</td></tr>
     <tr><td><code>org</code></td><td>公司、組織名</td><td>Acme</td><td>可以 · 標準鬆</td></tr>
@@ -261,11 +273,16 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
     <tr><td><code>quantity</code></td><td>金額、百分比</td><td>18%</td><td>可以 · 標準鬆</td></tr>
     <tr><td><code>confidential_marking</code></td><td colspan="3"><b>這個不是某個字,是整封信的標記</b> &mdash; 像「請務必保密」「board only」</td></tr>
   </table></div>
-  <b>三件要一起講清楚的:</b><br><br>
-  <b>① 「標準鬆」的東西,湊在一起就要收緊。</b>城市 + 性別 + 生日湊起來,可以認出 87% 的人(Yudi 引的研究)。單獨出現沒關係,一起出現就要遮。<br><br>
-  <b>② 金額很難分。</b><code>240 萬</code>綁在交易上,算商業機密;<code>18%</code>單獨出現,就只是個數字。<mark class="hl-key">這種就是要讓模型判斷的,不要硬寫規則。</mark><br><br>
-  <b>③ 最後一列是整封信的標記,不是某一個字。</b>這個差別明天標註的時候會用到(第 2 件)。至於信被標記成機密之後要怎麼處理 &mdash; 那是第 4 件,今晚不碰。<br><br>
-  <mark class="hl-no">還有一個現在就要知道的:</mark><code>business_confidential</code> 是五個裡面<b>唯一偵測不到的</b>。另外四個有格式或明確意思,只有它沒有 &mdash; <code>Blue Harbor</code> 看起來就是個地名。<b>要靠客戶給我們一份詞表</b>,這件事 Yudi 已經列進要跟客戶要的清單。
+  <mark class="hl-no">兩處偏離了 Yudi 的原文,要他確認:</mark><br><br>
+  <b>①</b> 加了 <code>quantity</code> &mdash; 他的五個等級<b>完全沒有數字類</b>,但信裡有 <code>240 萬</code> 和 <code>18%</code>,Karina 標註時無處可放。<br>
+  <b>②</b> <code>org</code> 的位置簡化了 &mdash; 他的表裡「組織名」在 Low、「公開場合的公司名」在 Public,兩者重疊。統一放 Low,<b>等於弄丟了他的區分</b>。
+  <br><br>
+  <b>另外三件要一起講清楚的:</b><br><br>
+  <b>①</b> 「標準鬆」的東西<b>湊在一起就要收緊</b>。城市 + 性別 + 生日湊起來可以認出 87% 的人(Yudi 引的研究)。<br>
+  <b>②</b> <b>金額很難分。</b><code>240 萬</code>綁在交易上算商業機密,<code>18%</code>單獨出現只是個數字。<mark class="hl-key">這種要讓模型判斷,不要硬寫規則。</mark><br>
+  <b>③</b> 最後一列<b>是整封信的標記,不是某一個字</b>。這個差別第 2 件標註時會用到。信被標記成機密之後怎麼處理,是第 4 件。
+  <br><br>
+  <mark class="hl-no">現在就要知道:</mark><code>business_confidential</code> 是五個裡<b>唯一偵測不到的</b>。另外四個有格式或明確意思,只有它沒有 &mdash; <code>Blue Harbor</code> 看起來就是個地名。<b>要靠客戶給詞表</b>,Yudi 已經列進要跟客戶要的清單。
   </div>
   <div class="risk"><span class="h">不解決會怎樣</span>Karina 明天開始標,不知道類別欄該寫什麼,自己編一套 &mdash; 然後三套都對不上。</div>
   <div class="fields">

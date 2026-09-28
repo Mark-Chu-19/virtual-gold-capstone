@@ -236,17 +236,29 @@ account <b>4532-1178-9902</b>.
 <div class="cat"><h2><span class="ord">1</span>The same thing has two different names</h2><span class="tag">Yudi ↔ Zhexuan · 15 min</span></div>
 <div class="item">
   <p class="rec"><b>The problem:</b> "oncologist" in this email is <code>High (health)</code> in Yudi's document and <code>regulated:health</code> in Zhexuan's. Same thing, two names.</p>
+  <p class="ctx"><b>One misreading fixed while we are here:</b> below we use <code>medical</code>, not <code>health</code>. Zhexuan's API contract has <b>both</b> <code>regulated:health</code> (medical information) and <code>/healthz</code> (is the service alive) &mdash; two meanings of health in one document.</p>
   <p><b>Karina starts labelling 100 emails tomorrow. What does she write in the category column?</b> There is no answer right now, so she would invent a third set.</p>
 
-  <div class="prop"><span class="h">Recommended</span>
-  <b>They are not actually arguing about the same thing.</b><br><br>
-  Yudi is asking: <b>"how bad is it if this leaks?"</b> &mdash; the worse it is, the lower the bar for masking it.<br>
-  Zhexuan is asking: <b>"can we let the model decide this one?"</b> &mdash; for some things, no, however sure it is.<br><br>
-  <mark class="hl-key">Two different questions. Both answers can sit on the same category.</mark><br><br>
-  And they have already circled the same set of things &mdash; what is in Yudi's two High tiers is very close to Zhexuan's five "model cannot decide" categories.
+
+  <div class="prop"><span class="h">Agreed &middot; take Yudi's list</span>
+  <b>Categories are Privacy Research's remit, so we use the five tiers from Yudi's document as they stand.</b> The two things below are formatting, not a competing proposal.
+  <div class="tbl"><table>
+    <tr><th>Yudi's tier</th><th>Split into</th></tr>
+    <tr><td>High (personal): government IDs, passwords and keys, bank and card numbers, health information</td><td><code>government_id</code> <code>credential</code> <code>financial_account</code> <code>medical</code></td></tr>
+    <tr><td>High (business): unreleased results, deal terms, project code names, legal matters</td><td><code>business_confidential</code> (kept as one)</td></tr>
+    <tr><td>Medium: names of private individuals, personal phones, personal emails, home addresses</td><td><code>person_private</code> <code>contact_personal</code></td></tr>
+    <tr><td>Low: city, dates, organisation names, age, gender</td><td><code>location</code> <code>date_time</code> <code>org</code> <code>demographic</code></td></tr>
+    <tr><td>Public: public figures, published support lines, company names in a public context</td><td><code>person_public</code> <code>contact_public</code></td></tr>
+  </table></div>
+  <b>Formatting change one: split each tier row into single ids.</b> Yudi's Medium row is four things at once — names, phones, emails, addresses — but <b>a labeller can only put one value on one span</b>, so they have to come apart. Pure formatting, no argument about content.
+  <br><br>
+  <b>Formatting change two: add a "can the model decide this one?" column.</b> This is Zhexuan's contribution and Yudi's table does not have it. <mark class="hl-key">The two are not the same thing</mark>:<br><br>
+  &bull; Yudi's High = a bar of 0.2 → mask once the model is 0.2 sure, <b>but below 0.2 it goes through</b><br>
+  &bull; Zhexuan's "model cannot decide" = <b>no score releases it</b>, ever; only policy does<br><br>
+  So health information the model is only 0.1 sure about <b>would be sent as-is</b> under Yudi's rule alone — which is exactly what needs stopping. <b>This column is also what item 4's option B runs on</b>; without it there is no way to know which section stays local.
   <div class="tbl"><table>
     <tr><th>Category</th><th>What it is</th><th>In this email</th><th>Model decides?</th></tr>
-    <tr><td><code>health</code></td><td>conditions, diagnoses, appointments</td><td>oncologist</td><td><b>No</b></td></tr>
+    <tr><td><code>medical</code></td><td>conditions, diagnoses, appointments</td><td>oncologist</td><td><b>No</b></td></tr>
     <tr><td><code>financial_account</code></td><td>account and card numbers</td><td>4532-1178-9902</td><td><b>No</b></td></tr>
     <tr><td><code>government_id</code></td><td>national ID, passport</td><td>—</td><td><b>No</b></td></tr>
     <tr><td><code>credential</code></td><td>passwords, keys</td><td>—</td><td><b>No</b></td></tr>
@@ -262,11 +274,16 @@ account <b>4532-1178-9902</b>.
     <tr><td><code>quantity</code></td><td>amounts, percentages</td><td>18%</td><td>Yes · loose bar</td></tr>
     <tr><td><code>confidential_marking</code></td><td colspan="3"><b>not a word in the text &mdash; a marking on the whole message</b>, like "keep this confidential" or "board only"</td></tr>
   </table></div>
-  <b>Three things to agree alongside it:</b><br><br>
-  <b>1. Loose-bar items tighten up when they cluster.</b> City plus gender plus date of birth identifies 87% of people (the study Yudi cites). Fine alone, masked together.<br><br>
-  <b>2. Amounts are genuinely hard.</b> <code>$2.4M</code> attached to a deal is business confidential; a bare <code>18%</code> is just a number. <mark class="hl-key">This is what the model is for &mdash; do not try to write a rule.</mark><br><br>
-  <b>3. The last row is a marking on the message, not a word in it.</b> That difference gets used tomorrow when labelling (item 2). What should <em>happen</em> when a message is marked confidential is item 4, not tonight.<br><br>
-  <mark class="hl-no">One thing to know now:</mark> <code>business_confidential</code> is the only one of the five we <b>cannot detect</b>. The other four have a format or a clear meaning; this one has neither &mdash; <code>Blue Harbor</code> just looks like a place name. <b>We need a list of terms from the client</b>, which Yudi already has on his list of things to ask for.
+  <mark class="hl-no">Two places where this departs from Yudi's text and needs his sign-off:</mark><br><br>
+  <b>1.</b> <code>quantity</code> was added &mdash; his five tiers have <b>no category for numbers at all</b>, but this email has <code>$2.4M</code> and <code>18%</code> and a labeller has nowhere to put them.<br>
+  <b>2.</b> <code>org</code> was simplified &mdash; his table has "organisation names" at Low and "company names in a public context" at Public, which overlap. Putting <code>org</code> at Low <b>loses that distinction</b>.
+  <br><br>
+  <b>Three more things to agree alongside it:</b><br><br>
+  <b>1.</b> Loose-bar items <b>tighten up when they cluster</b>. City plus gender plus date of birth identifies 87% of people (the study Yudi cites).<br>
+  <b>2.</b> <b>Amounts are genuinely hard.</b> <code>$2.4M</code> attached to a deal is business confidential; a bare <code>18%</code> is just a number. <mark class="hl-key">That is what the model is for — do not write a rule.</mark><br>
+  <b>3.</b> The last row <b>is a marking on the message, not a word in it</b>. That difference gets used in item 2. What should happen once a message is marked is item 4.
+  <br><br>
+  <mark class="hl-no">One thing to know now:</mark> <code>business_confidential</code> is the only one of the five we <b>cannot detect</b>. The other four have a format or a clear meaning; this one has neither &mdash; <code>Blue Harbor</code> just looks like a place name. <b>We need a term list from the client</b>, which Yudi already has on his list of things to ask for.
   </div>
   <div class="risk"><span class="h">If we skip it</span>Karina starts tomorrow, does not know what to put in the category column, invents her own &mdash; and then none of the three line up.</div>
   <div class="fields">
