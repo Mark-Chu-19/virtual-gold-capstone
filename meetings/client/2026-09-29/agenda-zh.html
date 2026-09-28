@@ -1,0 +1,370 @@
+<title>9/29 客戶會議</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4","Noto Sans TC","PingFang TC",Georgia,serif;
+  --sans:"Source Sans 3","Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.04em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+
+.cat{display:flex;align-items:baseline;gap:12px;margin:44px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{margin:0}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item h3{font-family:var(--serif);font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 8px;font-weight:600}
+.item .ctx{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.item .rec{margin:0 0 6px;font-size:15px}
+.item .rec b{color:var(--hl-key)}
+.item ul{margin:4px 0 8px;padding-left:20px}
+.item li{margin-bottom:4px;font-size:15px}
+.fields{display:grid;grid-template-columns:1fr 160px 110px;gap:10px;margin-top:10px}
+.fields label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fields textarea,.fields input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.fields textarea{min-height:56px;resize:vertical}
+.fields textarea:focus,.fields input:focus{outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:600px){.fields{grid-template-columns:1fr}}
+.owners{width:100%}
+.owners td input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:6px 10px}
+.owners td:first-child{font-weight:600;white-space:nowrap}
+.out{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.out li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.out li:last-child{border-bottom:none}
+.out input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.out .who{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-top:4px}
+figure.arch svg{min-width:700px}
+.sec-b .intent{color:var(--local);font-weight:600}
+.sec-b th.intent{background:var(--local-soft);color:var(--local)}
+.sec-b .finding div.k{background:none;border:none;border-radius:0;padding:0;font-size:11px;line-height:1.4}
+.d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.d-box.gate{fill:var(--local-soft);stroke:var(--local);stroke-width:2.5}
+.d-box.policy{fill:var(--local-soft);stroke:var(--local);stroke-width:1.5;stroke-dasharray:5 3}
+.d-box.store{fill:var(--cloud-soft);stroke:var(--cloud)}
+.d-box.ret{stroke:var(--warn)}
+.d-box.trust{stroke:var(--ink)}
+.d-box.untrust{stroke:var(--warn);stroke-dasharray:5 3}
+.d-box.cloud{fill:none;stroke:var(--muted);stroke-dasharray:5 4}
+.d-n{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.d-n.g{fill:var(--local)} .d-n.v{fill:var(--cloud)} .d-n.r{fill:var(--warn)}
+.d-name{font-family:var(--sans);font-size:14.5px;font-weight:600;fill:var(--ink)}
+.d-sub{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+.d-region{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;fill:var(--muted)}
+.d-flow{stroke:var(--muted);stroke-width:1.8;fill:none}
+.d-back{stroke:var(--warn);stroke-width:1.8;fill:none}
+.d-link{stroke:var(--cloud);stroke-width:1.5;fill:none;stroke-dasharray:4 3}
+.d-head{fill:var(--muted)} .d-head-b{fill:var(--warn)} .d-head-g{fill:var(--local)}
+.d-rule{stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+.d-rulelabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--muted)}
+.d-gov{stroke:var(--local);stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+.d-govlabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--local)}
+.d-bound{stroke:var(--warn);stroke-width:2;stroke-dasharray:7 5}
+.d-blabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;fill:var(--warn)}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone · Virtual Gold Inc · 第四次客戶會議</div>
+  <h1>脫敏服務怎麼運作,以及六件需要貴方確認的事</h1>
+  <dl class="meta">
+    <div><dt>日期</dt><dd>2026-09-29 · 18:00–19:00 ET · 第 6 週,共 15 週</dd></div>
+    <div><dt>目標</dt><dd>用三個工作流帶貴方看過設計,並收掉六件待辦 &mdash; GPU、NDA、期中、Drive、通訊平台、SOW</dd></div>
+  </dl>
+  <div class="toolbar">
+    <div class="btns"><button id="expand-all" type="button">展開全部</button><button id="collapse-all" type="button">收合全部</button></div>
+    <div class="legend"><span><mark class="hl-key">金色:我們的說明</mark></span><span><mark class="hl-ask">藍色:需要貴方回答</mark></span></div>
+  </div>
+</header>
+
+<ol class="agenda">
+  <li><a href="#team"><span class="n">A</span><span class="t">分工</span><span class="m">5 分</span></a></li>
+  <li><a href="#service"><span class="n">B</span><span class="t">服務怎麼運作</span><span class="m">Zhexuan &amp; Anmol · 12 分</span></a></li>
+  <li><a href="#judgment"><span class="n">C</span><span class="t">怎麼決定要遮什麼</span><span class="m">Yudi · 18 分</span></a></li>
+  <li><a href="#data"><span class="n">D</span><span class="t">評測資料集</span><span class="m">Karina · 5 分</span></a></li>
+  <li><a href="#asks"><span class="n">E</span><span class="t">六件要確認的事</span><span class="m">15 分</span></a></li>
+</ol>
+
+<div class="cat" id="team"><h2>A · 分工</h2><span class="tag">5 分</span></div>
+<div class="item">
+  <p class="ctx">一人負責一個領域,對應 Aarvin 提出的五個責任範圍。2026-09-25 團隊會議確認。</p>
+  <div class="tbl"><table>
+    <tr><th>領域</th><th>負責人</th><th>內容</th></tr>
+    <tr><td><strong>1 · 評測與測試資料</strong></td><td>Karina Yang</td><td>標註過的信件基準集、評測指標、回歸測試</td></tr>
+    <tr><td><strong>2 · 隱私研究</strong></td><td>Yudi Guo</td><td>什麼算私密、類別與等級定義、法規依據</td></tr>
+    <tr><td><strong>3 · 模型工作</strong></td><td>Anmol Sahu</td><td>prompt、本地模型運行、產生信心分數</td></tr>
+    <tr><td><strong>4 · 服務工程</strong></td><td>Zhexuan Ye</td><td>本地服務本體、HTTP 契約、延遲、失效處理</td></tr>
+    <tr><td><strong>5 · 整合與協調</strong></td><td>Mark Chu</td><td>文件、進度回報、最終 demo</td></tr>
+  </table></div>
+  <p class="rec"><b>Mark 為單一對口窗口</b>,依貴方要求。</p>
+</div>
+
+<div class="cat" id="service"><h2>B · 服務怎麼運作</h2><span class="tag">Zhexuan &amp; Anmol · 12 分</span></div>
+<div class="item">
+  <p class="ctx">這個服務夾在貴方系統與雲端助理之間。<b>它自己不呼叫雲端</b>,也不需要對外網路 &mdash; 脫敏後的文字要怎麼處理,完全由貴方系統決定。</p>
+  <div class="finding">
+    <div><div class="k">大致形狀</div>貴方系統把使用者的任務加上信件送進來,我們回傳同樣的內容,但私密部分換成佔位符,並附上整個請求的處置決定。之後在另一次呼叫裡,貴方把雲端的回覆送回來,我們還原成真值。<mark class="hl-key">佔位符對應真值的那張表,從頭到尾沒離開過我們的機器。</mark></div>
+    <div><div class="k">出錯一律擋下</div>任何錯誤都代表內容<b>沒有</b>被處理。就算回傳成功但狀態不是「可放行」,後果一樣:不得送往雲端。任何一個環節失效,什麼都不會放出去。</div>
+    <div><div class="k">敏感內容不進日誌</div>輸入文字、偵測到的值、還原後的文字<b>一律不寫入日誌</b> &mdash; 只記 id、數量、耗時、決定與錯誤類型。</div>
+  </div>
+  <details class="more"><summary>細節:端點與各自的回傳</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>端點</th><th>做什麼</th></tr>
+    <tr><td><code>POST /v1/redactions</code></td><td>偵測、遮蔽,並回傳整個請求的處置決定</td></tr>
+    <tr><td><code>GET /v1/redactions/{id}</code></td><td>查詢狀態、取回結果</td></tr>
+    <tr><td><code>POST /v1/redactions/{id}/restore</code></td><td>掃描雲端回覆,再還原真值</td></tr>
+    <tr><td><code>DELETE /v1/redactions/{id}</code></td><td>刪除紀錄</td></tr>
+    <tr><td><code>GET /v1/info</code> · <code>/healthz</code> · <code>/readyz</code></td><td>服務資訊與健康檢查</td></tr>
+  </table></div>
+  <p>除健康檢查外全部需要 bearer 認證。錯誤格式採 RFC 9457。完整契約見 <code>docs/research/zhexuan/2026-09-27/</code>。</p>
+  </div></details>
+  <div class="fields">
+    <div><label for="b1">貴方回饋</label><textarea id="b1" data-store="b1" placeholder="這個形狀符合貴方系統的呼叫方式嗎"></textarea></div>
+    <div><label for="b1o">負責</label><input id="b1o" data-store="b1o" value="Zhexuan"></div>
+    <div><label for="b1d">後續</label><input id="b1d" data-store="b1d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat" id="judgment"><h2>C · 怎麼決定要遮什麼</h2><span class="tag">Yudi · 18 分</span></div>
+<div class="item">
+  <p class="ctx">兩個設計一起講,因為它們不是二選一 &mdash; 其中一個是另一個必須超越的基準。</p>
+
+  <h3>1 · 基準:偵測到的全部遮掉</h3>
+  <p><b>先從「完全不做判斷」開始。</b>任何一個偵測器標到的片段,一律換成可還原的佔位符。公開的客服電話也照遮。不判斷,也不爭論。</p>
+  <div class="finding">
+    <div><div class="k">為什麼這能當起點</div>遮掉一支公開電話以前之所以算錯誤,是因為<b>資訊就此消失</b>。在這裡它只是對雲端隱藏,最後還是會回到主管手上。<mark class="hl-key">所以過度遮蔽不再是看得見的錯誤,而是雲端推理品質的一點下降 &mdash; 而那是量得出來的。</mark>整個專案最難的判斷題,變成一個可以調的旋鈕。</div>
+    <div><div class="k">而且它是對照組</div>全部遮掉,定義了安全的上限和可用性的下限。<b>之後每一項改良都必須用量測證明自己值得</b> &mdash; 買回多少答案品質,付出多少外洩風險。先嚴再依證據放寬,比先寬鬆再收緊好交代。</div>
+  </div>
+
+  <h3>2 · 改良:讓更多東西通過,但只在安全的地方</h3>
+  <p>全部遮掉安全但粗糙。改良是在上面加兩個判斷,讓公開與低風險的內容可以原樣通過。</p>
+  <div class="tbl"><table>
+    <tr><th>判斷</th><th>在問什麼</th><th>作用</th></tr>
+    <tr><td><b>類別</b></td><td>這是什麼種類的東西?</td><td>決定我們對它多謹慎</td></tr>
+    <tr><td><b>能不能讓模型決定</b></td><td>信心分數有沒有資格放行它?</td><td>五個類別:永遠不行,只能靠政策</td></tr>
+  </table></div>
+  <p class="ctx">分數永遠不能放行的五個類別:<b>醫療</b>、<b>金融帳號</b>、<b>政府識別碼</b>、<b>密碼金鑰</b>、<b>商業機密</b>。其餘由分數決定,個人資訊標準較嚴,公開資訊較鬆。</p>
+
+  <details class="more"><summary>細節:類別清單與依據</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>類別</th><th>涵蓋</th><th>分數能放行嗎</th></tr>
+    <tr><td><code>medical</code></td><td>病情、診斷、就診</td><td><b>不行</b></td></tr>
+    <tr><td><code>financial_account</code></td><td>帳號、卡號</td><td><b>不行</b></td></tr>
+    <tr><td><code>government_id</code></td><td>身分證、護照、駕照</td><td><b>不行</b></td></tr>
+    <tr><td><code>credential</code></td><td>密碼、金鑰、token</td><td><b>不行</b></td></tr>
+    <tr><td><code>business_confidential</code></td><td>未公開財務、交易條款、專案代號、法律事項</td><td><b>不行</b></td></tr>
+    <tr><td><code>person_private</code> · <code>contact_personal</code></td><td>私人個體及其電話、email、住址</td><td>可以 · 標準嚴</td></tr>
+    <tr><td><code>person_public</code> · <code>contact_public</code></td><td>公眾人物、已公開的客服專線</td><td>可以 · 標準鬆</td></tr>
+    <tr><td><code>org</code> · <code>location</code> · <code>date_time</code> · <code>demographic</code> · <code>quantity</code></td><td>公司、地點、日期、年齡性別、金額</td><td>可以 · 標準鬆</td></tr>
+  </table></div>
+  <p>影響等級依 <b>NIST SP 800-122</b>。低風險項目湊在一起要收緊,依據是 Sweeney 的研究:郵遞區號、性別與出生日期合起來可唯一識別約 87% 的美國人口。商業機密是唯一既無格式也無固定語意的類別,這也是我們在下面要詞表的原因。</p>
+  </div></details>
+
+  <h3>3 · 模型不確定的時候</h3>
+  <p><b>照樣遮,並記下它不確定。</b>沒有任何請求需要等人處理。那些記錄就是我們量測過度遮蔽的資料 &mdash; 所以「謹慎的代價」是一個數字,不是猜測。</p>
+
+  <h3>4 · 這一節需要貴方回答的</h3>
+  <div class="tbl"><table>
+    <tr><th>項目</th><th>我們需要什麼</th></tr>
+    <tr><td><mark class="hl-ask">決定整個設計的那一題</mark></td><td><b>一封信裡如果有健康或財務資訊,我們把它換成佔位符之後,剩下的部分可以送雲端嗎?還是整封都不能送?</b><br>如果是整封都不能送 &mdash; 以主管信件大多是長串轉寄來看,這可能代表大部分請求都會被擋下。我們想知道這是不是貴方預期的結果。</td></tr>
+    <tr><td><mark class="hl-ask">機密詞表</mark></td><td>專案代號、交易名稱、主要往來對象。這是唯一我們自己偵測不到的類別 &mdash; 代號看起來就是個普通字詞。</td></tr>
+    <tr><td><mark class="hl-ask">輸入範圍</mark></td><td>只有純文字,還是也包含附件與掃描件?這決定第一版原型要處理到什麼程度。</td></tr>
+  </table></div>
+  <div class="fields">
+    <div><label for="c1">貴方回饋</label><textarea id="c1" data-store="c1" placeholder="反對、修正、等級應該怎麼定"></textarea></div>
+    <div><label for="c1o">負責</label><input id="c1o" data-store="c1o" value="Yudi"></div>
+    <div><label for="c1d">後續</label><input id="c1d" data-store="c1d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat" id="data"><h2>D · 評測資料集</h2><span class="tag">Karina · 5 分</span></div>
+<div class="item">
+  <p class="ctx">僅做簡短介紹,細節另出文件。</p>
+  <p>Aarvin 要求的 100 封標註信件:從哪裡來、每一封要記什麼、以及在拿它評分之前,我們怎麼確認這些標註本身可信。</p>
+  <div class="fields">
+    <div><label for="d1">貴方回饋</label><textarea id="d1" data-store="d1" placeholder="對資料集的意見"></textarea></div>
+    <div><label for="d1o">負責</label><input id="d1o" data-store="d1o" value="Karina"></div>
+    <div><label for="d1d">後續</label><input id="d1d" data-store="d1d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat" id="asks"><h2>E · 六件要確認的事</h2><span class="tag">15 分</span></div>
+<div class="item">
+  <p class="ctx">依「最先卡住我們」的順序排列。</p>
+
+  <h3>1 · GPU 資源</h3>
+  <p class="rec"><mark class="hl-ask">會有什麼硬體可用,什麼時候可用?</mark></p>
+  <p>我們在 9/27 已確認團隊<b>只有個人筆電</b>。第一期這樣可行 &mdash; 偵測層跑在 CPU 上,所以<b>不需要任何 GPU,我們就能給貴方一個可以打的端點</b>。第二期由本地模型做情境判斷,需要 T4 等級以上的顯卡。</p>
+  <p class="ctx">9 月 3 日提到的沙盒,自 9/15 會議起一直是待確認事項:供應商、GPU、直接存取方式、費用誰負擔。<b>這是唯一完全卡住其中一條工作流的事項。</b></p>
+
+  <h3>2 · NDA 流程</h3>
+  <p class="rec"><mark class="hl-ask">與 CMU Diane 的 addendum 目前進度如何?</mark></p>
+  <p>做成獨立服務加 HTTP 端點、而不是直接整合,本來就是等這件事的權宜之計。兩件事取決於它:</p>
+  <ul>
+    <li>設計維持現狀,還是在看得到貴方架構之後調整</li>
+    <li><b>API 請求能不能告訴我們每段文字從哪來</b> &mdash; 本文、引用串、使用者自己打的。我們只需要這種粗的層級,不需要貴方內部結構的任何資訊,而它能實質降低我們的錯誤率。<b>這件事未必真的被 NDA 擋住,值得確認。</b></li>
+  </ul>
+
+  <h3>3 · 期中報告</h3>
+  <p class="rec"><mark class="hl-ask">第 7 週的期中,貴方希望看到什麼?</mark></p>
+  <p>我們原本的計畫早於 9/21 的方向調整,與其自行假設,不如跟貴方談定內容。我們的建議:一個能跑的服務,加上「脫敏在答案品質上付出多少代價」的量測。</p>
+
+  <h3>4 · Google Drive</h3>
+  <p class="rec"><mark class="hl-ask">確認共用 Drive 與存取名單。</mark></p>
+  <p>依 9/21 會議:使用 Virtual Gold 的 Drive,開放給 Aarvin、Alex、Inderpal 與 Alra。名單確認後我們會後立刻設定。</p>
+
+  <h3>5 · Google Chat</h3>
+  <p class="rec"><mark class="hl-ask">要改用 Google Chat 嗎?</mark></p>
+  <p>Slack 工作區顯示我們的帳號有 30 天試用到期,而單一工作區要把兩個 capstone 分成不同討論串,需要付費功能。當時提到的替代方案是改用 Google Chat。我們兩邊都可以 &mdash; 只需要定一個地方。</p>
+
+  <h3>6 · Scope of Work</h3>
+  <p class="rec"><mark class="hl-ask">兩件事:成本欄位,以及第 2 節是否仍符合實際工作。</mark></p>
+  <p>第 2 版除成本金額外皆已完成,尚未簽署。</p>
+  <p><b>第二點比較重要。</b>第 2 節寫的是「路由機制與信心評分」。9/21 方向調整之後,我們要做的是本地脫敏服務 &mdash; 信心評分還在,但路由不在了。<mark class="hl-key">既然還沒簽,現在正是修正的時機</mark>,而不是簽下一份與實際工作不符的文件。</p>
+
+  <div class="fields">
+    <div><label for="e1">回覆與決定</label><textarea id="e1" data-store="e1" placeholder="GPU · NDA · 期中 · Drive · 通訊平台 · SOW"></textarea></div>
+    <div><label for="e1o">負責</label><input id="e1o" data-store="e1o" value="Mark"></div>
+    <div><label for="e1d">後續</label><input id="e1d" data-store="e1d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat"><h2>文件位置</h2><span class="tag">參考</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>內容</th><th>位置</th></tr>
+    <tr><td>API 契約與架構(B 節)</td><td><code>docs/research/zhexuan/2026-09-27/</code></td></tr>
+    <tr><td>敏感資訊分類(C 節)</td><td><code>docs/research/yudi/2026-09-27/</code></td></tr>
+    <tr><td>全遮基準(C 節)</td><td><code>docs/research/karina/2026-09-24/</code></td></tr>
+    <tr><td>評測資料集(D 節)</td><td>另出文件</td></tr>
+  </table></div>
+</div>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-client-2026-09-21-zh:';
+  function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
+  var all=document.querySelectorAll('details.more');
+  document.getElementById('expand-all').addEventListener('click',function(){all.forEach(function(d){d.open=true})});
+  document.getElementById('collapse-all').addEventListener('click',function(){all.forEach(function(d){d.open=false})});
+  document.querySelectorAll('[data-store]').forEach(function(el){
+    var k=el.getAttribute('data-store');
+    if(el.type==='checkbox'){
+      el.checked=get(k)==='1';
+      el.addEventListener('change',function(){set(k,el.checked?'1':'0')});
+    }else{
+      var v=get(k); if(v!==null) el.value=v;
+      el.addEventListener('input',function(){set(k,el.value)});
+    }
+  });
+})();
+</script>

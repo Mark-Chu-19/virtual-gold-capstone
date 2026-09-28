@@ -1,0 +1,370 @@
+<title>Sep 29 Client Meeting</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+
+.cat{display:flex;align-items:baseline;gap:12px;margin:44px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{margin:0}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item h3{font-family:var(--serif);font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 8px;font-weight:600}
+.item .ctx{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.item .rec{margin:0 0 6px;font-size:15px}
+.item .rec b{color:var(--hl-key)}
+.item ul{margin:4px 0 8px;padding-left:20px}
+.item li{margin-bottom:4px;font-size:15px}
+.fields{display:grid;grid-template-columns:1fr 160px 110px;gap:10px;margin-top:10px}
+.fields label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fields textarea,.fields input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.fields textarea{min-height:56px;resize:vertical}
+.fields textarea:focus,.fields input:focus{outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:600px){.fields{grid-template-columns:1fr}}
+.owners{width:100%}
+.owners td input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:6px 10px}
+.owners td:first-child{font-weight:600;white-space:nowrap}
+.out{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.out li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.out li:last-child{border-bottom:none}
+.out input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.out .who{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-top:4px}
+figure.arch svg{min-width:700px}
+.sec-b .intent{color:var(--local);font-weight:600}
+.sec-b th.intent{background:var(--local-soft);color:var(--local)}
+.sec-b .finding div.k{background:none;border:none;border-radius:0;padding:0;font-size:11px;line-height:1.4}
+.d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.d-box.gate{fill:var(--local-soft);stroke:var(--local);stroke-width:2.5}
+.d-box.policy{fill:var(--local-soft);stroke:var(--local);stroke-width:1.5;stroke-dasharray:5 3}
+.d-box.store{fill:var(--cloud-soft);stroke:var(--cloud)}
+.d-box.ret{stroke:var(--warn)}
+.d-box.trust{stroke:var(--ink)}
+.d-box.untrust{stroke:var(--warn);stroke-dasharray:5 3}
+.d-box.cloud{fill:none;stroke:var(--muted);stroke-dasharray:5 4}
+.d-n{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.d-n.g{fill:var(--local)} .d-n.v{fill:var(--cloud)} .d-n.r{fill:var(--warn)}
+.d-name{font-family:var(--sans);font-size:14.5px;font-weight:600;fill:var(--ink)}
+.d-sub{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+.d-region{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;fill:var(--muted)}
+.d-flow{stroke:var(--muted);stroke-width:1.8;fill:none}
+.d-back{stroke:var(--warn);stroke-width:1.8;fill:none}
+.d-link{stroke:var(--cloud);stroke-width:1.5;fill:none;stroke-dasharray:4 3}
+.d-head{fill:var(--muted)} .d-head-b{fill:var(--warn)} .d-head-g{fill:var(--local)}
+.d-rule{stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+.d-rulelabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--muted)}
+.d-gov{stroke:var(--local);stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+.d-govlabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--local)}
+.d-bound{stroke:var(--warn);stroke-width:2;stroke-dasharray:7 5}
+.d-blabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;fill:var(--warn)}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone · Virtual Gold Inc · Client meeting 4</div>
+  <h1>How the redaction service works, and six things we need from you</h1>
+  <dl class="meta">
+    <div><dt>Date</dt><dd>2026-09-29 · 18:00–19:00 ET · Week 6 of 15</dd></div>
+    <div><dt>Goal</dt><dd>Walk you through the design across three workstreams, and close six open items &mdash; GPU, NDA, midterm, Drive, chat, SOW</dd></div>
+  </dl>
+  <div class="toolbar">
+    <div class="btns"><button id="expand-all" type="button">Expand all</button><button id="collapse-all" type="button">Collapse all</button></div>
+    <div class="legend"><span><mark class="hl-key">Gold: what we say</mark></span><span><mark class="hl-ask">Blue: needs your answer</mark></span></div>
+  </div>
+</header>
+
+<ol class="agenda">
+  <li><a href="#team"><span class="n">A</span><span class="t">Who does what</span><span class="m">5 min</span></a></li>
+  <li><a href="#service"><span class="n">B</span><span class="t">How the service works</span><span class="m">Zhexuan &amp; Anmol · 12 min</span></a></li>
+  <li><a href="#judgment"><span class="n">C</span><span class="t">Deciding what to redact</span><span class="m">Yudi · 18 min</span></a></li>
+  <li><a href="#data"><span class="n">D</span><span class="t">Evaluation dataset</span><span class="m">Karina · 5 min</span></a></li>
+  <li><a href="#asks"><span class="n">E</span><span class="t">Six things we need</span><span class="m">15 min</span></a></li>
+</ol>
+
+<div class="cat" id="team"><h2>A · Who does what</h2><span class="tag">5 min</span></div>
+<div class="item">
+  <p class="ctx">One person per area, matching the five responsibilities Aarvin set out. Confirmed at our team meeting on 2026-09-25.</p>
+  <div class="tbl"><table>
+    <tr><th>Area</th><th>Owner</th><th>What it covers</th></tr>
+    <tr><td><strong>1 · Evaluation &amp; Test Data</strong></td><td>Karina Yang</td><td>The labelled email benchmark, evaluation metrics, regression testing</td></tr>
+    <tr><td><strong>2 · Privacy Research</strong></td><td>Yudi Guo</td><td>What counts as private, the category and tier definitions, regulatory grounding</td></tr>
+    <tr><td><strong>3 · Model Work</strong></td><td>Anmol Sahu</td><td>Prompting, running the local model, producing confidence scores</td></tr>
+    <tr><td><strong>4 · Service Engineering</strong></td><td>Zhexuan Ye</td><td>The local service itself, the HTTP contract, latency, failure handling</td></tr>
+    <tr><td><strong>5 · Integration &amp; Coordination</strong></td><td>Mark Chu</td><td>Documentation, progress updates, the final demo</td></tr>
+  </table></div>
+  <p class="rec"><b>Mark is your single point of contact</b>, as requested.</p>
+</div>
+
+<div class="cat" id="service"><h2>B · How the service works</h2><span class="tag">Zhexuan &amp; Anmol · 12 min</span></div>
+<div class="item">
+  <p class="ctx">The service sits between your system and the cloud assistant. It never calls the cloud itself and needs no outbound network access &mdash; what happens to the redacted text afterwards is entirely your system's decision.</p>
+  <div class="finding">
+    <div><div class="k">The shape of it</div>Your system posts the user's task plus the email. We return the same content with private spans replaced by placeholders, plus a decision for the request as a whole. Later, separately, you can post the cloud's reply back and we restore the real values. <mark class="hl-key">The mapping from placeholder to original never leaves our machine.</mark></div>
+    <div><div class="k">Fail closed, everywhere</div>Any error means the content was <b>not</b> processed. A successful response that is not marked ready carries the same consequence: it must not be forwarded to the cloud. If a component fails, nothing is released.</div>
+    <div><div class="k">Nothing sensitive is logged</div>Input text, detected values and restored text are never written to logs &mdash; only ids, counts, timings, decisions and error types.</div>
+  </div>
+  <details class="more"><summary>Detail: the endpoints and what each returns</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>Endpoint</th><th>What it does</th></tr>
+    <tr><td><code>POST /v1/redactions</code></td><td>Detect, redact, and return a decision for the whole request</td></tr>
+    <tr><td><code>GET /v1/redactions/{id}</code></td><td>Check status, retrieve a result</td></tr>
+    <tr><td><code>POST /v1/redactions/{id}/restore</code></td><td>Scan the cloud's reply, then restore the real values</td></tr>
+    <tr><td><code>DELETE /v1/redactions/{id}</code></td><td>Delete a record</td></tr>
+    <tr><td><code>GET /v1/info</code> · <code>/healthz</code> · <code>/readyz</code></td><td>Service metadata and health checks</td></tr>
+  </table></div>
+  <p>Bearer auth on everything except the health checks. Errors are RFC 9457 problem details. Full contract in <code>docs/research/zhexuan/2026-09-27/</code>.</p>
+  </div></details>
+  <div class="fields">
+    <div><label for="b1">Your feedback</label><textarea id="b1" data-store="b1" placeholder="Does this fit how your system would call it?"></textarea></div>
+    <div><label for="b1o">Owner</label><input id="b1o" data-store="b1o" value="Zhexuan"></div>
+    <div><label for="b1d">Follow-up</label><input id="b1d" data-store="b1d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat" id="judgment"><h2>C · Deciding what to redact</h2><span class="tag">Yudi · 18 min</span></div>
+<div class="item">
+  <p class="ctx">Two designs, presented together, because they are not alternatives &mdash; one is the baseline the other has to beat.</p>
+
+  <h3>1 · The baseline: mask everything we find</h3>
+  <p><b>Start by not deciding at all.</b> If any detector flags a span, it is replaced with a reversible placeholder. The public support line gets masked too. Nothing is judged, nothing is argued about.</p>
+  <div class="finding">
+    <div><div class="k">Why this works as a starting point</div>Masking a public phone number used to be a mistake because <b>the information was lost</b>. Here it is only hidden from the cloud and comes back in the final answer. <mark class="hl-key">So over-redaction stops being a visible error and becomes a small, measurable drop in the cloud's reasoning quality.</mark> The hardest judgment call in the project turns into a tuning knob.</div>
+    <div><div class="k">And it is the control condition</div>Masking everything sets the ceiling on safety and the floor on usefulness. <b>Every refinement after this has to earn its place by measurement</b> &mdash; how much answer quality it buys back, and how much leakage it costs. Starting strict and loosening with evidence is easier to stand behind than starting loose.</div>
+  </div>
+
+  <h3>2 · The refinement: let more through, but only where it is safe</h3>
+  <p>Masking everything is safe but blunt. The refinement adds two judgements on top, so that public and low-risk content can pass through intact.</p>
+  <div class="tbl"><table>
+    <tr><th>Judgement</th><th>What it asks</th><th>Effect</th></tr>
+    <tr><td><b>Category</b></td><td>What kind of thing is this?</td><td>Sets how careful we are with it</td></tr>
+    <tr><td><b>Can the model decide?</b></td><td>May a confidence score release this at all?</td><td>For five categories: never. Policy only</td></tr>
+  </table></div>
+  <p class="ctx">The five that a score may never release: <b>medical</b>, <b>financial accounts</b>, <b>government IDs</b>, <b>credentials</b>, <b>business-confidential</b>. Everything else is score-driven, with a stricter bar for personal details and a looser one for public ones.</p>
+
+  <details class="more"><summary>Detail: the category list, and where it comes from</summary><div class="body">
+  <div class="tbl"><table>
+    <tr><th>Category</th><th>Covers</th><th>Score may release?</th></tr>
+    <tr><td><code>medical</code></td><td>conditions, diagnoses, appointments</td><td><b>No</b></td></tr>
+    <tr><td><code>financial_account</code></td><td>account and card numbers</td><td><b>No</b></td></tr>
+    <tr><td><code>government_id</code></td><td>national ID, passport, licence</td><td><b>No</b></td></tr>
+    <tr><td><code>credential</code></td><td>passwords, keys, tokens</td><td><b>No</b></td></tr>
+    <tr><td><code>business_confidential</code></td><td>unreleased figures, deal terms, project code names, legal matters</td><td><b>No</b></td></tr>
+    <tr><td><code>person_private</code> · <code>contact_personal</code></td><td>private individuals, their phone, email, address</td><td>Yes · strict bar</td></tr>
+    <tr><td><code>person_public</code> · <code>contact_public</code></td><td>public figures, published support lines</td><td>Yes · loose bar</td></tr>
+    <tr><td><code>org</code> · <code>location</code> · <code>date_time</code> · <code>demographic</code> · <code>quantity</code></td><td>companies, places, dates, age and gender, amounts</td><td>Yes · loose bar</td></tr>
+  </table></div>
+  <p>Impact levels follow <b>NIST SP 800-122</b>. The rule that low-risk items tighten up when several appear together follows Sweeney's finding that ZIP code, gender and date of birth uniquely identify an estimated 87% of the US population. Business-confidential is the one category with neither a format nor a fixed meaning, which is why we ask for a term list below.</p>
+  </div></details>
+
+  <h3>3 · When the model is unsure</h3>
+  <p><b>It masks anyway, and records that it was unsure.</b> No request waits on a person. Those records are how we measure over-redaction, so the cost of caution is a number rather than a guess.</p>
+
+  <h3>4 · What we need from you here</h3>
+  <div class="tbl"><table>
+    <tr><th>Item</th><th>What we need</th></tr>
+    <tr><td><mark class="hl-ask">The question that decides the design</mark></td><td><b>If an email contains health or financial information and we replace it with a placeholder, can the rest of the message go to the cloud? Or must the whole message stay local?</b><br>If it is the whole message &mdash; given that executive email is mostly long forwarded threads &mdash; that likely means most requests get blocked. We want to know whether that is what you expect.</td></tr>
+    <tr><td><mark class="hl-ask">Confidential term list</mark></td><td>Project code names, deal names, key counterparties. This is the one category we cannot detect on our own &mdash; a code name looks like an ordinary word.</td></tr>
+    <tr><td><mark class="hl-ask">Input scope</mark></td><td>Plain text only, or attachments and scanned documents too? This decides what the first prototype has to handle.</td></tr>
+  </table></div>
+  <div class="fields">
+    <div><label for="c1">Your feedback</label><textarea id="c1" data-store="c1" placeholder="Objections, corrections, what the tiers should be"></textarea></div>
+    <div><label for="c1o">Owner</label><input id="c1o" data-store="c1o" value="Yudi"></div>
+    <div><label for="c1d">Follow-up</label><input id="c1d" data-store="c1d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat" id="data"><h2>D · Evaluation dataset</h2><span class="tag">Karina · 5 min</span></div>
+<div class="item">
+  <p class="ctx">A short introduction only. The detail goes in its own document.</p>
+  <p>The 100 labelled emails Aarvin asked for: where they come from, what gets recorded on each one, and how we check the labels are trustworthy before scoring anything against them.</p>
+  <div class="fields">
+    <div><label for="d1">Your feedback</label><textarea id="d1" data-store="d1" placeholder="Notes on the dataset"></textarea></div>
+    <div><label for="d1o">Owner</label><input id="d1o" data-store="d1o" value="Karina"></div>
+    <div><label for="d1d">Follow-up</label><input id="d1d" data-store="d1d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat" id="asks"><h2>E · Six things we need from you</h2><span class="tag">15 min</span></div>
+<div class="item">
+  <p class="ctx">Ordered by what blocks us soonest.</p>
+
+  <h3>1 · GPU resources</h3>
+  <p class="rec"><mark class="hl-ask">What hardware will be available, and when?</mark></p>
+  <p>We confirmed on Sep 27 that the team has <b>personal laptops only</b>. That is workable for the first phase &mdash; the detection layer runs on CPU, so <b>we can give you a working endpoint without any GPU at all</b>. The second phase, where the local model does the contextual judgement, needs a T4-class card or better.</p>
+  <p class="ctx">The sandbox offered on Sep 3 has been an open question since our Sep 15 meeting: provider, GPU, direct access, and who pays. <b>It is the only thing blocking one of the five workstreams entirely.</b></p>
+
+  <h3>2 · NDA process</h3>
+  <p class="rec"><mark class="hl-ask">Where does the addendum with Diane at CMU stand?</mark></p>
+  <p>Building a standalone service with an HTTP endpoint, rather than integrating directly, was explicitly the workaround while this is pending. Two things turn on it:</p>
+  <ul>
+    <li>Whether the design stays as it is, or changes once we can see your architecture</li>
+    <li><b>Whether the API request can tell us where each piece of text came from</b> &mdash; body, quoted thread, the user's own words. We only need that coarse level, not anything about your internal structures, and it would measurably reduce our error rate. It may not be blocked by the NDA at all, which is worth checking.</li>
+  </ul>
+
+  <h3>3 · Midterm presentation</h3>
+  <p class="rec"><mark class="hl-ask">What would you like to see at the week 7 midpoint?</mark></p>
+  <p>Our original plan predates the change of direction on Sep 21, so we would rather agree the content with you than assume. Our suggestion: a working service, with measurements of what redaction costs in answer quality.</p>
+
+  <h3>4 · Google Drive</h3>
+  <p class="rec"><mark class="hl-ask">Confirm the shared Drive and who has access.</mark></p>
+  <p>From the Sep 21 meeting: we use Virtual Gold's Drive, with access for Aarvin, Alex, Inderpal and Alra. We can set this up straight after this call if you confirm the list.</p>
+
+  <h3>5 · Google Chat</h3>
+  <p class="rec"><mark class="hl-ask">Are we moving to Google Chat?</mark></p>
+  <p>The Slack workspace showed a 30-day trial expiry on our accounts, and a single workspace covering two capstones as separate threads needs a paid feature. Moving to Google Chat was raised as the alternative. We are happy either way &mdash; we just need one place, decided.</p>
+
+  <h3>6 · Scope of Work</h3>
+  <p class="rec"><mark class="hl-ask">Two items: the cost line, and whether section 2 still describes the work.</mark></p>
+  <p>Version 2 is complete except for the cost amount, and is not yet signed.</p>
+  <p><b>The second point matters more.</b> Section 2 describes a routing mechanism and confidence scoring. Since the direction changed on Sep 21, what we are building is a local redaction service &mdash; confidence scoring is still in it, but routing is not. <mark class="hl-key">Since it is unsigned, this is the moment to correct it</mark> rather than signing something that does not match the work.</p>
+
+  <div class="fields">
+    <div><label for="e1">Answers and decisions</label><textarea id="e1" data-store="e1" placeholder="GPU · NDA · midterm · Drive · chat · SOW"></textarea></div>
+    <div><label for="e1o">Owner</label><input id="e1o" data-store="e1o" value="Mark"></div>
+    <div><label for="e1d">Follow-up</label><input id="e1d" data-store="e1d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat"><h2>Where the documents are</h2><span class="tag">Reference</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>What</th><th>Where</th></tr>
+    <tr><td>API contract and architecture (section B)</td><td><code>docs/research/zhexuan/2026-09-27/</code></td></tr>
+    <tr><td>Sensitive data classification (section C)</td><td><code>docs/research/yudi/2026-09-27/</code></td></tr>
+    <tr><td>Redact-always baseline (section C)</td><td><code>docs/research/karina/2026-09-24/</code></td></tr>
+    <tr><td>Evaluation dataset (section D)</td><td>separate document, to follow</td></tr>
+  </table></div>
+</div>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-client-2026-09-29:';
+  function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
+  var all=document.querySelectorAll('details.more');
+  document.getElementById('expand-all').addEventListener('click',function(){all.forEach(function(d){d.open=true})});
+  document.getElementById('collapse-all').addEventListener('click',function(){all.forEach(function(d){d.open=false})});
+  document.querySelectorAll('[data-store]').forEach(function(el){
+    var k=el.getAttribute('data-store');
+    if(el.type==='checkbox'){
+      el.checked=get(k)==='1';
+      el.addEventListener('change',function(){set(k,el.checked?'1':'0')});
+    }else{
+      var v=get(k); if(v!==null) el.value=v;
+      el.addEventListener('input',function(){set(k,el.value)});
+    }
+  });
+})();
+</script>
