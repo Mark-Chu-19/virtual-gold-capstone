@@ -181,6 +181,11 @@ figure.arch svg{min-width:700px}
 .ord{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--gold);line-height:1;margin-right:12px;vertical-align:-3px}
 .dep{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
 mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{color:var(--hl-no)}
+.prop{background:var(--local-soft);border:1px solid var(--local);border-radius:8px;padding:13px 17px;margin:12px 0 0;font-size:15px;line-height:1.72}
+.prop .h{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:7px;color:var(--local);font-weight:600}
+.prop b{color:var(--hl-key)}
+.prop table{margin:9px 0 4px;font-size:13.5px}
+.prop table th{background:var(--local-soft)}
 </style>
 
 <div class="page">
@@ -191,6 +196,7 @@ mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{col
     <div><dt>When</dt><dd>Sunday 2026-09-27, 22:00 · last session before the client meeting on Monday 9/28 at 18:00</dd></div>
     <div><dt>Goal</dt><dd>Settle five of the six. The sixth cannot be settled by us, so we settle how to ask the client instead</dd></div>
     <div><dt>Out of scope</dt><dd>Technical detail inside anyone's own proposal. That may change again after tomorrow; tonight is only for <b>where two documents contradict each other</b></dd></div>
+    <div><dt>How to use it</dt><dd><b>Items 1 to 5 each carry a draft proposal (green box)</b> &mdash; argue with it or amend it rather than starting from nothing. Item 6 has none, because only the client can answer it</dd></div>
   </dl>
 </header>
 
@@ -244,6 +250,32 @@ account <b>4532-1178-9902</b>.
   <div class="eg"><span class="who">On this email</span><b>"oncologist"</b> &mdash; Yudi labels it <code>High (health)</code>, Zhexuan labels it <code>regulated:health</code>. Same thing, two names.<br><br><b>"Harborview clause"</b> &mdash; Yudi would probably say <code>High (business, legal matters)</code>, Zhexuan <code>regulated:confidential-business</code>. <b>Or they might each pick something else</b>, because there is no shared list to look it up in.</div>
   <div class="risk"><span class="h">If we do not settle it</span>When Karina starts labelling she <b>will not know what to write in the category field</b>. She will invent a third list, and then none of the three will line up.</div>
   <p class="rec"><b>Decide:</b> one category list, marking which are regulated (a confidence score alone may never release them) and which are standard.</p>
+  
+  <div class="prop"><span class="h">Proposed · one list, three attributes per category</span>
+  <b>The key point: the two lists are not competing, they are two different axes.</b> Yudi's tier asks "how severe is a leak" (it sets the threshold); Zhexuan's regulated/standard asks "may a confidence score authorise release at all" (a binary gate). <b>A category needs both.</b> And the two already point at the same set &mdash; Yudi's two High rows are close to Zhexuan's five regulated categories.
+  <div class="tbl"><table>
+    <tr><th>id</th><th>gate</th><th>tier</th><th>Covers</th><th>In this email</th><th>Detected by</th></tr>
+    <tr><td><code>health</code></td><td>regulated</td><td>High</td><td>conditions, diagnoses, appointments</td><td>oncologist</td><td>NER + model</td></tr>
+    <tr><td><code>financial_account</code></td><td>regulated</td><td>High</td><td>account, card, routing, IBAN</td><td>4532-1178-9902</td><td>rules + checksum</td></tr>
+    <tr><td><code>government_id</code></td><td>regulated</td><td>High</td><td>national ID, passport, licence</td><td>—</td><td>rules + checksum</td></tr>
+    <tr><td><code>credential</code></td><td>regulated</td><td>High</td><td>passwords, API keys, private keys</td><td>—</td><td>rules</td></tr>
+    <tr><td><code>business_confidential</code></td><td>regulated</td><td>High</td><td>unreleased results, deal terms, code names, legal matters</td><td>Blue Harbor, Harborview</td><td><mark class="hl-no">needs client term list</mark></td></tr>
+    <tr><td><code>person_private</code></td><td>standard</td><td>Medium</td><td>names of private individuals</td><td>Dana, Sarah Chen</td><td>NER</td></tr>
+    <tr><td><code>contact_personal</code></td><td>standard</td><td>Medium</td><td>personal phone / email / address</td><td>412-555-0182</td><td>rules + context</td></tr>
+    <tr><td><code>person_public</code></td><td>standard</td><td>Public</td><td>public figures</td><td>—</td><td>NER + model</td></tr>
+    <tr><td><code>contact_public</code></td><td>standard</td><td>Public</td><td>published support or switchboard lines</td><td>1-800-555-0199</td><td>rules + context</td></tr>
+    <tr><td><code>org</code></td><td>standard</td><td>Low</td><td>organisations, company names</td><td>Acme</td><td>NER</td></tr>
+    <tr><td><code>location</code></td><td>standard</td><td>Low</td><td>cities, regions</td><td>—</td><td>NER</td></tr>
+    <tr><td><code>date_time</code></td><td>standard</td><td>Low</td><td>dates and times</td><td>Thursday, Sep 20</td><td>rules</td></tr>
+    <tr><td><code>demographic</code></td><td>standard</td><td>Low</td><td>age, gender</td><td>—</td><td>NER</td></tr>
+    <tr><td><code>quantity</code></td><td>standard</td><td>Low</td><td>amounts, percentages, counts</td><td>18%</td><td>rules</td></tr>
+    <tr><td><code>confidential_marking</code></td><td colspan="2"><b>message level</b></td><td>"keep this confidential", "board only", "do not forward"</td><td>(not in this one)</td><td>rules</td></tr>
+  </table></div>
+  <b>Three rules to settle alongside it:</b><br>
+  <b>1.</b> The <code>Low</code> combination rule &mdash; retained individually, escalated when several appear together (Yudi cites Sweeney: ZIP, gender and date of birth uniquely identify 87%).<br>
+  <b>2.</b> Amounts are a boundary case &mdash; <code>$2.4M</code> attached to a deal is <code>business_confidential</code>, a bare <code>18%</code> is <code>quantity</code>. <b>That is exactly what the model is for; do not try to make it a rule.</b><br>
+  <b>3.</b> <code>confidential_marking</code> <b>is not a span category, it is a property of the whole message</b> &mdash; that distinction has to carry into the schema in conflict 2. What it should then <em>do</em> is conflict 6, not tonight.
+  </div>
   <div class="fields">
     <div><label for="d1">Outcome</label><textarea id="d1" data-store="d1" placeholder="the list / who writes it / by when"></textarea></div>
     <div><label for="d1o">Owner</label><input id="d1o" data-store="d1o" value="Yudi"></div>
@@ -272,6 +304,23 @@ account <b>4532-1178-9902</b>.
   <p class="ctx">The two binary labels also do not mean the same thing: Karina's <code>ok_either_way</code> covers both "this is public" and "private but it does not matter either way"; Yudi's <code>public in context</code> covers only the first.</p>
   <div class="risk"><span class="h">If we do not settle it</span>Karina labels 100 emails → Yudi cannot use them (no category) → Zhexuan cannot either (no category, no provenance) → <b>relabel</b>. On her own plan that is a full week, and this is the one item Aarvin actually pushed on.</div>
   <p class="rec"><b>Decide:</b> one schema with four fields &mdash; <code>type</code>, <code>category</code>, <code>ground_truth</code>, <code>provenance</code> &mdash; and which of the two binary meanings the ground truth takes.</p>
+  
+  <div class="prop"><span class="h">Proposed · four fields, and ground truth becomes three-valued</span>
+  <b>The important change: ground truth should not be binary.</b> Neither Karina's <code>yes/ok_either_way</code> nor Yudi's <code>private/public</code> can express the third case &mdash; <b>some things break the task if masked</b> (Karina's own red-flagged scenarios: 7 scheduling needs real dates, 9 lookups need the real company name).
+  <div class="tbl"><table>
+    <tr><th>Field</th><th>Values</th><th>Who needs it</th></tr>
+    <tr><td><code>span</code></td><td>start / end offsets</td><td>everyone</td></tr>
+    <tr><td><code>type</code></td><td>what the detector emits: <code>PHONE</code> / <code>PERSON</code> / <code>ORG</code>…</td><td>Karina, Zhexuan</td></tr>
+    <tr><td><code>category</code></td><td>an id from the conflict-1 list</td><td>Yudi (tiers), Zhexuan (policy gate)</td></tr>
+    <tr><td><code>ground_truth</code></td><td><code>must_mask</code> missing it is a failure<br><code>may_mask</code> safe either way<br><b><code>must_not_mask</code> masking breaks the task</b></td><td>everyone</td></tr>
+    <tr><td><code>provenance</code></td><td><code>user_request</code> / <code>email_body</code> / <code>quoted_thread</code> / <code>signature</code> / <code>unknown</code></td><td>Yudi, Zhexuan</td></tr>
+    <tr><td><code>entity_id</code></td><td>variants of one entity share an id</td><td>Sarah / Sarah Chen</td></tr>
+  </table></div>
+  <b>Plus one message-level field:</b> <code>message.confidential_marking: true/false</code>, because conflict 1 establishes that it is not a span.
+  <br><br>
+  <b>One more thing to settle on the spot: does <code>quoted_thread</code> count as unclear provenance?</b><br>
+  <mark class="hl-key">Proposed: no.</mark> A quoted thread has <b>clear</b> provenance &mdash; it came from a known message. <code>unknown</code> should be reserved for cases we genuinely cannot place. <b>Otherwise almost every executive email is LOCAL_ONLY simply for having quoted history</b>, which multiplies the problem in conflict 6.
+  </div>
   <div class="fields">
     <div><label for="d2">Outcome</label><textarea id="d2" data-store="d2" placeholder="schema / who writes the labelling guide"></textarea></div>
     <div><label for="d2o">Owner</label><input id="d2o" data-store="d2o" value="Karina"></div>
@@ -298,6 +347,17 @@ account <b>4532-1178-9902</b>.
   <div class="why"><span class="h">The observation that resolves it</span>Human review exists because <b>getting it wrong is expensive</b>.<br><br>Karina's entire argument is that <b>getting it wrong is cheap</b>, because everything is restored. <mark class="hl-key">If that argument holds, the reason for human review disappears.</mark></div>
   <div class="sell"><span class="h">Suggestion</span>Take "<b>mask anyway, and log the low-confidence spans for later analysis</b>".<br><br>It does three things at once: keeps Yudi's contribution claim, matches Karina's reversibility, and does not require a reviewer who does not exist.<br><br>And Zhexuan's <code>PENDING_REVIEW</code> <b>need not be thrown away</b> &mdash; keep it in the API, disabled in v0, as a future option. Leaving the interface in place also reads well to the client.</div>
   <p class="rec"><b>Decide:</b> what happens in the middle band. If human review stays, we must also answer <b>who the reviewer is</b>.</p>
+  
+  <div class="prop"><span class="h">Proposed · one threshold plus logging; PENDING_REVIEW stays in the spec, off in v0</span>
+  <b>Concretely:</b><br>
+  <b>1.</b> Drop the threshold pair (auto-redact / reject); keep <b>one</b>.<br>
+  <b>2.</b> Below the threshold, <b>mask anyway</b> &mdash; masking is reversible, so the cost of being wrong is already small &mdash; but tag it <code>low_confidence</code> and log it.<br>
+  <b>3.</b> That log <b>is the over-masking measurement</b>. Karina's metric set already includes over-mask rate; this gives it a data source instead of needing a second mechanism.<br>
+  <b>4.</b> Keep <code>PENDING_REVIEW</code> <b>in the API decision enum but never return it in v0</b>. The interface stays, so if the client later does want human review, the contract does not change.
+  <br><br>
+  <b>Why this satisfies all three:</b> Yudi's "without per-item human review" contribution claim survives; Karina's reversibility argument is exactly what justifies it; Zhexuan's mechanism is not discarded, only deferred.<br><br>
+  <mark class="hl-no">If the meeting decides to keep human review, it must answer "who reviews" in the same breath</mark> &mdash; one executive, dozens of times a day. Without an answer we cannot present this design to the client.
+  </div>
   <div class="fields">
     <div><label for="d3">Outcome</label><textarea id="d3" data-store="d3" placeholder="middle-band handling / keep PENDING_REVIEW?"></textarea></div>
     <div><label for="d3o">Owner</label><input id="d3o" data-store="d3o" value="Zhexuan + Yudi"></div>
@@ -320,6 +380,19 @@ account <b>4532-1178-9902</b>.
   <mark class="hl-no">If the CEO's assistant and the CFO's assistant share one context store, does a lookup on Dana from the CFO side return what was recorded on the CEO side?</mark></div>
   <div class="risk"><span class="h">Why it needs a real discussion</span>Zhexuan's API document says the global context store "<b>holds known private information persistently</b>" and is "<b>shared across all callers and sessions</b>".<br><br>That makes it a higher-value target than the vault (<b>it is never cleared</b>), and it sits in direct tension with the same document's own principle that sensitive content is never logged. Encryption, retention and access control are not specified.</div>
   <p class="rec"><b>Decide:</b> (a) one name for the first three. (b) whether the global context store exists at all; if it does, who protects it, and whether cross-caller sharing is intended.</p>
+  
+  <div class="prop"><span class="h">Proposed · call it the vault; drop the context store from v0</span>
+  <b>(a) Naming:</b> the first two become <code>vault</code> (Karina's word, the most descriptive, and unambiguously session-scoped). <code>session mapping</code> and "mapping table" stop being separate components. <b>Five minutes, then move on.</b>
+  <br><br>
+  <b>(b) The global context store: proposed not to build it in v0.</b> Four reasons:
+  <br>
+  <b>1.</b> It is the highest-value target in the system &mdash; it holds private information persistently and, <b>unlike the vault, is never cleared</b>.<br>
+  <b>2.</b> Encryption, retention and access control are <b>entirely unspecified</b>, and specifying them takes time we do not have this week.<br>
+  <b>3.</b> <b>Cross-caller sharing is a privacy problem nobody asked for</b> &mdash; an entity labelled on the CEO's side becoming visible on the CFO's side is not requested anywhere in the client material.<br>
+  <b>4.</b> The core flow <b>does not need it</b> &mdash; without it every request still detects, masks and restores correctly; what is lost is a cross-session memory optimisation.
+  <br><br>
+  <mark class="hl-key">Proposed: move it to a later phase as a standalone optimisation with its own security design.</mark> Dropping it now is cheap and adding it back later is easy; carrying it now makes it a liability in every security conversation from here on.
+  </div>
   <div class="fields">
     <div><label for="d4">Outcome</label><textarea id="d4" data-store="d4" placeholder="naming / context store keep or drop, and its protection"></textarea></div>
     <div><label for="d4o">Owner</label><input id="d4o" data-store="d4o" value="Zhexuan"></div>
@@ -344,6 +417,20 @@ account <b>4532-1178-9902</b>.
   <mark class="hl-no">One span, three methods, three numbers &mdash; and the API has one field.</mark></div>
   <div class="risk"><span class="h">How this happened</span>Anmol is the only one who has not produced a document, because he is blocked on hardware (<code>TODO.md</code> D24, waiting on Virtual Gold). <b>So his area got written three times by other people.</b></div>
   <p class="rec"><b>Decide:</b> which version Anmol takes over, or how the three merge. This also widens <code>TODO.md</code> <b>B33</b>: the handover is no longer just Zhexuan's PR #2, but Yudi's and Karina's threshold schemes as well.</p>
+  
+  <div class="prop"><span class="h">Proposed · split it along the workstream boundaries, not one owner for all of it</span>
+  <div class="tbl"><table>
+    <tr><th>Step</th><th>Owner</th><th>Whose version</th></tr>
+    <tr><td><b>Produce the raw score</b></td><td><b>Anmol</b> (area 3)</td><td>His own implementation, following PR #2's signal priority (token logprob → SEP → sampling ensemble)</td></tr>
+    <tr><td><b>Calibration procedure</b></td><td><b>Yudi</b> supplies, <b>Anmol</b> implements</td><td><b>Take Yudi's</b> &mdash; the most complete of the three, and it has the v2 agreement method as a fallback</td></tr>
+    <tr><td><b>Choosing the threshold</b></td><td><b>Karina</b> (area 1)</td><td>A threshold is an evaluation output, not a model output. Client sets a leak-rate target, she picks the threshold from the experiment</td></tr>
+    <tr><td><b>The API field</b></td><td><b>Zhexuan</b> (area 4)</td><td>The field carries the <b>calibrated</b> score, and the spec should say so</td></tr>
+  </table></div>
+  <b>One field to add:</b> each span in the API needs <code>score_method</code>, otherwise nobody reading a 0.55 can tell whether it is raw or calibrated, model-stated or a detector vote share.
+  <br><br>
+  <b>Why split it this way:</b> three people wrote a version because Anmol is blocked on hardware (D24) and produced no document, not because three people want to own it. <mark class="hl-key">Splitting on workstream boundaries gives each person the part inside their own area, instead of asking anyone to give theirs up.</mark><br><br>
+  <b>Knock-on:</b> <code>TODO.md</code> B33's handover widens &mdash; not only Zhexuan's PR #2, but Yudi's calibration procedure too.
+  </div>
   <div class="fields">
     <div><label for="d5">Outcome</label><textarea id="d5" data-store="d5" placeholder="which version / scope of the B33 handover"></textarea></div>
     <div><label for="d5o">Owner</label><input id="d5o" data-store="d5o" value="Anmol"></div>
