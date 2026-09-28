@@ -4,7 +4,7 @@
 **Present:** (to fill in)
 **Agenda:** [`agenda-en.html`](agenda-en.html) · the two items moved out are in [`deferred-en.md`](deferred-en.md)
 
-Three of the four settled. Item 4 still to record.
+Four items: three settled, item 4 not adopted and carried forward.
 
 ---
 
@@ -67,11 +67,19 @@ Plus one field for the whole message: `marked confidential`.
 
 **Effect:** Yudi's "without per-item human review" contribution claim survives, and Zhexuan's mechanism is not discarded — only switched off, so the contract does not change if the client later wants it.
 
-## 4. Once masked, has it still left — to record
+## 4. Once masked, has it still left — not adopted, carried forward
 
-> (outcome to fill in)
+**Outcome: option B is not taken.** The topic is carried to the next meeting.
 
-The agenda's recommendation was **option B**: hold back only the **section** containing the regulated item, not the whole email. The reasoning is that A (hold the whole email) and C (mask and send everything) differ on a legal question, while B holds under either answer — so it can be built without waiting for the client.
+The agenda recommended B — hold back only the **section** containing the regulated item rather than the whole email — on the grounds that A (hold the whole email) and C (mask and send everything) differ on a legal question while B holds under either answer. The team decided against it.
+
+**Consequence worth noting:** without B, **A and C remain unresolved**. That means:
+
+- How coarse the policy gate should be **cannot be settled until the client answers**
+- Until then that part of the architecture cannot be built
+- It also changes what we say to the client — we cannot claim the design works whatever they answer, so the question goes back to them as it stands
+
+**Which makes getting an answer more important, not less:** "If an email has health or financial information in it and we replace it with placeholders, can the rest go to the cloud? Or must the whole message stay local?" 
 
 ---
 
@@ -84,9 +92,10 @@ The agenda's recommendation was **option B**: hold back only the **section** con
 | 3 | Write the labelling guide from the six fields; start on the 100 emails | Karina | (to fill in) |
 | 4 | Add the single bar and the "not sure" tag to the API spec; mark `PENDING_REVIEW` disabled | Zhexuan | (to fill in) |
 | 5 | Ask the client for the confidential term list | Yudi | client meeting |
+| 6 | **Ask the client: once replaced with placeholders, can the rest of the email go to the cloud** — item 4 turns on this | Mark | client meeting |
+| 7 | Carry item 4 (policy-gate granularity) to the next meeting | everyone | next meeting |
 
 ## Not yet recorded
 
 - Who presents what at the 18:00 client meeting today
-- The outcome of item 4
 - Whether this meeting produced any further actions
