@@ -1,0 +1,404 @@
+<title>Sep 27 alignment: six conflicts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+
+.cat{display:flex;align-items:baseline;gap:12px;margin:44px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{margin:0}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item h3{font-family:var(--serif);font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 8px;font-weight:600}
+.item .ctx{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.item .rec{margin:0 0 6px;font-size:15px}
+.item .rec b{color:var(--hl-key)}
+.item ul{margin:4px 0 8px;padding-left:20px}
+.item li{margin-bottom:4px;font-size:15px}
+.fields{display:grid;grid-template-columns:1fr 160px 110px;gap:10px;margin-top:10px}
+.fields label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fields textarea,.fields input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.fields textarea{min-height:56px;resize:vertical}
+.fields textarea:focus,.fields input:focus{outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:600px){.fields{grid-template-columns:1fr}}
+.owners{width:100%}
+.owners td input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:6px 10px}
+.owners td:first-child{font-weight:600;white-space:nowrap}
+.out{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.out li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.out li:last-child{border-bottom:none}
+.out input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.out .who{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-top:4px}
+figure.arch svg{min-width:700px}
+.sec-b .intent{color:var(--local);font-weight:600}
+.sec-b th.intent{background:var(--local-soft);color:var(--local)}
+.sec-b .finding div.k{background:none;border:none;border-radius:0;padding:0;font-size:11px;line-height:1.4}
+.d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.d-box.gate{fill:var(--local-soft);stroke:var(--local);stroke-width:2.5}
+.d-box.policy{fill:var(--local-soft);stroke:var(--local);stroke-width:1.5;stroke-dasharray:5 3}
+.d-box.store{fill:var(--cloud-soft);stroke:var(--cloud)}
+.d-box.ret{stroke:var(--warn)}
+.d-box.trust{stroke:var(--ink)}
+.d-box.untrust{stroke:var(--warn);stroke-dasharray:5 3}
+.d-box.cloud{fill:none;stroke:var(--muted);stroke-dasharray:5 4}
+.d-n{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.d-n.g{fill:var(--local)} .d-n.v{fill:var(--cloud)} .d-n.r{fill:var(--warn)}
+.d-name{font-family:var(--sans);font-size:14.5px;font-weight:600;fill:var(--ink)}
+.d-sub{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+.d-region{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;fill:var(--muted)}
+.d-flow{stroke:var(--muted);stroke-width:1.8;fill:none}
+.d-back{stroke:var(--warn);stroke-width:1.8;fill:none}
+.d-link{stroke:var(--cloud);stroke-width:1.5;fill:none;stroke-dasharray:4 3}
+.d-head{fill:var(--muted)} .d-head-b{fill:var(--warn)} .d-head-g{fill:var(--local)}
+.d-rule{stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+.d-rulelabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--muted)}
+.d-gov{stroke:var(--local);stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+.d-govlabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--local)}
+.d-bound{stroke:var(--warn);stroke-width:2;stroke-dasharray:7 5}
+.d-blabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;fill:var(--warn)}
+.eg{background:var(--soft);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:12px 16px;margin:10px 0 14px;font-size:15px;line-height:1.75}
+.eg .who{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.mail{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--cloud);border-radius:0 6px 6px 0;padding:13px 17px;margin:10px 0 14px;font-size:14px;line-height:1.85;white-space:pre-wrap}
+.mail .who{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px;white-space:normal}
+.why,.risk,.sell{border-radius:6px;padding:11px 15px;margin:10px 0 0;font-size:15px;line-height:1.7}
+.why{background:var(--gold-soft)}
+.risk{background:var(--warn-soft);font-size:14.5px}
+.sell{background:var(--cloud-soft);font-size:14.5px}
+.why .h,.risk .h,.sell .h{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;display:block;margin-bottom:5px;color:var(--muted)}
+.who2{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--cloud-soft);color:var(--cloud);font-weight:600;white-space:nowrap}
+.ord{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--gold);line-height:1;margin-right:12px;vertical-align:-3px}
+.dep{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{color:var(--hl-no)}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone · Virtual Gold Inc · Internal</div>
+  <h1>Tonight's alignment: six conflicts between the four proposals</h1>
+  <dl class="meta">
+    <div><dt>When</dt><dd>Sunday 2026-09-27, 22:00 · last session before the client meeting on Monday 9/28 at 18:00</dd></div>
+    <div><dt>Goal</dt><dd>Settle five of the six. The sixth cannot be settled by us, so we settle how to ask the client instead</dd></div>
+    <div><dt>Out of scope</dt><dd>Technical detail inside anyone's own proposal. That may change again after tomorrow; tonight is only for <b>where two documents contradict each other</b></dd></div>
+  </dl>
+</header>
+
+<div class="cat"><h2>Why these six</h2><span class="tag">Framing</span></div>
+<div class="item">
+  <p>We have four proposals: <b>Yudi</b>'s tiered classification, <b>Karina</b>'s redact-always, <b>Zhexuan and Anmol</b>'s API contract and architecture v2, and <b>Mark</b>'s three signals (fallback).</p>
+  <p class="rec"><b>The good news:</b> all four converged independently on the same principle &mdash; <mark class="hl-key">the model may propose, but only code may release</mark>. All four also use reversible placeholders and all four fail closed.</p>
+  <p>What is left is six places where <b>two documents give different answers to the same question</b>. Ordered by dependency: the later ones cannot be settled until the earlier ones are.</p>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>Conflict</th><th>Between</th><th>Settle tonight?</th></tr>
+    <tr><td>1</td><td>The category lists do not match</td><td>Yudi ↔ Zhexuan</td><td>Yes</td></tr>
+    <tr><td>2</td><td>What fields the 100 emails get labelled with</td><td>Karina ↔ Yudi ↔ Zhexuan</td><td>Yes, and it <b>must</b> be</td></tr>
+    <tr><td>3</td><td>What happens when confidence lands in the middle</td><td>Zhexuan ↔ Yudi</td><td>Yes</td></tr>
+    <tr><td>4</td><td>State storage: three names, or four things</td><td>Everyone</td><td>Yes</td></tr>
+    <tr><td>5</td><td>Who owns the confidence score, and whose version</td><td>Three wrote one ↔ it is Anmol's area</td><td>Yes</td></tr>
+    <tr><td>6</td><td><b>Does redacted still count as having left</b></td><td>Zhexuan ↔ Karina</td><td><mark class="hl-no">No &mdash; only the client can answer</mark></td></tr>
+  </table></div>
+</div>
+
+<div class="cat"><h2>The shared example</h2><span class="tag">All six use this one email</span></div>
+<div class="item">
+  <p class="ctx">Rather than a new example per topic, all six sections below use this message. It happens to touch every one of the conflicts.</p>
+  <div class="mail"><span class="who">From Dana Whitfield (external partner) · Subject RE: RE: Blue Harbor — Q4 numbers</span>Tom,
+
+Before Thursday's board call &mdash; my <b>oncologist</b> moved my appointment,
+so I'll dial in from home. Reach me on my cell, <b>412-555-0182</b>.
+
+Budget came in at <b>$2.4M</b>, <b>18%</b> over. Vendor wire details:
+account <b>4532-1178-9902</b>.
+
+&mdash; Dana
+
+&gt; On Sep 20, Tom Reyes wrote:
+&gt; <b>Acme's support line is 1-800-555-0199</b> if you need them.
+&gt; <b>Sarah</b> from Legal flagged the <b>Harborview</b> clause.
+&gt;&gt; On Sep 18, <b>Sarah Chen</b> wrote:
+&gt;&gt; I'll review by Friday.</div>
+  <div class="eg"><span class="who">What the executive asks the assistant</span>Summarize this and draft a reply to Dana.</div>
+  <p class="ctx">This message contains: <b>health information</b> (oncologist), a <b>bank account</b>, a <b>personal mobile</b>, a <b>public support line inside a quoted thread</b>, <b>two proper nouns of unclear type</b> (Blue Harbor, Harborview), <b>one person written two ways</b> (Sarah / Sarah Chen), and <b>two levels of quoted history</b>.</p>
+</div>
+
+<div class="cat"><h2><span class="ord">1</span>The category lists do not match</h2><span class="tag">Yudi ↔ Zhexuan · 15 min</span></div>
+<div class="item">
+  <p class="dep">Without this, the labelling fields in item 2 cannot be defined.</p>
+  <div class="tbl"><table>
+    <tr><th>Yudi's tiers</th><th>Zhexuan's categories</th></tr>
+    <tr><td>High (personal): government IDs, passwords and keys, bank and card numbers, health information</td><td>regulated: health, financial, credential/secret</td></tr>
+    <tr><td>High (business): unreleased results, deal terms, project code names, legal matters</td><td>regulated: confidential-business, confidential-email/thread</td></tr>
+    <tr><td>Medium / Low / Public</td><td>standard (everything else)</td></tr>
+  </table></div>
+  <div class="eg"><span class="who">On this email</span><b>"oncologist"</b> &mdash; Yudi labels it <code>High (health)</code>, Zhexuan labels it <code>regulated:health</code>. Same thing, two names.<br><br><b>"Harborview clause"</b> &mdash; Yudi would probably say <code>High (business, legal matters)</code>, Zhexuan <code>regulated:confidential-business</code>. <b>Or they might each pick something else</b>, because there is no shared list to look it up in.</div>
+  <div class="risk"><span class="h">If we do not settle it</span>When Karina starts labelling she <b>will not know what to write in the category field</b>. She will invent a third list, and then none of the three will line up.</div>
+  <p class="rec"><b>Decide:</b> one category list, marking which are regulated (a confidence score alone may never release them) and which are standard.</p>
+  <div class="fields">
+    <div><label for="d1">Outcome</label><textarea id="d1" data-store="d1" placeholder="the list / who writes it / by when"></textarea></div>
+    <div><label for="d1o">Owner</label><input id="d1o" data-store="d1o" value="Yudi"></div>
+    <div><label for="d1d">Due</label><input id="d1d" data-store="d1d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">2</span>What the 100 emails get labelled with</h2><span class="tag">Karina ↔ Yudi ↔ Zhexuan · 20 min</span></div>
+<div class="item">
+  <p class="dep">Depends on item 1. Karina starts labelling tomorrow, so this <b>has</b> to be finished tonight.</p>
+  <div class="tbl"><table>
+    <tr><th>Field</th><th>Karina</th><th>Yudi</th><th>Zhexuan</th></tr>
+    <tr><td><code>type</code> entity type</td><td>✓</td><td>—</td><td>✓</td></tr>
+    <tr><td><code>category</code> sensitivity category</td><td><mark class="hl-no">✗</mark></td><td>✓ his tiers need it</td><td>✓ his policy gate needs it</td></tr>
+    <tr><td>ground truth</td><td><code>must_mask: yes/ok_either_way</code></td><td><code>private/public in context</code></td><td>—</td></tr>
+    <tr><td><code>provenance</code></td><td><mark class="hl-no">✗</mark></td><td>✓</td><td>✓ "unclear source" triggers LOCAL_ONLY</td></tr>
+  </table></div>
+  <div class="eg"><span class="who">On this email · one phone number, three different needs</span><b><code>412-555-0182</code> (Dana's mobile, in the body)</b><br>
+  Karina needs: <code>{type: PHONE, must_mask: yes}</code><br>
+  Yudi needs: <code>{category: Medium-personal-phone, private_in_context: true}</code><br>
+  Zhexuan needs: <code>{category: standard, provenance: external-sender-body}</code><br><br>
+  <b><code>1-800-555-0199</code> (Acme support, inside the quoted thread)</b><br>
+  Karina needs: <code>{type: PHONE, must_mask: ok_either_way}</code><br>
+  Yudi needs: <code>{category: Public, private_in_context: false}</code><br>
+  Zhexuan needs: <code>{provenance: quoted-thread}</code> &mdash; <mark class="hl-no">and "quoted thread" may itself count as unclear provenance, which would put the whole email in LOCAL_ONLY</mark></div>
+  <p class="ctx">The two binary labels also do not mean the same thing: Karina's <code>ok_either_way</code> covers both "this is public" and "private but it does not matter either way"; Yudi's <code>public in context</code> covers only the first.</p>
+  <div class="risk"><span class="h">If we do not settle it</span>Karina labels 100 emails → Yudi cannot use them (no category) → Zhexuan cannot either (no category, no provenance) → <b>relabel</b>. On her own plan that is a full week, and this is the one item Aarvin actually pushed on.</div>
+  <p class="rec"><b>Decide:</b> one schema with four fields &mdash; <code>type</code>, <code>category</code>, <code>ground_truth</code>, <code>provenance</code> &mdash; and which of the two binary meanings the ground truth takes.</p>
+  <div class="fields">
+    <div><label for="d2">Outcome</label><textarea id="d2" data-store="d2" placeholder="schema / who writes the labelling guide"></textarea></div>
+    <div><label for="d2o">Owner</label><input id="d2o" data-store="d2o" value="Karina"></div>
+    <div><label for="d2d">Due</label><input id="d2d" data-store="d2d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">3</span>What happens when confidence lands in the middle</h2><span class="tag">Zhexuan ↔ Yudi · 20 min</span></div>
+<div class="item">
+  <p class="dep">Depends on items 1 and 2 &mdash; you need the categories and the ground truth before you know what "the middle" looks like.</p>
+  <div class="tbl"><table>
+    <tr><th>Who</th><th>Answer</th></tr>
+    <tr><td><b>Yudi</b></td><td>Use thresholds, err toward caution (High tier drops to 0.2)</td></tr>
+    <tr><td><b>Karina</b></td><td>Mask it anyway; it comes back on restore</td></tr>
+    <tr><td><b>Zhexuan</b></td><td>Return <code>PENDING_REVIEW</code>, <b>hand it to a person</b>, caller polls</td></tr>
+    <tr><td><b>Mark</b></td><td>Fall toward safety (the ratchet only goes up)</td></tr>
+  </table></div>
+  <div class="eg"><span class="who">On this email</span><b><code>Harborview</code></b> &mdash; a project code name (sensitive) or a place name (not)? The model returns <b>0.55</b>.<br><br>
+  Yudi: above the Medium threshold of 0.5 → mask<br>
+  Karina: detected, so mask<br>
+  <b>Zhexuan: between auto-redact and reject → <code>PENDING_REVIEW</code></b><br>
+  Mark: ratchet up → mask<br><br>
+  <mark class="hl-no">Under Zhexuan's design the executive hits "draft me a reply" and gets back "still processing", then waits for a person to go and decide what Harborview is.</mark></div>
+  <div class="risk"><span class="h">Why this is a conflict, not just a preference</span>Yudi states "<b>without per-item human review</b>" as this project's research contribution &mdash; on the grounds that Rescriber, the closest prior system, requires the user to confirm every item, and we cannot.<br><br><b>What Zhexuan added is exactly that mechanism.</b> The two contribution claims cancel out.</div>
+  <div class="why"><span class="h">The observation that resolves it</span>Human review exists because <b>getting it wrong is expensive</b>.<br><br>Karina's entire argument is that <b>getting it wrong is cheap</b>, because everything is restored. <mark class="hl-key">If that argument holds, the reason for human review disappears.</mark></div>
+  <div class="sell"><span class="h">Mark's suggestion</span>Take "<b>mask anyway, and log the low-confidence spans for later analysis</b>".<br><br>It does three things at once: keeps Yudi's contribution claim, matches Karina's reversibility, and does not require a reviewer who does not exist.<br><br>And Zhexuan's <code>PENDING_REVIEW</code> <b>need not be thrown away</b> &mdash; keep it in the API, disabled in v0, as a future option. Leaving the interface in place also reads well to the client.</div>
+  <p class="rec"><b>Decide:</b> what happens in the middle band. If human review stays, we must also answer <b>who the reviewer is</b>.</p>
+  <div class="fields">
+    <div><label for="d3">Outcome</label><textarea id="d3" data-store="d3" placeholder="middle-band handling / keep PENDING_REVIEW?"></textarea></div>
+    <div><label for="d3o">Owner</label><input id="d3o" data-store="d3o" value="Zhexuan + Yudi"></div>
+    <div><label for="d3d">Due</label><input id="d3d" data-store="d3d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">4</span>State storage: three names, or four things</h2><span class="tag">Everyone · 15 min</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>Who</th><th>Name</th><th>Holds</th><th>Scope</th><th>Lifetime</th></tr>
+    <tr><td>Zhexuan</td><td><code>session mapping</code></td><td>placeholder label consistency</td><td>one session</td><td>bounded</td></tr>
+    <tr><td>Karina</td><td><code>vault</code></td><td>placeholder → real value</td><td>one session</td><td>cleared at session end</td></tr>
+    <tr><td>Mark</td><td>mapping table</td><td>placeholder → real value</td><td>one session</td><td>session end</td></tr>
+    <tr><td><b>Zhexuan</b></td><td><b><code>global context store</code></b></td><td><b>known entities, private information</b></td><td><b>across sessions and callers</b></td><td><b>persistent</b></td></tr>
+  </table></div>
+  <p>The first three are the same thing under three names &mdash; <b>rename and move on, five minutes</b>. The fourth is new and needs a real discussion.</p>
+  <div class="eg"><span class="who">On this email</span><b>Dana Whitfield</b> becomes <code>PERSON_1</code> this time. Three days later another email mentions Dana &mdash;<br><br>
+  <code>session mapping</code>: does not remember (new session, new numbering)<br>
+  <b><code>global context store</code>: remembers, and <u>shares it across all callers</u></b><br><br>
+  <mark class="hl-no">If the CEO's assistant and the CFO's assistant share one context store, does a lookup on Dana from the CFO side return what was recorded on the CEO side?</mark></div>
+  <div class="risk"><span class="h">Why it needs a real discussion</span>Zhexuan's API document says the global context store "<b>holds known private information persistently</b>" and is "<b>shared across all callers and sessions</b>".<br><br>That makes it a higher-value target than the vault (<b>it is never cleared</b>), and it sits in direct tension with the same document's own principle that sensitive content is never logged. Encryption, retention and access control are not specified.</div>
+  <p class="rec"><b>Decide:</b> (a) one name for the first three. (b) whether the global context store exists at all; if it does, who protects it, and whether cross-caller sharing is intended.</p>
+  <div class="fields">
+    <div><label for="d4">Outcome</label><textarea id="d4" data-store="d4" placeholder="naming / context store keep or drop, and its protection"></textarea></div>
+    <div><label for="d4o">Owner</label><input id="d4o" data-store="d4o" value="Zhexuan"></div>
+    <div><label for="d4d">Due</label><input id="d4d" data-store="d4d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">5</span>Who owns the confidence score, and whose version</h2><span class="tag">Three wrote one ↔ it is Anmol's area · 15 min</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>Who</th><th>Wrote</th></tr>
+    <tr><td><b>Yudi</b></td><td>A full calibration procedure (v1 score calibration, v2 agreement) plus threshold selection: the client sets a leak-rate target, thresholds follow from the experiment</td></tr>
+    <tr><td><b>Zhexuan</b></td><td>The API's <code>confidence</code> field and the auto-redact / reject threshold pair; OQ 5 assigns calibration to Evaluation</td></tr>
+    <tr><td><b>Karina</b></td><td>"The lowest threshold that still hits recall ≥ 0.95"</td></tr>
+    <tr><td><b>Anmol</b></td><td><mark class="hl-no">—</mark></td></tr>
+  </table></div>
+  <p>And per <code>TODO.md</code> A9, "generating confidence scores" is <b>Anmol's area 3</b>.</p>
+  <div class="eg"><span class="who">On this email</span>Where does that <b>0.55</b> on <code>Harborview</code> come from?<br><br>
+  Yudi's v1: raw 0.55 → calibration table → <b>reported as 0.30</b><br>
+  Karina: share of detectors that flagged it → one of three → <b>0.33</b><br>
+  Zhexuan: the API field simply says <code>confidence: 0.55</code>, with no method attached<br><br>
+  <mark class="hl-no">One span, three methods, three numbers &mdash; and the API has one field.</mark></div>
+  <div class="risk"><span class="h">How this happened</span>Anmol is the only one who has not produced a document, because he is blocked on hardware (<code>TODO.md</code> D24, waiting on Virtual Gold). <b>So his area got written three times by other people.</b></div>
+  <p class="rec"><b>Decide:</b> which version Anmol takes over, or how the three merge. This also widens <code>TODO.md</code> <b>B33</b>: the handover is no longer just Zhexuan's PR #2, but Yudi's and Karina's threshold schemes as well.</p>
+  <div class="fields">
+    <div><label for="d5">Outcome</label><textarea id="d5" data-store="d5" placeholder="which version / scope of the B33 handover"></textarea></div>
+    <div><label for="d5o">Owner</label><input id="d5o" data-store="d5o" value="Anmol"></div>
+    <div><label for="d5d">Due</label><input id="d5d" data-store="d5d" placeholder="date"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">6</span>Does redacted still count as having left</h2><span class="tag">Zhexuan ↔ Karina · 20 min · cannot be settled tonight</span></div>
+<div class="item">
+  <p class="dep">The largest of the six, and <b>only the client can answer it</b>. Tonight's goal is not a decision but <b>agreeing how to ask</b>.</p>
+  <div class="tbl"><table>
+    <tr><th></th><th>Zhexuan (policy gate)</th><th>Karina (redact always)</th></tr>
+    <tr><td><b>Behaviour</b></td><td>Any regulated category or unclear provenance anywhere → <code>LOCAL_ONLY</code>, the whole email stays local, and no human review can override it</td><td>Mask everything into placeholders → send → restore on the way back</td></tr>
+    <tr><td><b>Implicit premise</b></td><td><b>Some things cannot be sent even redacted</b></td><td><b>Redacted content is safe to send</b></td></tr>
+  </table></div>
+  <div class="eg"><span class="who">On this email · the outcomes are very far apart</span>This message contains an <b>oncologist</b> (health) and a <b>wire account</b> (financial). Both are regulated.<br><br>
+  <b>Under Zhexuan's design:</b> <code>LOCAL_ONLY</code>, whole email bounced. The executive asked for a summary and a draft and <mark class="hl-no">gets "this message cannot be processed". The assistant is of no help at all.</mark><br><br>
+  <b>Under Karina's design:</b> <code>[HEALTH_1]</code> and <code>[ACCOUNT_1]</code> are masked, the rest goes. <mark class="hl-key">The executive gets a normal summary and draft</mark>, and the cloud never learns it was an oncologist or what the account number is.</div>
+  <div class="risk"><span class="h">And Zhexuan's own document says this will fire often</span>From his v2: "<b>likely to trigger often in practice &mdash; long threads and quoted history make it easy for one sensitive line to bounce back a whole email that would otherwise be fine to release</b>".<br><br>This email is exactly that shape: two levels of quoting, one line of health information. Put next to Karina's ten scenarios (long forwarded threads, HR performance notes, board memos), <b>most of the executive's mail could be blocked, which makes the assistant useless.</b></div>
+  <div class="why"><span class="h">But Zhexuan's position is defensible</span>If the client's legal team says health information may never leave the network <b>even redacted</b>, then no amount of masking makes it sendable. <mark class="hl-key">That is a compliance question, not a technical one, and not ours to decide.</mark></div>
+  <div class="sell"><span class="h">Suggested wording for Aarvin tomorrow</span>"If an email contains health or financial information and we <b>replace it with placeholders</b>, can the rest of the message go to the cloud? Or must the <b>whole message</b> stay local?"<br><br>Then follow with: "If it is the whole message, then given how executive email looks &mdash; mostly long forwarded threads &mdash; that may mean <b>most requests get blocked</b>. Is that what you expect?"<br><br><b>The answer decides whether Karina's design is viable at all.</b></div>
+  <p class="rec"><b>Decide tonight:</b> who asks, in what words, and what our fallback is if the answer is "the whole message".</p>
+  <div class="fields">
+    <div><label for="d6">Outcome</label><textarea id="d6" data-store="d6" placeholder="how we ask / what follows from each answer"></textarea></div>
+    <div><label for="d6o">Owner</label><input id="d6o" data-store="d6o" value="Mark"></div>
+    <div><label for="d6d">Due</label><input id="d6d" data-store="d6d" value="9/28 meeting"></div>
+  </div>
+</div>
+
+<div class="cat"><h2>Timing and close</h2><span class="tag">Suggested</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>#</th><th>Item</th><th>Min</th><th>Output</th></tr>
+    <tr><td>1</td><td>Category list</td><td>15</td><td>One list, marked regulated / standard</td></tr>
+    <tr><td>2</td><td>Labelling schema</td><td>20</td><td>Four fields defined, and who writes the labelling guide</td></tr>
+    <tr><td>3</td><td>Middle-band handling</td><td>20</td><td>The rule; if review stays, who reviews</td></tr>
+    <tr><td>4</td><td>State storage</td><td>15</td><td>One name, and the context store kept or dropped</td></tr>
+    <tr><td>5</td><td>Confidence ownership</td><td>15</td><td>Which version Anmol takes</td></tr>
+    <tr><td>6</td><td>Redacted vs left</td><td>20</td><td><b>No decision</b>, only how we ask tomorrow</td></tr>
+    <tr><td>—</td><td>Tomorrow's running order</td><td>15</td><td>Who presents what</td></tr>
+  </table></div>
+  <div class="why"><span class="h">If time runs short, cut these</span>Items 4 and 5 can wait until after tomorrow &mdash; they do not change what we say to the client.<br><br><mark class="hl-no">Items 1, 2, 3 and 6 cannot be cut.</mark> 1 and 2 block Karina's work tomorrow; 3 decides whether our research contribution still stands; 6 decides what we ask.</div>
+  <p class="rec"><b>Suggested opening with the client:</b> "The three of us researched this separately and converged on the same principle &mdash; <mark class="hl-key">the model may propose, but only code may release</mark>." That is more persuasive than presenting one design, and it is true.</p>
+  <div class="fields">
+    <div><label for="d7">Unresolved / carried to tomorrow</label><textarea id="d7" data-store="d7" placeholder="what we did not finish, what Aarvin must answer"></textarea></div>
+    <div><label for="d7o">Notes</label><input id="d7o" data-store="d7o" value="Mark"></div>
+    <div><label for="d7d">Next</label><input id="d7d" data-store="d7d" value="9/28 18:00"></div>
+  </div>
+</div>
+
+<footer style="margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)">
+  Internal · 2026-09-27 · The four proposals are in <code>docs/research/{yudi,karina,zhexuan}/</code> and <code>docs/architecture/horizontal-draft/</code> (Mark's fallback)<br>
+  Three further groups &mdash; A (each author's own technical decisions), C (questions for the client), D (documents to chase) &mdash; are deliberately not on tonight's agenda and go into <code>todo/TODO.md</code> after tomorrow
+</footer>
+
+</div>

@@ -1,0 +1,403 @@
+<title>9/27 今晚對焦:六個衝突</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --hl-key:#7A5E1A; --hl-ask:#34507F; --hl-no:#993F17;
+  --serif:"Source Serif 4","Noto Sans TC","PingFang TC",Georgia,serif;
+  --sans:"Source Sans 3","Noto Sans TC","PingFang TC","Microsoft JhengHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.04em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+    --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  --hl-key:#E2BE62; --hl-ask:#9CB6E4; --hl-no:#EE9A72;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:36px 72px}
+.page{max-width:840px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+
+header{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 16px;text-wrap:balance;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+.toolbar{display:flex;gap:10px 20px;align-items:center;margin-top:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.toolbar .btns{display:flex;gap:6px}
+button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend mark{font-weight:600}
+
+.agenda{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 40px;list-style:none;padding:0;counter-reset:none}
+.agenda li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.3;transition:border-color .15s}
+.agenda li:hover{border-color:var(--gold)}
+.agenda a{color:inherit;text-decoration:none;display:block}
+.agenda .n{font-family:var(--mono);font-size:11px;color:var(--gold);display:block;margin-bottom:6px}
+.agenda .t{font-weight:600;font-size:15px}
+.agenda .m{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+@media (max-width:640px){.agenda{grid-template-columns:1fr 1fr}.agenda li:last-child{grid-column:1/-1}}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+.lede{color:var(--muted);margin:6px 0 20px;max-width:none;font-size:16px;line-height:1.65}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:26px 0 10px;font-weight:500}
+p,li{max-width:none}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:8px}
+ul.points li strong{font-weight:600}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px}
+
+mark{background:transparent;color:inherit;font-weight:600;padding:0}
+mark.hl-key{color:var(--hl-key)}
+mark.hl-ask{color:var(--hl-ask)}
+mark.hl-no{color:var(--hl-no)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0 4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+.tbl{overflow-x:auto;border-radius:8px}
+
+.finding{display:grid;grid-template-columns:1fr;gap:8px;margin:12px 0}
+.finding div{max-width:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:13px 18px 14px;font-size:15px;line-height:1.65}
+.finding .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.finding b{font-weight:600}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin-bottom:12px}
+.q h4{margin:0 0 8px;font-size:18px;font-family:var(--serif);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.q h4 .ref{font-size:11px;color:var(--muted)}
+.q ul{margin:0 0 6px;padding-left:20px}
+.q li{margin-bottom:4px;font-size:15px}
+.q label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+.q textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.q p.hint{margin:0 0 4px;font-size:14px;color:var(--muted)}
+.defaults td:first-child{font-weight:600;white-space:nowrap}
+
+details.more{margin:10px 0 0;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 0;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);font-weight:500;user-select:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 2px 2px}
+details.more[open]>summary::before{transform:rotate(45deg)}
+details.more>summary:hover{color:var(--ink)}
+details.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+details.more>.body{padding:2px 0 14px}
+.q details.more{border-top:none;margin:0}
+
+figure{margin:12px 0 4px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+figure.scroll{overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;font-family:var(--sans);color:var(--ink);fill:currentColor;min-width:520px}
+figcaption{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.check{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.check li:last-child{border-bottom:none}
+.check input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.check label{cursor:pointer}
+.after{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.after strong{color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){details.more>summary::before,.agenda li{transition:none}}
+
+.cat{display:flex;align-items:baseline;gap:12px;margin:44px 0 6px;padding-top:18px;border-top:2px solid var(--ink)}
+.cat h2{margin:0}
+.cat .tag{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px 14px;margin:12px 0}
+.item h3{font-family:var(--serif);font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 8px;font-weight:600}
+.item .ctx{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.item .rec{margin:0 0 6px;font-size:15px}
+.item .rec b{color:var(--hl-key)}
+.item ul{margin:4px 0 8px;padding-left:20px}
+.item li{margin-bottom:4px;font-size:15px}
+.fields{display:grid;grid-template-columns:1fr 160px 110px;gap:10px;margin-top:10px}
+.fields label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fields textarea,.fields input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.fields textarea{min-height:56px;resize:vertical}
+.fields textarea:focus,.fields input:focus{outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:600px){.fields{grid-template-columns:1fr}}
+.owners{width:100%}
+.owners td input{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;padding:6px 10px}
+.owners td:first-child{font-weight:600;white-space:nowrap}
+.out{list-style:none;padding:0;margin:8px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.out li{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.out li:last-child{border-bottom:none}
+.out input{margin-top:5px;accent-color:var(--local);width:15px;height:15px}
+.out .who{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-top:4px}
+figure.arch svg{min-width:700px}
+.sec-b .intent{color:var(--local);font-weight:600}
+.sec-b th.intent{background:var(--local-soft);color:var(--local)}
+.sec-b .finding div.k{background:none;border:none;border-radius:0;padding:0;font-size:11px;line-height:1.4}
+.d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.d-box.gate{fill:var(--local-soft);stroke:var(--local);stroke-width:2.5}
+.d-box.policy{fill:var(--local-soft);stroke:var(--local);stroke-width:1.5;stroke-dasharray:5 3}
+.d-box.store{fill:var(--cloud-soft);stroke:var(--cloud)}
+.d-box.ret{stroke:var(--warn)}
+.d-box.trust{stroke:var(--ink)}
+.d-box.untrust{stroke:var(--warn);stroke-dasharray:5 3}
+.d-box.cloud{fill:none;stroke:var(--muted);stroke-dasharray:5 4}
+.d-n{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.d-n.g{fill:var(--local)} .d-n.v{fill:var(--cloud)} .d-n.r{fill:var(--warn)}
+.d-name{font-family:var(--sans);font-size:14.5px;font-weight:600;fill:var(--ink)}
+.d-sub{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+.d-region{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;fill:var(--muted)}
+.d-flow{stroke:var(--muted);stroke-width:1.8;fill:none}
+.d-back{stroke:var(--warn);stroke-width:1.8;fill:none}
+.d-link{stroke:var(--cloud);stroke-width:1.5;fill:none;stroke-dasharray:4 3}
+.d-head{fill:var(--muted)} .d-head-b{fill:var(--warn)} .d-head-g{fill:var(--local)}
+.d-rule{stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+.d-rulelabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--muted)}
+.d-gov{stroke:var(--local);stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+.d-govlabel{font-family:var(--mono);font-size:10px;letter-spacing:.04em;fill:var(--local)}
+.d-bound{stroke:var(--warn);stroke-width:2;stroke-dasharray:7 5}
+.d-blabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;fill:var(--warn)}
+.eg{background:var(--soft);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:12px 16px;margin:10px 0 14px;font-size:15px;line-height:1.75}
+.eg .who{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.mail{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--cloud);border-radius:0 6px 6px 0;padding:13px 17px;margin:10px 0 14px;font-size:14px;line-height:1.85;white-space:pre-wrap}
+.mail .who{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px;white-space:normal}
+.why,.risk,.sell{border-radius:6px;padding:11px 15px;margin:10px 0 0;font-size:15px;line-height:1.7}
+.why{background:var(--gold-soft)}
+.risk{background:var(--warn-soft);font-size:14.5px}
+.sell{background:var(--cloud-soft);font-size:14.5px}
+.why .h,.risk .h,.sell .h{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;display:block;margin-bottom:5px;color:var(--muted)}
+.who2{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--cloud-soft);color:var(--cloud);font-weight:600;white-space:nowrap}
+.ord{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--gold);line-height:1;margin-right:12px;vertical-align:-3px}
+.dep{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+mark.hl-key{color:var(--hl-key)} mark.hl-ask{color:var(--hl-ask)} mark.hl-no{color:var(--hl-no)}
+</style>
+
+<div class="page">
+<header>
+  <div class="eyebrow">CMU Capstone · Virtual Gold Inc · 團隊內部</div>
+  <h1>今晚對焦:四份提案之間的六個衝突</h1>
+  <dl class="meta">
+    <div><dt>時間</dt><dd>2026-09-27(日)22:00 · 明天 9/28(一)18:00 客戶會議前最後一次</dd></div>
+    <div><dt>目標</dt><dd>六個衝突中解掉五個。第六個決定不了,但要決定明天怎麼問客戶</dd></div>
+    <div><dt>不談什麼</dt><dd>各自方案內部的技術細節。那些明天討論完可能又變,今晚只處理<b>彼此打架的地方</b></dd></div>
+  </dl>
+</header>
+
+<div class="cat"><h2>為什麼是這六個</h2><span class="tag">前提</span></div>
+<div class="item">
+  <p>我們手上有四份提案:<b>Yudi</b> 的分級判定、<b>Karina</b> 的全遮還原、<b>Zhexuan + Anmol</b> 的 API 契約與架構 v2、<b>Mark</b> 的三訊號(備案)。</p>
+  <p class="rec"><b>好消息:</b>四份在同一個原則上獨立收斂 &mdash; <mark class="hl-key">模型只提議,放行由程式碼決定</mark>。四份也都用可還原佔位符、都 fail closed。</p>
+  <p>要處理的是剩下六個地方,它們<b>不是各自內部的問題,是兩份文件對同一件事給了不同答案</b>。順序照依賴關係排,前面沒定後面就定不了。</p>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>衝突</th><th>誰對誰</th><th>今晚能解嗎</th></tr>
+    <tr><td>1</td><td>類別清單對不上</td><td>Yudi ↔ Zhexuan</td><td>能</td></tr>
+    <tr><td>2</td><td>100 封信的標註欄位</td><td>Karina ↔ Yudi ↔ Zhexuan</td><td>能,而且<b>必須</b></td></tr>
+    <tr><td>3</td><td>信心落在中間時怎麼辦</td><td>Zhexuan ↔ Yudi</td><td>能</td></tr>
+    <tr><td>4</td><td>狀態儲存:三個名字還是四個東西</td><td>全體</td><td>能</td></tr>
+    <tr><td>5</td><td>信心分數歸誰、用哪一版</td><td>三人寫 ↔ Anmol 的領域</td><td>能</td></tr>
+    <tr><td>6</td><td><b>遮過了算不算「離開」</b></td><td>Zhexuan ↔ Karina</td><td><mark class="hl-no">不能 &mdash; 只有客戶能答</mark></td></tr>
+  </table></div>
+</div>
+
+<div class="cat"><h2>共用的例子</h2><span class="tag">六個衝突都用這封信</span></div>
+<div class="item">
+  <p class="ctx">為了不要每個議題換一個例子,底下六段全部用這一封。它剛好把六個衝突都踩到。</p>
+  <div class="mail"><span class="who">寄件者 Dana Whitfield(外部合作夥伴) · 主旨 RE: RE: Blue Harbor — Q4 numbers</span>Tom,
+
+週四董事會之前 &mdash; 我的<b>腫瘤科醫師</b>把門診改期了,我會從家裡連線。
+有事打我手機 <b>412-555-0182</b>。
+
+預算是 <b>240 萬</b>,超出 <b>18%</b>。廠商匯款帳號:<b>4532-1178-9902</b>。
+
+&mdash; Dana
+
+&gt; 9/20 Tom Reyes 寫道:
+&gt; 需要的話 Acme 客服是 <b>1-800-555-0199</b>。
+&gt; 法務的 <b>Sarah</b> 對 <b>Harborview</b> 條款有意見。
+&gt;&gt; 9/18 <b>Sarah Chen</b> 寫道:
+&gt;&gt; 我週五前看完。</div>
+  <div class="eg"><span class="who">主管對助理說</span>幫我摘要這封信,然後擬個回覆給 Dana。</div>
+  <p class="ctx">這封信裡有:<b>健康資訊</b>(腫瘤科)、<b>金融帳號</b>、<b>私人手機</b>、<b>引用串裡的公開客服電話</b>、<b>兩個看不出是什麼的專有名詞</b>(Blue Harbor、Harborview)、<b>同一個人的兩種寫法</b>(Sarah / Sarah Chen),以及<b>兩層引用歷史</b>。</p>
+</div>
+
+<div class="cat"><h2><span class="ord">1</span>類別清單對不上</h2><span class="tag">Yudi ↔ Zhexuan · 15 分</span></div>
+<div class="item">
+  <p class="dep">沒有這個,第 2 項的標註欄位定不出來。</p>
+  <div class="tbl"><table>
+    <tr><th>Yudi 的分級</th><th>Zhexuan 的類別</th></tr>
+    <tr><td>High(個資):政府識別碼、密碼金鑰、銀行卡號、健康資訊</td><td>regulated:health、financial、credential/secret</td></tr>
+    <tr><td>High(商業機密):未公開財報、交易條款、專案代號、法律事項</td><td>regulated:confidential-business、confidential-email/thread</td></tr>
+    <tr><td>Medium / Low / Public</td><td>standard(其餘全部)</td></tr>
+  </table></div>
+  <div class="eg"><span class="who">在這封信上</span><b>「腫瘤科醫師」</b> &mdash; Yudi 標 <code>High(健康)</code>,Zhexuan 標 <code>regulated:health</code>。同一個東西,兩個名字。<br><br><b>「Harborview 條款」</b> &mdash; Yudi 可能標 <code>High(商業機密-法律事項)</code>,Zhexuan 標 <code>regulated:confidential-business</code>。<b>但也可能兩人都覺得該是另一個</b>,因為沒有共同清單可以查。</div>
+  <div class="risk"><span class="h">不解決會怎樣</span>Karina 拿到標註工作時,<b>不知道該在 category 欄位寫什麼</b>。她會自己編一套,然後三套都對不上。</div>
+  <p class="rec"><b>要決:</b>一份類別清單,標明哪些是 regulated(不可用信心分數放行)、哪些是 standard。</p>
+  <div class="fields">
+    <div><label for="d1">結論</label><textarea id="d1" data-store="d1" placeholder="類別清單 / 誰負責寫出來 / 何時"></textarea></div>
+    <div><label for="d1o">負責</label><input id="d1o" data-store="d1o" value="Yudi"></div>
+    <div><label for="d1d">期限</label><input id="d1d" data-store="d1d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">2</span>100 封信要標哪些欄位</h2><span class="tag">Karina ↔ Yudi ↔ Zhexuan · 20 分</span></div>
+<div class="item">
+  <p class="dep">依賴第 1 項。Karina 明天就要開始標,今晚<b>必須</b>定完。</p>
+  <div class="tbl"><table>
+    <tr><th>欄位</th><th>Karina</th><th>Yudi</th><th>Zhexuan</th></tr>
+    <tr><td><code>type</code> 實體型態</td><td>✓</td><td>—</td><td>✓</td></tr>
+    <tr><td><code>category</code> 敏感度類別</td><td><mark class="hl-no">✗</mark></td><td>✓ 分級表靠它</td><td>✓ policy gate 靠它</td></tr>
+    <tr><td>標準答案</td><td><code>must_mask: yes/ok_either_way</code></td><td><code>private/public in context</code></td><td>—</td></tr>
+    <tr><td><code>provenance</code> 來源</td><td><mark class="hl-no">✗</mark></td><td>✓</td><td>✓「來源不明」是 LOCAL_ONLY 條件</td></tr>
+  </table></div>
+  <div class="eg"><span class="who">在這封信上 · 同一個電話號碼,三種需求</span><b><code>412-555-0182</code>(Dana 本文裡的手機)</b><br>
+  Karina 要:<code>{type: PHONE, must_mask: yes}</code><br>
+  Yudi 要:<code>{category: Medium-個人電話, private_in_context: true}</code><br>
+  Zhexuan 要:<code>{category: standard, provenance: 外部寄件者-本文}</code><br><br>
+  <b><code>1-800-555-0199</code>(引用串裡的 Acme 客服)</b><br>
+  Karina 要:<code>{type: PHONE, must_mask: ok_either_way}</code><br>
+  Yudi 要:<code>{category: Public, private_in_context: false}</code><br>
+  Zhexuan 要:<code>{provenance: 引用串}</code> &mdash; <mark class="hl-no">而「引用串」可能本身就算「來源不明」,那整封信會被 LOCAL_ONLY</mark></div>
+  <p class="ctx">另外兩個二元標籤的語意其實不一樣:Karina 的 <code>ok_either_way</code> 同時包含「這是公開的」和「私密但遮不遮無所謂」;Yudi 的 <code>public in context</code> 只有前者。</p>
+  <div class="risk"><span class="h">不解決會怎樣</span>Karina 標完 100 封 → Yudi 不能用(缺 category)→ Zhexuan 也不能用(缺 category 和 provenance)→ <b>重標</b>。以她自己的計畫那是整整一週,而且這正是 Aarvin 唯一催的項目。</div>
+  <p class="rec"><b>要決:</b>一份 schema,四個欄位 <code>type</code> / <code>category</code> / <code>ground_truth</code> / <code>provenance</code>,以及兩個二元標籤要合併成哪一種語意。</p>
+  <div class="fields">
+    <div><label for="d2">結論</label><textarea id="d2" data-store="d2" placeholder="schema 定義 / 標註指引誰寫"></textarea></div>
+    <div><label for="d2o">負責</label><input id="d2o" data-store="d2o" value="Karina"></div>
+    <div><label for="d2d">期限</label><input id="d2d" data-store="d2d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">3</span>信心落在中間時怎麼辦</h2><span class="tag">Zhexuan ↔ Yudi · 20 分</span></div>
+<div class="item">
+  <p class="dep">依賴第 1、2 項(要先知道類別和標準答案,才知道中間區間長什麼樣)。</p>
+  <div class="tbl"><table>
+    <tr><th>誰</th><th>答案</th></tr>
+    <tr><td><b>Yudi</b></td><td>用門檻,寧可錯殺(High 門檻壓到 0.2)</td></tr>
+    <tr><td><b>Karina</b></td><td>一律遮,反正還原得回來</td></tr>
+    <tr><td><b>Zhexuan</b></td><td>回傳 <code>PENDING_REVIEW</code>,<b>交給人審</b>,呼叫端輪詢</td></tr>
+    <tr><td><b>Mark</b></td><td>往安全方向倒(棘輪只能升)</td></tr>
+  </table></div>
+  <div class="eg"><span class="who">在這封信上</span><b><code>Harborview</code></b> &mdash; 是專案代號(敏感)還是地名(不敏感)?模型給 <b>0.55</b>。<br><br>
+  Yudi:高於 Medium 門檻 0.5 → 遮<br>
+  Karina:偵測到就遮<br>
+  <b>Zhexuan:落在自動遮蔽與拒絕門檻之間 → <code>PENDING_REVIEW</code></b><br>
+  Mark:棘輪往上 → 遮<br><br>
+  <mark class="hl-no">在 Zhexuan 的設計下,主管按下「幫我擬回覆」之後,拿到的是「還在處理中」,然後要等一個人去看 Harborview 是什麼。</mark></div>
+  <div class="risk"><span class="h">為什麼這是衝突,不只是選項差異</span>Yudi 把「<b>不需要逐項人工審查</b>」明確寫成本專案的研究貢獻 &mdash; 理由是最接近的前人系統 Rescriber 需要使用者確認每一項,而我們不能。<br><br><b>Zhexuan 加進來的正是那個機制。</b>兩人的貢獻主張會互相抵銷。</div>
+  <div class="why"><span class="h">關鍵觀察</span>人工審查存在的前提是「<b>遮錯了代價很大</b>」。<br><br>而 Karina 整個提案的論點就是「<b>遮錯了代價很小</b>」&mdash; 因為會還原回來。<mark class="hl-key">如果那個論點成立,人工審查的動機就消失了。</mark></div>
+  <div class="sell"><span class="h">Mark 的建議</span>選「<b>一律遮蔽 + 記錄低信心 span 供事後分析</b>」。<br><br>同時做到三件事:保住 Yudi 的貢獻主張、符合 Karina 的可還原性、不需要一個現實中不存在的審查員。<br><br>而 Zhexuan 的 <code>PENDING_REVIEW</code> <b>不必丟掉</b> &mdash; 寫進 API 但 v0 不啟用,降級成未來選配。介面先留著,對客戶也有說服力。</div>
+  <p class="rec"><b>要決:</b>低信心區間的處置。若保留人工審查,必須同時回答「<b>審查員是誰</b>」。</p>
+  <div class="fields">
+    <div><label for="d3">結論</label><textarea id="d3" data-store="d3" placeholder="低信心怎麼處置 / PENDING_REVIEW 留不留"></textarea></div>
+    <div><label for="d3o">負責</label><input id="d3o" data-store="d3o" value="Zhexuan + Yudi"></div>
+    <div><label for="d3d">期限</label><input id="d3d" data-store="d3d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">4</span>狀態儲存:三個名字,還是四個東西</h2><span class="tag">全體 · 15 分</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>誰</th><th>名字</th><th>內容</th><th>範圍</th><th>存活</th></tr>
+    <tr><td>Zhexuan</td><td><code>session mapping</code></td><td>佔位符標籤一致性</td><td>單 session</td><td>有限</td></tr>
+    <tr><td>Karina</td><td><code>vault</code></td><td>佔位符 → 真值</td><td>單 session</td><td>session 結束清除</td></tr>
+    <tr><td>Mark</td><td>對照表</td><td>佔位符 → 真值</td><td>單 session</td><td>session 結束</td></tr>
+    <tr><td><b>Zhexuan</b></td><td><b><code>global context store</code></b></td><td><b>已知實體、私密資訊</b></td><td><b>跨 session、跨呼叫端</b></td><td><b>持久</b></td></tr>
+  </table></div>
+  <p>前三列是同一個東西,只是名字不同 &mdash; <b>改個名就好,五分鐘</b>。第四列是全新的,要認真談。</p>
+  <div class="eg"><span class="who">在這封信上</span><b>Dana Whitfield</b> 這次被標成 <code>PERSON_1</code>。三天後另一封信又提到 Dana &mdash;<br><br>
+  <code>session mapping</code>:不記得(新 session,重新編號)<br>
+  <b><code>global context store</code>:記得,而且<u>跨所有呼叫端共用</u></b><br><br>
+  <mark class="hl-no">如果 CEO 的助理和 CFO 的助理共用同一個 context store,CFO 那邊查 Dana,會不會拿到 CEO 這邊標記的資訊?</mark></div>
+  <div class="risk"><span class="h">為什麼要認真談</span>Zhexuan 的 API 文件寫 global context store「<b>持續保存已知的私密資訊</b>,且<b>跨所有呼叫端與 session 共用</b>」。<br><br>這代表它是比 vault 更嚴重的攻擊目標(<b>不會清除</b>),而且同一份文件的原則寫著「絕不記錄敏感內容」&mdash; 兩者有直接張力。加密、保留期限、存取控制目前都沒有說明。</div>
+  <p class="rec"><b>要決:</b>(a) 統一命名。(b) global context store 要不要存在;如果要,誰負責保護它、跨使用者共用是不是預期行為。</p>
+  <div class="fields">
+    <div><label for="d4">結論</label><textarea id="d4" data-store="d4" placeholder="統一名稱 / context store 存廢與保護"></textarea></div>
+    <div><label for="d4o">負責</label><input id="d4o" data-store="d4o" value="Zhexuan"></div>
+    <div><label for="d4d">期限</label><input id="d4d" data-store="d4d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">5</span>信心分數歸誰、用哪一版</h2><span class="tag">三人寫了 ↔ Anmol 的領域 · 15 分</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>誰</th><th>寫了什麼</th></tr>
+    <tr><td><b>Yudi</b></td><td>完整校準程序(v1 分數校準、v2 一致性),加門檻選法:客戶設洩漏率目標 → 從實驗選門檻</td></tr>
+    <tr><td><b>Zhexuan</b></td><td>API 的 <code>confidence</code> 欄位、auto-redact 與 reject 雙門檻;OQ 5 把校準指派給 Evaluation</td></tr>
+    <tr><td><b>Karina</b></td><td>「選能達到 recall ≥ 0.95 的最低門檻」</td></tr>
+    <tr><td><b>Anmol</b></td><td><mark class="hl-no">—</mark></td></tr>
+  </table></div>
+  <p>而依 <code>TODO.md</code> A9 的分工,「產生信心分數」是 <b>Anmol 的領域 3</b>。</p>
+  <div class="eg"><span class="who">在這封信上</span><code>Harborview</code> 那個 <b>0.55</b> 是誰算出來的?<br><br>
+  Yudi 的 v1:原始 0.55 → 查校準表 → <b>實際上報 0.30</b><br>
+  Karina:偵測器投票比例 → 三個裡有一個抓到 → <b>0.33</b><br>
+  Zhexuan:API 欄位就叫 <code>confidence: 0.55</code>,沒說怎麼算<br><br>
+  <mark class="hl-no">同一個 span,三種算法三個數字,而 API 只有一個欄位。</mark></div>
+  <div class="risk"><span class="h">為什麼會變成這樣</span>Anmol 是唯一沒交出文件的人 &mdash; 他卡在硬體(<code>TODO.md</code> D24,等 Virtual Gold 回覆)。結果<b>他的領域被另外三個人各寫了一版</b>。</div>
+  <p class="rec"><b>要決:</b>Anmol 接手哪一版,還是三版合併。這也連著 <code>TODO.md</code> <b>B33</b> 那筆交接 &mdash; 現在要交接的不只是 Zhexuan 的 PR #2,還有 Yudi 和 Karina 各自的門檻方案。</p>
+  <div class="fields">
+    <div><label for="d5">結論</label><textarea id="d5" data-store="d5" placeholder="採用哪一版 / B33 交接範圍"></textarea></div>
+    <div><label for="d5o">負責</label><input id="d5o" data-store="d5o" value="Anmol"></div>
+    <div><label for="d5d">期限</label><input id="d5d" data-store="d5d" placeholder="日期"></div>
+  </div>
+</div>
+
+<div class="cat"><h2><span class="ord">6</span>遮過了,算不算「離開」</h2><span class="tag">Zhexuan ↔ Karina · 20 分 · 今晚決定不了</span></div>
+<div class="item">
+  <p class="dep">這是最大的一個,而且<b>只有客戶能答</b>。今晚的目標不是做決定,是<b>決定明天怎麼問</b>。</p>
+  <div class="tbl"><table>
+    <tr><th></th><th>Zhexuan(policy gate)</th><th>Karina(全遮還原)</th></tr>
+    <tr><td><b>做法</b></td><td>整封碰到管制類別或來源不明 → <code>LOCAL_ONLY</code>,整封不送雲端,人工也不能翻案</td><td>全部遮成佔位符 → 照送 → 回來還原</td></tr>
+    <tr><td><b>隱含前提</b></td><td><b>有些東西連遮過都不能送</b></td><td><b>遮過的東西送出去是安全的</b></td></tr>
+  </table></div>
+  <div class="eg"><span class="who">在這封信上 · 差異極大</span>這封信裡有<b>腫瘤科醫師</b>(健康)和<b>匯款帳號</b>(金融),兩個都是管制類別。<br><br>
+  <b>Zhexuan 的設計下:</b><code>LOCAL_ONLY</code>,整封退回。主管按了「幫我摘要並擬回覆」,<mark class="hl-no">得到的是「這封信不能處理」。助理完全幫不上忙。</mark><br><br>
+  <b>Karina 的設計下:</b><code>[HEALTH_1]</code>、<code>[ACCOUNT_1]</code> 遮掉,其餘照送。<mark class="hl-key">主管拿到正常的摘要和草稿</mark>,而雲端不知道那是腫瘤科、也不知道帳號。</div>
+  <div class="risk"><span class="h">而且 Zhexuan 自己承認這會常常觸發</span>他的 v2 文件原文:「<b>這很可能經常觸發 &mdash; 長串信件和引用歷史讓一行敏感內容把整封原本可以放行的信退回</b>」。<br><br>這封信就是典型:兩層引用、一行健康資訊。配合 Karina 的十個情境(長串轉寄、HR 績效筆記、董事會備忘錄),<b>主管的信可能大部分被擋下,助理等於廢掉。</b></div>
+  <div class="why"><span class="h">但 Zhexuan 的立場也站得住</span>如果客戶的法務說「健康資訊一律不得離開內網,<b>即使遮蔽過</b>」,那再怎麼遮都不能送。<mark class="hl-key">這是合規問題,不是技術問題,我們無權自己決定。</mark></div>
+  <div class="sell"><span class="h">建議明天這樣問 Aarvin</span>「一封信裡如果有健康或財務資訊,我們把它<b>遮成佔位符之後</b>,其餘部分可以送雲端嗎?還是<b>整封都不能送</b>?」<br><br>再補一句:「如果是整封不能送,以主管的信件型態(長串轉寄居多),這可能表示<b>大部分請求都會被擋下</b> &mdash; 這是你們預期的嗎?」<br><br><b>這一題的答案直接決定 Karina 的方案能不能成立。</b></div>
+  <p class="rec"><b>今晚要決:</b>誰問、怎麼問、如果客戶說「整封不能送」我們的備案是什麼。</p>
+  <div class="fields">
+    <div><label for="d6">結論</label><textarea id="d6" data-store="d6" placeholder="明天怎麼問 / 兩種答案各自的後續"></textarea></div>
+    <div><label for="d6o">負責</label><input id="d6o" data-store="d6o" value="Mark"></div>
+    <div><label for="d6d">期限</label><input id="d6d" data-store="d6d" value="9/28 會議"></div>
+  </div>
+</div>
+
+<div class="cat"><h2>時間分配與收尾</h2><span class="tag">建議</span></div>
+<div class="item">
+  <div class="tbl"><table>
+    <tr><th>#</th><th>議題</th><th>分鐘</th><th>產出</th></tr>
+    <tr><td>1</td><td>類別清單</td><td>15</td><td>一份清單,標明 regulated / standard</td></tr>
+    <tr><td>2</td><td>標註 schema</td><td>20</td><td>四欄位定義 + 誰寫標註指引</td></tr>
+    <tr><td>3</td><td>低信心怎麼辦</td><td>20</td><td>處置方式;若留人工審查,回答審查員是誰</td></tr>
+    <tr><td>4</td><td>狀態儲存</td><td>15</td><td>統一命名 + context store 存廢</td></tr>
+    <tr><td>5</td><td>信心分數歸屬</td><td>15</td><td>Anmol 接哪一版</td></tr>
+    <tr><td>6</td><td>遮過算不算離開</td><td>20</td><td><b>不做決定</b>,只定明天怎麼問</td></tr>
+    <tr><td>—</td><td>明天議程收尾</td><td>15</td><td>誰講哪一段</td></tr>
+  </table></div>
+  <div class="why"><span class="h">如果時間不夠,砍哪個</span>第 4 和第 5 可以延到明天會後 &mdash; 它們不影響明天對客戶講什麼。<br><br><mark class="hl-no">第 1、2、3、6 不能砍。</mark>1 和 2 卡住 Karina 明天的工作;3 決定我們的研究貢獻主張還在不在;6 決定明天問什麼。</div>
+  <p class="rec"><b>明天對客戶的開場建議:</b>「我們三個人各自研究,結論在同一個原則上收斂 &mdash; <mark class="hl-key">模型只提議,放行由程式碼決定</mark>。」比端一個方案出去有說服力得多,也誠實。</p>
+  <div class="fields">
+    <div><label for="d7">今晚未解 / 帶到明天</label><textarea id="d7" data-store="d7" placeholder="沒談完的、需要 Aarvin 回答的"></textarea></div>
+    <div><label for="d7o">記錄</label><input id="d7o" data-store="d7o" value="Mark"></div>
+    <div><label for="d7d">下次</label><input id="d7d" data-store="d7d" value="9/28 18:00"></div>
+  </div>
+</div>
+
+<footer style="margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)">
+  團隊內部 · 2026-09-27 · 四份提案見 <code>docs/research/{yudi,karina,zhexuan}/</code> 與 <code>docs/architecture/horizontal-draft/</code>(Mark 的備案)<br>
+  另有 A(各自技術決定)、C(需客戶回答)、D(待追文件)三類未列入今晚議程,明天會後再整理進 <code>todo/TODO.md</code>
+</footer>
+
+</div>
