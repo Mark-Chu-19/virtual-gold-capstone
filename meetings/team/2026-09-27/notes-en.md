@@ -95,7 +95,18 @@ The agenda recommended B — hold back only the **section** containing the regul
 | 6 | **Ask the client: once replaced with placeholders, can the rest of the email go to the cloud** — item 4 turns on this | Mark | client meeting |
 | 7 | Take item 4 (policy-gate granularity) to the client for discussion | Mark | 2026-09-28 client meeting |
 
+## Who presents what at the client meeting
+
+Monday 2026-09-28, 18:00. Agenda: [`../../client/2026-09-28/agenda-en.html`](../../client/2026-09-28/agenda-en.html).
+
+| Section | Topic | Presenter | Min |
+|---|---|---|---|
+| A | Who does what | Mark | 4 |
+| B | How the service works | Zhexuan & Anmol | 18 |
+| C | Deciding what to redact | Yudi | 20 |
+| D | Evaluation dataset | Karina | 4 |
+| E | Six things we need | Mark | 14 |
+
 ## Not yet recorded
 
-- Who presents what at the 18:00 client meeting today
 - Whether this meeting produced any further actions
