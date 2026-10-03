@@ -60,7 +60,7 @@ Meeting cadence (US Eastern, all weekly): client Monday 18:00–19:00 · profess
 
 | # | Edit | Done |
 |---|---|---|
-| 26 | Section 6 cost ownership. **v3 (`docs/sow/Scope of Work v3.docx`, 2026-10-03) follows the deck and has no cost line**: section 6 only says the Client provides GPU and sandbox access (slide 40). Decide whether to restore the `$[X]` sentence before sending. The SOW does not mention the CMU fallback | [ ] |
+| 26 | Section 6 cost ownership. **Settled 2026-10-03 without a figure:** v3 says that where the project needs paid resources (GPU or other hardware, sandbox compute, model API usage), the Client sponsors or covers them, and the team agrees any such usage with the Client in advance. No `$[X]` cap. The SOW does not mention the CMU fallback | [x] |
 
 ## Closed and superseded
 
