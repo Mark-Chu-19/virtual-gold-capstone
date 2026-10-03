@@ -5,80 +5,92 @@
 
 會議時間(美東,皆每週):客戶 週一 18:00–19:00 · 教授 週二 17:00–18:20 · 團隊 週五 15:30–16:30。
 
-## A. 決策(A1 到 A4 已於 2026-09-15 定案;A8 待客戶確認;**A9 負責人 2026-09-25 重新分配**;A10 原為 2026-09-25 團隊會議待決點,該會議已召開)
+> **2026-10-03 起的基準:期中簡報即團隊共識。**
+> [`meetings/client/2026-10-05/slides-midterm-en.pdf`](../meetings/client/2026-10-05/slides-midterm-en.pdf) 已經團隊內部討論並與教授確認。
+> 9/28 客戶會議、9/29 教授會議、10/2 團隊會議都沒有其他紀錄。這裡較早的條目、9/27 團隊筆記或研究文件與簡報不一致時,一律以簡報為準。
+> 簡報定下的事記在決策紀錄(日期 2026-10-03 的各列)。因簡報而過時的項目列在[已結案與取代](#已結案與取代),並附原因。原文留在 git 紀錄。
+
+## A. 待決事項
 
 | # | 項目 | 說明 | 負責人 | 期限 | 完成 |
 |---|---|---|---|---|---|
-| 1 | **工具選型**(除雲端 SDK 外已定案) | 客戶要的是路由機制與信心評分,沒有指定任何工具(9 月 3 日會議紀錄;SOW 第 2 節)。各元件與選擇,2026-09-15 定案:**本地推論:**HF transformers,T4 上 8B 4-bit(bitsandbytes);harness 需要每個 token 的 logprobs 與 hidden states 給 Semantic Entropy Probe 用(PR #2),Ollama、llama.cpp server、vLLM 都不暴露。**Router:**自己寫的 Python 模組(信心分數加敏感度規則),本地直接呼叫 transformers。**PII 閘道:**Presidio。**雲端呼叫:**A6 選定供應商的官方 SDK。不用:Ollama(沒有 hidden states);LiteLLM(包在 OpenAI 風格 API 外的 HTTP 轉接層,transformers 在程式內跑沒有東西可接;它的 hook 是呼叫前路由,不是依信心路由)。RouteLLM 是路由策略(任務複雜度分類),不是工具;架構第五節的 task heuristics 與第九節的 stretch goal 已涵蓋。 | Mark | W4 | [x] |
-| 2 | **RAG 知識層** | **2026-09-15 已決定:不進 MVP,列為 stretch goal。**客戶沒有要求知識庫(9 月 3 日會議紀錄、SOW);檢索接地驗證在 SOW 只是可選的信心策略之一,PR #2 也已把它排除在 harness 外。使用情境定案、客戶提供資料(A8)之前沒有文件可以 index。W7 期中後視客戶資料與時間再考慮;F32 的研究(一頁摘要)照做,把選項留著。 | Mark | — | [x] |
-| 3 | **資料敏感度分級** | **2026-09-15 已決定:納入 MVP。**「機密永不外送」規則就是 SOW「confidence-based or policy-based request routing」裡 policy 那一半,直接落實客戶的核心需求(保護專有資料,9 月 3 日)。在自寫的 router(A1)裡加一條規則:標記為機密的請求不論信心高低都留在本地。分級先用架構第十節的預設(public / internal / confidential),客戶回覆 B10 後再調。 | Mark | — | [x] |
-| 4 | **去識別化與還原管線** | **2026-09-15 已決定:兩段都進 MVP,做最簡版。**去識別化(送雲端前用 Presidio 遮罩)是客戶隱私參數的硬需求。還原做成每次請求一張對照表:出去時記「佔位符對應原值」,回來時字串替換;沒有這步雲端回答裡仍是佔位符,CLI demo 不能用。數值類:MVP 用佔位符,格式保留的假值維持 stretch goal(架構第十節預設)。 | Mark | — | [x] |
-| 5 | **本地模型與沙盒** | **2026-09-10 已決定:不在筆電跑 LLM。**模型跑在模擬地端的 GPU 沙盒上,筆電只做開發。模型:Llama 3.1 8B 為主、Qwen3 8B 為輔。推論:HF transformers 加 bitsandbytes 4-bit(A1),量化方式已定,GGUF 等級不再適用。待確認:沙盒本身與雲端額度,統一記在 **B15**(這裡不重複)。向客戶問沙盒規格時可說明:T4(16 GB)跑得動 8B 加 hidden states 輸出,但 k 次採樣集成(PR #2 Config C)記憶體會吃緊;A10G 等級(24 GB)可以從容跑(架構第十節)。 | Mark | W4 | [ ] |
-| 6 | **雲端供應商:OpenAI 或 Anthropic** | **2026-09-15 定規則:跟著 B15 走。**客戶提供哪家的額度或企業帳號就用哪家;客戶沒有偏好時預設 Anthropic。客戶沒有指定供應商(9 月 3 日會議紀錄、SOW);兩家都有企業版不拿資料訓練的承諾,價格同一級,而且 harness 在雲端那側只需要一個 `generate(query)` 呼叫(信心分數算的是本地模型,雲端 API 沒有 logprobs 無妨;TruthfulQA 只用 MC1/MC2 評分,PR #2)。B15 有答案時這條隨之定案。 | Mark | W4 | [ ] |
-| 7 | **W7 期中要展示什麼** | **2026-09-15 定案。**(1)三配置 local-only / hybrid / cloud-only 在 MMLU 子集與 GSM8K 上(金融資料集:FinQA 樣本,2026-09-21 決定):準確率、升級率、每題成本、延遲(PII 洩漏率與 prompt injection 抵抗力 W9 到 W11 再做)。每題都送雲端一次並快取,cloud-only 從同一次跑就出來(PR #2)。(2)信心訊號只用 token logprob(PR #2 variant A);SEP 與採樣集成 W9 到 W11。(3)一張圖:升級率對準確率曲線,直接回答「升級多少才夠」。(4)CLI demo:一個含 PII 的請求走完遮罩、升級、還原(A3、A4)。投影片 W6 完成。 | Mark | W6 | [ ] |
-| 8 | **使用情境 / 產業** | **2026-09-18 團隊提案(尚未定案):**對客戶的「垂直還是橫向」回答「兩個都要」,以 Inderpal 提的金融交易助理為垂直(公開申報文件與市場資料可上雲;持倉與策略留本地),淨化閘道為橫向能力。實例見 `meetings/team/2026-09-18/`。**2026-09-21 客戶會議上確認**;客戶可能選垂直、橫向或兩者。Karina 的合成資料(PR #3–#5)建立在此提案上,客戶改方向則跟著調整。客戶確認後才進決策紀錄。 **2026-09-21 已回答。**客戶選擇先做 horizontal,vertical(交易助理)延後至時間允許;horizontal 框定為主管信件的幕僚助理情境,該能力做成獨立服務並提供 HTTP API 端點。已記入決策紀錄。後續影響追蹤於 B35(Karina 的 PR 是為 vertical 建的)與架構文件(尚未改版)。 | Mark | 2026-09-21 | [x] |
-| 9 | **分工與研究** | **2026-09-18 團隊會議上認領負責人。**五條工作流,一人一條,範圍依 A1 到 A8 更新:(1)**路由與整合**:自寫 Python router(信心門檻加「機密留本地」規則,A3)、雲端 SDK 呼叫(A6)、CLI 進入點。(2)**模型與推論**:HF transformers 加 bitsandbytes 4-bit 跑 Llama 3.1 8B 與 Qwen3 8B、沙盒建置(B12)、沙盒 GPU 上的吞吐量與記憶體。(3)**信心評分與評測 harness**:負責人 Zhexuan Ye(研究報告與設計文件已交,PR #2);採樣核心、benchmark 載入、指標、期中 pilot。(4)**安全與去識別化**:Presidio 閘道、還原對照表(A4)、W9 到 W11 的 PII 洩漏率與 prompt injection 評測。(5)**合成資料(RAG 延至 stretch,A2)**:demo 與 B14 用的合成企業問題與文件、F32 一頁摘要;W7 前負擔最輕,此人同時支援(3)或期中投影片。每條工作流先做 F 區的一頁研究摘要。文件與簡報各人寫自己那塊,Mark 彙整。 **2026-09-25 取代。**9/21 的方向轉變與 Aarvin 的 onboarding 信件,把這五條工作流換成他定義的五個責任領域,並於 2026-09-25 團隊會議上一對一重新分配:**(1)評測與測試資料:Karina**(基準範例、評測指標)· **(2)隱私研究:Yudi**(個資界線、法規要求)· **(3)模型工作:Anmol**(prompt、本地模型配置、產生信心分數)· **(4)服務工程:Zhexuan**(快速可靠的本地服務、失效處理)· **(5)整合與協調:Mark**(文件、進度回報、最終 demo)。Mark 同時是 Aarvin 要求的單一對口窗口。由此產生三項實質的工作性質變動,列為 B33 到 B35:Zhexuan 從信心評分與 harness 轉到服務建置、Anmol 接手 Zhexuan 研究出來的信心分數產生方法、Karina 從合成資料擴大到整個評測。上面的範圍描述保留,作為轉換前各人負責內容的紀錄。 | Mark | — | [x] |
-| 10 | **敏感度閘門與評測:六個待決點,2026-09-25 團隊會議上內部定**(來自 Karina 的 PR #3–#5 與 Yudi 的 F31 報告)。(a)拆題:stretch(W9 後)還是期中?Karina 的 demo 資料假設有拆題;我們回 Alex 說是 stretch。(b)Demo 形式:PII 塞在問句裡(PR #4 現況)還是自然問句加獨立的策略筆記文件(`document_text`)?(c)公開資料規則:`data/real/` 改名 `data/public/`、執行時抓、不進 git;README 改寫成「不放客戶與個人資料」。(d)公開來源文件裡的實體(申報文件中的高階主管姓名)不算 PII、不遮罩;只有 internal/confidential 來源才算。影響 PII 洩漏率指標。(e)數值處理:佔位符(架構第十節預設)還是 Yudi 提的會話祕密係數縮放?(f)PII 洩漏率指標:偵測器 F1,還是依 Yudi 報告改為逐類別 recall 加多輪洩漏測試?(g)Anmol 的模型簡報仍寫「金融服務中小企業文件工作流」,並提出託管決策服務 Jev 當對照組:情境措辭對齊 A8,並決定 Jev 是否納入範圍。(h)Zhexuan 的信心閘門草稿(`docs/research/zhexuan/2026-09-21/confidence-gating-design-draft-zh.pdf`)把 token logprob 加 SEP 的選擇寫成 9/15 客戶會議的決定;實際是團隊在 PR #2 定的,併入 v0.3.1 時更正。(i)Anmol 的簡報引用的 Gemini 原始研究檔不在 repo 裡;放進 `reference/team/` 或拿掉連結。另:v0.3.1 把閘道的「PII 偵測」改稱「敏感資訊偵測」。 **2026-09-27 更新:**2026-09-25 會議已召開。這些點是為 vertical 交易情境寫的,結案前要逐項對照 horizontal 方向(A8)重新檢視;其中 (d) 與 (g) 分別指向申報文件與「financial-services SMB」的用語,現已不適用。負責人也已改變:(a)(b)(c)(f) 現由 Karina(工作流 1)負責,(e) 由 Yudi(工作流 2),(g)(h)(i) 分別由 Anmol 與 Zhexuan 負責。 | Mark | 2026-09-25 | [ ] |
+| 11 | **信心分數歸誰,以及 `score_method` 欄位** | 延續 9/27 延後事項 B。簡報定了方法(模型原始分數,用標註信件分組校正,第 14 頁),但沒定誰做哪一步。尚未確認的分工提案:Anmol 產生原始分數、Yudi 提供校正程序、Karina 決定門檻(門檻是評測的產出)、Zhexuan 的 API 欄位傳的是**校正後**的分數。每個 span 加一個 `score_method` 欄位,不然看到 0.55 的人不知道那是什麼 | Anmol | W9 | [ ] |
+| 12 | **模型分數沒有鑑別力時的備案** | 2026-09-14 的篩檢發現 8B 模型自報信心會飽和(91.7% 的回答自報 ≥95%)。如果第 14 頁的校正分組結果是平的,簡報的方法就沒有東西可以校正。Yudi 的提案已有備案:以共識計分(標出該 span 的偵測器比例、3–5 次重複執行中判為私密的比例)。第一批 baseline 數字出來時決定 | Anmol、Yudi | Phase 1 | [ ] |
+| 13 | **用哪個(些)開源模型** | 簡報寫「local model via Ollama, using Rescriber's open-source prompt」(第 17 頁),測試用「open-source models, cloud-hosted or local」(第 40 頁),但沒指名模型。Llama 3.1 8B / Qwen3 8B 是轉向前的計畫,對這個服務尚未確認 | Anmol | 10/11 | [ ] |
 
 ## B. 待辦動作
 
+### 期中前(2026-10-05 週一 18:00)
+
 | # | 動作 | 負責人 | 期限 | 完成 |
 |---|---|---|---|---|
-| 10 | **2026-09-15 客戶會議上當面走過架構文件第十節的預設方案**,不另外寄。要問三項:雲端供應商(A6:客戶提供哪家額度就用哪家,否則 Anthropic)、費用誰出(B15)、使用情境 / 產業(A8)。其餘七項告知即可:敏感度三級、自動升級並記錄、Qwen3 為輔並做供應鏈檢查、T4 等級沙盒跑 8B 4-bit(現改用 HF transformers)、數值用佔位符、NIST AI RMF、公開資料集加合成資料。客戶不反對即照預設進行;會後把回覆填進 D21 到 D23,並納入 v0.3(B11)。 | Mark | 2026-09-15 | [ ] |
-| 11 | **架構文件 v0.3 已於 2026-09-15 發布**(檔名改為 `architecture-v0.3-*`):第三、四節 RAG 標為 stretch,第七節期中目標,第九節時程與 MVP 清單,第十節雲端供應商列,第十一、十二節重寫,標題與頁尾。**v0.3.1 待 PR #2 merge 後補:**第五節加口頭表態信心的排除與訊號優先順序(token logprob → SEP → 採樣集成);第七節加信心指標子表。四種格式一起改。 | Mark | PR #2 之後 | [ ] |
-| 12 | **沙盒建置**(等 B15)。裝 Python、PyTorch 加 CUDA、transformers、bitsandbytes、accelerate;下載 Llama 3.1 8B(先在 Hugging Face 接受 Meta 授權)與 Qwen3 8B。驗收:一個 smoke test,載入 8B 4-bit,跑一次 `generate` 回傳文字、每個 token 的 logprobs 與 hidden states,並記錄 token/s 與 GPU 記憶體峰值;這個測試就是 harness 採樣核心的第一步,交給工作流(3)。筆電只放 client 程式與一個小型開發用模型(Qwen3 0.6B 或 Llama 3.2 1B),讓程式在本機跑通再上沙盒。| Anmol | W4 | [ ] |
-| 13 | **搭起評測 harness 骨架**,依 PR #2。跑架構第七節的三配置(local-only / hybrid / cloud-only),記錄其六個系統指標(準確率、延遲、每題成本、升級率、PII 洩漏率、prompt injection 抵抗力),並為每種信心訊號變體記錄信心子表(ECE、AUROC、AURC、升級率對準確率)。每題送雲端一次並快取,cloud-only 從同一次跑產出。W4 交付三個分支:`feat/harness-sampling-core`(共用 k 次採樣迴圈,建在 B12 的 smoke test 上)、`eval/benchmark-loaders`(先做 MMLU 子集與 GSM8K,對接 B14)、`eval/calibration-metrics`(用合成資料做單元測試;不需要 GPU,筆電可先做)。訊號變體 A 與期中 pilot 在 W5 到 W6。 | Zhexuan | W4 | [ ] |
-| 14 | **Benchmark 測試集**(與 B13 的 loaders 是同一件事)。MMLU:每科固定題數(例如 20 × 57 約 1,140 題)、固定 random seed,另切一個 dev split 給門檻校準用(PR #2:門檻不在 test set 上調)。GSM8K:官方 test split(1,319 題),dev 從 train 切。 | Zhexuan | W4 | [ ] |
-| 14a | **合成企業資料**(工作流 5)。兩批:(i)期中 CLI demo 用的含 PII 請求十幾條(A7),W5 要有,PR #4 已草擬(開著,形式討論中);(ii)W9 到 W11 的 PII 洩漏率與 prompt injection 測試用的企業文件:W5 先定格式與生成 prompt,W9 前生足量。產業背景依 A8。客戶給的範例(D22)只當格式樣板,不進資料集;全程不用真實資料(架構第十節)。 | Karina | W5 | [ ] |
-| 15 | **2026-09-15 客戶會議上確認算力與額度。**要問:(a)9 月 3 日承諾的雲端沙盒:供應商、GPU(T4 16 GB 可用;A10G 24 GB 可讓 k 次採樣的信心集成從容跑,A5)、SSH 之類的直接存取(模型用 transformers 在機器上跑,不是透過 API)、費用誰出;(b)雲端模型 API 額度或金鑰與預算上限,以及是否已有 OpenAI 或 Anthropic 企業帳號(A6 跟著走);(c)沙盒何時可用、能否用到學期末。**僅供內部的備案,會議上不主動提**(SOW v2 與架構第十節已不提):向 CMU Public Cloud Services 申請 GPU 主機:送諮詢表單並附 Randy 為教職員聯絡人,再寄信給 Randall Trzeciak 說明理由與成本估算(T4 等級 VM、100 GB、100 美元上限),副本 Randy。第 4 週要能用。 | Mark | 2026-09-15 | [ ] |
-| 33 | **信心評分工作從 Zhexuan 交接給 Anmol。**PR #2 已經定了訊號優先順序(先 token logprob,再 SEP,再取樣集成)並排除了 verbalized confidence;Aarvin 的領域 3 把「產生信心分數」放在 Anmol 身上。不做明確交接,Anmol 會把已經決定的事再推導一次。交接內容:為什麼排除 verbalized confidence、為什麼必須用 transformers 在程式內執行(A1)、SEP 論文用的是哪一層的 hidden state | Zhexuan → Anmol | W6 | [ ] |
-| 34 | **評測與校準指標從 Zhexuan 交接給 Karina。**PR #2 的另一半:ECE、AUROC、AURC、升級率對準確率,以及「門檻絕不在測試集上調」這條規則。Karina 現在端到端負責評測。要決定 Zhexuan 是否繼續維護 harness 程式碼,還是完全移交 | Zhexuan → Karina | W6 | [ ] |
-| 35 | **Karina 的 PR #3、#4、#5 要改或關掉。**schema、demo batch、SEC 抓取全部是為 vertical 交易情境建的。情境已改為主管信件的幕僚助理,逐一決定:改寫,還是關掉重來。此項阻塞 B14a | Karina | W6 | [ ] |
+| 36 | **依簡報的範圍改 Scope of Work,會議前寄出。**9/28 議程(E6)告訴客戶我們會改、事先寄、請他們在期中簽。`Scope of Work v2.docx` 早於 9/21 轉向:沒有 redaction 服務、100 封信 benchmark、dashboard,費用仍是 `$[X]`(E26)。寫 `Scope of Work v3.docx`。簡報沒提 SOW,收尾時要提 | Mark | 2026-10-04 | [ ] |
+| 37 | **重設「展示正在跑的東西」的期待。**9/28 議程(E3)承諾「show what is running by then, with measurements of what redaction costs in answer quality」。簡報沒有 demo 也沒有數字。開場就說清楚:第一批量測隨 Phase 1(10 月下旬起)出來,dashboard 與壓測結果 11/8 前 | Mark | 2026-10-05 | [ ] |
+| 38 | **三個可能被問的問題先統一答案。**(1)第 9 頁說信心不足的項目預設遮蔽;第 12、26 頁分數低於門檻就保留。差別要講清楚:分數低代表「有把握是公開的」,預設遮蔽指的是無法分類的項目(第 26 頁 A 分支)。(2)9/15 決定用 transformers,為什麼現在用 Ollama(決策紀錄 2026-10-03)。(3)模型分數飽和怎麼辦(A12) | Yudi、Zhexuan、Anmol | 2026-10-05 | [ ] |
+| 39 | **記錄期中會議**於 `meetings/client/2026-10-05/notes-*`:客戶對第 40 頁四項請求與下方 D 節的回覆、SOW 狀態、里程碑是否同意 | Mark | 2026-10-06 | [ ] |
 
-## C. 組員 Data & Architecture 提案待修正
+### 建置(簡報第 39 頁的里程碑)
 
-檔案:`reference/team/Virtual_Gold_Data_Architecture_Proposal_1.docx`
-
-| # | 修正 | 完成 |
-|---|---|---|
-| 16 | 「Llama 3.3 8B」改為 Llama 3.1 8B(Llama 3.3 只有 70B) | [ ] |
-| 17 | 「Qwen3 7B」改為 Qwen3 8B(7B 是 Qwen2.5) | [ ] |
-| 18 | 圖:「高信心直接回覆」的箭頭不應經過 PII 遮罩閘道 | [ ] |
-| 19 | 模型數據改引 Meta 與 Qwen 官方 model card,框架改引 NIST AI RMF 原文,不引部落格 | [ ] |
-| 20 | 時程對齊課程:W7 期中、W8 秋假、W14 感恩節 | [ ] |
+| # | 動作 | 負責人 | 期限 | 完成 |
+|---|---|---|---|---|
+| 40 | **M1:API contract 0.4.2 與服務骨架。**repo 裡只有 `docs/research/zhexuan/2026-09-27/redaction-api-contract-en.md`(0.3.0-draft)。該草稿仍有 `LOCAL_ONLY`、`PENDING_REVIEW`、輪詢端點、跨呼叫方的 global context store 與 opt-in 的 `allow_degraded`,這些簡報的設計都沒有。commit 0.4.2,並把 0.3.0 標為已取代 | Zhexuan | 2026-10-11 | [ ] |
+| 41 | M2:端到端 pipeline 含失效路徑 | Zhexuan | 2026-11-01 | [ ] |
+| 42 | M3:dashboard(Prometheus + Grafana)與壓測結果 | Zhexuan | 2026-11-08 | [ ] |
+| 43 | M4:VG08 整合(Phase 2,11/2 起);contract 凍結。需要 D52 | Zhexuan、Mark | 2026-11-15 | [ ] |
+| 44 | M5:程式凍結(軟凍結 11/18) | 全員 | 2026-11-22 | [ ] |
+| 45 | M6:期末報告 | Mark | 2026-11-30 | [ ] |
+| 46 | **評測資料集放進 repo**(`data/`):100 封虛構信件、999 個標註項目、18 種類型,JSONL 格式如第 36 頁。尚未 commit。內容是虛構的,符合「不放真實資料」的規則 | Karina | 2026-10-11 | [ ] |
+| 47 | **先 baseline,再做消融**(第 16 頁):Rescriber 式 baseline → 加偵測器聯集 → 加名字擴散 → 加重複執行 → 加分級門檻。在一個子集上調,在保留子集上報告。主要指標是各等級的洩漏率;另外追蹤過度遮蔽、校正、每封信秒數 | Karina | Phase 1 | [ ] |
+| 48 | **架構文件 v0.4。**`docs/architecture/` 仍是 v0.3,也就是轉向前的混合架構。v0.4 寫好之前,以簡報(第 10、11、19–29 頁)為架構依據 | Mark | W9 | [ ] |
+| 35 | **關掉 Karina 的 PR #3、#4、#5。**為 vertical 交易情境建的;已由 100 封信資料集取代 | Karina | 2026-10-11 | [ ] |
 
 ## D. 等客戶回覆
 
 | # | 項目 | 詢問日期 | 回覆 |
 |---|---|---|---|
-| 21 | 確認或修改架構第十節的十項預設方案(會議上當面走過,B10) | 2026-09-15 | |
-| 22 | 提案中提到的「企業與小企業資料」,依 A8 選定的產業,有沒有範例文件或格式。只要格式與範例,不要真實資料(B14a) | 2026-09-15 | |
-| 23 | 確認 Qwen3 8B 為輔並做供應鏈檢查(架構第十節第 4 項)。客戶 9 月 3 日已說國際模型安全審查較嚴,並要求架構模組化方便換模型;這是確認,不是新問題 | 2026-09-15 | |
-| 24 | **硬體。**Aarvin 在 onboarding 信件中要求我們「這週內」確認硬體配置。Mark 已於 2026-09-27 回覆:只有個人筆電。依 B15,CMU Public Cloud Services 這條路維持為內部備案,刻意未向客戶提出。現等 Virtual Gold 回覆他們會提供什麼。**此項完全阻塞工作流 3(Anmol)** | 2026-09-27 | |
-| 25 | **API contract。**Aarvin 在 9/21 會議上承諾「隔天」提供初版 API contract(紀錄 p7),即 2026-09-22;截至 2026-09-27 仍未收到。此項阻塞工作流 4 的端點實作,並決定請求是否逐段附帶出處 — 而那又決定了「以來源判定敏感度」這個做法可不可行 | 2026-09-21 | |
+| 49 | **審閱分級表與機密詞表**(第 40 頁第 1 項)。沒有客戶提供的專案代號、交易名稱、主要往來對象清單,`business_confidential` 偵測不到 | 2026-10-05 | |
+| 50 | **API 請求能否標示每段文字的來源?**(正文、引用串、主管自己打的字;第 40 頁第 2 項)。不一定受 NDA 限制 | 2026-09-28 | |
+| 51 | **本地模型用的 GPU 與沙盒**(第 40 頁第 3 項)。2026-09-15 起未決。Mark 已於 2026-09-27 告訴 Aarvin 團隊只有個人筆電。CMU Public Cloud Services 維持內部備案,不向客戶提 | 2026-09-15 | |
+| 52 | **開放 VG08 供整合**(第 40 頁第 4 項)。Phase 2 於 11/2 開始 | 2026-10-05 | |
+| 53 | 與 CMU 的 NDA 附約進度(9/28 議程 E2) | 2026-09-28 | |
+| 54 | 共用 Google Drive 與權限名單;Slack 還是 Google Chat(9/28 議程 E4、E5) | 2026-09-28 | |
+| 55 | 客戶需不需要 restore,還是他們自己的系統處理?每封信延遲目標與每日量(API contract 開放問題 1、2) | 2026-09-27 | |
 
 ## E. Scope of Work 簽署前
 
-`docs/sow/Scope of Work v2.docx`(改動處為紅字)除費用金額外已完成。已完成的修改(沙盒假設、沙盒依賴、Phase 1 原型句)留在 git 紀錄,不再列在這裡。
-
 | # | 修改 | 完成 |
 |---|---|---|
-| 26 | 第 6 節費用歸屬:紅字段落寫明由客戶負擔,金額留 $[X] 佔位。2026-09-15 會議上問到金額(B15)後填入、刪掉「待客戶確認」字樣,再簽署。SOW 中不提 CMU 備案。 | [ ] |
+| 26 | 第 6 節費用歸屬:填入 `$[X]` 金額、刪掉「待客戶確認」字樣。併入 v3(B36)。SOW 不提 CMU 備案 | [ ] |
 
-## F. 研究清單(按分工)
+## 已結案與取代
 
-> **2026-09-27 註:**本清單是依轉向前的工作流(A9,9/18)編排的。負責人已於 2026-09-25 變更,
-> 且 F28(「路由與整合」)已不對應任何人的領域。已交付的項目視為既有研究成果,其餘請依現行五個領域重新界定範圍。
+2026-10-03 對照期中簡報結案。原文見 git 紀錄(此日期之前的 `todo/TODO-zh.md`)。
 
-每條工作流第 4 週的研究交付:一頁摘要,說明「這個工具或方法能不能用在我們的架構、怎麼用、限制是什麼」,附來源連結。先讀官方文件與論文摘要,不用逐字讀完。
-
-| # | 工作流 | 負責人 | 要研究的東西 | 要回答的問題 |
-|---|---|---|---|---|
-| 28 | 路由與整合 | Mark | 門檻式升級與 cascade 規則:FrugalGPT(Chen et al. 2023, arXiv:2305.05176)、Hybrid LLM 的品質感知路由(Ding et al. 2024, arXiv:2404.14618)、AutoMix 的自我驗證路由(Madaan et al. 2023, arXiv:2310.12963)。僅供 stretch 對照:RouteLLM(Ong et al. 2024, arXiv:2406.18665)、RouterBench(Hu et al. 2024, arXiv:2403.12031)。LiteLLM 已拿掉(A1)。 | cascade 論文怎麼設定與調整升級規則,哪些可以搬到我們信心分數的單一門檻上?「機密留本地」規則(A3)怎麼和信心門檻疊在同一個 router 裡?一個本地呼叫 transformers、雲端呼叫 SDK 的最簡 Python router 長什麼樣? |
-| 29 | 模型與推論 | Anmol | **2026-09-20 已交付:**`docs/research/anmol/2026-09-20/models-inference-research-en.md`(Llama 3.1 8B 加 Qwen3 8B、transformers 程式內執行、NF4 4-bit、T4 用 FP16、KV cache 估算、執行紀錄清單、新模型觀察名單、Llama 授權審閱、Jev 為可選的託管比較)。原清單:T4 上的 HF transformers 加 bitsandbytes:Llama 3.1 8B 與 Qwen3 8B 的 4-bit 對 8-bit 準確率與速度;`generate` 開 `output_scores` 與 `output_hidden_states`(harness 需要的,PR #2);多樣本生成(`num_return_sequences=k`)的記憶體與吞吐量;accelerate 的 device-map 選項。兩個模型的官方 model card 與授權條款。 | T4 上一個 8B 模型 4-bit 的 token/s 與記憶體峰值,單樣本與 k=5 各多少?8-bit 加 hidden states 輸出放得下嗎?SEP 論文用哪一層的 hidden state?Qwen3 的授權對企業使用有沒有限制? |
-| 30 | 信心評分與評測 harness | Zhexuan | **2026-09-13/14 已交付:**文獻回顧(`docs/research/zhexuan/2026-09-13/confidence-scoring-harness-report-en.md`,中文譯本 `-zh.md`)與設計文件(`docs/research/zhexuan/2026-09-15/confidence-harness-design-zh.md`,2026-09-21 已 merge)。另有信心閘門設計草稿 `docs/research/zhexuan/2026-09-21/confidence-gating-design-draft-zh.pdf`(2026-09-20,僅中文):閘門先行、信心在其內調度、併入 Yudi 的修正。涵蓋自我一致性、語意熵與 SEP、Kadavath et al.、SelfCheckGPT、Xiong et al.、校準指標,以及 MMLU、GSM8K、TruthfulQA、HaluEval 的評分方式。 | 已回答:哪些訊號在 8B 有效(token logprob 與 SEP;口頭表態信心排除)、每種多花多少成本、harness 怎麼一次產出架構第七節的三配置與六個系統指標加信心子表。 |
-| 31 | 安全與去識別化 | Yudi | **2026-09-19 已交付:**`docs/research/yudi/2026-09-19/security-deidentification-report-en.docx`(17 篇文獻:敏感 ≠ PII、雙分數政策取代二元閘門、三種淨化策略、四層分級、多輪洩漏測試);客戶簡報在 `meetings/client/2026-09-21/`。原清單:Presidio 的 recognizers、自訂實體、evaluation 模組。隱私意識委派 PAPILLON(Siyan et al. 2024, arXiv:2410.17127)。OWASP Top 10 for LLM Applications。間接 prompt injection(Greshake et al. 2023, arXiv:2302.12173)。NIST AI RMF 1.0 與 Generative AI Profile(NIST AI 600-1)。還原:每次請求的佔位符對照表(A4),現有工具(例如 Presidio anonymizer 的 operators)怎麼處理反向那步。 | Presidio 對合成企業文件的漏檢率大概多少?雲端回覆後把佔位符換回原值最簡單可靠的做法是什麼,哪裡會壞(佔位符被改寫或換句)?我們的風險評估要對到 NIST 的哪些條目? |
-| 32 | 合成資料(RAG 為 stretch) | Karina | **2026-09-20 已交付:**`docs/research/karina/2026-09-20/financial-data-sources-en.md`(採用 FinQA,決策紀錄 2026-09-21)。其餘:用 LLM 生成合成企業文件與問答的方法,以客服工單與 B2B 資料集為種子(架構第七節);怎麼刻意植入 PII 與敏感等級標籤,讓安全測試有 ground truth(B14a)。Stretch,只做一頁:Chroma 對 pgvector、切塊、本地可跑的 embedding 模型(bge、nomic-embed)、RAGAS faithfulness 當接地訊號(A2)。 | demo 與 W9 到 W11 的安全測試各需要多少合成資料,敏感等級怎麼標?什麼 prompt 與檢查能讓生成的 PII 逼真但是假的?Stretch:一天內做得完的最簡 RAG 範圍是什麼? |
+| # | 原本 | 狀態 |
+|---|---|---|
+| A1 | 工具選型:HF transformers、自寫 router、Presidio、雲端 SDK | **已取代。**推論改用 Ollama(決策紀錄 2026-10-03)。Presidio 保留為三個偵測器之一。沒有 router,也沒有雲端呼叫:服務本身不呼叫雲端 |
+| A2 | RAG 列為 stretch | 結案。不屬於 redaction 服務 |
+| A3 | 機密請求不外送 | **已取代。**不整封擋下;受規範的項目換成佔位符,其餘送出(第 13 頁) |
+| A4 | 去識別化與還原進 MVP | 延續到簡報:佔位符、對照留本地、restore 是獨立呼叫(第 28 頁) |
+| A5 | 模型跑在 GPU 沙盒,Llama 3.1 8B / Qwen3 8B | 沙盒請求移到 D51;模型選擇重新開放(A13) |
+| A6 | 雲端供應商 | 結案。服務不呼叫雲端模型 |
+| A7 | 期中內容(MMLU/GSM8K 三配置、升級率圖、CLI demo) | 由簡報取代 |
+| A8 | 使用情境 | 2026-09-21 完成:horizontal,主管信件的幕僚助理 |
+| A9 | 分工 | 2026-09-25 完成;簡報沿用同樣五個領域(第 2 頁) |
+| A10 | PR #3–#5 引出的六個敏感度閘門待決點 | 結案。為 vertical 情境寫的;(f) 由各等級洩漏率解決(第 16 頁) |
+| B10、B15 | 向客戶走過第十節預設;確認算力 | 未決部分移到 D51 |
+| B11 | 架構 v0.3.1 | 由 B48(v0.4)取代 |
+| B12 | 沙盒建置 | 等 D51;硬體確定後重新界定 |
+| B13、B14 | harness 骨架;MMLU 與 GSM8K 測試集 | 結案。評測改為 100 封信 benchmark |
+| B14a | 合成企業資料 | 由 100 封信資料集取代(B46) |
+| B33、B34 | Zhexuan 的信心與指標交接 | 併入 A11 |
+| C16–C20 | 組員 Data & Architecture 提案的修正 | 結案。該提案描述轉向前的設計,不再維護 |
+| D21–D23 | 第十節預設;範例文件;Qwen3 確認 | 結案。轉向前的問題 |
+| D24 | 硬體 | 移到 D51 |
+| D25 | Aarvin 的 API contract | 改由團隊撰寫(0.4.2,B40) |
+| F28–F32 | 依轉向前工作流的研究清單 | 已交付的留在 `docs/research/`;其餘結案 |
+| 9/27 團隊第 1–4 項 | 五級拆 id、六個標註欄位、不確定也遮並標記、整封還是分段 | 簡報以不同方式定案(決策紀錄 2026-10-03) |
+| 9/27 延後事項 A | 狀態儲存的三個名稱 | 已定:每次 redaction 一份本地對照;context store 只放詞表與允許清單;沒有跨呼叫方的儲存 |
 
 ## 決策紀錄
 
@@ -100,3 +112,14 @@
 | 2026-09-21 | 先做 horizontal:把脫敏能力做成獨立 HTTP 服務,服務對象是主管的幕僚助理;vertical 交易助理延後至時間允許 | Inderpal 與 Alex 認為兩條同時做的風險是兩邊都做不完,且 horizontal 的適用面更廣;Mark 接受此建議。9/21 客戶會議紀錄 Decisions/Aligned |
 | 2026-09-25 | 工作流一對一重新對應到 Aarvin 的五個責任領域:評測與測試資料 Karina · 隱私研究 Yudi · 模型工作 Anmol · 服務工程 Zhexuan · 整合與協調 Mark。Mark 為單一對口窗口 | Aarvin 的 onboarding 信件定義了這五個領域、要求指定一位窗口,並說明角色確認後才會給完整規格。一對一對應是他能據以行動的形式。2026-09-25 團隊會議 |
 | 2026-09-27 | 回覆 Aarvin 的硬體問題時只提個人筆電,不提 CMU Public Cloud Services | 與 B15 既有決定一致:CMU 這條路是內部備案,不向客戶提出。也讓沙盒問題(B15,2026-09-15 起未決)留在 Virtual Gold 那一邊 |
+| 2026-10-03 | **範圍。**本地的遮蔽與還原服務:一個 HTTP 服務,在雲端助理看到主管信件之前,把私密資料換成可還原的佔位符,並在回覆中還原。交付物:服務本身、敏感度分級與決策規則、100 封信評測 benchmark、監控 dashboard。限制:專案硬體、開源模型、不能對外連網、每個請求自動處理、11/30 期末報告前完成。服務本身從不呼叫雲端模型。取代混合路由設計(2026-09-07、2026-09-08)、三配置評測與 FinQA(2026-09-21) | 期中簡報第 3–4、7 頁;團隊共識,已與教授確認 |
+| 2026-10-03 | **「模型判斷,程式決定」。**服務內六步:切段(正文、引用、簽名,附來源標記)→ 候選偵測(規則 + Presidio + 本地模型,依字元位置取聯集)→ 情境評估(模型判斷私密或公開並給原始分數,再校正)→ 程式決策(等級 × 分數對門檻)→ 佔位符(對照留本地)→ restore 為另一次刻意的呼叫。一個本地模型,兩個獨立 prompt:偵測與評估 | 第 10、19–28 頁 |
+| 2026-10-03 | **三個等級,起始門檻。**High(身分證號、密碼與金鑰、銀行與卡號、健康、商業機密):分數 ≥ 0.2 即遮蔽。Medium(私人姓名、個人電話、個人 email、住址):≥ 0.5 遮蔽。Low(城市、日期、組織名稱、年齡、性別):單獨出現保留,組合出現遮蔽。等級依 NIST SP 800-122。門檻是起始值,之後調整。9/27 的五級拆 id、「模型能否判斷」欄、`health` 改 `medical`、`quantity` 類別都沒有進這張表 | 第 11 頁 |
+| 2026-10-03 | **決策結果。**分數達到該等級門檻,或無法分類的 span:遮蔽。分數低於門檻,或單獨出現的 Low 項目:保留。沒有人工審查佇列(`PENDING_REVIEW`),也不整封擋下(`LOCAL_ONLY`):受規範的項目換成佔位符,信件其餘部分送雲端。取代 9/27「不確定也遮、標記 not sure」,並定案 9/27 第 4 項(整封還是分段) | 第 13、26 頁 |
+| 2026-10-03 | **失效時保守處理。**模型呼叫失敗或輸出無法解析:保留規則與 Presidio 的候選、全部遮蔽不看門檻、回應標記 `degraded: true`。固定開啟,不是 opt-in。回覆中出現服務沒發過的佔位符時標記出來,不猜。稽核紀錄只記類別、分數、動作與 degraded 旗標,絕不記原文。定案 API contract 開放問題 8 | 第 19、23、27、29 頁 |
+| 2026-10-03 | **信心分數。**每個 span 的模型原始分數用標註信件校正:依原始分數分組、算出實際為私密的比例,以該比例作為校正後分數 | 第 14 頁;Xiong et al. 2024 |
+| 2026-10-03 | **本地模型透過 Ollama 執行,採用 Rescriber 的開源 prompt。**取代 2026-09-15(transformers、不用 Ollama)。那個決定是因為混合架構的 harness 需要 hidden states 做 Semantic Entropy Probe;redaction 服務的分數來自評估 prompt 加校正,已不需要 hidden states | 第 17 頁 |
+| 2026-10-03 | **Context store 只放詞表與允許清單。**沒有持久、跨 session 或跨呼叫方的已知實體儲存。佔位符對照依每次 redaction 存在本地 mapping store。定案 9/27 延後事項 A | 第 20–21、23 頁 |
+| 2026-10-03 | **評測。**100 封虛構主管信件,15 個業務領域、9 個產業、4 種主管角色,999 個標註項目、18 種類型。內建案例:Aarvin 的情境案例、10 封乾淨信件、轉寄串、5 封攻擊信件、56 個不含單一名稱的商業機密(FACT 標籤)。每封信記:領域、產業、主管角色、任務、tags。每個 span 記:start、end、type、`must_mask`(true 或 false)。模型輸出:每封信一行 JSON,start 與 end 必填,type 與 score 選填。主要指標:各等級洩漏率。另追蹤:過度遮蔽、校正、每封信秒數。消融從 Rescriber 式 baseline 開始。取代 9/27 的三值正確答案與六欄位標註 | 第 16、34–36 頁 |
+| 2026-10-03 | **我們的兩項貢獻。**不需要人逐項審查即可運作(Rescriber 要使用者確認每一項遮蔽)。一個標註好的信件 benchmark,加上顯示各部分貢獻的消融實驗 | 第 17 頁 |
+| 2026-10-03 | **時程。**Phase 1:服務單獨測試,10 月下旬起。Phase 2:VG08 整合,11/2 起。10/12 那週秋假,不排工作。里程碑:10/11 contract 0.4.2 與服務骨架 · 11/1 端到端 pipeline 含失效路徑 · 11/8 dashboard 與壓測結果 · 11/15 VG08 整合、contract 凍結 · 11/22 程式凍結(軟凍結 11/18)· 11/30 期末報告。Dashboard 用 Prometheus 與 Grafana | 第 31、32、39、40 頁 |
