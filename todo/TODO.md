@@ -60,7 +60,7 @@ Meeting cadence (US Eastern, all weekly): client Monday 18:00–19:00 · profess
 
 | # | Edit | Done |
 |---|---|---|
-| 26 | Section 6 cost ownership: fill in the `$[X]` amount, remove the "to be confirmed" note. Fold into v3 (B36). The SOW does not mention the CMU fallback | [ ] |
+| 26 | Section 6 cost ownership. **v3 (`docs/sow/Scope of Work v3.docx`, 2026-10-03) follows the deck and has no cost line**: section 6 only says the Client provides GPU and sandbox access (slide 40). Decide whether to restore the `$[X]` sentence before sending. The SOW does not mention the CMU fallback | [ ] |
 
 ## Closed and superseded
 
