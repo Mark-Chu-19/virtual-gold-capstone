@@ -259,6 +259,15 @@ def test_session_reuses_the_person_label_for_a_bare_first_name():
     assert out.redacted_email["body"] == f"{dana} called again."
 
 
+def test_session_label_state_holds_no_original_text():
+    labels = LabelState()
+    out = redact_all_persons("Reply to Dana", DANA_TOM, labels)
+    stored = " ".join(labels.labels).lower()
+    for value in ("dana", "whitfield", "tom", "reyes"):
+        assert value not in stored
+    assert set(labels.labels.values()) == set(out.mapping)  # still one label per person
+
+
 # ---- through the HTTP API --------------------------------------------------------------------
 @pytest.fixture
 def privacy_config(tmp_path):

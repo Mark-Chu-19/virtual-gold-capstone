@@ -3,16 +3,34 @@
 Same as the 0.4.2 stub, plus one rule: every variant of a header person ("Dana Whitfield",
 "Dana", "Whitfield") shares one placeholder, and the mapping restores it to the full name.
 Ambiguous parts (a first name two header people share) keep their own placeholder.
+
+Session label keys never hold the original text: they are HMACs under a key generated at
+startup, so the session state left after a DELETE contains no names or values.
 """
 from __future__ import annotations
+
+import hashlib
+import hmac
+import secrets
 
 from ..contracts.fields import email_to_dict, iter_fields, set_field
 from ..contracts.types import Decision, EmailIn, LabelState, PseudonymResult, SpanOut
 from .names import alias_table, clean_person_name
 
 
+# Per-process key: the session state lives in this process only, and a fresh key per process
+# stops anyone from recovering common names by hashing a dictionary.
+_LABEL_KEY = secrets.token_bytes(32)
+
+
 def _ph_type(entity_type: str) -> str:
     return entity_type.split("_")[0]
+
+
+def label_key(ph_type: str, value: str) -> str:
+    """Session key for one entity: "{TYPE}|<hmac>", never the value itself."""
+    digest = hmac.new(_LABEL_KEY, value.strip().lower().encode("utf-8"), hashlib.sha256)
+    return f"{ph_type}|{digest.hexdigest()[:32]}"
 
 
 def _header_people(email: EmailIn) -> list[str]:
@@ -36,7 +54,7 @@ def pseudonymize(purpose: str, email: EmailIn, decisions: list[Decision],
             original = fields[c.field][c.start:c.end]
             t = _ph_type(c.type)
             person = aliases.get(original.strip()) if t == "PERSON" else None
-            key = f"{t}|{(person or original).strip().lower()}"
+            key = label_key(t, person or original)
             ph = labels.labels.get(key)
             if ph is None:
                 labels.counters[t] = labels.counters.get(t, 0) + 1
@@ -45,7 +63,7 @@ def pseudonymize(purpose: str, email: EmailIn, decisions: list[Decision],
             if person:  # later requests in the session that only say "Dana" reuse the label
                 for alias, full in aliases.items():
                     if full == person:
-                        labels.labels.setdefault(f"{t}|{alias.lower()}", ph)
+                        labels.labels.setdefault(label_key(t, alias), ph)
             mapping[ph] = person or mapping.get(ph, original)
             placeholder_for[id(d)] = ph
         spans.append(SpanOut(field=c.field, start=c.start, end=c.end, type=c.type, tier=d.tier,
