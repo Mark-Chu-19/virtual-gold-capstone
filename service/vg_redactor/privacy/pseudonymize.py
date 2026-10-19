@@ -4,6 +4,10 @@ Same as the 0.4.2 stub, plus one rule: every variant of a header person ("Dana W
 "Dana", "Whitfield") shares one placeholder, and the mapping restores it to the full name.
 Ambiguous parts (a first name two header people share) keep their own placeholder.
 
+Across a session, an alias learnt from an earlier email ("Dana" -> Dana Whitfield) is reused
+for a bare "Dana" later, until an email shows "Dana" belongs to two people. From then on the
+alias is marked ambiguous for the rest of the session and a bare "Dana" gets its own label.
+
 Session label keys never hold the original text: they are HMACs under a key generated at
 startup, so the session state left after a DELETE contains no names or values.
 """
@@ -15,7 +19,7 @@ import secrets
 
 from ..contracts.fields import email_to_dict, iter_fields, set_field
 from ..contracts.types import Decision, EmailIn, LabelState, PseudonymResult, SpanOut
-from .names import alias_table, clean_person_name
+from .names import alias_table, ambiguous_parts, clean_person_name
 
 
 # Per-process key: the session state lives in this process only, and a fresh key per process
@@ -33,6 +37,15 @@ def label_key(ph_type: str, value: str) -> str:
     return f"{ph_type}|{digest.hexdigest()[:32]}"
 
 
+AMBIGUOUS = ""  # alias-slot value: this name part has belonged to more than one person
+
+
+def _alias_key(ph_type: str, alias: str) -> str:
+    """Alias slots live apart from value slots, so marking an alias ambiguous never
+    touches the label of the bare value."""
+    return label_key(ph_type, "\x00alias\x00" + alias)
+
+
 def _header_people(email: EmailIn) -> list[str]:
     raw = [email.from_.name if email.from_ else None]
     raw += [a.name for a in email.to] + [a.name for a in email.cc]
@@ -42,7 +55,11 @@ def _header_people(email: EmailIn) -> list[str]:
 def pseudonymize(purpose: str, email: EmailIn, decisions: list[Decision],
                  labels: LabelState) -> PseudonymResult:
     fields = iter_fields(purpose, email)
-    aliases = alias_table(_header_people(email))
+    people = _header_people(email)
+    aliases = alias_table(people)
+    ambiguous = ambiguous_parts(people)
+    for part in ambiguous:  # seen as two people here: never resolve it to one person again
+        labels.labels[_alias_key("PERSON", part)] = AMBIGUOUS
     mapping: dict[str, str] = {}
     spans: list[SpanOut] = []
     placeholder_for: dict[int, str] = {}
@@ -52,18 +69,27 @@ def pseudonymize(purpose: str, email: EmailIn, decisions: list[Decision],
         c = d.candidate
         if d.action == "redact":
             original = fields[c.field][c.start:c.end]
+            value = original.strip()
             t = _ph_type(c.type)
-            person = aliases.get(original.strip()) if t == "PERSON" else None
-            key = label_key(t, person or original)
-            ph = labels.labels.get(key)
+            person = aliases.get(value) if t == "PERSON" else None
+            ph = None
+            if t == "PERSON" and person is None and value not in ambiguous:
+                ph = labels.labels.get(_alias_key(t, value)) or None  # alias from earlier email
+            key = label_key(t, person or value)
+            ph = ph or labels.labels.get(key)
             if ph is None:
                 labels.counters[t] = labels.counters.get(t, 0) + 1
                 ph = f"[{t}_{labels.counters[t]}]"
                 labels.labels[key] = ph
-            if person:  # later requests in the session that only say "Dana" reuse the label
+            if person:  # remember this person's aliases for later emails in the session
                 for alias, full in aliases.items():
                     if full == person:
-                        labels.labels.setdefault(label_key(t, alias), ph)
+                        slot = _alias_key(t, alias)
+                        current = labels.labels.get(slot)
+                        if current is None:
+                            labels.labels[slot] = ph
+                        elif current not in (ph, AMBIGUOUS):  # the alias now names two people
+                            labels.labels[slot] = AMBIGUOUS
             mapping[ph] = person or mapping.get(ph, original)
             placeholder_for[id(d)] = ph
         spans.append(SpanOut(field=c.field, start=c.start, end=c.end, type=c.type, tier=d.tier,

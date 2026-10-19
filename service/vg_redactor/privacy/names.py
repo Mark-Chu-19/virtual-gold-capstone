@@ -33,6 +33,15 @@ def name_parts(full: str) -> set[str]:
     return {t for t in _TOKEN.findall(full) if len(t) > 1 and t not in COMMON_WORD_NAMES}
 
 
+def ambiguous_parts(full_names: list[str]) -> set[str]:
+    """Name parts that belong to more than one person ("Dana" in Dana Whitfield and Dana Lee)."""
+    owners: dict[str, set[str]] = {}
+    for full in set(full_names):
+        for part in name_parts(full):
+            owners.setdefault(part, set()).add(full)
+    return {part for part, fulls in owners.items() if len(fulls) > 1}
+
+
 def alias_table(full_names: list[str]) -> dict[str, str]:
     """alias -> full name. A part shared by two different people ("Dana" in Dana Whitfield and
     Dana Lee) is ambiguous and left out, so two people are never merged into one."""

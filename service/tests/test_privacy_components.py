@@ -1,5 +1,6 @@
 """Privacy Research components: unit tests, plus the HTTP API with them swapped in."""
 import shutil
+from dataclasses import replace
 
 import httpx
 import pytest
@@ -8,6 +9,7 @@ from vg_redactor.api.app import create_app
 from vg_redactor.contracts.policy import Policy
 from vg_redactor.contracts.types import Candidate, Overrides, ScoredCandidate, Segment
 from vg_redactor.main import build_components
+from vg_redactor.model.client import StubModelClient
 from vg_redactor.obs.metrics import Metrics
 from vg_redactor.privacy import (FileContextStore, decide, detect_rules, fit_table, make_calibrate,
                                  make_merge)
@@ -117,6 +119,20 @@ def test_merge_keeps_the_stricter_type_and_does_not_mutate_inputs():
     m = merged[0]
     assert (m.start, m.end, m.type, m.detectors, m.hint) == (0, 14, "HEALTH", {"presidio", "model"}, "x")
     assert (a.end, a.type, a.detectors) == (10, "CITY", {"presidio"})
+
+
+@pytest.mark.parametrize("forced", ["term_list_match", "deny_list"])
+def test_merge_keeps_forced_redaction_hints(forced):
+    """Review finding P1: a header-name hint must not replace a forced-redaction hint."""
+    name = Candidate(field="email.body", start=0, end=14, type="PERSON", detectors={"rules"},
+                     hint="header_name")
+    term = Candidate(field="email.body", start=5, end=14, type="CODENAME", detectors={"rules"},
+                     hint=forced)
+    for lists in ([name], [term]), ([term], [name]):
+        m = make_merge(POLICY)(*lists)[0]
+        assert (m.type, m.hint) == ("CODENAME", forced)
+        low = ScoredCandidate(candidate=m, raw_score=0.01, calibrated=0.01)
+        assert decide([low], POLICY, Overrides(), ctx())[0].action == "redact"
 
 
 def test_merge_keeps_fields_apart_and_sorts():
@@ -259,6 +275,29 @@ def test_session_reuses_the_person_label_for_a_bare_first_name():
     assert out.redacted_email["body"] == f"{dana} called again."
 
 
+def test_bare_name_is_not_tied_to_a_person_once_another_person_shares_it():
+    """Review finding P2: a session alias from an earlier email must not win over a later
+    email where the name belongs to two people."""
+    labels = LabelState()
+    redact_all_persons("x", {"from": {"name": "Dana Whitfield", "address": "d@x.test"},
+                             "body": "Hi"}, labels)
+    second = redact_all_persons("x", {
+        "from": {"name": "Dana Whitfield", "address": "d@x.test"},
+        "cc": [{"name": "Dana Lee", "address": "l@x.test"}],
+        "body": "Dana Whitfield and Dana Lee met. Dana agreed."}, labels)
+    body = second.redacted_email["body"]
+    assert restore(body, second.mapping).restored_text == \
+        "Dana Whitfield and Dana Lee met. Dana agreed."
+    # ...and in a later email without a header, a bare "Dana" stays apart from both people.
+    later = EmailIn.model_validate({"body": "Dana called."})
+    c = Candidate(field="email.body", start=0, end=4, type="PERSON", detectors={"model"})
+    third = pseudonymize("x", later, [Decision(candidate=c, tier="medium", action="redact",
+                                               confidence=0.9, reason="meets_threshold")], labels)
+    ph = third.redacted_email["body"].split()[0]
+    assert third.mapping[ph] == "Dana"
+    assert ph not in {p for p, v in second.mapping.items() if v != "Dana"}
+
+
 def test_session_label_state_holds_no_original_text():
     labels = LabelState()
     out = redact_all_persons("Reply to Dana", DANA_TOM, labels)
@@ -305,6 +344,28 @@ async def test_api_with_privacy_components(settings, model, privacy_config, use_
         # Variants of one person restore to the full name ("- Dana" -> "- Dana Whitfield").
         assert back.json()["restored_text"] == req["email"]["body"].replace(
             "- Dana", "- Dana Whitfield")
+
+
+class LowScoreModel(StubModelClient):
+    """Scores every candidate 0.01, as a model that thinks nothing is private."""
+
+    async def generate(self, prompt, *, prompt_name, deadline_ms):
+        raw = await super().generate(prompt, prompt_name=prompt_name, deadline_ms=deadline_ms)
+        return raw.replace('"score": 0.9', '"score": 0.01')
+
+
+async def test_api_term_list_inside_a_header_name_is_redacted_even_at_low_score(settings):
+    """Review finding P1, end to end: header Dana Whitfield, term list Whitfield, score 0.01."""
+    comps = build_components(presidio=False)
+    comps = replace(comps, context_store=FileContextStore(
+        "ctx-test", {"Whitfield"}, set(), POLICY.high_types()))
+    req = {"purpose": "Summarise", "mapping": {"retain": True}, "email": {
+        "from": {"name": "Dana Whitfield", "address": "dana@example.test"},
+        "body": "Thanks, Dana Whitfield"}}
+    async with await _client(settings, LowScoreModel(), comps) as c:
+        out = (await c.post("/v1/redactions", json=req, headers=HEADERS)).json()
+    assert "Whitfield" not in out["redacted_email"]["body"]
+    assert "Whitfield" not in str(out["redacted_email"]["from"])
 
 
 @pytest.mark.skipif(not HAS_PRESIDIO, reason="no presidio")
