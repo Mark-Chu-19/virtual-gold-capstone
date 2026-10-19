@@ -33,7 +33,7 @@ def decide(scored: list[ScoredCandidate], policy: Policy, overrides: Overrides,
         if c.hint in FORCED_REDACT_HINTS:
             out.append(d("redact", c.hint))  # a client-listed term is always redacted
         elif c.type not in policy.taxonomy:
-            out.append(d("redact", "cannot_classify_default_redact"))  # e.g. AMOUNT, NETWORK_ID
+            out.append(d("redact", "cannot_classify_default_redact"))  # a type the taxonomy does not list
         elif score is None:
             out.append(d("redact", "cannot_classify_default_redact"))
         elif c.hint == "allow_list":

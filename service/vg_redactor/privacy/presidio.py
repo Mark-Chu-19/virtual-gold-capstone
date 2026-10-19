@@ -11,7 +11,6 @@ from typing import Any, Callable
 from ..contracts.types import Candidate, Segment
 
 # Presidio entity -> our taxonomy (config/policy.yaml). None = ignored.
-# Types not in the taxonomy (NETWORK_ID, DEMOGRAPHIC) are redacted by default in decide().
 ENTITY_MAP: dict[str, str | None] = {
     "PERSON": "PERSON",
     "PHONE_NUMBER": "PHONE_PERSONAL",

@@ -155,6 +155,13 @@ def decisions(*items, ov=None):
     return [(d.action, d.reason) for d in decide(list(items), POLICY, ov or Overrides(), ctx())]
 
 
+def test_new_types_have_tiers():
+    assert (POLICY.tier_of("DEMOGRAPHIC"), POLICY.tier_of("NETWORK_ID"), POLICY.tier_of("AMOUNT")) == (
+        "high", "medium", "medium")
+    assert decisions(scored("AMOUNT", 0.3), scored("AMOUNT", 0.8, start=10)) == [
+        ("retain", "below_threshold"), ("redact", "meets_threshold")]
+
+
 def test_tier_thresholds():
     assert decisions(scored("HEALTH", 0.25), scored("PHONE_PERSONAL", 0.15),
                      scored("PHONE_PERSONAL", 0.95)) == [
@@ -168,7 +175,7 @@ def test_term_list_match_is_always_redacted():
 def test_unknown_types_and_missing_scores_are_redacted():
     no_score = scored("PERSON", None)
     no_score.calibrated = None
-    assert decisions(scored("AMOUNT", 0.01), no_score) == [
+    assert decisions(scored("SOMETHING_NEW", 0.01), no_score) == [
         ("redact", "cannot_classify_default_redact"), ("redact", "cannot_classify_default_redact")]
 
 
@@ -299,4 +306,4 @@ def test_presidio_maps_types_and_skips_uk_nhs():
     got = {(text[c.start:c.end], c.type) for c in detect(body(text))}
     assert ("412-555-0182", "PHONE_PERSONAL") in got
     assert ("tom.reyes@acme.com", "EMAIL_PERSONAL") in got
-    assert all(k in POLICY.taxonomy or k in {"NETWORK_ID", "DEMOGRAPHIC"} for _, k in got)
+    assert all(k in POLICY.taxonomy for _, k in got)

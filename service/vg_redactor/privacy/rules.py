@@ -22,8 +22,8 @@ PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("EMAIL_PERSONAL", re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]*\w")),
     ("GOV_ID", re.compile(r"(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)")),
     ("CARD_NUMBER", re.compile(r"(?<!\d)(?:\d[ -]?){12,15}\d(?!\d)")),
-    # AMOUNT is deliberately not in the tier table: decide() redacts unknown types by default
-    # until the client decides how amounts should be tiered.
+    # AMOUNT is Medium: "$20 lunch" and an unreleased reserve look alike, so the model's
+    # contextual score decides.
     ("AMOUNT", re.compile(
         rf"[$€£¥]\s?(?:{_NUM})(?:\s?{_SCALE}\b)?"
         rf"|\b(?:USD|EUR|GBP|CNY)\s?(?:{_NUM})(?:\s?{_SCALE}\b)?"
