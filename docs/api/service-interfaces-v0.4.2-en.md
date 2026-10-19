@@ -125,6 +125,13 @@ Body: `{"reply_text": "..."}` (limited to `max_request_bytes`).
 ### 3.5 Other endpoints
 
 - `DELETE /v1/redactions/{id}`: always `204`.
+  Only an existing record creates a tombstone; restore for a never-issued id remains `404`.
+  Repeated DELETE does not extend tombstone retention. DELETE drops the record's mapping,
+  but session label state (entity types, normalized original values as keys, and counters)
+  remains even when no records remain in the session, preserving labels across requests.
+  DELETE does not shorten the session expiry, which is extended by session requests and
+  their record TTLs. The TTL sweep removes the state at or after expiry; process restart
+  also loses it. DELETE does not immediately release all session references to original values.
 - `GET /v1/info`: `service_version`, `contract_version`, `policy_version`, `model_version`, `prompt_versions`,
   `context_store_version`, `tiers`, `entity_types` (type and tier), `limits` (`max_request_bytes`, `timeout_ms`,
   `max_ttl_seconds`, `max_records`), `failure_behavior: "redact_all_candidates"`.

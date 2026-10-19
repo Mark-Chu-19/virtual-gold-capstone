@@ -116,6 +116,14 @@ async def test_restore_404_410_and_delete_idempotent(client):
     assert (await post_json(client, f"{R}/{rid}/restore", {"reply_text": "x"})).status_code == 410
 
 
+async def test_delete_unknown_id_keeps_restore_not_found(client):
+    url = f"{R}/req_unknown/restore"
+    assert (await post_json(client, url, {"reply_text": "x"})).status_code == 404
+    for _ in range(2):
+        assert (await client.delete(f"{R}/req_unknown")).status_code == 204
+        assert (await post_json(client, url, {"reply_text": "x"})).status_code == 404
+
+
 async def test_session_labels_are_consistent_across_requests(client):
     body = copy.deepcopy(EMAIL_REQ); body["session_id"] = "s1"
     a = (await post_json(client, R, body)).json()["redacted_email"]["body"]
@@ -124,6 +132,15 @@ async def test_session_labels_are_consistent_across_requests(client):
     # request 1 used PHONE_1 (body) and PHONE_2 (the thread's support line); the same number keeps
     # its label in request 2 and the new number continues the numbering
     assert "[PHONE_1]" in a and "[PHONE_1]" in b and "[PHONE_3]" in b
+
+
+async def test_session_labels_survive_deleting_all_records(client):
+    body = copy.deepcopy(EMAIL_REQ); body["session_id"] = "s1"
+    first = (await post_json(client, R, body)).json()
+    assert (await client.delete(f"{R}/{first['request_id']}")).status_code == 204
+    body["email"]["body"] = "Call 303-555-0103, then 202-555-0102"
+    second = (await post_json(client, R, body)).json()
+    assert second["redacted_email"]["body"] == "Call [PHONE_3], then [PHONE_1]"
 
 
 async def test_info_health_ready(client):

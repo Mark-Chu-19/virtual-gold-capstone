@@ -106,8 +106,8 @@ class RecordStore:
 
     def _remove_locked(self, rid: str, reason: str) -> bool:
         rec = self._records.pop(rid, None)
-        self._tombstones[rid] = self._clock()
-        if rec:
+        if rec is not None:
+            self._tombstones[rid] = self._clock()
             rec.mapping = None  # drop the reference to original values
             self._on_remove(reason)
         return rec is not None

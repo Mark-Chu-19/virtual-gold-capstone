@@ -36,6 +36,56 @@ def test_store_ttl_capacity_tombstones():
         s.get("b")
 
 
+def test_delete_unknown_id_does_not_create_tombstones():
+    removed = []
+    store = RecordStore(1, 100, on_remove=removed.append)
+    for rid in ("unknown-a", "unknown-b", "unknown-c"):
+        assert store.delete(rid) is False
+        with pytest.raises(RecordNotFound):
+            store.get(rid)
+    assert store._tombstones == {}
+    assert removed == []
+
+
+def test_repeated_delete_does_not_extend_tombstone_retention():
+    clk = Clock(); removed = []
+    store = RecordStore(1, 100, clock=clk, on_remove=removed.append)
+    store.reserve("a")
+    rec = store.commit("a", {"[X_1]": "value"}, 100, None)
+    assert store.delete("a") is True
+    assert rec.mapping is None
+    clk.t = 90
+    assert store.delete("a") is False
+    with pytest.raises(RecordGone):
+        store.get("a")
+    clk.t = 101
+    with pytest.raises(RecordNotFound):
+        store.get("a")
+    assert removed == ["deleted"]
+
+
+def test_session_state_survives_delete_until_latest_record_ttl():
+    clk = Clock()
+    store = RecordStore(2, 100, clock=clk)
+    state = store.label_state("session", 10)
+    state.labels["PERSON|example"] = "[PERSON_1]"
+    state.counters["PERSON"] = 1
+    for rid, ttl in (("a", 10), ("b", 50)):
+        store.reserve(rid)
+        store.commit(rid, {"[PERSON_1]": "Example"}, ttl, "session")
+    assert store.delete("a") is True
+    assert store.delete("b") is True
+    clk.t = 11
+    store.sweep()
+    assert store._sessions["session"][0] is state
+    assert state.labels == {"PERSON|example": "[PERSON_1]"}
+    clk.t = 50
+    store.sweep()
+    assert "session" not in store._sessions
+    fresh = store.label_state("session", 10)
+    assert fresh.labels == {} and fresh.counters == {}
+
+
 def test_merge_unions_overlaps():
     a = Candidate(field="f", start=0, end=5, type="PERSON", detectors={"rules"})
     b = Candidate(field="f", start=3, end=9, type="PERSON", detectors={"model"})

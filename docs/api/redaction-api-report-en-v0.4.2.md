@@ -302,6 +302,18 @@ values: the call returns `BLOCKED` with reason `mapping_not_retained`.
 Idempotent: the call returns `204` whether the record exists, expired, was already deleted, or
 never existed, so it does not reveal whether an id was valid.
 
+Deleting an id that never existed creates no tombstone; restore for that id remains `404`.
+Repeating DELETE for an already deleted id does not extend its tombstone retention.
+
+For requests with a `session_id`, DELETE drops the record's placeholder-to-original mapping
+but preserves the session label state, even after all records in that session are deleted.
+That state includes entity types and normalized original values as label keys, plus label
+counters, to keep placeholders consistent across subsequent requests in the same session.
+DELETE does not shorten the session expiry (extended by session requests and their record TTLs);
+the state is removed by the TTL sweep at or after expiry. It is held only in process memory
+and is also lost on process restart. DELETE therefore does not immediately release every
+reference to original values associated with the session.
+
 | Code | Meaning |
 |---|---|
 | 204 | Record deleted or already gone — restore now returns 410 for a record that existed |

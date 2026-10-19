@@ -98,6 +98,9 @@ tests/contract|failure_injection|leak|load
 
 ### 3.5 其余端点
 - `DELETE /v1/redactions/{id}` → 一律 `204`(幂等:存在、已删除、已过期、从未存在都返回 204;只有 401 例外)。
+  仅删除实际存在的记录时写墓碑；从未存在的 id 在 DELETE 后 restore 仍返回 `404`，重复 DELETE 不延长墓碑保留时间。
+  DELETE 释放该记录的 mapping，但保留 session 标签状态（以实体类型和规范化原值为键，以及标签计数器），即使该 session 已没有记录，也保留跨请求的占位符一致性。
+  DELETE 不缩短 session 到期时间；该时间由 session 请求及其记录 TTL 延长，到期后由 TTL sweep 清理，进程重启也会丢失。因此 DELETE 不会立即释放 session 中所有原值引用。
 - `GET /v1/info`:
 ```json
 {"service_version":"","contract_version":"0.4.2","policy_version":"","model_version":"",
