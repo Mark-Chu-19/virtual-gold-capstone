@@ -11,6 +11,8 @@ VG_API_KEYS=dev-key python -m vg_redactor.main      # API on :8080, metrics on 1
 python -m pytest                                    # contract, failure-injection, leak tests
 ```
 
+Monitoring (Prometheus + Grafana, 8-panel dashboard, traffic generator): see `dashboards/README.md`.
+
 Single process only: request records live in memory, so run one worker.
 
 | Path | Owner | What |

@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
+from pathlib import Path
 
 import httpx
 
@@ -17,10 +18,35 @@ from ..pipeline.deadline import Deadline
 
 
 class StubModelClient:
-    """Deterministic fake that speaks the stub prompt protocol (see stubs/components.py)."""
+    """Deterministic fake that speaks the stub prompt protocol (see stubs/components.py).
+
+    Optional dev/demo fault injection: if `fault_file` names a file, its content is read on every
+    call. Supported values: `down`, `timeout`, `garbage`, `slow:<milliseconds>`; anything else
+    (or no file) means no fault. This lets a live demo raise the degraded rate on the dashboard.
+    """
     version = "model-stub-0"
 
+    def __init__(self, fault_file: str | None = None):
+        self.fault_file = fault_file
+
+    def _fault(self) -> str:
+        if not self.fault_file:
+            return ""
+        try:
+            return Path(self.fault_file).read_text().strip()
+        except OSError:
+            return ""
+
     async def generate(self, prompt: str, *, prompt_name: str, deadline_ms: int) -> str:
+        fault = self._fault()
+        if fault == "down":
+            raise ModelUnavailable()
+        if fault == "timeout":
+            raise ModelTimeout()
+        if fault == "garbage":
+            return "<<not json>>"
+        if fault.startswith("slow:"):
+            await asyncio.sleep(int(fault[5:]) / 1000)
         head, _, payload = prompt.partition("\n")
         if head == "DETECT":
             return "[]"
@@ -28,7 +54,7 @@ class StubModelClient:
         return json.dumps([{"i": i, "private": True, "score": 0.9} for i, _ in enumerate(cands)])
 
     async def ping(self) -> bool:
-        return True
+        return self._fault() != "down"
 
 
 class OllamaModelClient:

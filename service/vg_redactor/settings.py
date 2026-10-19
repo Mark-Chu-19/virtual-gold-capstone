@@ -14,6 +14,9 @@ class ModelSettings(BaseModel):
     backend: str = "stub"
     ollama_url: str = "http://127.0.0.1:11434"
     model_name: str = "llama3:8b"
+    # Dev/demo only (backend "stub"): a file whose content selects an injected model fault, see
+    # dashboards/README.md. Unset means no fault injection.
+    stub_fault_file: str | None = None
 
 
 class Settings(BaseModel):
@@ -28,6 +31,8 @@ class Settings(BaseModel):
     allow_list_in_degraded: bool = False
     audit_log_path: str | None = None
     metrics_port: int = 9100
+    # Metrics are local-only by default. Only widen this for Docker on macOS (dashboards/README.md).
+    metrics_host: str = "127.0.0.1"
     model: ModelSettings = Field(default_factory=ModelSettings)
     # sha256 hex digests of accepted API keys
     api_key_hashes: set[str] = Field(default_factory=set)
@@ -40,6 +45,8 @@ class Settings(BaseModel):
         s = cls(**data)
         keys = [k.strip() for k in os.environ.get("VG_API_KEYS", "").split(",") if k.strip()]
         s.api_key_hashes = {hash_key(k) for k in keys}
+        s.metrics_host = os.environ.get("VG_METRICS_HOST", s.metrics_host)
+        s.model.stub_fault_file = os.environ.get("VG_STUB_FAULT_FILE", s.model.stub_fault_file)
         return s
 
 

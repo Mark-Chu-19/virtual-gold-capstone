@@ -1,0 +1,10 @@
+# Same job for a Prometheus installed directly on the machine (no Docker):
+#   prometheus --config.file=dashboards/prometheus.native.yml
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: vg-redactor
+    static_configs:
+      - targets: ["127.0.0.1:9100"]

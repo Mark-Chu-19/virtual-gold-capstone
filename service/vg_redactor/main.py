@@ -16,12 +16,12 @@ def build():
     settings = Settings.load()
     components = build_stub_components(Policy.load(CONFIG_DIR / "policy.yaml"))
     client = (OllamaModelClient(settings.model.ollama_url, settings.model.model_name)
-              if settings.model.backend == "ollama" else StubModelClient())
+              if settings.model.backend == "ollama" else StubModelClient(settings.model.stub_fault_file))
     metrics = Metrics()
     return settings, create_app(settings, components, client, metrics), metrics
 
 
 if __name__ == "__main__":
     settings, app, metrics = build()
-    start_http_server(settings.metrics_port, addr="127.0.0.1", registry=metrics.registry)
+    start_http_server(settings.metrics_port, addr=settings.metrics_host, registry=metrics.registry)
     uvicorn.run(app, host="127.0.0.1", port=8080)  # one worker only: records are in-process

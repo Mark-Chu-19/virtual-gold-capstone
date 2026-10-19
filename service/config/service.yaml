@@ -10,6 +10,7 @@ max_records: 1000
 allow_list_in_degraded: false
 audit_log_path: logs/audit.jsonl
 metrics_port: 9100
+metrics_host: 127.0.0.1           # local only; see dashboards/README.md for Docker on macOS
 model:
   backend: stub                   # stub | ollama
   ollama_url: http://127.0.0.1:11434

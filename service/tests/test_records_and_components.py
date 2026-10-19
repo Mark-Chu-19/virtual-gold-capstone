@@ -62,3 +62,23 @@ def test_segment_tags_sources():
     srcs = {sg.field: sg.source for sg in segment("p", email)}
     assert srcs == {"purpose": "purpose", "email.subject": "subject", "email.body": "body",
                     "email.thread[0].text": "quoted_thread"}
+
+
+async def test_stub_model_fault_file(tmp_path):
+    import pytest as _pytest
+    from vg_redactor.contracts.errors import ModelTimeout, ModelUnavailable
+    from vg_redactor.model.client import StubModelClient
+    f = tmp_path / "fault"
+    m = StubModelClient(str(f))
+    assert await m.ping() and await m.generate("DETECT\n[]", prompt_name="detection", deadline_ms=100) == "[]"
+    f.write_text("down")
+    assert not await m.ping()
+    with _pytest.raises(ModelUnavailable):
+        await m.generate("DETECT\n[]", prompt_name="detection", deadline_ms=100)
+    f.write_text("timeout")
+    with _pytest.raises(ModelTimeout):
+        await m.generate("DETECT\n[]", prompt_name="detection", deadline_ms=100)
+    f.write_text("garbage")
+    assert (await m.generate("DETECT\n[]", prompt_name="detection", deadline_ms=100)).startswith("<<")
+    f.unlink()
+    assert await m.ping()

@@ -33,6 +33,7 @@ class ScriptedModel(StubModelClient):
     version = "model-scripted"
 
     def __init__(self):
+        super().__init__()
         self.mode = {"detection": "ok", "assessment": "ok"}
         self.up = True
 
