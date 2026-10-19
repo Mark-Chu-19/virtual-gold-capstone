@@ -93,7 +93,7 @@ tests/contract|failure_injection|leak|load
 
 1. 查记录 → 404(从未有过,或进程重启后)/410(已过期或已删除)。服务保留已删除/过期 id 的墓碑(只存 id,不含数据,保留 `max_ttl_seconds`),用来区分 410 与 404。
 2. `mapping` 为空 → 200 `BLOCKED` + `mapping_not_retained`。
-3. 用正则 `\[[A-Za-z]+_\d+\]`(大小写不敏感)抓出回复里所有疑似占位符;不在映射表(精确大小写)的全部进 `unmatched_placeholders`,有任意一个 → `BLOCKED` + `unknown_placeholder`(OQ9 当前结论)。
+3. (实现:此步在 `Pseudonymizer.restore` 内完成,网关只负责查记录和 `mapping_not_retained`)用正则 `\[[A-Za-z]+_\d+\]`(大小写不敏感)抓出回复里所有疑似占位符;不在映射表(精确大小写)的全部进 `unmatched_placeholders`,有任意一个 → `BLOCKED` + `unknown_placeholder`(OQ9 当前结论)。
 4. 否则 `restored_text` 由 `Pseudonymizer.restore` 生成。**不消费记录**,同一 id 可重复 restore,直到 TTL 或 `DELETE`。
 
 ### 3.5 其余端点

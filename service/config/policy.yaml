@@ -1,0 +1,28 @@
+# Tier table, taxonomy and thresholds. PROVISIONAL: thresholds and taxonomy are for client review
+# (Open Questions 4 and 5). High tier cannot be overridden per request.
+policy_version: "policy-0.1.0-provisional"
+low_tier_combine_count: 3
+tiers:
+  high:   {rule: redact, threshold: 0.2}
+  medium: {rule: redact, threshold: 0.5}
+  low:    {rule: retain_unless_combined, threshold: null}
+  public: {rule: retain_if_confident, threshold: 0.5}   # score = P(private); retain when below
+taxonomy:
+  GOV_ID: high
+  CREDENTIAL: high
+  CARD_NUMBER: high
+  BANK_ACCOUNT: high
+  HEALTH: high
+  BUSINESS_CONFIDENTIAL: high
+  CODENAME: high
+  PERSON: medium
+  PHONE_PERSONAL: medium
+  EMAIL_PERSONAL: medium
+  ADDRESS_HOME: medium
+  CITY: low
+  DATE: low
+  ORG: low
+  AGE: low
+  GENDER: low
+  PHONE_PUBLIC: public
+  EMAIL_PUBLIC: public

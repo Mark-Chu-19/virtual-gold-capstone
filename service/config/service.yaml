@@ -1,0 +1,16 @@
+# Service settings. API keys come from the VG_API_KEYS environment variable (comma separated).
+timeout_ms: 15000
+model_call_timeout_ms: 6000       # provisional, set from load tests
+degraded_reserve_ms: 1500         # time kept free so the degraded path can finish
+model_concurrency: 1
+max_request_bytes: 262144
+default_ttl_seconds: 3600
+max_ttl_seconds: 86400
+max_records: 1000
+allow_list_in_degraded: false
+audit_log_path: logs/audit.jsonl
+metrics_port: 9100
+model:
+  backend: stub                   # stub | ollama
+  ollama_url: http://127.0.0.1:11434
+  model_name: llama3:8b

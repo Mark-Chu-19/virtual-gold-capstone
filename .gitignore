@@ -6,3 +6,5 @@
 node_modules/
 __pycache__/
 .venv/
+service/logs/
+.pytest_cache/

@@ -3,7 +3,7 @@
 **Version:** 0.4.2-draft &nbsp;|&nbsp; **Status:** Draft for team and client review &nbsp;|&nbsp; **Owner:** Service Engineering
 
 **Changelog (0.4.2):** Pinned down details the first implementation needs; no change to the
-architecture. Component interfaces are in `service-interfaces-v0.4.2.md`.
+architecture. Component interfaces are in `service-interfaces-v0.4.2-en.md`.
 
 - **Path.** All endpoints live under `/v1/redactions` (the workflow diagram's `POST /redact` is
   shorthand for `POST /v1/redactions`).
@@ -331,7 +331,7 @@ traffic.
 Served on a separate port bound to `127.0.0.1` (default 9100), no auth, Prometheus text format.
 Metrics hold only counts, timings, tiers, actions, and error types as bounded-cardinality labels;
 never text, detected values, or ids. Metric names and labels are listed in
-`service-interfaces-v0.4.2.md` §6.
+`service-interfaces-v0.4.2-en.md` §6.
 
 ## 4. Key Concepts
 
