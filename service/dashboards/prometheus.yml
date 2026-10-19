@@ -1,0 +1,11 @@
+# Used by docker-compose.yml. The service runs on the host, so the container reaches it through
+# host.docker.internal; for that the service must listen for metrics on an address the container
+# can reach (see dashboards/README.md, "Docker on macOS").
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: vg-redactor
+    static_configs:
+      - targets: ["host.docker.internal:9100"]
