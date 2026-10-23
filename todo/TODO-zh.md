@@ -6,7 +6,7 @@
 會議時間(美東,皆每週):客戶 週一 18:00–19:00 · 教授 週二 17:00–18:20 · 團隊 週五 15:30–16:30。
 
 > **2026-10-03 起的基準:期中簡報即團隊共識。**
-> [`meetings/client/2026-10-05/slides-midterm-en.pdf`](../meetings/client/2026-10-05/slides-midterm-en.pdf) 已經團隊內部討論並與教授確認。
+> [`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<../meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>) 已經團隊內部討論並與教授確認。
 > 9/28 客戶會議、9/29 教授會議、10/2 團隊會議都沒有其他紀錄。這裡較早的條目、9/27 團隊筆記或研究文件與簡報不一致時,一律以簡報為準。
 > 簡報定下的事記在決策紀錄(日期 2026-10-03 的各列)。因簡報而過時的項目列在[已結案與取代](#已結案與取代),並附原因。原文留在 git 紀錄。
 

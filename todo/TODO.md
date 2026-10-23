@@ -6,7 +6,7 @@ Fill in **Owner** and **Due** at the team meeting. Chinese version: [`TODO-zh.md
 Meeting cadence (US Eastern, all weekly): client Monday 18:00–19:00 · professor Tuesday 17:00–18:20 · team Friday 15:30–16:30.
 
 > **Baseline as of 2026-10-03: the midterm deck is the team consensus.**
-> [`meetings/client/2026-10-05/slides-midterm-en.pdf`](../meetings/client/2026-10-05/slides-midterm-en.pdf) was agreed inside the team and with the professor.
+> [`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<../meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>) was agreed inside the team and with the professor.
 > No other notes from the Sep 28 client meeting, the Sep 29 professor meeting or the Oct 2 team meeting exist. Where an earlier entry here, the Sep 27 team notes or a research document disagrees with the deck, the deck wins.
 > The decisions it settles are in the decision log (rows dated 2026-10-03). Items it made obsolete are listed in [Closed and superseded](#closed-and-superseded) with the reason. Their full text is in git history.
 

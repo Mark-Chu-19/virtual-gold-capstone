@@ -7,7 +7,7 @@ We are building and evaluating a **local sanitization service**: a standalone HT
 
 > **Direction set at the Sep 21 client meeting:** the horizontal scenario (this service) first; the vertical scenario (a trading assistant over public filings) deferred to time-permitting status. Anything in this repository written before that date describes the earlier design, a hybrid assistant with confidence-based escalation.
 >
-> **Current baseline (2026-10-03): the midterm deck** [`meetings/client/2026-10-05/slides-midterm-en.pdf`](meetings/client/2026-10-05/slides-midterm-en.pdf) is the team consensus, agreed inside the team and with the professor. Where any older document disagrees with it, the deck wins. Its decisions are in the `todo/TODO.md` decision log (rows dated 2026-10-03).
+> **Current baseline (2026-10-03): the midterm deck** [`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>) is the team consensus, agreed inside the team and with the professor. Where any older document disagrees with it, the deck wins. Its decisions are in the `todo/TODO.md` decision log (rows dated 2026-10-03).
 
 ## Where we are (Week 6, updated 2026-10-03)
 
@@ -57,7 +57,7 @@ Milestones from the deck: Oct 11 contract 0.4.2 and service skeleton · Nov 1 en
 ## Read this first
 
 **Until architecture v0.4 exists, the source of truth is the midterm deck,
-[`meetings/client/2026-10-05/slides-midterm-en.pdf`](meetings/client/2026-10-05/slides-midterm-en.pdf)**,
+[`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>)**,
 together with the 2026-10-03 rows of the `todo/TODO.md` decision log.
 
 > **Note (2026-09-27):** v0.3 describes the pre-pivot design (hybrid assistant with confidence-based
@@ -112,10 +112,10 @@ Sections in the document:
 │   │   ├── 2026-09-03/            notes-gemini-en.docx
 │   │   ├── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
 │   │   ├── 2026-09-21/            agenda-{en,zh}.html · notes-gemini-en.pdf
-│   │   │                          briefing-security-deidentification-en.{html,pdf} (Yudi)
+│   │   │                          briefing-security-deidentification-en.html (Yudi)
 │   │   │                          financial-data-sources-en.pdf · email-aarvin-onboarding-en.md
 │   │   ├── 2026-09-28/            agenda-{en,zh}.html
-│   │   └── 2026-10-05/            slides-midterm-en.pdf   midterm presentation, the current baseline
+│   │   └── 2026-10-05/            Midterm Client Presentation Slides(Virtual Gold).pdf   midterm presentation as given, the current baseline
 │   ├── team/                      internal team meetings, not shared with the client
 │   │   ├── 2026-09-18/            agenda-en.html · agenda-zh.html
 │   │   └── 2026-09-27/            agenda-{en,zh}.html · notes-{en,zh}.md · deferred-{en,zh}.md
