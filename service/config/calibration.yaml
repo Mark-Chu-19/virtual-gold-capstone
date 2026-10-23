@@ -1,0 +1,9 @@
+# Calibration table: raw model score -> observed share of private items, fitted offline on
+# held-out labelled emails with vg_redactor.privacy.fit_table. Identity until that data exists.
+#
+# Fitted form:
+#   version: "calibration-2026-11-01"
+#   edges: [0.5, 0.7, 0.9, 1.0]     # upper bin edges
+#   rates: [0.10, 0.30, 0.50, 0.70] # non-decreasing
+identity: true
+version: "calibration-identity-0"

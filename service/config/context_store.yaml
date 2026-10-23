@@ -1,0 +1,9 @@
+# Static context store, supplied by the client and loaded once at startup.
+# A change to either list is a new deployment: bump `version`.
+version: "context-0.1.0-empty"
+# Project code names, deal names, key counterparties. Every match (case-insensitive, whole word)
+# becomes a High-tier CODENAME candidate and is always redacted.
+term_list: []
+# Known-public values (published support lines, company names). Exact match only.
+# Never applies to High-tier types.
+allow_list: []

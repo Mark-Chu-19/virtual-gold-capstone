@@ -10,8 +10,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-asyncio>=0.23"]
+# Privacy Research components; also run: python -m spacy download en_core_web_lg
+privacy = ["presidio-analyzer>=2.2"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+include = ["vg_redactor*"]

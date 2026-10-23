@@ -1,15 +1,20 @@
 # vg_redactor: local redaction service (contract 0.4.2)
 
-W9 skeleton: gateway, record store, model adapter, orchestrator, metrics, audit log. Components
-that other teammates own run as **stubs** (`vg_redactor/stubs/components.py`) behind the exact
+W9 skeleton: gateway, record store, model adapter, orchestrator, metrics, audit log. The Privacy
+Research components (`vg_redactor/privacy/`) are wired in by default; the remaining components
+(prompts and parsers) run as **stubs** (`vg_redactor/stubs/components.py`) behind the exact
 signatures in `vg_redactor/contracts/components.py`.
 
 ```bash
 cd service
-pip install -e ".[dev]"
+pip install -e ".[dev,privacy]"
+python -m spacy download en_core_web_lg             # Presidio's English model (~400 MB)
 VG_API_KEYS=dev-key python -m vg_redactor.main      # API on :8080, metrics on 127.0.0.1:9100
 python -m pytest                                    # contract, failure-injection, leak tests
 ```
+
+To run without Presidio, install `pip install -e ".[dev]"` and start with
+`VG_COMPONENTS=stub VG_API_KEYS=dev-key python -m vg_redactor.main`, which uses the original stubs.
 
 Monitoring (Prometheus + Grafana, 8-panel dashboard, traffic generator): see `dashboards/README.md`.
 
@@ -19,7 +24,8 @@ Single process only: request records live in memory, so run one worker.
 |---|---|---|
 | `api/` `pipeline/` `model/` `records/` `obs/` | Service Eng. | gateway, orchestration, model adapter, records, metrics/logs/audit |
 | `contracts/` | shared, read-only for components | types, errors, component bundle |
-| `stubs/components.py` | replaced by component owners | segmentation, rules, Presidio, prompts, calibration, decision, pseudonymisation |
+| `privacy/` | Privacy Research | rules, Presidio, merge, calibration, decision, pseudonymisation, context store |
+| `stubs/components.py` | replaced by component owners | segmentation, prompts and parsers, restore (still in use); the rest kept for `VG_COMPONENTS=stub` |
 | `config/policy.yaml` | Privacy Research / Evaluation | tier table, taxonomy, thresholds (provisional) |
 | `config/service.yaml` | Service Eng. | timeouts, limits, model backend (`stub` or `ollama`) |
 
