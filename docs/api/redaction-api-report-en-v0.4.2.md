@@ -307,12 +307,13 @@ Repeating DELETE for an already deleted id does not extend its tombstone retenti
 
 For requests with a `session_id`, DELETE drops the record's placeholder-to-original mapping
 but preserves the session label state, even after all records in that session are deleted.
-That state includes entity types and normalized original values as label keys, plus label
-counters, to keep placeholders consistent across subsequent requests in the same session.
+That state holds label keys of the form `TYPE|<HMAC-SHA256>` under a key generated when the
+process starts, plus label counters, to keep placeholders consistent across subsequent requests
+in the same session. The keys hold no original text.
 DELETE does not shorten the session expiry (extended by session requests and their record TTLs);
 the state is removed by the TTL sweep at or after expiry. It is held only in process memory
-and is also lost on process restart. DELETE therefore does not immediately release every
-reference to original values associated with the session.
+and is also lost on process restart. Because the label keys are HMACs, the state left after
+DELETE contains no original values.
 
 | Code | Meaning |
 |---|---|
