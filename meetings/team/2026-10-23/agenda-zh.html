@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10/23 團隊會議</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --serif:"Source Serif 4","PingFang TC","Noto Serif TC",Georgia,serif;
+  --sans:"Source Sans 3","PingFang TC","Noto Sans TC","Microsoft JhengHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:36px 72px}
+.page{max-width:860px;margin:0 auto}
+header{padding-bottom:22px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.intro{margin:0 0 18px;font-size:17px;line-height:1.6}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400;flex:none}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.lede{color:var(--muted);margin:6px 0 18px;font-size:16px;line-height:1.65}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:7px}
+
+/* order overview */
+.order{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 14px}
+.order li:hover{border-color:var(--gold)}
+.order a{color:inherit;text-decoration:none}
+.order .n{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.order .t{font-weight:600}
+.order .w{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.order .d{grid-column:2/-1;font-size:14px;color:var(--muted)}
+@media (max-width:600px){.order li{grid-template-columns:28px 1fr}.order .w{grid-column:2}}
+
+/* dependency chains */
+.chains{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 44px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;font-size:14px}
+.chain:last-child{margin-bottom:0}
+.chain .lab{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);width:100%}
+.node{border:1px solid var(--line);border-radius:999px;padding:3px 11px;background:var(--soft)}
+.node.today{border-color:var(--warn);background:var(--warn-soft);font-weight:600}
+.arr{color:var(--muted)}
+
+/* item cards */
+section.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 22px 18px;margin-bottom:24px;scroll-margin-top:16px}
+section.item.urgent{border-left:4px solid var(--warn)}
+section.item.soon{border-left:4px solid var(--gold)}
+section.item.later{border-left:4px solid var(--cloud)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.due{background:var(--warn-soft);color:var(--warn)}
+.opts{display:grid;gap:8px;margin:0}
+.opt{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:15px}
+.opt b{font-family:var(--mono);font-size:12px;color:var(--gold);margin-right:6px}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.links div{background:var(--soft);border-radius:8px;padding:10px 12px;font-size:14px}
+.links .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px}
+@media (max-width:600px){.links{grid-template-columns:1fr}}
+.decide{margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+.decide ul{list-style:none;padding:0;margin:0}
+.decide li{padding-left:24px;position:relative;margin-bottom:6px}
+.decide li::before{content:"";position:absolute;left:0;top:.35em;width:13px;height:13px;border:1.5px solid var(--muted);border-radius:3px}
+
+/* outcome table */
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);background:var(--soft);font-weight:500}
+td.blank{min-width:140px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media print{body{background:#fff}section.item{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">團隊會議 · 2026-10-23(週五)· 15:30–16:30 美東</div>
+  <h1>10/23:週一前要定下來的事</h1>
+  <p class="intro">Phase 1 在<strong>下週一 10/26</strong> 開始,當天晚上也是下次客戶會議;M2(端到端 pipeline)<strong>11/1</strong> 到期。下面的項目從最急排到最不急。有些項目互相牽動,所以順序很重要:先定範圍,因為 contract、測試計畫、週一要跟客戶說什麼,都跟著它走。</p>
+  <dl class="meta">
+    <div><dt>出席</dt><dd>Anmol · Karina · Mark · Yudi · Zhexuan</dd></div>
+    <div><dt>依據</dt><dd><code>todo/TODO-zh.md</code>(下方的項目編號)</dd></div>
+    <div><dt>基準</dt><dd>實際報告的期中簡報,49 頁</dd></div>
+  </dl>
+</header>
+
+<h2><span class="n">00</span>議程順序</h2>
+<p class="lede">紅色今天一定要決定。金色最好今天決定,週一才能開工。藍色簡短帶過即可。</p>
+<ol class="order">
+  <li><span class="n">01</span><a class="t" href="#routing">請求層級的路由:做還是不做?</a><span class="w">A14 · 今天</span><span class="d">卡住 contract 修改、週一要跟客戶說的內容、SOW、VG08 整合</span></li>
+  <li><span class="n">02</span><a class="t" href="#documents">只收 email,還是英文文字與文件?</a><span class="w">A15 · 今天</span><span class="d">和 01 是同一次 contract 修改;決定 Phase 1 從週一開始測什麼</span></li>
+  <li><span class="n">03</span><a class="t" href="#m2">11/1 的 M2:還是 stub 的部分誰寫</a><span class="w">B41 · 今天</span><span class="d">只剩九天;prompt 和解析器還沒有負責人</span></li>
+  <li><span class="n">04</span><a class="t" href="#model">只用一個模型:跑 Gemma 4 後選定</a><span class="w">A13 · B58</span><span class="d">03 的 prompt 要針對這個模型調</span></li>
+  <li><span class="n">05</span><a class="t" href="#truth">評測的標準答案</a><span class="w">A16 · B46 · B59 · B60</span><span class="d">Phase 1 要量 benchmark 結果;校正需要標註資料</span></li>
+  <li><span class="n">06</span><a class="t" href="#score">信心分數:誰負責哪一步</a><span class="w">A11 · A12</span><span class="d">要等 05</span></li>
+  <li><span class="n">07</span><a class="t" href="#monday">週一的客戶會議</a><span class="w">B56–B63 · D · E68</span><span class="d">Mark 週一前要寄什麼、要問什麼</span></li>
+  <li><span class="n">08</span><a class="t" href="#repo">Repo 與流程</a><span class="w">B64 · B65 · B35</span><span class="d">五分鐘</span></li>
+</ol>
+
+<div class="chains" aria-label="各項目之間的依賴關係">
+  <div class="chain"><span class="lab">範圍</span><span class="node today">01 路由</span><span class="node today">02 文件輸入</span><span class="arr">→</span><span class="node">修改 contract</span><span class="arr">→</span><span class="node">把 contract 寄給 Alex 與 Aarvin(B62)</span><span class="arr">→</span><span class="node">VG08 整合與凍結,11/15</span></div>
+  <div class="chain"><span class="lab">建置</span><span class="node">04 模型</span><span class="arr">→</span><span class="node today">03 prompt 與解析器</span><span class="arr">→</span><span class="node">M2 端到端,11/1</span><span class="arr">→</span><span class="node">壓測,11/8</span></div>
+  <div class="chain"><span class="lab">評測</span><span class="node">05 標準答案</span><span class="arr">→</span><span class="node">資料集放進 <code>data/</code></span><span class="arr">→</span><span class="node">06 校正擬合</span><span class="arr">→</span><span class="node">門檻與消融(B47)</span></div>
+  <div class="chain"><span class="lab">客戶</span><span class="node today">01 + 02 的答案</span><span class="arr">→</span><span class="node">07 週一會議</span><span class="arr">→</span><span class="node">SOW 簽署(E68)</span></div>
+</div>
+
+<section class="item urgent" id="routing">
+  <h2><span class="n">01</span>請求層級的路由:做還是不做?</h2>
+  <div class="tags"><span class="tag">A14</span><span class="tag">Mark · Zhexuan</span><span class="tag due">今天決定</span></div>
+  <p class="lede">給客戶看的和我們做出來的不一致。客戶看到的有路由;contract 和程式都沒有。</p>
+  <h3>我們說過的</h3>
+  <ul class="points">
+    <li>定稿簡報:「Tier + routing rules」是交付物(第 5 頁);服務要「redact and apply routing」,VG08 要「check release eligibility」(第 33 頁);Phase 2 要「check routing before cloud use」(第 45 頁);dashboard 統計路由狀態(第 37 頁)。</li>
+    <li>客戶手上的 SOW(<code>Scope of Work -  20261005.docx</code>)還寫了「獨立的請求路由政策,決定整個請求留在本地還是可以送出」。</li>
+  </ul>
+  <h3>我們做出來的</h3>
+  <ul class="points">
+    <li>2026-10-03 決策紀錄:不整封擋下(<code>LOCAL_ONLY</code>)。</li>
+    <li>Contract 0.4.2 拿掉了請求層級的判斷;<code>service/</code> 只回傳 span,每個 span 附等級與動作。</li>
+  </ul>
+  <h3>可以選的做法</h3>
+  <div class="opts">
+    <div class="opt"><b>A</b>服務回傳一個請求層級的狀態(例如「可送出」或「留在本地」),由程式依偵測到的等級與類別計算。符合簡報和 SOW。需要改 contract、一張規則表和測試。</div>
+    <div class="opt"><b>B</b>服務只回報,由 VG08 決定。回應裡已經有每個 span 的等級;再加一段簡短摘要(各等級數量、degraded 旗標),讓 VG08 套用自己的送出規則。改動最小;但仍要清楚告訴客戶。</div>
+    <div class="opt"><b>C</b>不在範圍內。週一告訴客戶路由是 VG08 的工作,並在簽署前把 SOW 的寫法收窄。</div>
+  </div>
+  <div class="links">
+    <div><span class="k">會卡住</span>02(同一次 contract 修改)、B62 寄 contract、E68 SOW 簽署、M4 VG08 整合</div>
+    <div><span class="k">真正的期限</span>11/15 contract 凍結;週一的客戶會議</div>
+  </div>
+  <div class="decide"><h3>今天要定</h3><ul><li>選 A、B 還是 C</li><li>誰改 contract、何時完成(建議:Phase 2 在 11/2 開始前)</li><li>Mark 週一怎麼跟客戶說明</li></ul></div>
+</section>
+
+<section class="item urgent" id="documents">
+  <h2><span class="n">02</span>只收 email,還是英文文字與文件?</h2>
+  <div class="tags"><span class="tag">A15</span><span class="tag">Zhexuan · Mark</span><span class="tag due">今天決定</span></div>
+  <p class="lede">Phase 1 週一開始,簡報上寫的是「Test English text and documents」。但目前 API 只接受 email。</p>
+  <ul class="points">
+    <li>9/28 客戶會議對齊:現階段輸入語言與文件限英文。</li>
+    <li>定稿第 4、5、45 頁與 SOW:輸入是英文文字與文件;email benchmark 只是第一個格式,不是上限。</li>
+    <li>Contract 0.4.2:只有 email 結構(purpose、from/to/cc、subject、body、thread);附件與 OCR 不在範圍內。</li>
+  </ul>
+  <h3>可以選的做法</h3>
+  <div class="opts">
+    <div class="opt"><b>A</b>加第二種請求格式:純文件文字,加上選填的來源標記。切段本來就是逐欄位處理,所以 pipeline 大致不用動。需要改 contract、驗證與測試。</div>
+    <div class="opt"><b>B</b>這學期只收 email,並且講清楚:「文件」指呼叫方貼進 body 的文字。程式不用改,但說法會變窄。</div>
+  </div>
+  <div class="links">
+    <div><span class="k">取決於</span>01(兩者同一次改 contract)</div>
+    <div><span class="k">會卡住</span>Phase 1 測試計畫;100 封信 benchmark 能宣稱到什麼程度</div>
+  </div>
+  <div class="decide"><h3>今天要定</h3><ul><li>選 A 還是 B</li><li>如果選 A:文件請求要帶哪些欄位、誰來寫</li></ul></div>
+</section>
+
+<section class="item urgent" id="m2">
+  <h2><span class="n">03</span>11/1 的 M2:還是 stub 的部分誰寫</h2>
+  <div class="tags"><span class="tag">B41</span><span class="tag">Zhexuan · Anmol</span><span class="tag due">11/1 到期</span></div>
+  <p class="lede">Gateway、紀錄、失效路徑(PR #7)與隱私研究元件(PR #8)都已合併並通過測試。下面這些還是 stub,所以 pipeline 還沒辦法用真的模型端到端跑。</p>
+  <ul class="points">
+    <li><strong>偵測與評估的 prompt 及其解析器</strong>(模型工作)。一個本地模型、兩個獨立 prompt(簡報第 25、28 頁)。</li>
+    <li><strong>切段</strong>:分成正文、引用串、簽名,並附來源標記(第 24 頁)。</li>
+    <li><strong>Restore</strong> 用的是 stub 版本,已符合 0.4.2。</li>
+    <li>Ollama 後端已經寫在 <code>service/vg_redactor/model/client.py</code>,但從沒跑過一次完整請求。</li>
+  </ul>
+  <div class="links">
+    <div><span class="k">取決於</span>04(prompt 要針對一個模型調)</div>
+    <div><span class="k">會卡住</span>壓測(11/8)、Phase 1 的量測、在真實 pipeline 上比較 Gemma</div>
+  </div>
+  <div class="decide"><h3>今天要定</h3><ul><li>prompt 與解析器的負責人、切段的負責人</li><li>第一次用 Ollama 端到端跑的日期(建議:10/28)</li></ul></div>
+</section>
+
+<section class="item soon" id="model">
+  <h2><span class="n">04</span>只用一個模型:跑 Gemma 4 後選定</h2>
+  <div class="tags"><span class="tag">A13</span><span class="tag">B58</span><span class="tag">Anmol · Mark</span></div>
+  <ul class="points">
+    <li>初步 benchmark(10/5):透過 Groq 與 OpenRouter 跑了 Llama 3.1 8B 與 Qwen 2.5 7B;兩者都勝過規則加 Presidio,且接近雲端模型。</li>
+    <li>Aarvin:試試 Gemma,現階段只用一個模型;之後再透過 middleware 支援換模型(決策紀錄 2026-10-05)。</li>
+    <li><code>service/config/service.yaml</code> 目前寫的是 <code>llama3:8b</code>。</li>
+    <li>Gemma 的結果也要放進 Aarvin 要的一頁 benchmark 報告(B57)。</li>
+  </ul>
+  <div class="decide"><h3>今天要定</h3><ul><li>誰跑 Gemma 4、何時完成</li><li>選模型的標準:先看 High 與 Medium 的洩漏率,再看速度?</li></ul></div>
+</section>
+
+<section class="item soon" id="truth">
+  <h2><span class="n">05</span>評測的標準答案</h2>
+  <div class="tags"><span class="tag">A16</span><span class="tag">B46 · B59 · B60</span><span class="tag">Karina</span></div>
+  <p class="lede">10/5 Aarvin 問我們怎麼信任產生出來的資料集。我們同意另外找一個已標註好的資料集(網路或 Kaggle)當標準答案。</p>
+  <ul class="points">
+    <li>100 封信資料集(999 個項目、18 種類型)已經做好,但還沒放進 repo(<code>data/</code> 還不存在)。</li>
+    <li>建議的分工:外部資料集負責 recall 與校正;100 封信負責我們設計針對的主管信件案例(情境案例、轉寄串、攻擊信件、56 個沒有單一名稱的商業機密)。</li>
+    <li>B60:寫一段簡短說明,交代 100 封信怎麼產生、怎麼檢查(誰標註、抽查方式、一致性)。</li>
+  </ul>
+  <div class="links">
+    <div><span class="k">會卡住</span>06 校正擬合、B47 baseline 與消融、Phase 1 的量測</div>
+    <div><span class="k">另外</span>B61 的隱晦資訊測試要用到那 56 個商業機密項目</div>
+  </div>
+  <div class="decide"><h3>今天要定</h3><ul><li>同意分工方式</li><li>誰去找外部資料集;100 封信放進 <code>data/</code> 的日期</li></ul></div>
+</section>
+
+<section class="item soon" id="score">
+  <h2><span class="n">06</span>信心分數:誰負責哪一步</h2>
+  <div class="tags"><span class="tag">A11</span><span class="tag">A12</span><span class="tag">Anmol · Yudi · Karina</span></div>
+  <ul class="points">
+    <li>方法已定(簡報第 17 頁):模型原始分數,用標註資料分組校正。校正程式已合併(<code>privacy/calibration.py</code>,擬合前是恆等函數)。</li>
+    <li>尚未確認的分工提案:Anmol 產生原始分數;Yudi 負責校正擬合;Karina 從評測結果決定門檻;API 傳校正後的分數,並加 <code>score_method</code> 欄位。</li>
+    <li>A12 備案:如果分數沒有鑑別力(8B 模型自報信心會飽和),改用偵測器共識或重複執行。10/5 Aarvin 也提出同樣的疑慮。</li>
+  </ul>
+  <div class="decide"><h3>今天要定</h3><ul><li>確認分工</li><li>什麼時候檢查分數有沒有鑑別力(第一批 baseline 數字出來時)</li></ul></div>
+</section>
+
+<section class="item soon" id="monday">
+  <h2><span class="n">07</span>週一的客戶會議(10/26 18:00)</h2>
+  <div class="tags"><span class="tag">B56–B63</span><span class="tag">D49 · D50 · D51 · D52</span><span class="tag">E68</span><span class="tag">Mark</span></div>
+  <h3>Mark 週一前要寄的</h3>
+  <ul class="points">
+    <li>B56 benchmark 結果與期中簡報 · B57 一頁 benchmark 報告(04 完成的話加上 Gemma)· B63 資訊分類表。</li>
+    <li>B62 contract 0.4.2 要等 01 與 02。</li>
+  </ul>
+  <h3>週一要問的</h3>
+  <ul class="points">
+    <li>D49 請客戶審閱分級表與機密詞表(沒有詞表,商業機密偵測不到)。</li>
+    <li>D50 請求能否標示每段文字的來源 · D52 Phase 2 要用的 VG08 存取(11/2 起)· D51 GPU 或沙盒,9/15 起都還沒回覆。</li>
+    <li>E68 SOW 還沒簽;等 01、02 確定 SOW 的寫法後,再約定簽署時間。</li>
+  </ul>
+  <div class="decide"><h3>今天要定</h3><ul><li>01 和 02 由誰向客戶報告</li><li>SOW 的寫法要不要在簽署前修改</li></ul></div>
+</section>
+
+<section class="item later" id="repo">
+  <h2><span class="n">08</span>Repo 與流程</h2>
+  <div class="tags"><span class="tag">B64</span><span class="tag">B65</span><span class="tag">B35</span></div>
+  <ul class="points">
+    <li><strong>B64</strong>(Zhexuan):<code>docs/api/</code> 需要更新一次。中文版介面文件還是動工前的計畫;兩份都沒提到 <code>privacy/</code>;contract 沒有中文版。</li>
+    <li><strong>B65</strong>:每個 PR 合併前都要經過一次審查。PR #7 是作者自己合併的。Mark 可能會開啟分支保護。</li>
+    <li><strong>B35</strong>(Karina):關掉 PR #3、#4、#5(轉向前的 vertical 情境)。</li>
+  </ul>
+</section>
+
+<h2><span class="n">09</span>結論</h2>
+<p class="lede">開會時填;會後寫進 <code>todo/TODO-zh.md</code> 與決策紀錄。</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>#</th><th>項目</th><th>決定</th><th>負責人</th><th>期限</th></tr></thead>
+  <tbody>
+    <tr><td>01</td><td>路由(A14)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>02</td><td>文件輸入(A15)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>03</td><td>M2 的 stub(B41)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>04</td><td>模型(A13、B58)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>05</td><td>標準答案(A16、B46、B59、B60)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>06</td><td>信心分數(A11、A12)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>07</td><td>週一客戶會議</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>08</td><td>Repo 與流程</td><td class="blank"></td><td></td><td></td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer>Virtual Gold capstone · 內部團隊會議,不對客戶公開 · 2026-10-23 · 英文版:<a href="agenda-en.html">agenda-en.html</a></footer>
+</div>
+</body>
+</html>
