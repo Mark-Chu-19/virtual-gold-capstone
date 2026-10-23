@@ -125,14 +125,13 @@ Sections in the document:
 │   └── TODO-zh.md                 Traditional Chinese
 ├── reference/                     inputs we did NOT write; read-only
 │   ├── client/                    Virtual Gold Inc - AI Assistant.pdf          original capstone brief
-│   ├── course/                    Proposed Weekly Structure.pdf                15-week course structure we must follow
-│   └── team/                      Virtual_Gold_Data_Architecture_Proposal_1.docx   teammate proposal (merged into v0.2)
+│   └── course/                    Proposed Weekly Structure.pdf                15-week course structure we must follow
 ├── .github/                       CODEOWNERS, pull_request_template.md
 ├── src/                           (not created yet) prototype code
 └── data/                          (not created yet) synthetic datasets and benchmark subsets; never real data
 ```
 
-Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, research), `meetings/` is everything about one meeting in one place, `reference/` is what we were handed (client, course, or a teammate), `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
+Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, research), `meetings/` is everything about one meeting in one place, `reference/` is what we were handed (client or course), `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
 
 ### Naming conventions
 
