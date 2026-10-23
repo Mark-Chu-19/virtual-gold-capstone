@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oct 23 Team Meeting</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:36px 72px}
+.page{max-width:860px;margin:0 auto}
+header{padding-bottom:22px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.intro{margin:0 0 18px;font-size:17px;line-height:1.6}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400;flex:none}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.lede{color:var(--muted);margin:6px 0 18px;font-size:16px;line-height:1.65}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:7px}
+
+/* order overview */
+.order{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 14px}
+.order li:hover{border-color:var(--gold)}
+.order a{color:inherit;text-decoration:none}
+.order .n{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.order .t{font-weight:600}
+.order .w{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.order .d{grid-column:2/-1;font-size:14px;color:var(--muted)}
+@media (max-width:600px){.order li{grid-template-columns:28px 1fr}.order .w{grid-column:2}}
+
+/* dependency chains */
+.chains{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 44px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;font-size:14px}
+.chain:last-child{margin-bottom:0}
+.chain .lab{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);width:100%}
+.node{border:1px solid var(--line);border-radius:999px;padding:3px 11px;background:var(--soft)}
+.node.today{border-color:var(--warn);background:var(--warn-soft);font-weight:600}
+.arr{color:var(--muted)}
+
+/* item cards */
+section.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 22px 18px;margin-bottom:24px;scroll-margin-top:16px}
+section.item.urgent{border-left:4px solid var(--warn)}
+section.item.soon{border-left:4px solid var(--gold)}
+section.item.later{border-left:4px solid var(--cloud)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.due{background:var(--warn-soft);color:var(--warn)}
+.opts{display:grid;gap:8px;margin:0}
+.opt{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:15px}
+.opt b{font-family:var(--mono);font-size:12px;color:var(--gold);margin-right:6px}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.links div{background:var(--soft);border-radius:8px;padding:10px 12px;font-size:14px}
+.links .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px}
+@media (max-width:600px){.links{grid-template-columns:1fr}}
+.decide{margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+.decide ul{list-style:none;padding:0;margin:0}
+.decide li{padding-left:24px;position:relative;margin-bottom:6px}
+.decide li::before{content:"";position:absolute;left:0;top:.35em;width:13px;height:13px;border:1.5px solid var(--muted);border-radius:3px}
+
+/* outcome table */
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);background:var(--soft);font-weight:500}
+td.blank{min-width:140px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media print{body{background:#fff}section.item{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">Team meeting · Friday 2026-10-23 · 15:30–16:30 ET</div>
+  <h1>Oct 23: what we need to settle before Monday</h1>
+  <p class="intro">Phase 1 starts <strong>Monday Oct 26</strong>, the same evening as the next client meeting, and M2 (end-to-end pipeline) is due <strong>Nov 1</strong>. The items below run from most urgent to least. Several depend on each other, so the order matters: settle the scope first, because the contract, the test plan and what we tell the client on Monday all follow from it.</p>
+  <dl class="meta">
+    <div><dt>Who</dt><dd>Anmol · Karina · Mark · Yudi · Zhexuan</dd></div>
+    <div><dt>Source</dt><dd><code>todo/TODO.md</code> (item numbers below)</dd></div>
+    <div><dt>Baseline</dt><dd>Midterm deck as presented, 49 slides</dd></div>
+  </dl>
+</header>
+
+<h2><span class="n">00</span>Running order</h2>
+<p class="lede">Red needs a decision today. Gold should be decided today so work can start Monday. Blue can be short.</p>
+<ol class="order">
+  <li><span class="n">01</span><a class="t" href="#routing">Request-level routing: in or out?</a><span class="w">A14 · today</span><span class="d">Blocks the contract change, the Monday message to the client, the SOW and VG08 integration</span></li>
+  <li><span class="n">02</span><a class="t" href="#documents">Email only, or English text and documents?</a><span class="w">A15 · today</span><span class="d">Same contract change as 01; decides what Phase 1 tests from Monday</span></li>
+  <li><span class="n">03</span><a class="t" href="#m2">M2 by Nov 1: who writes what is still a stub</a><span class="w">B41 · today</span><span class="d">Nine days left; prompts and parsers have no owner yet</span></li>
+  <li><span class="n">04</span><a class="t" href="#model">One model: run Gemma 4 and pick</a><span class="w">A13 · B58</span><span class="d">The prompts in 03 are tuned against this model</span></li>
+  <li><span class="n">05</span><a class="t" href="#truth">Ground truth for evaluation</a><span class="w">A16 · B46 · B59 · B60</span><span class="d">Phase 1 measures benchmark results; calibration needs labelled data</span></li>
+  <li><span class="n">06</span><a class="t" href="#score">Confidence score: who builds which step</a><span class="w">A11 · A12</span><span class="d">Waits on 05</span></li>
+  <li><span class="n">07</span><a class="t" href="#monday">Monday's client meeting</a><span class="w">B56–B63 · D · E68</span><span class="d">What Mark sends before Monday and what we ask</span></li>
+  <li><span class="n">08</span><a class="t" href="#repo">Repo and process</a><span class="w">B64 · B65 · B35</span><span class="d">Five minutes</span></li>
+</ol>
+
+<div class="chains" aria-label="How the items depend on each other">
+  <div class="chain"><span class="lab">Scope chain</span><span class="node today">01 routing</span><span class="node today">02 documents</span><span class="arr">→</span><span class="node">contract update</span><span class="arr">→</span><span class="node">send contract to Alex and Aarvin (B62)</span><span class="arr">→</span><span class="node">VG08 integration and freeze, Nov 15</span></div>
+  <div class="chain"><span class="lab">Build chain</span><span class="node">04 model</span><span class="arr">→</span><span class="node today">03 prompts and parsers</span><span class="arr">→</span><span class="node">M2 end to end, Nov 1</span><span class="arr">→</span><span class="node">load test, Nov 8</span></div>
+  <div class="chain"><span class="lab">Evaluation chain</span><span class="node">05 ground truth</span><span class="arr">→</span><span class="node">dataset in <code>data/</code></span><span class="arr">→</span><span class="node">06 calibration fit</span><span class="arr">→</span><span class="node">thresholds and ablation (B47)</span></div>
+  <div class="chain"><span class="lab">Client chain</span><span class="node today">01 + 02 answer</span><span class="arr">→</span><span class="node">07 Monday meeting</span><span class="arr">→</span><span class="node">SOW signature (E68)</span></div>
+</div>
+
+<section class="item urgent" id="routing">
+  <h2><span class="n">01</span>Request-level routing: in or out?</h2>
+  <div class="tags"><span class="tag">A14</span><span class="tag">Mark · Zhexuan</span><span class="tag due">decide today</span></div>
+  <p class="lede">What we showed the client and what we built disagree. The client saw routing; the contract and the code have none.</p>
+  <h3>What we said</h3>
+  <ul class="points">
+    <li>Final deck: "Tier + routing rules" is a deliverable (slide 5); the service "redacts and applies routing" and VG08 "checks release eligibility" (slide 33); Phase 2 "checks routing before cloud use" (slide 45); the dashboard counts routing statuses (slide 37).</li>
+    <li>The SOW the client holds (<code>Scope of Work -  20261005.docx</code>) adds "a separate request-routing policy that determines whether the complete request remains local or may proceed".</li>
+  </ul>
+  <h3>What we built</h3>
+  <ul class="points">
+    <li>Decision log 2026-10-03: no whole-request block (<code>LOCAL_ONLY</code>).</li>
+    <li>Contract 0.4.2 removed the request-level decision; <code>service/</code> returns spans only, each with its tier and action.</li>
+  </ul>
+  <h3>Options</h3>
+  <div class="opts">
+    <div class="opt"><b>A</b>The service returns one request-level status (for example "release" or "keep local") computed in code from the tiers and categories found. Matches the deck and the SOW. Needs a contract change, a rule table and tests.</div>
+    <div class="opt"><b>B</b>The service reports, VG08 decides. The response already carries every span's tier; add a short summary (counts per tier, degraded flag) and let VG08 apply its own release rule. Smallest change; we still need to say this plainly to the client.</div>
+    <div class="opt"><b>C</b>Out of scope. Tell the client on Monday that routing is VG08's job and narrow the SOW wording before signature.</div>
+  </div>
+  <div class="links">
+    <div><span class="k">Blocks</span>02 (same contract change), B62 send contract, E68 SOW signature, M4 VG08 integration</div>
+    <div><span class="k">Deadline that bites</span>Contract freeze Nov 15; the client meeting on Monday</div>
+  </div>
+  <div class="decide"><h3>Decide today</h3><ul><li>A, B or C</li><li>Who changes the contract, and by when (proposed: before Phase 2 starts Nov 2)</li><li>How Mark explains it on Monday</li></ul></div>
+</section>
+
+<section class="item urgent" id="documents">
+  <h2><span class="n">02</span>Email only, or English text and documents?</h2>
+  <div class="tags"><span class="tag">A15</span><span class="tag">Zhexuan · Mark</span><span class="tag due">decide today</span></div>
+  <p class="lede">Phase 1 starts Monday with "Test English text and documents" on the deck. Today the API accepts only an email.</p>
+  <ul class="points">
+    <li>Sep 28 client meeting aligned on "English-only input language and documents" for this phase.</li>
+    <li>Final deck slides 4, 5 and 45 and the SOW: inputs are English text and documents; the email benchmark is the first format, not the limit.</li>
+    <li>Contract 0.4.2: email structure only (purpose, from/to/cc, subject, body, thread); attachments and OCR out of scope.</li>
+  </ul>
+  <h3>Options</h3>
+  <div class="opts">
+    <div class="opt"><b>A</b>Add a second request shape: plain document text plus optional source tags. Segmentation already works per field, so the pipeline mostly stays. Needs contract, validation and tests.</div>
+    <div class="opt"><b>B</b>Keep email only for this term and say so: "documents" means text the caller pastes into the body. No code change; the claim gets narrower.</div>
+  </div>
+  <div class="links">
+    <div><span class="k">Depends on</span>01 (one contract change for both)</div>
+    <div><span class="k">Blocks</span>The Phase 1 test plan; what the 100-email benchmark can claim</div>
+  </div>
+  <div class="decide"><h3>Decide today</h3><ul><li>A or B</li><li>If A: what a document request carries, and who writes it</li></ul></div>
+</section>
+
+<section class="item urgent" id="m2">
+  <h2><span class="n">03</span>M2 by Nov 1: who writes what is still a stub</h2>
+  <div class="tags"><span class="tag">B41</span><span class="tag">Zhexuan · Anmol</span><span class="tag due">due Nov 1</span></div>
+  <p class="lede">The gateway, records, failure path (PR #7) and the Privacy Research components (PR #8) are merged and tested. The pieces below are still stubs, so the pipeline cannot run end to end on a real model yet.</p>
+  <ul class="points">
+    <li><strong>Detection and assessment prompts and their parsers</strong> (Model Work). Two independent prompts, one local model (deck slides 25, 28).</li>
+    <li><strong>Segmentation</strong> into body, quoted thread and signature with source tags (slide 24).</li>
+    <li><strong>Restore</strong> uses the stub version, which already meets 0.4.2.</li>
+    <li>The Ollama backend exists in <code>service/vg_redactor/model/client.py</code> but has never run a full request.</li>
+  </ul>
+  <div class="links">
+    <div><span class="k">Depends on</span>04 (prompts are tuned for one model)</div>
+    <div><span class="k">Blocks</span>Load test (Nov 8), Phase 1 measurements, the Gemma comparison on the real pipeline</div>
+  </div>
+  <div class="decide"><h3>Decide today</h3><ul><li>Owner for prompts and parsers, owner for segmentation</li><li>Date of the first end-to-end run on Ollama (proposed: Oct 28)</li></ul></div>
+</section>
+
+<section class="item soon" id="model">
+  <h2><span class="n">04</span>One model: run Gemma 4 and pick</h2>
+  <div class="tags"><span class="tag">A13</span><span class="tag">B58</span><span class="tag">Anmol · Mark</span></div>
+  <ul class="points">
+    <li>Preliminary benchmark (Oct 5): Llama 3.1 8B and Qwen 2.5 7B through Groq and OpenRouter; both beat rules plus Presidio and came close to the cloud model.</li>
+    <li>Aarvin: try Gemma, and stick to one model for now; swappability later through middleware (decision log 2026-10-05).</li>
+    <li><code>service/config/service.yaml</code> says <code>llama3:8b</code> today.</li>
+    <li>Gemma results also go into the one-page benchmark report Aarvin asked for (B57).</li>
+  </ul>
+  <div class="decide"><h3>Decide today</h3><ul><li>Who runs Gemma 4, by when</li><li>The rule for picking: leak rate on High and Medium first, then speed?</li></ul></div>
+</section>
+
+<section class="item soon" id="truth">
+  <h2><span class="n">05</span>Ground truth for evaluation</h2>
+  <div class="tags"><span class="tag">A16</span><span class="tag">B46 · B59 · B60</span><span class="tag">Karina</span></div>
+  <p class="lede">On Oct 5 Aarvin asked how we can trust a generated dataset. We agreed to also source an already-labelled dataset (internet or Kaggle) as ground truth.</p>
+  <ul class="points">
+    <li>The 100-email set (999 items, 18 types) is built but not in the repo (<code>data/</code> does not exist yet).</li>
+    <li>Proposed split: the external set for recall and calibration; the 100 emails for the executive-email cases our design is about (context cases, forwarded threads, attacks, 56 business secrets with no single name).</li>
+    <li>B60: a short note on how the 100 emails were made and checked (who labelled, spot checks, agreement).</li>
+  </ul>
+  <div class="links">
+    <div><span class="k">Blocks</span>06 calibration fit, B47 baseline and ablation, Phase 1 measurements</div>
+    <div><span class="k">Also</span>B61 complex obfuscation tests use the 56 business-secret items</div>
+  </div>
+  <div class="decide"><h3>Decide today</h3><ul><li>Agree the split</li><li>Who looks for the external set, and the date the 100 emails go into <code>data/</code></li></ul></div>
+</section>
+
+<section class="item soon" id="score">
+  <h2><span class="n">06</span>Confidence score: who builds which step</h2>
+  <div class="tags"><span class="tag">A11</span><span class="tag">A12</span><span class="tag">Anmol · Yudi · Karina</span></div>
+  <ul class="points">
+    <li>Method is fixed (deck slide 17): raw model score, calibrated by binning on labelled data. The calibration code is merged (<code>privacy/calibration.py</code>, identity until fitted).</li>
+    <li>Proposed split, still unconfirmed: Anmol produces the raw score; Yudi owns the calibration fit; Karina picks thresholds from evaluation; the API carries the calibrated score with a <code>score_method</code> field.</li>
+    <li>A12 fallback if scores do not discriminate (8B models' self-stated confidence saturates): detector agreement or repeated runs. Aarvin raised the same doubt on Oct 5.</li>
+  </ul>
+  <div class="decide"><h3>Decide today</h3><ul><li>Confirm the split</li><li>When to check whether scores discriminate (first baseline numbers)</li></ul></div>
+</section>
+
+<section class="item soon" id="monday">
+  <h2><span class="n">07</span>Monday's client meeting (Oct 26, 18:00)</h2>
+  <div class="tags"><span class="tag">B56–B63</span><span class="tag">D49 · D50 · D51 · D52</span><span class="tag">E68</span><span class="tag">Mark</span></div>
+  <h3>Mark sends before Monday</h3>
+  <ul class="points">
+    <li>B56 benchmark results and the midterm slides · B57 one-page benchmark report (with Gemma if 04 is done) · B63 information-category tables.</li>
+    <li>B62 contract 0.4.2 waits on 01 and 02.</li>
+  </ul>
+  <h3>We ask on Monday</h3>
+  <ul class="points">
+    <li>D49 review of the tier table and the confidential term list (without it, business-confidential cannot be detected).</li>
+    <li>D50 whether requests can label each text's source · D52 VG08 access for Phase 2 (from Nov 2) · D51 GPU or sandbox, still open since Sep 15.</li>
+    <li>E68 the SOW is not signed yet; agree when, after 01 and 02 settle its wording.</li>
+  </ul>
+  <div class="decide"><h3>Decide today</h3><ul><li>Who presents 01 and 02 to the client</li><li>Whether the SOW wording changes before signature</li></ul></div>
+</section>
+
+<section class="item later" id="repo">
+  <h2><span class="n">08</span>Repo and process</h2>
+  <div class="tags"><span class="tag">B64</span><span class="tag">B65</span><span class="tag">B35</span></div>
+  <ul class="points">
+    <li><strong>B64</strong> (Zhexuan): <code>docs/api/</code> needs a pass. The Chinese interfaces file is still the pre-build plan; neither file mentions <code>privacy/</code>; the contract has no Chinese version.</li>
+    <li><strong>B65</strong>: every PR gets one review before merge. PR #7 was merged by its author. Mark may turn on branch protection.</li>
+    <li><strong>B35</strong> (Karina): close PRs #3, #4, #5 (pre-pivot vertical scenario).</li>
+  </ul>
+</section>
+
+<h2><span class="n">09</span>Outcomes</h2>
+<p class="lede">Fill in during the meeting; these go into <code>todo/TODO.md</code> and the decision log afterwards.</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>#</th><th>Item</th><th>Decision</th><th>Owner</th><th>Due</th></tr></thead>
+  <tbody>
+    <tr><td>01</td><td>Routing (A14)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>02</td><td>Documents input (A15)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>03</td><td>M2 stubs (B41)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>04</td><td>Model (A13, B58)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>05</td><td>Ground truth (A16, B46, B59, B60)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>06</td><td>Confidence score (A11, A12)</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>07</td><td>Monday client meeting</td><td class="blank"></td><td></td><td></td></tr>
+    <tr><td>08</td><td>Repo and process</td><td class="blank"></td><td></td><td></td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer>Virtual Gold capstone · internal team meeting, not shared with the client · 2026-10-23</footer>
+</div>
+</body>
+</html>

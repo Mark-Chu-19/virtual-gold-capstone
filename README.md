@@ -136,7 +136,8 @@ Sections in the document:
 │   │                              notes-gemini-en.pdf
 │   ├── team/                      internal team meetings, not shared with the client
 │   │   ├── 2026-09-18/            agenda-en.html · agenda-zh.html
-│   │   └── 2026-09-27/            agenda-{en,zh}.html · notes-{en,zh}.md · deferred-{en,zh}.md
+│   │   ├── 2026-09-27/            agenda-{en,zh}.html · notes-{en,zh}.md · deferred-{en,zh}.md
+│   │   └── 2026-10-23/            agenda-en.html
 │   └── professor/                 (not created yet) weekly check-ins with the faculty advisor
 ├── todo/                          team to-do: open decisions, pending actions, decision log
 │   ├── TODO.md                    English
