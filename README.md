@@ -111,10 +111,10 @@ Sections in the document:
 │   ├── client/                    meetings with Virtual Gold
 │   │   ├── 2026-09-03/            notes-gemini-en.docx
 │   │   ├── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
-│   │   ├── 2026-09-21/            agenda-{en,zh}.html · agenda-en.pdf · notes-gemini-en.pdf
+│   │   ├── 2026-09-21/            agenda-{en,zh}.html · notes-gemini-en.pdf
 │   │   │                          briefing-security-deidentification-en.{html,pdf} (Yudi)
 │   │   │                          financial-data-sources-en.pdf · email-aarvin-onboarding-en.md
-│   │   ├── 2026-09-28/            agenda-{en,zh}.html · agenda-en.pdf
+│   │   ├── 2026-09-28/            agenda-{en,zh}.html
 │   │   └── 2026-10-05/            slides-midterm-en.pdf   midterm presentation, the current baseline
 │   ├── team/                      internal team meetings, not shared with the client
 │   │   ├── 2026-09-18/            agenda-en.html · agenda-zh.html
