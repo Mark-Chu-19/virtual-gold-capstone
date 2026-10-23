@@ -15,7 +15,7 @@ We are building and evaluating a **local sanitization service**: a standalone HT
 |---|---|
 | Design: six steps in one local service ("the model judges, code decides"), three sensitivity tiers, calibrated scores, fail-safe redaction, restore as a separate call | Agreed 2026-10-03, midterm deck slides 13–32 |
 | Midterm presentation to the client | Held 2026-10-05; notes in `meetings/client/2026-10-05/` |
-| Scope of Work | `docs/sow/Scope of Work -  20261005.docx` given to the client at the midterm; signature not recorded (`todo/TODO.md` E68) |
+| Scope of Work | `docs/sow/Scope of Work -  20261005.docx` given to the client at the midterm; not signed yet (`todo/TODO.md` E68) |
 | API contract 0.4.2 and service skeleton (M1) | Done 2026-10-19, PR #7: `docs/api/`, `service/` |
 | Privacy Research components (rules, Presidio, merge, calibration, decision, pseudonymisation) | Done 2026-10-23, PR #8: `service/vg_redactor/privacy/` |
 | End-to-end pipeline with failure path (M2) | In progress, due 2026-11-01; prompts and parsers are still stubs |

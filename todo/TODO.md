@@ -10,6 +10,20 @@ Meeting cadence (US Eastern, all weekly): client Monday 18:00–19:00 · profess
 > Client notes for Sep 28 and Oct 5 are now on file (`meetings/client/2026-09-28/`, `2026-10-05/`, Gemini). There are no notes for the Sep 29 professor meeting or the Oct 2 team meeting. Where an earlier entry here, the Sep 27 team notes or a research document disagrees with the deck, the deck wins.
 > The decision log rows dated 2026-10-03 were written from the Oct 3 draft. The final deck adds **routing rules** and **"English text and documents"** as inputs; A14 and A15 track where that leaves the API contract.
 
+## For the team meeting, Friday 2026-10-23
+
+Bring these to today's meeting. Phase 1 starts Monday Oct 26, the same day as the next client meeting.
+
+| Topic | Items | What to settle today |
+|---|---|---|
+| Scope against the final deck | A14 routing, A15 documents as input | Whether to build routing and document input, or tell the client the scope narrowed. Owner and date for the contract change (before the Nov 15 freeze) |
+| Evaluation | A16 ground truth, B59, B60, B46 | How the external labelled dataset and the 100 emails split the work; when the 100 emails go into `data/` |
+| Model and scores | A13, B58, A11, A12 | Who runs Gemma 4 and by when; confirm the confidence-score split and who owns `score_method` |
+| M2 (due Nov 1) | B41 | Who writes the detection and assessment prompts and parsers (still stubs); first end-to-end run on Ollama |
+| Mark's client actions | B56, B57, B62, B63 | Status of each; what goes out before Monday |
+| Repo and process | B64, B65, B35 | Zhexuan's `docs/api/` updates; the review-before-merge rule; closing PRs #3–#5 |
+| For Monday's client meeting | D49, D50, D52, E68 | Ask again for the tier table review, source labels and VG08 access; the SOW is not signed yet |
+
 ## A. Open decisions
 
 | # | Item | Notes | Owner | Due | Done |
@@ -20,7 +34,6 @@ Meeting cadence (US Eastern, all weekly): client Monday 18:00–19:00 · profess
 | 13 | **Which open-source model** | Oct 5: the preliminary benchmark ran Llama 3.1 8B and Qwen 2.5 7B through Groq and OpenRouter; both beat the rules-plus-Presidio baseline and came close to the cloud model. Aarvin advised trying Gemma and sticking to **one** model for now (decision log 2026-10-05). `service/config/service.yaml` currently says `llama3:8b`. Pick the one model after the Gemma run (B58) | Anmol, Mark | after B58 | [ ] |
 | 11 | **Who owns the confidence score, and the `score_method` field** | Carried from the Sep 27 deferred item B. The deck fixes the method (raw model score, calibrated by binning on labelled emails, slide 17) but not who builds which step. Proposed split, still unconfirmed: Anmol produces the raw score, Yudi supplies the calibration procedure (now in `service/vg_redactor/privacy/calibration.py`, identity until fitted), Karina picks thresholds (an evaluation output), the API field carries the **calibrated** score. Add a `score_method` field per span, or nobody reading a 0.55 knows what it is | Anmol | W9 | [ ] |
 | 12 | **Fallback if the model's scores do not discriminate** | The 2026-09-14 screen found that 8B models' self-stated confidence saturates (91.7% of answers at ≥95%). Aarvin raised the same doubt on Oct 5. If the slide 17 calibration bins come out flat, there is nothing to calibrate. Yudi's proposal has the fallback: agreement-based scoring (share of detectors that flag a span, share of 3–5 repeated runs). Decide when the first baseline numbers are in | Anmol, Yudi | Phase 1 | [ ] |
-| 17 | **Final delivery date** | The Oct 5 Gemini notes say the deliverables are "set for completion by November 13". The deck says code freeze Nov 22 and final presentation Nov 30 (slides 43–44). Probably a transcription error; confirm with the course schedule | Mark | next team meeting | [ ] |
 
 ## B. Pending actions
 
@@ -72,7 +85,7 @@ Meeting cadence (US Eastern, all weekly): client Monday 18:00–19:00 · profess
 | # | Item | Done |
 |---|---|---|
 | 26 | Section 6 cost ownership. **Settled 2026-10-03 without a figure:** where the project needs paid resources (GPU or other hardware, sandbox compute, model API usage), the Client sponsors or covers them, and the team agrees any such usage with the Client in advance. No `$[X]` cap. The SOW does not mention the CMU fallback | [x] |
-| 68 | **Signature status of the SOW given at the midterm** (`docs/sow/Scope of Work -  20261005.docx`). The Sep 28 agenda asked the client to sign at the midterm; the Oct 5 notes do not mention it. Its scope also differs from contract 0.4.2 (A14, A15) | [ ] |
+| 68 | **Signature status of the SOW given at the midterm** (`docs/sow/Scope of Work -  20261005.docx`). **Not signed as of 2026-10-23** (Mark). The Sep 28 agenda asked the client to sign at the midterm; the Oct 5 notes do not mention it. Its scope also differs from contract 0.4.2 (A14, A15) | [ ] |
 
 ## Closed and superseded
 
@@ -80,6 +93,7 @@ Closed on 2026-10-03 against the midterm deck, and on 2026-10-23 against the fin
 
 | # | Was | Status |
 |---|---|---|
+| A17 | Final delivery date | **Settled 2026-10-23:** final presentation Nov 30, as in the deck. "November 13" in the Oct 5 Gemini notes is a transcription error |
 | B36 | Revise the Scope of Work before the midterm | Done: `Scope of Work -  20261005.docx` was given to the client at the midterm. Signature tracked in E68 |
 | B37 | Reset the "show what is running" expectation | Closed: the midterm presented preliminary benchmark results (Oct 5 notes) |
 | B38 | Agree answers to three likely questions | Closed with the midterm. The saturation question came up (Aarvin) and stays open as A12 |
