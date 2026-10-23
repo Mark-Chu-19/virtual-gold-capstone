@@ -26,8 +26,8 @@ A document belongs to whoever wrote it, not to whoever the topic now belongs to.
 | Zhexuan | 2026-09-13 | `confidence-scoring-harness-report-{en,zh}.md` — literature review behind the confidence harness |
 | Zhexuan | 2026-09-15 | `confidence-harness-design-{en,zh}.md` — harness design, v0.2 |
 | Zhexuan | 2026-09-21 | `confidence-gating-design-draft-zh.pdf` — confidence scheduling and the confidentiality gate |
-| Zhexuan | 2026-09-27 | `redaction-api-contract-en.md` — HTTP contract v0.3.0-draft: endpoints, release decisions, asynchronous review, 11 open questions |
-| Zhexuan | 2026-09-27 | `redaction-architecture-v2-proposal-en.html` — workflow and architecture v2, adds a whole-request policy gate and an asynchronous review queue |
+| Zhexuan | 2026-09-27 | `redaction-api-contract-en.md` — HTTP contract v0.3.0-draft: endpoints, release decisions, asynchronous review, 11 open questions. **Superseded** by contract 0.4.2 in [`docs/api/`](../api/) |
+| Zhexuan | 2026-09-27 | `redaction-architecture-v2-proposal-en.html` — workflow and architecture v2 (with Anmol), adds a whole-request policy gate and an asynchronous review queue. **Superseded** by the midterm deck; the review queue was dropped, the routing question is open again (`todo/TODO.md` A14) |
 
 ## What belongs here
 

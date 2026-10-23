@@ -4,7 +4,7 @@
 
 **Prepared:** 2026-09-20  
 **Scope:** model selection, local inference, confidence estimation, routing, privacy, and client discussion  
-**Source basis:** [Gemini research source](<Hybrid AI Models And Inference.md>), the [latest client meeting notes](virtual-gold-capstone/meetings/client/2026-09-15/notes-gemini-en.pdf), the [team implementation plan](virtual-gold-capstone/todo/TODO.md), and current primary documentation linked throughout
+**Source basis:** Gemini research source (`Hybrid AI Models And Inference.md`, not in the repo), the [latest client meeting notes](../../../../meetings/client/2026-09-15/notes-gemini-en.pdf), the [team implementation plan](../../../../todo/TODO.md), and current primary documentation linked throughout
 
 ## Executive recommendation
 

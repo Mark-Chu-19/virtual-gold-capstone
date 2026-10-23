@@ -2,7 +2,7 @@
 
 **Capstone · Virtual Gold Inc · Week 3 · Confidence-scoring work package**
 
-Extends [architecture-v0.3-en.md](../architecture/architecture-v0.3-en.md) §5 (Confidence scoring) and §7 (Evaluation design and datasets) with an 8B-scale literature review and a concrete harness design. This document is the basis for the `feat/harness-*` and `eval/*` branches described in §6 below.
+Extends [architecture-v0.3-en.md](../../../architecture/architecture-v0.3-en.md) §5 (Confidence scoring) and §7 (Evaluation design and datasets) with an 8B-scale literature review and a concrete harness design. This document is the basis for the `feat/harness-*` and `eval/*` branches described in §6 below.
 
 | Version | Date | Status | Author |
 |---|---|---|---|

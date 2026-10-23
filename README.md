@@ -7,23 +7,27 @@ We are building and evaluating a **local sanitization service**: a standalone HT
 
 > **Direction set at the Sep 21 client meeting:** the horizontal scenario (this service) first; the vertical scenario (a trading assistant over public filings) deferred to time-permitting status. Anything in this repository written before that date describes the earlier design, a hybrid assistant with confidence-based escalation.
 >
-> **Current baseline (2026-10-03): the midterm deck** [`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>) is the team consensus, agreed inside the team and with the professor. Where any older document disagrees with it, the deck wins. Its decisions are in the `todo/TODO.md` decision log (rows dated 2026-10-03).
+> **Current baseline: the midterm deck as presented on 2026-10-05** [`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>) (49 slides) is the team consensus, agreed inside the team and with the professor. Where any older document disagrees with it, the deck wins. Its decisions are in the `todo/TODO.md` decision log; slide numbers there refer to this deck.
 
-## Where we are (Week 6, updated 2026-10-03)
+## Where we are (Week 9, updated 2026-10-23)
 
 | Item | Status |
 |---|---|
-| Design: six steps in one local service ("the model judges, code decides"), three sensitivity tiers, calibrated scores, fail-safe redaction, restore as a separate call | Agreed 2026-10-03, midterm deck slides 10–29 |
-| Evaluation dataset: 100 fictional executive emails, 999 labelled items, 18 types | Built (Karina); not yet committed to `data/` |
-| Midterm presentation to the client | Monday 2026-10-05, 18:00 |
-| Scope of Work v3, revised to the deck's scope, to be signed at the midterm | Owed before the meeting (`todo/TODO.md` B36) |
-| API contract 0.4.2 and service skeleton | Milestone 1, due 2026-10-11 |
-| GPU / sandbox for the local model | Waiting on the client since 2026-09-15 |
-| Architecture document v0.4 | Not started; the deck stands in until then |
+| Design: six steps in one local service ("the model judges, code decides"), three sensitivity tiers, calibrated scores, fail-safe redaction, restore as a separate call | Agreed 2026-10-03, midterm deck slides 13–32 |
+| Midterm presentation to the client | Held 2026-10-05; notes in `meetings/client/2026-10-05/` |
+| Scope of Work | `docs/sow/Scope of Work -  20261005.docx` given to the client at the midterm; signature not recorded (`todo/TODO.md` E68) |
+| API contract 0.4.2 and service skeleton (M1) | Done 2026-10-19, PR #7: `docs/api/`, `service/` |
+| Privacy Research components (rules, Presidio, merge, calibration, decision, pseudonymisation) | Done 2026-10-23, PR #8: `service/vg_redactor/privacy/` |
+| End-to-end pipeline with failure path (M2) | In progress, due 2026-11-01; prompts and parsers are still stubs |
+| **Open: request-level routing and "documents" as input.** The final deck and the SOW include both; contract 0.4.2 has neither | To decide, `todo/TODO.md` A14, A15 |
+| Evaluation dataset: 100 fictional executive emails, 999 labelled items, 18 types | Built (Karina); not yet committed to `data/`. Oct 5: also source an already-labelled external dataset as ground truth (A16) |
+| Model | Benchmarked Llama 3.1 8B and Qwen 2.5 7B; Gemma 4 next; one model for now (A13) |
+| GPU / sandbox for the local model | Waiting on the client since 2026-09-15; test over the web or with Ollama meanwhile |
+| Architecture document v0.4 | Not started; the deck and `docs/api/` stand in until then |
 
-Milestones from the deck: Oct 11 contract 0.4.2 and service skeleton · Nov 1 end-to-end pipeline with failure path · Nov 8 dashboard and load-test results · Nov 15 VG08 integration, contract freeze · Nov 22 code freeze (soft freeze Nov 18) · Nov 30 final presentation.
+Milestones from the deck: Oct 11 contract 0.4.2 and service skeleton · Nov 1 end-to-end pipeline with failure path · Nov 8 dashboard and load-test results · Nov 15 VG08 integration, contract freeze · Nov 22 code freeze (soft freeze Nov 18) · Nov 30 final presentation. Phase 1 (service on its own) Oct 26–Nov 8, Phase 2 (VG08) Nov 2–15.
 
-## History (Weeks 1–5)
+## History (Weeks 1–9)
 
 | Milestone | Status |
 |---|---|
@@ -51,14 +55,17 @@ Milestones from the deck: Oct 11 contract 0.4.2 and service skeleton · Nov 1 en
 | Architecture doc v0.3 describes the pre-pivot design and has **not** been revised for the horizontal direction yet | Open; the midterm deck is the architecture of record until v0.4 |
 | Team meeting Sep 25 (Fri): team produced its own architecture proposal for the horizontal direction | Held; the proposals are in `docs/research/` (2026-09-24, 2026-09-27) |
 | Team alignment Sep 27 (Sun): category list, labelling fields, unsure-model handling; whole-email vs section taken to the client | Notes in `meetings/team/2026-09-27/`; partly superseded by the midterm deck |
-| Client meeting Sep 28 (Mon): presented the horizontal architecture; six asks (GPU, NDA, midterm, Drive, chat, SOW) | Agenda in `meetings/client/2026-09-28/`; no notes recorded |
-| Midterm deck agreed by the team and the professor | 2026-10-03, `meetings/client/2026-10-05/` |
+| Client meeting Sep 28 (Mon): presented the horizontal architecture; aligned on English-only input, two test phases (standalone, then VG08), testing early with cloud-hosted open-source models or Ollama; Slack workspace and Drive set up | Agenda and Gemini notes in `meetings/client/2026-09-28/` |
+| Midterm deck agreed by the team and the professor | 2026-10-03 |
+| Midterm presentation Oct 5 (Mon): 49-slide deck; preliminary benchmark (local models beat rules + Presidio, close to the cloud model); aligned on an external labelled dataset as ground truth and one model for now | Deck and Gemini notes in `meetings/client/2026-10-05/` |
+| PR #7 (Zhexuan): contract 0.4.2, service skeleton, dashboard | Merged 2026-10-19 |
+| PR #8 (Yudi): Privacy Research components | Merged 2026-10-23 |
 
 ## Read this first
 
 **Until architecture v0.4 exists, the source of truth is the midterm deck,
 [`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>)**,
-together with the 2026-10-03 rows of the `todo/TODO.md` decision log.
+together with the `todo/TODO.md` decision log and the API contract in [`docs/api/`](docs/api/).
 
 > **Note (2026-09-27):** v0.3 describes the pre-pivot design (hybrid assistant with confidence-based
 > routing). The Sep 21 client meeting changed the direction to a standalone sanitization service for
@@ -96,26 +103,37 @@ Sections in the document:
 .
 ├── README.md                      start here: progress, open decisions, layout
 ├── docs/                          documents WE write and hand over
-│   ├── architecture/              the architecture document, single source of truth, four formats
+│   ├── api/                       API contract 0.4.2 and service interfaces (Zhexuan), the current spec
+│   │   ├── redaction-api-report-en-v0.4.2.md   the HTTP contract
+│   │   └── service-interfaces-v0.4.2-{en,zh}.md  component signatures and the service layout
+│   ├── architecture/              the architecture document (v0.3 is pre-pivot; the deck stands in until v0.4)
 │   │   ├── architecture-v0.3-en.md      English, Markdown (renders on GitHub)
 │   │   ├── architecture-v0.3-en.html    English, HTML with SVG diagrams
 │   │   ├── architecture-v0.3-zh.md      Traditional Chinese, Markdown
 │   │   ├── architecture-v0.3-zh.html    Traditional Chinese, HTML
 │   │   └── horizontal-draft/            Mark's personal drafts for the post-pivot horizontal design.
 │   │                                    NOT the team's proposal — fallback only, see the banner in each file
-│   ├── sow/                       Scope of Work drafts
+│   ├── sow/                       Scope of Work, every version kept
 │   │   ├── Scope of Work v1.docx        original draft (W3)
-│   │   └── Scope of Work v2.docx        revised, changes in red; sign this one once the cost line is filled in
+│   │   ├── Scope of Work v2.docx        revised 2026-09-10, pre-pivot
+│   │   ├── Scope of Work v3.docx        written from the Oct 3 deck draft
+│   │   └── Scope of Work -  20261005.docx   the version given to the client at the midterm (current; name kept as given)
 │   └── research/                  research reports and design docs, by author then date: anmol/ karina/ yudi/ zhexuan/ (see its README)
+├── service/                       the local redaction service (Python, FastAPI); see service/README.md
+│   ├── vg_redactor/               gateway, pipeline, records, model adapter, metrics; privacy/ components; stubs/
+│   ├── config/                    service, policy (tiers), calibration, context store
+│   ├── dashboards/                Prometheus + Grafana, 8-panel dashboard
+│   └── tests/                     contract, failure-injection, leak and component tests
 ├── meetings/                      one folder per meeting, named YYYY-MM-DD: the agenda we bring plus the notes that come out
 │   ├── client/                    meetings with Virtual Gold
-│   │   ├── 2026-09-03/            notes-gemini-en.docx
+│   │   ├── 2026-09-03/            notes-gemini-en.pdf
 │   │   ├── 2026-09-15/            agenda-en.html · agenda-zh.html · notes-gemini-en.pdf · notes-zh.md
 │   │   ├── 2026-09-21/            agenda-{en,zh}.html · notes-gemini-en.pdf
 │   │   │                          briefing-security-deidentification-en.html (Yudi)
 │   │   │                          financial-data-sources-en.pdf · email-aarvin-onboarding-en.md
-│   │   ├── 2026-09-28/            agenda-{en,zh}.html
-│   │   └── 2026-10-05/            Midterm Client Presentation Slides(Virtual Gold).pdf   midterm presentation as given, the current baseline
+│   │   ├── 2026-09-28/            agenda-{en,zh}.html · notes-gemini-en.pdf
+│   │   └── 2026-10-05/            Midterm Client Presentation Slides(Virtual Gold).pdf   the midterm deck as given, the current baseline
+│   │                              notes-gemini-en.pdf
 │   ├── team/                      internal team meetings, not shared with the client
 │   │   ├── 2026-09-18/            agenda-en.html · agenda-zh.html
 │   │   └── 2026-09-27/            agenda-{en,zh}.html · notes-{en,zh}.md · deferred-{en,zh}.md
@@ -127,17 +145,17 @@ Sections in the document:
 │   ├── client/                    Virtual Gold Inc - AI Assistant.pdf          original capstone brief
 │   └── course/                    Proposed Weekly Structure.pdf                15-week course structure we must follow
 ├── .github/                       CODEOWNERS, pull_request_template.md
-├── src/                           (not created yet) prototype code
-└── data/                          (not created yet) synthetic datasets and benchmark subsets; never real data
+└── data/                          (not created yet) the evaluation dataset; fictional or public only, never real data
 ```
 
-Rule of thumb: `docs/` is what we author and hand over (architecture, SOW, research), `meetings/` is everything about one meeting in one place, `reference/` is what we were handed (client or course), `todo/` is what we still have to decide, `src/` and `data/` are the prototype.
+Rule of thumb: `docs/` is what we author and hand over (API contract, architecture, SOW, research), `service/` is the code, `meetings/` is everything about one meeting in one place, `reference/` is what we were handed (client or course), `todo/` is what we still have to decide, `data/` is the evaluation dataset.
 
 ### Naming conventions
 
 - Every bilingual file carries a language suffix: `-en` or `-zh`. The exception is `todo/TODO.md`, which is English (`TODO-zh.md` is the Chinese copy).
 - Meeting folders are `YYYY-MM-DD`. Inside: `agenda-<lang>.html` for the running order, `briefing-<topic>-<lang>.html` for a presentation piece one workstream brings, `slides-<topic>-<lang>.pdf` for a full slide deck, `notes-<source>-<lang>` for what comes out (`gemini` = the auto-generated notes, `zh` = our translation), `email-<who>-<topic>-<lang>.md` for correspondence that belongs to that meeting.
-- Versions live in the filename: `architecture-v0.3-*`, `Scope of Work v2`. A new version is a new file; old versions stay for history.
+- Versions live in the filename: `architecture-v0.3-*`, `Scope of Work v3`, `-v0.4.2`. A new version is a new file; old versions stay for history.
+- Files exactly as the client received them keep their original name: `Scope of Work -  20261005.docx`, `Midterm Client Presentation Slides(Virtual Gold).pdf`.
 
 ## Meeting cadence
 
@@ -163,7 +181,7 @@ All times US Eastern. Agendas go up before the meeting, notes go in after, both 
 
 ## Open decisions
 
-Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): decisions, pending actions, corrections to the teammate proposal, items waiting on the client, the SOW cost line, the per-workstream research list, and a decision log. Since 2026-10-03 the TODO is aligned with the midterm deck: items the deck made obsolete are listed under "Closed and superseded". Section 11 of the architecture doc is out of date and will be replaced in v0.4.
+Tracked in [`todo/TODO.md`](todo/TODO.md) (English) and [`todo/TODO-zh.md`](todo/TODO-zh.md) (Traditional Chinese): decisions, pending actions, items waiting on the client, the Scope of Work, and a decision log. The TODO is aligned with the midterm deck as presented (49 slides) and the Sep 28 and Oct 5 client notes: items they made obsolete are listed under "Closed and superseded". Section 11 of the architecture doc is out of date and will be replaced in v0.4.
 
 ## Contributing workflow
 
@@ -182,9 +200,9 @@ There is no technical lock on `main` right now, so this works only if all of us 
 | Prefix | Use for | Example |
 |---|---|---|
 | `docs/` | architecture document, SOW, research, meeting agendas, README | `docs/v0.3-rag-decision` |
-| `feat/` | new code in `src/` | `feat/router-threshold` |
-| `fix/` | bug fixes | `fix/logprob-parsing` |
-| `eval/` | datasets, benchmark runs, results | `eval/gsm8k-subset` |
+| `feat/` | new code in `service/` | `feat/privacy-components` |
+| `fix/` | bug fixes | `fix/tombstone-unknown-id` |
+| `eval/` | datasets, benchmark runs, results | `eval/benchmark-100` |
 | `todo/` | decisions and the decision log | `todo/week3-decisions` |
 
 ### Step by step
@@ -199,20 +217,20 @@ git pull origin main
 **2. Create a branch.**
 
 ```bash
-git checkout -b feat/router-threshold
+git checkout -b feat/privacy-components
 ```
 
 **3. Make your changes and commit.** Commit message: one line, starts with a verb, says what changed.
 
 ```bash
-git add src/router.py
-git commit -m "Add confidence threshold to rule-based router"
+git add service/vg_redactor/privacy/rules.py
+git commit -m "Add money-amount pattern to the rule detector"
 ```
 
 **4. Push the branch to GitHub.**
 
 ```bash
-git push -u origin feat/router-threshold
+git push -u origin feat/privacy-components
 ```
 
 **5. Open the pull request.** GitHub shows a **Compare & pull request** button after the push. Click it, fill in the template (What, Why, Type, Checklist), and click **Create pull request**. Mark is added as reviewer automatically.
@@ -221,7 +239,7 @@ git push -u origin feat/router-threshold
 
 ```bash
 git add .
-git commit -m "Read threshold from config instead of hardcoding"
+git commit -m "Read thresholds from policy.yaml instead of hardcoding"
 git push
 ```
 
@@ -238,7 +256,7 @@ git fetch origin
 git merge origin/main
 # open the files GitHub lists, resolve the <<<<<<< ======= >>>>>>> blocks
 git add .
-git commit -m "Merge main into feat/router-threshold"
+git commit -m "Merge main into feat/privacy-components"
 git push
 ```
 
@@ -247,7 +265,7 @@ git push
 - Anything we author goes in `docs/` (architecture, SOW, research one-pagers); anything a teammate or the client sends us goes in `reference/`; anything about a meeting, ours or theirs, goes in that meeting's folder under `meetings/`.
 - Decisions go in `todo/`: tick the item and add a row to the decision log. If a decision changes the architecture, update `docs/` in the same PR.
 - `docs/`, `meetings/` agendas and `todo/` exist in English and Traditional Chinese; keep both in sync, or say in the PR which one is ahead. The README is English only.
-- Datasets and code go in `data/` and `src/` once the MVP starts in week 4.
+- Code goes in `service/`; the evaluation dataset goes in `data/`.
 
 ## Notes on data
 
