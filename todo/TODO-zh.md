@@ -7,7 +7,7 @@
 
 > **基準:2026-10-05 實際報告的期中簡報。**
 > [`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<../meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>)(49 頁)即團隊共識,已經團隊內部討論並與教授確認。**本文件的頁碼都指這一版。**2026-10-23 以前本文件引用的是 10/3 的 42 頁草稿,頁碼已全部改過。
-> 9/28 與 10/5 的客戶會議紀錄已歸檔(`meetings/client/2026-09-28/`、`2026-10-05/`,Gemini)。9/29 教授會議與 10/2 團隊會議沒有紀錄。這裡較早的條目、9/27 團隊筆記或研究文件與簡報不一致時,一律以簡報為準。
+> 9/28 與 10/5 的客戶會議紀錄已歸檔(`meetings/client/2026-09-28/`、`2026-10-05/`,Gemini)。9/29 教授會議與 10/2 團隊會議沒有紀錄。這裡較早的條目、9/27 團隊筆記或研究文件與簡報不一致時,一律以簡報為準。10/19 客戶會議有 Zhexuan 的 9 頁報告(先講服務與隱私元件,再由 Anmol 講模型工作)在 `meetings/client/2026-10-19/`;那次還沒有 Gemini 紀錄。
 > 決策紀錄中 2026-10-03 的各列是依 10/3 草稿寫的。定稿多了**路由規則**,輸入也改成**「英文文字與文件」**;這對 API contract 的影響由 A14、A15 追蹤。
 
 ## 2026-10-23(週五)團隊會議要談的
@@ -30,8 +30,8 @@
 |---|---|---|---|---|---|
 | 14 | **請求層級的路由:做還是不做?** | 定稿把「Tier + routing rules」列為交付物(第 5 頁),服務要「redact and apply routing」、VG08「check release eligibility」(第 33 頁),Phase 2 要「check routing before cloud use」(第 45 頁),dashboard 也統計路由狀態(第 37 頁)。給客戶的 SOW(`Scope of Work -  20261005.docx`)另外寫了「獨立的請求路由政策,決定整個請求留在本地還是可以送出」。但 2026-10-03 的決策紀錄寫不整封擋下(`LOCAL_ONLY`),API contract 0.4.2 拿掉了請求層級的判斷,`service/` 也沒有。要決定路由的意思(服務回傳一個狀態,還是 VG08 依 span 自己判斷)並寫進 contract,或向客戶說明範圍收窄。11/15 contract 凍結前一定要定 | Mark、Zhexuan | 下次客戶會議 | [ ] |
 | 15 | **輸入範圍:只有 email,還是英文文字與文件?** | 9/28 對齊「現階段輸入語言與文件限英文」;定稿(第 4、5、45 頁)與 SOW 都寫「English-language text and documents」,email 只是第一個 benchmark 格式。Contract 0.4.2 只接受 email 結構,附件與 OCR 列為不在範圍內。要決定「文件」請求在 API 裡長什麼樣子(純文字加來源標記?),或把說法限縮到 email | Zhexuan、Mark | M4 前 | [ ] |
-| 16 | **評測的標準答案從哪來** | 10/5 對齊:找網路或 Kaggle 上已標註好的資料集當標準答案,起因是 Aarvin 問團隊怎麼信任 LLM 產生的測試案例。要決定它和 100 封信 benchmark 怎麼搭配:外部資料集拿來校正和算 recall,100 封信負責主管信件的情境案例(情境、攻擊、商業機密)?校正(A11)取決於這一點 | Karina | Phase 1 | [ ] |
-| 13 | **用哪個開源模型** | 10/5:初步 benchmark 透過 Groq 與 OpenRouter 跑了 Llama 3.1 8B 與 Qwen 2.5 7B,兩者都勝過規則加 Presidio 的 baseline,且接近雲端模型。Aarvin 建議試 Gemma,並且現階段只用**一個**模型(決策紀錄 2026-10-05)。`service/config/service.yaml` 目前寫 `llama3:8b`。跑完 Gemma(B58)後選定一個 | Anmol、Mark | B58 之後 | [ ] |
+| 16 | **評測的標準答案從哪來** | 10/5 對齊:找網路或 Kaggle 上已標註好的資料集當標準答案,起因是 Aarvin 問團隊怎麼信任 LLM 產生的測試案例。要決定它和 100 封信 benchmark 怎麼搭配:外部資料集拿來校正和算 recall,100 封信負責主管信件的情境案例(情境、攻擊、商業機密)?校正(A11)取決於這一點。10/19(Anmol):100 封信分成 60 封開發用、40 封保留測試(需遮的片段分別 591 與 380 個);保留的 40 封只在 pipeline 凍結、D70 的目標談妥後跑一次 | Karina | Phase 1 | [ ] |
+| 13 | **用哪個開源模型** | 10/5:初步 benchmark 跑了 Llama 3.1 8B 與 Qwen 2.5 7B;Aarvin 建議試 Gemma,並且現階段只用**一個**模型(決策紀錄 2026-10-05)。**10/19(Anmol,報告第 8–9 頁):**在同樣 15 封開發用信件上,透過託管 API 跑的 Llama 3.3 70B 找到 92.8% 的已標註實體,但仍有 16.2% 的隱私字元沒遮,公開文字被遮了 18.5%;Llama 3.1 8B(77.3%)與 Qwen 3.5 9B(70.7%)是較早在本機 M4 上、用舊版 pipeline 跑的結果。建議:**Llama 3.3 70B** 自架在客戶的私有雲,**Llama 3.1 8B** 用 Ollama 當筆電備案,Gemma 2 27B 為挑戰者(只有 3 封信的試跑)。未決:70B 需要客戶的 GPU(D51)、實測用的是託管 API、`service/config/service.yaml` 仍寫 `llama3:8b`。等同條件重跑(B69)後選定 | Anmol、Mark | B69 之後 | [ ] |
 | 11 | **信心分數歸誰,以及 `score_method` 欄位** | 延續 9/27 延後事項 B。簡報定了方法(模型原始分數,用標註信件分組校正,第 17 頁),但沒定誰做哪一步。尚未確認的分工提案:Anmol 產生原始分數、Yudi 提供校正程序(已在 `service/vg_redactor/privacy/calibration.py`,擬合前是恆等函數)、Karina 決定門檻(門檻是評測的產出)、API 欄位傳的是**校正後**的分數。每個 span 加一個 `score_method` 欄位,不然看到 0.55 的人不知道那是什麼 | Anmol | W9 | [ ] |
 | 12 | **模型分數沒有鑑別力時的備案** | 2026-09-14 的篩檢發現 8B 模型自報信心會飽和(91.7% 的回答自報 ≥95%)。10/5 Aarvin 也提出同樣的疑慮。如果第 17 頁的校正分組結果是平的,就沒有東西可以校正。Yudi 的提案已有備案:以共識計分(標出該 span 的偵測器比例、3–5 次重複執行中判為私密的比例)。第一批 baseline 數字出來時決定 | Anmol、Yudi | Phase 1 | [ ] |
 
@@ -42,8 +42,8 @@
 | # | 動作 | 負責人 | 期限 | 完成 |
 |---|---|---|---|---|
 | 56 | **把初步 benchmark 結果與期中簡報寄給客戶**(10/5 的下一步;資料在專案 Drive) | Mark | | [ ] |
-| 57 | **一頁的 benchmark 報告**給 Aarvin 與 Alex:列出測過的所有模型,包括 Gemma 與新推出的模型(10/5) | Mark | | [ ] |
-| 58 | **在現有 benchmark 框架裡跑 Gemma 4**(10/5)。供 A13 使用 | Mark | | [ ] |
+| 57 | **一頁的 benchmark 報告**給 Aarvin 與 Alex:列出測過的所有模型,包括 Gemma 與新推出的模型(10/5)。Anmol 10/19 報告第 8–9 頁已涵蓋大部分內容 | Mark | | [ ] |
+| 58 | **在現有 benchmark 框架裡跑 Gemma**(10/5)。10/19:Anmol 用 3 封信試跑 Gemma 2 27B(隱私字元未遮 8.2%,同樣三封 70B 為 16.4%);15 封的完整試跑因 API 額度用完而失敗,目前無法排名。完整重跑併入 B69。供 A13 使用 | Mark、Anmol | | [ ] |
 | 59 | **找一個已標註好的 PII 資料集**(網路或 Kaggle),當作標準答案的 baseline(10/5)。供 A16 使用 | Karina | | [ ] |
 | 60 | **說明產生出來的 100 封信資料集為什麼可信**(10/5,Aarvin 的問題)。供 A16 使用 | Karina | | [ ] |
 | 61 | **測試複雜的隱晦資訊**:沒有單一名稱的機密想法(56 個商業機密項目),並為它們寫 system prompt(10/5,Alex 的問題) | Anmol、Karina | Phase 1 | [ ] |
@@ -55,16 +55,17 @@
 | # | 動作 | 負責人 | 期限 | 完成 |
 |---|---|---|---|---|
 | 40 | M1:API contract 0.4.2 與服務骨架。**2026-10-19 完成**(PR #7,晚了八天):contract 與介面文件在 `docs/api/`,服務在 `service/`,43 個測試 | Zhexuan | 2026-10-11 | [x] |
-| 41 | **M2:端到端 pipeline 含失效路徑。**隱私研究元件 2026-10-23 合併(PR #8,76 個測試)。仍是 stub 的:切段、偵測與評估的 prompt 及其解析器(模型工作)、restore。Ollama 後端還沒端到端跑過 | Zhexuan、Anmol | 2026-11-01 | [ ] |
+| 41 | **M2:端到端 pipeline 含失效路徑。**隱私研究元件 2026-10-23 合併(PR #8,76 個測試)。仍是 stub 的:切段、偵測與評估的 prompt 及其解析器(模型工作)、restore。Ollama 後端還沒端到端跑過。Anmol 的模型原型(偵測、依情境評估、遮蔽;10/19 報告第 7 頁)目前在服務之外執行,把它接進服務屬於本項 | Zhexuan、Anmol | 2026-11-01 | [ ] |
 | 42 | M3:dashboard 與壓測結果。Prometheus + Grafana 與 8 個面板的 dashboard 已在 `service/dashboards/`(PR #7);壓測結果還沒有 | Zhexuan | 2026-11-08 | [ ] |
 | 43 | M4:VG08 整合(Phase 2,11/2–11/15);contract 凍結。需要 A14、A15 與 D52 | Zhexuan、Mark | 2026-11-15 | [ ] |
 | 44 | M5:程式凍結(軟凍結 11/18) | 全員 | 2026-11-22 | [ ] |
 | 45 | M6:期末報告 | Mark | 2026-11-30 | [ ] |
 | 46 | **評測資料集放進 repo**(`data/`):100 封虛構信件、999 個標註項目、18 種類型,JSONL 格式如第 41 頁。尚未 commit。內容是虛構的,符合「不放真實資料」的規則 | Karina | | [ ] |
-| 47 | **先 baseline,再做消融**(第 19 頁):Rescriber 式 baseline → 加偵測器聯集 → 加名字擴散 → 加重複執行 → 加分級門檻。在一個子集上調,在保留子集上報告。主要指標是各等級的洩漏率;另外追蹤過度遮蔽、校正、每封信秒數。Phase 1 為 10/26–11/8(第 45 頁) | Karina | 2026-11-08 | [ ] |
+| 47 | **先 baseline,再做消融**(第 19 頁):Rescriber 式 baseline → 加偵測器聯集 → 加名字擴散 → 加重複執行 → 加分級門檻。在一個子集上調,在保留子集上報告。主要指標是各等級的洩漏率;另外追蹤過度遮蔽、校正、每封信秒數。10/19:在 60 封開發用信件上調,在保留的 40 封上報告(A16)。Phase 1 為 10/26–11/8(第 45 頁) | Karina | 2026-11-08 | [ ] |
 | 48 | **架構文件 v0.4。**`docs/architecture/` 仍是 v0.3,也就是轉向前的混合架構。v0.4 寫好之前,以簡報(第 13、14、22–33 頁)與 `docs/api/` 為架構依據 | Mark | | [ ] |
-| 64 | **更新 `docs/api/`**(Zhexuan 的檔案)。(1)`service-interfaces-v0.4.2-zh.md` 還是動工前的計畫:引用 0.4.1、`development-schedule.md`、`protocols.py`、`pseudonym.py`、`structlog`,這些都不存在,英文版卻稱它為「原版」。(2)兩份都沒提到 `service/vg_redactor/privacy/`(PR #8);英文版還寫「Owners are not confirmed yet」。(3)`redaction-api-report-en-v0.4.2.md` 把語言放在版本前面,和其他檔案不一致。(4)contract 沒有中文版 | Zhexuan | | [ ] |
+| 64 | **更新 `docs/api/`**(Zhexuan 的檔案)。(1)`service-interfaces-v0.4.2-zh.md` 還是動工前的計畫:引用 0.4.1、`development-schedule.md`、`protocols.py`、`pseudonym.py`、`structlog`,這些都不存在,英文版卻稱它為「原版」。(2)兩份都沒提到 `service/vg_redactor/privacy/`(PR #8);英文版還寫「Owners are not confirmed yet」。(3)`redaction-api-report-en-v0.4.2.md` 把語言放在版本前面,和其他檔案不一致。(4)contract 沒有中文版。(5)其中 session 保留的描述寫在 PR #8 之前,PR #8 存的是 HMAC 金鑰而非原始值(Zhexuan 自己 10/19 報告第 5 頁也提到) | Zhexuan | | [ ] |
 | 65 | **合併前要審查。**PR #7 由作者自己合併、沒有經過審查,違反 README 的「Nobody merges their own PR」。開啟分支保護(至少一個核准),或再向團隊說明這條規則 | Mark | 下次團隊會議 | [ ] |
+| 69 | **同條件模型重跑。**用和 10/19 Llama 3.3 70B 相同的 pipeline 版本與信件,重跑 Llama 3.1 8B、Qwen 與 Gemma 2 27B;目前 8B 與 Qwen 的數字是舊結果。15 封信只涵蓋 15 個業務領域中的 4 個,應擴大到 60 封開發用信件。託管 API 一直因額度用完而失敗:決定用哪家、誰付費。供 A13 使用 | Anmol | Phase 1 | [ ] |
 | 35 | **關掉 Karina 的 PR #3、#4、#5。**為 vertical 交易情境建的;已由 100 封信資料集取代 | Karina | | [ ] |
 
 ## D. 等客戶回覆
@@ -79,6 +80,7 @@
 | 67 | **Alex 與 Aarvin 向團隊確認測試計畫**(兩個 phase;9/28 的下一步) | 2026-09-28 | |
 | 53 | 與 CMU 的 NDA 附約進度(9/28 議程 E2) | 2026-09-28 | |
 | 55 | 客戶需不需要 restore,還是他們自己的系統處理?每封信延遲目標與每日量(API contract 開放問題 1、2) | 2026-09-27 | |
+| 70 | **跑保留的 40 封測試前先定驗收目標:**可接受的隱私文字洩漏率、公開文字過度遮蔽率、每封信秒數與失效時的行為(Anmol,10/19 報告第 9 頁)。與 D55 的延遲問題重疊 | 2026-10-19 | |
 
 ## E. Scope of Work
 
