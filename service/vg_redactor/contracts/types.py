@@ -5,9 +5,10 @@ the field named by `field` (see FieldPath syntax in service-interfaces-v0.4.2-en
 """
 from __future__ import annotations
 
+import re
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 FieldPath = str
 Tier = Literal["high", "medium", "low", "public"]
@@ -72,6 +73,51 @@ class RedactionRequest(Strict):
 
 class RestoreRequest(Strict):
     reply_text: str
+
+
+class TokenizationOptions(Strict):
+    mode: Literal["mapping", "aes_siv"] | None = None
+    ttl_seconds: int | None = Field(default=None, ge=1)
+
+
+class EmailAddressV2(EmailAddress):
+    # An encrypted 320-character address can exceed the original address field limit.
+    address: str = Field(min_length=1, max_length=4096)
+
+    @field_validator("address")
+    @classmethod
+    def address_or_token(cls, value):
+        if len(value) > 320 and not value.startswith("[VG:"):
+            raise ValueError("Address exceeds plaintext limit")
+        return value
+
+
+class EmailInV2(EmailIn):
+    from_: EmailAddressV2 | None = Field(default=None, alias="from")
+    to: list[EmailAddressV2] = Field(default_factory=list)
+    cc: list[EmailAddressV2] = Field(default_factory=list)
+
+
+class RedactionRequestV2(Strict):
+    purpose: str = Field(min_length=1, max_length=32768)
+    purpose_source: str | None = None
+    email: EmailInV2
+    group_id: str = Field(default="default", pattern=r"^[A-Za-z0-9_-]{1,64}$")
+    tokenization: TokenizationOptions = Field(default_factory=TokenizationOptions)
+    policy: PolicyOptions = Field(default_factory=PolicyOptions)
+    include: list[Literal["service_info"]] = Field(default_factory=list, max_length=1)
+
+    @field_validator("purpose")
+    @classmethod
+    def purpose_or_tokens(cls, value):
+        # Existing tokens may expand a valid purpose beyond its original plaintext limit.
+        if len(re.sub(r"\[VG[^\]]*\]", "", value)) > 2000:
+            raise ValueError("Purpose exceeds plaintext limit")
+        return value
+
+
+class RestoreRequestV2(Strict):
+    text: str
 
 
 # ---- component data --------------------------------------------------------------------------
@@ -151,7 +197,7 @@ class RedactionResponse(BaseModel):
     redacted_email: dict
     redacted_purpose: str
     spans: list[SpanOut]
-    record: RecordInfo
+    record: RecordInfo | None = None
     policy_version: str
     model_version: str
     prompt_versions: dict[str, str]
