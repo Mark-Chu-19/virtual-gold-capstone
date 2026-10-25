@@ -7,11 +7,15 @@ from typing import Protocol
 
 from redis.asyncio import Redis
 
+from .conversation_store import ConversationStore, MemoryConversationStore, RedisConversationStore
+
 
 class MappingStore(Protocol):
     shared: bool
+    conversations: ConversationStore
 
     async def put(self, group: str, values: dict[str, str], expires_at: int) -> None: ...
+    async def touch(self, group: str, expires_at: int) -> None: ...
     async def get(self, group: str, references: list[str]) -> list[str | None]: ...
     async def delete(self, groups: list[str]) -> None: ...
     async def ping(self) -> bool: ...
@@ -23,6 +27,7 @@ class MemoryMappingStore:
     shared = False
 
     def __init__(self):
+        self.conversations = MemoryConversationStore()
         self._lock = threading.Lock()
         self._groups: dict[str, tuple[dict[str, str], int]] = {}
 
@@ -32,6 +37,13 @@ class MemoryMappingStore:
             if expiry <= time.time():
                 current = {}
             self._groups[group] = ({**current, **values}, max(expiry, expires_at))
+
+    async def touch(self, group, expires_at):
+        with self._lock:
+            if group in self._groups:
+                values, expiry = self._groups[group]
+                if expiry > time.time():
+                    self._groups[group] = values, max(expiry, expires_at)
 
     async def get(self, group, references):
         with self._lock:
@@ -70,6 +82,7 @@ class RedisMappingStore:
     def __init__(self, url: str, *, client=None):
         self.client = client or Redis.from_url(url, decode_responses=True,
                                                socket_connect_timeout=2, socket_timeout=2)
+        self.conversations = RedisConversationStore(self.client)
 
     @staticmethod
     def _key(group):
@@ -81,6 +94,15 @@ class RedisMappingStore:
             for ref, value in values.items():
                 args.extend((ref, value))
             await self.client.eval(self._PUT, 1, self._key(group), *args)
+
+    async def touch(self, group, expires_at):
+        await self.client.eval("""
+            local expiry = redis.call('EXPIRETIME', KEYS[1])
+            if expiry > 0 then
+                redis.call('EXPIREAT', KEYS[1], math.max(expiry, tonumber(ARGV[1])))
+            end
+            return 1
+        """, 1, self._key(group), expires_at)
 
     async def get(self, group, references):
         return await self.client.hmget(self._key(group), references) if references else []

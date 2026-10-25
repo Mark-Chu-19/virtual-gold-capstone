@@ -26,6 +26,8 @@ class TokenSettings(BaseModel):
     store: Literal["memory", "redis"] = "memory"
     redis_url: str = "redis://127.0.0.1:6379/0"
     active_key_id: str = "k1"
+    conversation_max_lifetime_seconds: int = Field(default=86400, ge=1)
+    conversation_tombstone_seconds: int = Field(default=86400, ge=1)
     # Inject through VG_TOKEN_KEYS, never commit keys in YAML.
     keys: dict[str, str] = Field(default_factory=dict, repr=False)
 

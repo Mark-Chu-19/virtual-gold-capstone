@@ -52,7 +52,9 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
     if token_store is None:
         token_store = (RedisMappingStore(token_settings.redis_url) if token_settings.store == "redis"
                        else MemoryMappingStore())
-    tokens = TokenService(token_settings.keys, token_settings.active_key_id, token_store)
+    tokens = TokenService(token_settings.keys, token_settings.active_key_id, token_store,
+        conversation_max_lifetime_seconds=token_settings.conversation_max_lifetime_seconds,
+        conversation_tombstone_seconds=token_settings.conversation_tombstone_seconds)
     idempotency = Idempotency(tokens)
     readiness = {"model_up": None}
 
@@ -158,16 +160,19 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
         mode = req.tokenization.mode or token_settings.default_mode
         ttl = min(req.tokenization.ttl_seconds or settings.default_ttl_seconds, settings.max_ttl_seconds)
         context = tokens.context(req, request.state.principal, mode, ttl)
-        ticket, cached = await idempotency.begin(
-            request.headers.get("idempotency-key"), request.state.principal, req, mode,
-            request.state.request_id, math.ceil(settings.timeout_ms / 1000) + 10)
-        if cached is not None:
-            cached = dict(cached)
-            cached["request_id"] = request.state.request_id
-            return JSONResponse(cached, headers={"X-Degraded": str(cached["degraded"]).lower(),
-                                                 "Idempotency-Replayed": "true"})
+        ticket = None
         try:
             async with asyncio.timeout(settings.timeout_ms / 1000):
+                await context.prepare()
+                ticket, cached = await idempotency.begin(
+                    request.headers.get("idempotency-key"), request.state.principal, req, mode,
+                    request.state.request_id, math.ceil(settings.timeout_ms / 1000) + 10)
+                if cached is not None:
+                    await tokens.validate_cached(cached, request.state.principal)
+                    cached = dict(cached)
+                    cached["request_id"] = request.state.request_id
+                    return JSONResponse(cached, headers={"X-Degraded": str(cached["degraded"]).lower(),
+                                                         "Idempotency-Replayed": "true"})
                 masked = await context.masked_request()
                 metrics.inflight.inc()
                 try:
@@ -178,10 +183,11 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
                 body = resp.model_dump(mode="json", exclude_none=True)
                 body.pop("record", None)
                 body["tokenization"] = {"mode": mode, "expires_at": context.expires,
-                                        "format_version": 1, "mapping_retained": mode == "mapping"}
+                                        "format_version": 2, "mapping_retained": mode == "mapping"}
                 if "service_info" in req.include:
                     body["service_info"] = await info()
-                await idempotency.finish(ticket, body, max(1, context.expires - int(tokens.clock())))
+                await idempotency.finish(ticket, body, max(1, context.expires - int(tokens.clock())),
+                                         conversation=context.key)
         except TimeoutError:
             await idempotency.abandon(ticket)
             raise DeadlineExceeded() from None
@@ -206,6 +212,17 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
         if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", group_id):
             raise validation_failed([{"field": "group_id", "code": "invalid_group"}])
         await tokens.delete_group(request.state.principal, group_id)
+        return Response(status_code=204)
+
+    @app.delete("/v2/groups/{group_id}", status_code=204)
+    async def close_conversation(group_id: str, request: Request):
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", group_id):
+            raise validation_failed([{"field": "group_id", "code": "invalid_group"}])
+        try:
+            async with asyncio.timeout(settings.timeout_ms / 1000):
+                await tokens.close_conversation(request.state.principal, group_id)
+        except TimeoutError:
+            raise DeadlineExceeded() from None
         return Response(status_code=204)
 
     @app.post("/v1/redactions/{rid}/restore")
@@ -238,7 +255,12 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
                        "max_ttl_seconds": settings.max_ttl_seconds, "max_records": settings.max_records},
             "failure_behavior": "redact_all_candidates",
             "tokenization": {"enabled": tokens.enabled, "default_mode": token_settings.default_mode,
-                             "modes": ["mapping", "aes_siv"], "format_version": 1,
+                             "modes": ["mapping", "aes_siv"], "format_version": 2,
+                             "supported_format_versions": [1, 2],
+                             "conversation_keys": {"independent": True,
+                                 "store_shared": token_store.conversations.shared,
+                                 "max_lifetime_seconds": token_settings.conversation_max_lifetime_seconds,
+                                 "closure_supported": True},
                              "mapping_store_shared": token_store.shared,
                              "single_token_revocation": {"mapping": False, "aes_siv": False},
                              "group_mapping_deletion": True,
@@ -265,7 +287,9 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
                                "model_detection": "up" if up else "down",
                                "model_assessment": "up" if up else "down",
                                "tokenization": "up" if tokens.enabled else "unconfigured",
-                               "mapping_store": "up" if storage_up else "down"}}
+                               "mapping_store": "up" if storage_up else "down",
+                               "conversation_key_store": ("up" if storage_up else "down")
+                                   if tokens.enabled else "unconfigured"}}
 
     return app
 

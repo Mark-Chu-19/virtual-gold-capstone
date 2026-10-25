@@ -10,6 +10,7 @@ from typing import Literal
 Mode = Literal['mapping', 'aes_siv']
 CANDIDATE = re.compile(r'(?:\[VG[^\]\r\n]*(?:\]|(?=\r|\n|$))|(?<![\w\[])VG:[^\s\]]+\]?)', re.I)
 TOKEN = re.compile(r'\[VG:1:([ms]):([A-Z_]+):([A-Za-z0-9_-]{1,32}):([a-f0-9]{32}):([1-9][0-9]{0,11}):([A-Za-z0-9_.-]+)\]')
+TOKEN_V2 = re.compile(r'\[VG:2:([ms]):([A-Z_]+):([a-f0-9]{32}):([1-9][0-9]{0,8}):([A-Za-z0-9_.-]+)\]')
 LEGACY = re.compile(r'\[[A-Za-z]+_\d+\]')
 
 
@@ -43,3 +44,4 @@ class Parsed:
     scope: str
     expires: int
     payload: str
+    format_version: int = 1

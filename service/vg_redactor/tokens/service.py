@@ -1,9 +1,8 @@
 """Authenticated tokens, exact-text rendering and all-or-nothing restoration.
 
-Wire format: [VG:1:<m|s>:<TYPE>:<kid>:<group-handle>:<expiry>:<payload>].
-Tenant identity is authenticated out of band. Group handles reveal no business identifier.
-Mapping references and at-rest ciphertexts are deterministic within a tenant/group/key/type.
-AES-SIV encrypts the exact original UTF-8 bytes, never a normalized entity alias.
+New tokens use independent conversation keys and opaque random handles (format 2).
+Legacy format-1 tokens keep their original master-key/expiry semantics for migration.
+Tenant identity is authenticated out of band. Exact UTF-8 bytes are restored, never aliases.
 """
 from __future__ import annotations
 
@@ -13,7 +12,7 @@ import hmac
 import re
 import time
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from cryptography.exceptions import InvalidTag
 
@@ -22,12 +21,14 @@ from ..contracts.fields import email_to_dict, iter_fields, set_field
 from ..contracts.types import Decision, PseudonymResult, RedactionRequestV2, RestoreOutcome, SpanOut
 from .backends import AesSivBackend, MappingBackend, TokenBackend
 from .store import MappingStore
-from .wire import CANDIDATE, LEGACY, TOKEN, Mode, Parsed, Principal, packed
+from .conversations import ConversationKey, ConversationKeyManager, UnavailableConversation
+from .wire import CANDIDATE, LEGACY, TOKEN, TOKEN_V2, Mode, Parsed, Principal, packed
 
 
 class TokenService:
     def __init__(self, keys: dict[str, str], active_key_id: str, store: MappingStore,
-                 *, clock=time.time):
+                 *, clock=time.time, conversation_max_lifetime_seconds=86400,
+                 conversation_tombstone_seconds=86400):
         self.keys = {}
         for kid, encoded in keys.items():
             if not re.fullmatch(r'[A-Za-z0-9_-]{1,32}', kid):
@@ -42,6 +43,9 @@ class TokenService:
         if keys and active_key_id not in keys:
             raise ValueError('Active token key is missing from keyring')
         self.active_key_id, self.store, self.clock = active_key_id, store, clock
+        self.conversations = ConversationKeyManager(self.keys, active_key_id, store.conversations,
+            max_lifetime_seconds=conversation_max_lifetime_seconds,
+            tombstone_seconds=conversation_tombstone_seconds, clock=lambda: self.clock())
         self.backends: dict[str, TokenBackend] = {'m': MappingBackend(self), 's': AesSivBackend(self)}
 
     @property
@@ -55,13 +59,23 @@ class TokenService:
     def scope(self, principal, group, kid):
         return self._mac(kid, 'group', principal.tenant_id, group).hex()[:32]
 
-    def _mac(self, kid, *parts):
+    def _mac(self, kid, *parts, material=None):
         # Domain-separated key derivation: the HMAC key is distinct from the SIV key.
-        key = hmac.digest(self.keys[kid], b'vg-token-hmac-v1', 'sha256')
+        key = (material.derive('reference-hmac', 32) if material else
+               hmac.digest(self.keys[kid], b'vg-token-hmac-v1', 'sha256'))
         return hmac.digest(key, packed(*parts), 'sha256')
+
+    def encryption_key(self, parsed, material=None):
+        if parsed.format_version == 1:
+            return self.keys[parsed.kid]
+        if material is None or material.scope != parsed.scope or material.version != parsed.kid:
+            raise ValueError('Conversation key required')
+        return material.derive('mapping-aes-siv' if parsed.mode == 'm' else 'token-aes-siv', 64)
 
     @staticmethod
     def _header(p, principal):
+        if p.format_version == 2:
+            return packed('vg-token', 2, p.mode, p.entity_type, principal.tenant_id, p.scope, p.kid)
         return packed('vg-token', 1, p.mode, p.entity_type, p.kid, principal.tenant_id,
                       p.scope, p.expires)
 
@@ -71,14 +85,22 @@ class TokenService:
 
     @staticmethod
     def _mapping_aad(p, principal, reference):
-        return packed('vg-mapping', 1, principal.tenant_id, p.kid, p.scope,
+        return packed('vg-mapping', p.format_version, principal.tenant_id, p.kid, p.scope,
                       p.entity_type, reference)
+
+    def storage_group(self, principal, parsed):
+        kid = parsed.kid if parsed.format_version == 1 else 'conversation-' + parsed.kid
+        return self._storage_group(principal, kid, parsed.scope)
 
     def check_group(self, principal, group):
         if '*' not in principal.groups and group not in principal.groups:
             raise ProblemError(403, 'group-forbidden', 'Group access denied')
 
     def _parse(self, text, principal):
+        match = TOKEN_V2.fullmatch(text)
+        if match:
+            mode, kind, scope, version, payload = match.groups()
+            return Parsed(text, mode, kind, version, scope, 0, payload, format_version=2)
         match = TOKEN.fullmatch(text)
         if not match:
             raise ValueError('Malformed token')
@@ -98,15 +120,22 @@ class TokenService:
         invalid = set(LEGACY.findall(text))
         originals = {}
         pending = defaultdict(list)
+        materials = {}
         for token in candidates:
             try:
                 p = self._parse(token, principal)
+                material = None
+                if p.format_version == 2:
+                    identity = (p.scope, p.kid)
+                    if identity not in materials:
+                        materials[identity] = await self.conversations.load(principal, p.scope, p.kid)
+                    material = materials[identity]
                 backend = self.backends[p.mode]
-                reference = backend.reference(p, principal)
+                reference = backend.reference(p, principal, material)
                 if reference is None:
-                    originals[token] = backend.decode(p, principal)
+                    originals[token] = backend.decode(p, principal, material=material)
                 else:
-                    pending[self._storage_group(principal, p.kid, p.scope)].append((p, reference))
+                    pending[self.storage_group(principal, p)].append((p, reference, material))
             except (ValueError, InvalidTag, UnicodeError):
                 invalid.add(token)
         if invalid:
@@ -114,10 +143,10 @@ class TokenService:
                                   unmatched_placeholders=sorted(invalid))
         try:
             for group, entries in pending.items():
-                values = await self.store.get(group, [reference for _, reference in entries])
-                for (p, reference), value in zip(entries, values, strict=True):
+                values = await self.store.get(group, [reference for _, reference, _ in entries])
+                for (p, reference, material), value in zip(entries, values, strict=True):
                     try:
-                        originals[p.text] = self.backends[p.mode].decode(p, principal, value)
+                        originals[p.text] = self.backends[p.mode].decode(p, principal, value, material)
                     except (ValueError, InvalidTag, UnicodeError):
                         invalid.add(p.text)
         except Exception:
@@ -139,10 +168,30 @@ class TokenService:
         self.check_group(principal, group)
         groups = [self._storage_group(principal, kid, self.scope(principal, group, kid))
                   for kid in self.keys]
+        scope = await self.conversations.scope_for_group(principal, group)
+        if scope:
+            groups.append(self._storage_group(principal, 'conversation-1', scope))
         try:
             await self.store.delete(groups)
         except Exception:
             raise ProblemError(503, 'mapping-store-unavailable', 'Mapping storage unavailable') from None
+
+    async def close_conversation(self, principal, group):
+        self.require_enabled()
+        self.check_group(principal, group)
+        await self.conversations.close(principal, group)
+        await self.delete_group(principal, group)
+
+    async def validate_cached(self, body, principal):
+        # A replay must not bypass closure/expiry of any conversation represented in its tokens.
+        from ..contracts.types import EmailInV2
+        texts = iter_fields(body['redacted_purpose'],
+                            EmailInV2.model_validate(body['redacted_email'])).values()
+        for text in texts:
+            if CANDIDATE.search(text):
+                result = await self.restore(text, principal)
+                if result.restore_decision == 'BLOCKED':
+                    raise ProblemError(409, 'cached-token-unavailable', 'Cached tokens are unavailable')
 
 
 @dataclass
@@ -153,6 +202,17 @@ class TokenContext:
     mode: Mode
     expires: int
     ttl: int
+    key: ConversationKey | None = field(default=None, repr=False)
+
+    async def prepare(self):
+        self.key = await self.service.conversations.get_or_create(
+            self.principal, self.request.group_id, self.ttl)
+        self.expires = self.key.expires_at
+        try:
+            await self.service.store.touch(self.service._storage_group(
+                self.principal, 'conversation-' + self.key.version, self.key.scope), self.expires)
+        except Exception:
+            raise ProblemError(503, 'mapping-store-unavailable', 'Mapping storage unavailable') from None
 
     async def masked_request(self):
         """Validate existing tokens and mask them length-preservingly before all detectors."""
@@ -171,9 +231,8 @@ class TokenContext:
 
     async def render(self, decisions: list[Decision]) -> PseudonymResult:
         svc, principal, req = self.service, self.principal, self.request
-        self.expires = int(svc.clock()) + self.ttl
-        kid = svc.active_key_id
-        scope = svc.scope(principal, req.group_id, kid)
+        await self.prepare()
+        kid, scope = self.key.version, self.key.scope
         fields = iter_fields(req.purpose, req.email)
         output = dict(fields)
         mapping = {}
@@ -188,19 +247,24 @@ class TokenContext:
                 raise ProblemError(422, 'token-overlap', 'Detected span overlaps an existing token')
             raw = fields[c.field][c.start:c.end].encode('utf-8')
             mode = 'm' if self.mode == 'mapping' else 's'
-            p = Parsed('', mode, c.type, kid, scope, self.expires, '')
-            encoded = svc.backends[mode].encode(p, principal, raw)
+            p = Parsed('', mode, c.type, kid, scope, 0, '', format_version=2)
+            encoded = svc.backends[mode].encode(p, principal, raw, self.key)
             payload = encoded.payload
             if encoded.reference is not None:
                 mapping[encoded.reference] = encoded.stored_value
-            token = f'[VG:1:{mode}:{c.type}:{kid}:{scope}:{self.expires}:{payload}]'
+            token = f'[VG:2:{mode}:{c.type}:{scope}:{kid}:{payload}]'
             replacements.append((c.field, c.start, c.end, token))
         # Publish all mapping entries atomically, before returning any tokens.
         if mapping:
             try:
-                await svc.store.put(svc._storage_group(principal, kid, scope), mapping, self.expires)
+                await svc.store.put(svc._storage_group(principal, 'conversation-' + kid, scope), mapping, self.expires)
             except Exception:
                 raise ProblemError(503, 'mapping-store-unavailable', 'Mapping storage unavailable') from None
+        # Recheck after publishing mappings: closure during storage work must not issue tokens.
+        try:
+            await svc.conversations.load(principal, scope, kid)
+        except UnavailableConversation:
+            raise ProblemError(410, 'conversation-unavailable', 'Conversation expired or closed') from None
         for path, start, end, token in sorted(replacements, key=lambda r: (r[0], -r[1])):
             output[path] = output[path][:start] + token + output[path][end:]
         email = email_to_dict(req.email)

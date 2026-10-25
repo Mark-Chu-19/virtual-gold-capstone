@@ -4,10 +4,14 @@ V2 adds Mapping and AES-SIV backends to the existing detect/assess/decide pipeli
 (`/v1/redactions`, record-based restore/delete) remains compatible and process-local.
 V2 restoration takes the message and authentication only: no redaction ID or mode is needed.
 
+New tokens now use Conversation Key Manager and wire format 2. Request bodies are unchanged;
+see [conversation key lifecycle and migration](conversation-keys-en.md).
+
 ## Start and configure
 
 From `service/`, install `pip install -e '.[dev]'`. Python `cryptography` provides AES-SIV;
-keys are 64 bytes for AES-256-SIV. No cryptographic primitives are implemented locally.
+configured wrapping keys (KEKs) are 64 bytes for AES-256-SIV. The service creates independent
+random conversation secrets and stores only their wrapped representation. No cryptographic primitives are implemented locally.
 Generate a persistent development keyring once, keep it in your secret manager/environment,
 and reuse it across replicas and restarts:
 
@@ -92,43 +96,43 @@ Content-Type: application/json
   `Idempotency-Replayed: true`. Different input returns 409. An in-progress duplicate returns
   409 with `Retry-After: 1`; retry the same key. Failed requests release their bounded lease.
   Redis is required for cross-instance leases/results. Cached response bodies are encrypted.
-  Stateless AES-SIV requires no storage unless this optional header is used.
+  Both modes require the shared conversation key store; AES-SIV still needs no original-value mapping.
 
 The response includes `redacted_email`, `redacted_purpose`, `spans`, normal/degraded metadata,
 versions, a tracing `request_id`, and:
 
 ```json
-{"tokenization":{"mode":"aes_siv","expires_at":1800000000,"format_version":1,"mapping_retained":false}}
+{"tokenization":{"mode":"aes_siv","expires_at":1800000000,"format_version":2,"mapping_retained":false}}
 ```
 
-`expires_at` is Unix seconds, established when tokens are rendered. V2 creates no v1 record
+`expires_at` is the conversation expiry snapshot in Unix seconds. Activity may extend it up to
+the configured hard lifetime; it is not a per-token immutable deadline. V2 creates no v1 record
 and does not reserve its `max_records` capacity. Span offsets remain Unicode code-point offsets
 into the original request fields, even when input already contains protected tokens.
 
 ## Token format and exact restoration
 
 ```text
-[VG:1:m:PHONE_PERSONAL:k1:<opaque-group-handle>:<expiry>:<reference>.<signature>]
-[VG:1:s:PHONE_PERSONAL:k1:<opaque-group-handle>:<expiry>:<base64url-siv-ciphertext>]
+[VG:2:m:PHONE_PERSONAL:<random-conversation-handle>:1:<reference>.<signature>]
+[VG:2:s:PHONE_PERSONAL:<random-conversation-handle>:1:<base64url-siv-ciphertext>]
 ```
 
-Version, backend, complete entity type, key ID, group handle and expiry are authenticated.
-The trusted tenant is also bound cryptographically. Group handles are keyed HMAC values,
-not raw conversation identifiers. Tokens reveal their type, expiry and equality within a fixed
-context; AES-SIV also reveals plaintext byte length. They are pseudonymization, not anonymization.
-The model gets the token and surrounding text, never the key or a plaintext mapping.
+Format, backend, entity type, conversation handle, DEK version and trusted tenant are
+cryptographically bound. The handle is random, not the raw conversation identifier. Master
+key IDs and expiry are kept in the conversation record instead of the token. Equal values
+within a fixed context reveal equality; AES-SIV also reveals plaintext byte length. These are
+pseudonymization, not anonymization. The model never receives keys or plaintext mappings.
 
-Mapping references use the exact original text and are stable within tenant/group/type/key.
+Mapping references use exact original text and are stable within tenant/conversation/type/DEK.
 Values are AES-SIV encrypted before Redis receives them. A single group write publishes all
 of a request's mappings before a successful response. A shorter subsequent TTL does not shorten
-older mappings' retention. Entries can remain until the longest active group TTL, although each
-token's own authenticated expiry is enforced during restoration.
+older mappings' retention. An AES-SIV request also extends existing mapping retention. The conversation expiry and
+status are checked during restoration.
 
-AES-SIV encrypts exact UTF-8 bytes; its associated data binds the authenticated header and tenant.
-Equal plaintext under the same key AND associated data produces the same ciphertext. Because
-expiry is bound, separately issued tokens with different expiry values need not be identical.
-Neither backend normalizes case, expands short names or merges different original forms.
-For example, `Dana`, `DANA` and `Dana Whitfield` restore to their exact respective strings.
+AES-SIV encrypts exact UTF-8 bytes under the conversation-derived key. Fixed associated data
+binds format, mode, entity type, tenant, conversation and DEK version, so repeated requests with
+the same value/type retain identical tokens even when the conversation TTL is extended. Neither
+backend normalizes case or expands names: `Dana`, `DANA` and `Dana Whitfield` restore exactly.
 Cross-request alias learning/entity resolution is not provided by encryption.
 
 Token strings are longer than v1's `[PHONE_1]`; compare actual model token counts rather than
@@ -139,7 +143,7 @@ POST /v2/restorations
 Authorization: Bearer <agent-key>
 Content-Type: application/json
 
-{"text":"Call [VG:1:...]"}
+{"text":"Call [VG:2:...]"}
 ```
 
 Success: `restore_decision: RESTORED`, `restored_text`, empty `unmatched_placeholders`.
@@ -160,18 +164,21 @@ causes 422 rather than corrupting it. `[VG...]` is a reserved token namespace.
 `DELETE /v2/groups/{group_id}/mappings` is authenticated and idempotent (204); it removes that
 group's Mapping data across all configured key IDs. This explicitly does NOT revoke AES-SIV
 tokens or already returned plaintext. Concurrent new redaction after deletion can create new
-mappings; callers needing a permanent group shutdown must stop new writes at the workflow layer.
-Mapping group deletion does not clear cached idempotency responses; replaying a cached result
-can return tokens that are now revoked. Use a new key for a new workflow operation.
+mappings; use the conversation-close endpoint to stop new writes for that conversation.
+Cached idempotency responses are revalidated before replay; revoked embedded tokens cause 409.
+Use a new key for a new workflow operation. `DELETE /v2/groups/{group_id}` additionally closes the
+conversation and removes its wrapped secret. New format-2 tokens from both backends are then
+blocked, and new redactions (including cached retries) return 410. See the lifecycle document.
 
 Neither backend currently exposes single-token revocation. Stateless AES-SIV cannot implement
 individual immediate revocation without additional state. Expiry is checked by the service,
 not cryptographic erasure: someone holding an old key can decrypt retained ciphertext offline.
-Remove a key only after its tokens and idempotency results no longer need recovery. Retain old
-keys and add a new active key to rotate; do not remove old keys when switching default mode.
+Wrapping-key rotation lazily rewraps active conversation secrets without changing tokens. Retain
+old KEKs until every relevant record has been rewrapped. Legacy format-1 tokens/caches may still
+require old keys; do not remove them just because the default mode was changed.
 
-Mapping failure returns 503 before a successful token response. AES-SIV without idempotency keeps
-working if Redis is down. A crashed writer may leave encrypted mappings until TTL; no successful
+Storage failure returns 503 before a successful token response. New AES-SIV tokens also require
+conversation key storage, so Redis outage prevents their generation/restoration. A crashed writer may leave encrypted mappings until TTL; no successful
 response is issued before commit. Optional idempotency leases expire after the request deadline
 plus a grace period; they are not an exactly-once guarantee across arbitrary process pauses.
 Audit logs record the backend and decision metadata, never original values/tokens/keys.

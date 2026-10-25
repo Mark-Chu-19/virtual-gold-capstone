@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESSIV
 
 from ..contracts.errors import ProblemError
 from .store import IdempotencyCache
+from .conversations import UnavailableConversation
 from .wire import b64, unb64, packed
 
 
@@ -36,27 +37,34 @@ class Idempotency:
             if 'body' not in item:
                 raise ProblemError(409, 'request-in-progress', 'Request is already in progress',
                                    headers={'Retry-After': '1'})
-            body = AESSIV(self.tokens.keys[item['kid']]).decrypt(
+            if 'scope' in item:
+                conversation = await self.tokens.conversations.load(principal, item['scope'], item['version'])
+                key = conversation.derive('idempotency-aes-siv', 64)
+            else:  # Pre-conversation-key cache entries remain readable during migration.
+                key = self.tokens.keys[item['kid']]
+            body = AESSIV(key).decrypt(
                 unb64(item['body']), [packed('vg-idempotency', cache_key, fingerprint)])
             result = json.loads(body)
             if result['tokenization']['expires_at'] <= self.tokens.clock():
                 raise ProblemError(409, 'idempotency-expired', 'Cached tokens have expired')
             return None, result
+        except UnavailableConversation:
+            raise ProblemError(409, 'cached-token-unavailable', 'Cached conversation is unavailable') from None
         except ProblemError:
             raise
         except Exception:
             raise ProblemError(503, 'idempotency-unavailable', 'Idempotency storage unavailable') from None
 
-    async def finish(self, ticket, body, ttl):
+    async def finish(self, ticket, body, ttl, *, conversation):
         if ticket is None:
             return
         key, pending = ticket
         item = json.loads(pending)
-        kid = self.tokens.active_key_id
-        encrypted = AESSIV(self.tokens.keys[kid]).encrypt(
+        encrypted = AESSIV(conversation.derive('idempotency-aes-siv', 64)).encrypt(
             json.dumps(body, separators=(',', ':')).encode(),
             [packed('vg-idempotency', key, item['fingerprint'])])
-        value = json.dumps({'fingerprint': item['fingerprint'], 'kid': kid, 'body': b64(encrypted)})
+        value = json.dumps({'fingerprint': item['fingerprint'], 'scope': conversation.scope,
+                            'version': conversation.version, 'body': b64(encrypted)})
         try:
             if not await self.cache.swap(key, pending, value, ttl):
                 raise RuntimeError('Lease lost')

@@ -161,7 +161,7 @@ async def test_key_rotation_and_new_default_do_not_break_old_tokens(v2, settings
     new_service = TokenService(rotated, 'k2', app.state.tokens.store)
     assert (await new_service.restore(old, Principal('tenant1'))).restore_decision == 'RESTORED'
     # Restart requires configured keys; no per-process random key is used.
-    restarted = TokenService(KEYS, 'k1', app.state.tokens.store)
+    restarted = TokenService(rotated, 'k2', app.state.tokens.store)
     assert (await restarted.restore(old, Principal('tenant1'))).restore_decision == 'RESTORED'
 
 
@@ -214,7 +214,7 @@ async def test_redis_atomic_concurrent_writes_expiry_and_cross_instance(settings
         await c.aclose()
 
 
-async def test_storage_failure_blocks_mapping_but_not_stateless_aes(settings, components, model):
+async def test_mapping_failure_does_not_block_aes_when_key_storage_is_available(settings, components, model):
     class Broken(MemoryMappingStore):
         async def put(self, *args):
             raise ConnectionError('CANARY secret internal error')
@@ -319,7 +319,7 @@ async def test_v2_degraded_flow_and_no_private_text_in_observability(v2, setting
         restored = (await client.post('/v2/restorations', json={'text': text})).json()
         assert restored['restored_text'] == body()['email']['body']
     observations = caplog.text + open(settings.audit_log_path).read() + app.state.metrics.render().decode()
-    for private in ['202-555-0102', '123-45-6789', KEYS['k1'], '[VG:1:']:
+    for private in ['202-555-0102', '123-45-6789', KEYS['k1'], '[VG:1:', '[VG:2:']:
         assert private not in observations
     assert 'token_backend' in observations and 'vg_token_redactions_total' in observations
 

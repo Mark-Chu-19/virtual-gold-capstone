@@ -39,8 +39,15 @@ V2 supports `tokenization.mode: mapping | aes_siv`, restoration directly from me
 shared Redis mappings, tenant/group permissions and optional cross-instance idempotency.
 V1 remains compatible. Configure a persistent `VG_TOKEN_KEYS` keyring to enable v2; use
 Redis for independent replicas (memory is development-only). No plaintext mapping is retained
-in AES-SIV mode. Real-model token preservation still needs evaluation.
+in AES-SIV mode; both modes now require persistent conversation key records. Real-model token preservation still needs evaluation.
 
 See [the v2 contract and setup](../docs/api/tokenization-v2-en.md) /
 [中文说明](../docs/api/tokenization-v2-zh.md). `infra/compose.yaml` supplies development Redis;
 `scripts/evaluate_tokens.py` compares both modes through local Ollama without changing notebooks.
+
+Conversation Key Manager now creates independent random conversation secrets, wraps them with
+`VG_TOKEN_KEYS`, and derives separate encryption/signing keys. New format-2 tokens are stable
+within a conversation and remain self-routing; format-1 tokens still restore during migration.
+`DELETE /v2/groups/{group_id}` closes a conversation, unlike `/mappings` which only clears mappings.
+See [conversation key lifecycle](../docs/api/conversation-keys-en.md) /
+[会话密钥说明](../docs/api/conversation-keys-zh.md).
