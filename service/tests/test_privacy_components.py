@@ -49,8 +49,33 @@ def test_rules_find_fixed_shape_items():
     assert ("4111 1111 1111 1111", "CARD_NUMBER") in got
 
 
+def test_extensions_but_not_codes_or_user_agents():
+    text = "Cell 412-555-0182 x4521, desk ext. 204, Extension 33. Ref US-EN-6403-X501; (X11; Linux)."
+    assert [t for t, k in found(text) if k == "PHONE_PERSONAL"] == [
+        "412-555-0182", "x4521", "ext. 204", "Extension 33"]
+
+
 def test_card_numbers_need_a_valid_luhn_checksum():
     assert not [t for t, k in found("ref 4111 1111 1111 1112") if k == "CARD_NUMBER"]
+
+
+def test_numbers_that_cannot_start_a_card_are_not_cards():
+    assert not [t for t, k in found("ref 9111111111111111") if k == "CARD_NUMBER"]  # Luhn-valid
+
+
+def test_us_addresses():
+    text = ("Send it to 1200 Main Street, Apt 4B, Pittsburgh, PA 15213 or PO Box 552. "
+            "Office: 233 S Wacker Dr, Chicago, IL 60606.")
+    assert [t for t, k in found(text) if k == "ADDRESS_HOME"] == [
+        "1200 Main Street, Apt 4B, Pittsburgh, PA 15213", "PO Box 552",
+        "233 S Wacker Dr, Chicago, IL 60606"]
+    assert found("We have 2 Main Points to cover.") == []
+
+
+def test_ages():
+    text = "She is 42, age 42, aged 42, a 42-year-old, 42 years old."
+    assert [t for t, k in found(text) if k == "AGE"] == [
+        "age 42", "aged 42", "42-year-old", "42 years old"]
 
 
 def test_amounts():
@@ -102,6 +127,14 @@ def test_team_mailboxes_are_not_treated_as_people():
     segs = header_and_body("Contact Support or the Team.",
                            **{"email.to[0].name": "Support Team"})
     assert body_names(segs) == []
+
+
+def test_names_under_a_sign_off_are_found_without_a_header():
+    assert [t for t, k in found("Ping me. Thanks,\nJordan\nVP Finance") if k == "PERSON"] == [
+        "Jordan"]
+    assert [t for t, k in found("Please review. Best, Alex Kim") if k == "PERSON"] == ["Alex Kim"]
+    for text in ("Thanks for the update.", "Best of luck!", "Regards,\nThe Finance Team"):
+        assert found(text) == []
 
 
 def test_header_names_are_matched_case_sensitively():
@@ -175,6 +208,12 @@ def test_new_types_have_tiers():
     assert (POLICY.tier_of("DEMOGRAPHIC"), POLICY.tier_of("NETWORK_ID"), POLICY.tier_of("AMOUNT")) == (
         "high", "medium", "medium")
     assert decisions(scored("AMOUNT", 0.3), scored("AMOUNT", 0.8, start=10)) == [
+        ("retain", "below_threshold"), ("redact", "meets_threshold")]
+
+
+def test_public_addresses_are_redacted_only_when_fairly_sure_they_are_private():
+    assert POLICY.tier_of("ADDRESS_PUBLIC") == "public"
+    assert decisions(scored("ADDRESS_PUBLIC", 0.6), scored("ADDRESS_PUBLIC", 0.85, start=10)) == [
         ("retain", "below_threshold"), ("redact", "meets_threshold")]
 
 
@@ -377,3 +416,26 @@ def test_presidio_maps_types_and_skips_uk_nhs():
     assert ("412-555-0182", "PHONE_PERSONAL") in got
     assert ("tom.reyes@acme.com", "EMAIL_PERSONAL") in got
     assert all(k in POLICY.taxonomy for _, k in got)
+
+
+@pytest.mark.skipif(not HAS_PRESIDIO, reason="no presidio")
+def test_presidio_drops_known_false_positives():
+    from vg_redactor.privacy import make_detect_presidio
+    detect = make_detect_presidio()
+
+    def got(text):
+        return {(text[c.start:c.end], c.type) for c in detect(body(text))}
+
+    # Extensions and short codes are not driver's licences (GOV_ID, High tier).
+    for text in ("Reach me at 412-555-0182 x204.", "Room 4521, x4521.", "MAC 00:1B:44:11:3A:B7."):
+        assert not {s for s, k in got(text) if k == "GOV_ID"}
+    assert ("D1234567", "GOV_ID") in got("Driver license D1234567")
+    # A command word starting a sentence is not a name; a real name is still found.
+    assert not {s for s, k in got("Email john.doe@acme.com.") if k == "PERSON"}
+    assert ("Dana", "PERSON") in got("Reach out to Dana before Friday.")
+    # Fiscal periods are not places; ages are AGE, not DATE.
+    assert ("Q3", "CITY") not in got("Sync with Kim on Q3.")
+    assert ("age 42", "AGE") in got("He is from Brazil, age 42.")
+    # Long digit strings spaCy calls dates are account numbers, unless they read as YYYYMMDD.
+    assert ("92535170542762962231", "ACCOUNT_NUMBER") in got("Can you verify your 92535170542762962231?")
+    assert not {s for s, k in got("The report dated 20261025 is final.") if k == "ACCOUNT_NUMBER"}

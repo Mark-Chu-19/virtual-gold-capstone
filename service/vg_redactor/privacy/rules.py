@@ -2,8 +2,9 @@
 
 Covers patterns with a fixed shape and what Presidio cannot know:
 phone numbers and extensions, email addresses, SSN-shaped IDs, card numbers (Luhn-checked),
-money amounts, the client's term list (project code names, deal names, counterparties), and
-every occurrence of the names given in the from / to / cc header fields.
+money amounts, US postal addresses, ages, the client's term list (project code names, deal names,
+counterparties), every occurrence of the names given in the from / to / cc header fields, and
+the name under a sign-off ("Thanks,\nJordan").
 """
 from __future__ import annotations
 
@@ -16,12 +17,33 @@ from .names import clean_person_name, name_parts
 _SCALE = r"(?:k|K|m|M|mm|MM|bn|B|thousand|million|billion)"
 _NUM = r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?"
 
+# US postal addresses. Home or office cannot be told from the text, so every match is
+# ADDRESS_HOME (Medium) and the model's score decides; a publicly listed office address scores low
+# and is kept (the model's own label for it is ADDRESS_PUBLIC, Public tier).
+_STATES = ("AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|"
+           "NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY")
+_SUFFIX = (r"Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Way|Court|Ct|Place|Pl|"
+           r"Terrace|Ter|Circle|Cir|Parkway|Pkwy|Highway|Hwy|Square|Sq")
+_WORD = r"(?:[A-Z][a-zA-Z.'-]*|\d+(?:st|nd|rd|th))"
+_UNIT = r"(?:,?\s*(?:Apt|Apartment|Suite|Ste|Unit|Floor|Fl|#)\.?\s*#?[A-Za-z0-9-]+)?"
+_CITY_STATE_ZIP = rf"[A-Z][a-zA-Z]+(?:\s[A-Z][a-zA-Z]+){{0,2}},?\s+(?:{_STATES})\s+\d{{5}}(?:-\d{{4}})?\b"
+_ADDRESS = (rf"\b\d{{1,6}}(?:\s+{_WORD}){{1,4}}\s+(?:{_SUFFIX})\b\.?{_UNIT}(?:,\s*{_CITY_STATE_ZIP})?"
+            rf"|\bP\.?\s?O\.?\s?Box\s+\d+\b(?:,\s*{_CITY_STATE_ZIP})?"
+            rf"|\b{_CITY_STATE_ZIP}")
+AGE_RE = re.compile(r"\b(?:aged?\s+\d{1,3}|\d{1,3}[- ]years?[- ]old|\d{1,3}-year-old)\b",
+                    re.IGNORECASE)
+
 PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("PHONE_PERSONAL", re.compile(r"(?<!\d)(?:\+?1[-. ]?)?\(?\d{3}\)?[-. ]\d{3}[-. ]\d{4}(?!\d)")),
-    ("PHONE_PERSONAL", re.compile(r"\b(?:ext\.?|extension|x)\s?\d{2,5}\b", re.IGNORECASE)),
+    # Extensions: "ext. 204", "extension 204", or a bare lower-case "x4521" that starts a word.
+    # The bare form must not follow a hyphen or bracket, so codes ("US-EN-6403-X501") and user
+    # agents ("(X11; Linux") are not taken for extensions.
+    ("PHONE_PERSONAL", re.compile(r"(?i:\b(?:ext\.?|extension)\s?\d{2,5}\b)|(?<![^\s,;:])x\d{2,5}\b")),
     ("EMAIL_PERSONAL", re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]*\w")),
     ("GOV_ID", re.compile(r"(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)")),
-    ("CARD_NUMBER", re.compile(r"(?<!\d)(?:\d[ -]?){12,15}\d(?!\d)")),
+    # Card numbers start with 2-6 (Mastercard 2-series, Amex 3, Visa 4, Mastercard 5, Discover 6),
+    # so order and ticket numbers that pass Luhn by chance are not taken for cards.
+    ("CARD_NUMBER", re.compile(r"(?<!\d)[2-6](?:[ -]?\d){12,15}(?!\d)")),
     # AMOUNT is Medium: "$20 lunch" and an unreleased reserve look alike, so the model's
     # contextual score decides.
     ("AMOUNT", re.compile(
@@ -29,6 +51,8 @@ PATTERNS: list[tuple[str, re.Pattern[str]]] = [
         rf"|\b(?:USD|EUR|GBP|CNY)\s?(?:{_NUM})(?:\s?{_SCALE}\b)?"
         rf"|\b(?:{_NUM})\s?(?:million|billion|thousand)\b(?:\s(?:dollars|euros|pounds))?"
         rf"|\b(?:{_NUM})\s(?:dollars|euros|pounds)\b")),
+    ("ADDRESS_HOME", re.compile(_ADDRESS)),
+    ("AGE", AGE_RE),
 ]
 
 TERM_TYPE = "CODENAME"  # High tier in config/policy.yaml
@@ -59,6 +83,24 @@ def _header_name_candidates(segments: list[Segment]) -> list[Candidate]:
     return [Candidate(field=seg.field, start=m.start(), end=m.end(), type="PERSON",
                       detectors={"rules"}, hint="header_name")
             for seg in segments for m in rx.finditer(seg.text)]
+
+
+# ---- the name under a sign-off -----------------------------------------------------------------
+# Finds "Thanks,\nJordan" and "Best, Alex" when the header carries no name (forwarded mail,
+# a mailbox address only). Presidio misses a lone name on its own line.
+_SIGNOFF = re.compile(
+    r"(?:^|(?<=[.!?]))[ \t>-]*"
+    r"(?i:thanks|thank you|many thanks|best|best regards|regards|kind regards|warm regards|"
+    r"warmly|cheers|sincerely|yours|cordially|talk soon)[ \t]*[,!.]?[ \t]*(?:\n[ \t>]*|[ \t]+)"
+    r"(?P<name>[A-Z][a-zA-Z'’-]+(?:[ \t]+[A-Z][a-zA-Z'’.-]*){0,2})[ \t]*$",
+    re.MULTILINE)
+
+
+def _signoff_candidates(segments: list[Segment]) -> list[Candidate]:
+    return [Candidate(field=seg.field, start=m.start("name"), end=m.end("name"), type="PERSON",
+                      detectors={"rules"}, hint="signoff_name")
+            for seg in segments for m in _SIGNOFF.finditer(seg.text)
+            if clean_person_name(m.group("name"))]  # drops "Best,\nThe Finance Team"
 
 
 def luhn_ok(digits: str) -> bool:
@@ -94,7 +136,7 @@ def detect_rules(segments: list[Segment], ctx: ContextStore) -> list[Candidate]:
             for m in terms.finditer(seg.text):
                 out.append(Candidate(field=seg.field, start=m.start(), end=m.end(), type=TERM_TYPE,
                                      detectors={"rules"}, hint="term_list_match"))
-    return out + _header_name_candidates(segments)
+    return out + _header_name_candidates(segments) + _signoff_candidates(segments)
 
 
 # ---- confidential markers -------------------------------------------------------------------
