@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Oct 25 Team Meeting</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; each topic is a card with evidence, a recommendation, then a fill-in block. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --field:#FBFCFD;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:36px 72px}
+.page{max-width:880px;margin:0 auto}
+header{padding-bottom:22px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.intro{margin:0 0 18px;font-size:17px;line-height:1.6;max-width:68ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0 0 18px;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400;flex:none}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.lede{color:var(--muted);margin:6px 0 14px;font-size:16px;line-height:1.65}
+p{margin:0 0 10px}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:7px}
+a{color:var(--cloud)}
+
+/* running order */
+.order{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 14px}
+.order li:hover{border-color:var(--gold)}
+.order a{color:inherit;text-decoration:none}
+.order .n{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.order .t{font-weight:600}
+.order .w{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.order .d{grid-column:2/-1;font-size:14px;color:var(--muted)}
+@media (max-width:600px){.order li{grid-template-columns:28px 1fr}.order .w{grid-column:2}}
+.chains{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 44px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;font-size:14px}
+.chain:last-child{margin-bottom:0}
+.chain .lab{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);width:100%}
+.node{border:1px solid var(--line);border-radius:999px;padding:3px 11px;background:var(--soft)}
+.node.today{border-color:var(--warn);background:var(--warn-soft);font-weight:600}
+.arr{color:var(--muted)}
+
+/* topic cards */
+section.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 22px 20px;margin-bottom:26px;scroll-margin-top:16px}
+section.item.urgent{border-left:4px solid var(--warn)}
+section.item.soon{border-left:4px solid var(--gold)}
+section.item.later{border-left:4px solid var(--cloud)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.due{background:var(--warn-soft);color:var(--warn)}
+.issue{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.issue h4{margin:0 0 6px;font-size:16px}
+.issue .ev{font-size:14px;color:var(--muted);margin:6px 0 0}
+.rec{background:var(--local-soft);border-radius:8px;padding:12px 14px;margin-top:14px}
+.rec .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--local);display:block;margin-bottom:4px}
+.tablewrap{overflow-x:auto;margin:6px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);background:var(--soft);font-weight:500}
+td.hl{background:var(--warn-soft)}
+.num{font-variant-numeric:tabular-nums}
+
+/* fill-in block */
+.fill{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;display:grid;gap:14px}
+.fill .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.qa{display:grid;gap:10px}
+.qa label{display:grid;gap:4px;font-size:15px}
+.qa .who{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+.choices{display:grid;gap:8px;border:0;padding:0;margin:0}
+.choices legend{padding:0;margin-bottom:6px}
+.choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font-size:15px}
+.choice:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.choice input{margin-top:4px;accent-color:var(--gold);flex:none}
+.choice b{font-family:var(--mono);font-size:12px;color:var(--gold);margin-right:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.row2{grid-template-columns:1fr}}
+.row2 label{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+input[type=text],textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{min-height:64px;resize:vertical;line-height:1.5}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.choice:focus-within{outline:2px solid var(--gold);outline-offset:1px}
+
+/* export */
+.export{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-top:10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+button{font:inherit;font-size:15px;font-weight:600;border-radius:8px;padding:8px 14px;border:1px solid var(--gold);background:var(--gold);color:var(--surface);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:focus-visible{outline:2px solid var(--cloud);outline-offset:2px}
+#status{font-size:13px;color:var(--muted)}
+#mdout{min-height:180px;font-family:var(--mono);font-size:13px}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">Virtual Gold · team meeting · internal</div>
+  <h1>What the client sees tomorrow</h1>
+  <p class="intro">Four teammates prepared material for Monday's client meeting. Read side by side, the files disagree in a few places, and one of them states things as decided that we have not decided. Tonight we settle five things so that what the client sees on Monday is accurate and says the same thing everywhere.</p>
+  <dl class="meta">
+    <div><dt>When</dt><dd>Sunday 2026-10-25</dd></div>
+    <div><dt>Client meeting</dt><dd>Monday 2026-10-26, 18:00 ET</dd></div>
+    <div><dt>Materials</dt><dd><code>meetings/client/2026-10-26/</code></dd></div>
+    <div><dt>Tracked in</dt><dd><code>todo/TODO.md</code>, Oct 25 section</dd></div>
+  </dl>
+  <div class="row2">
+    <label for="attendees">Attendees<input type="text" id="attendees" data-save placeholder="Mark, Anmol, Yudi, Zhexuan, Karina"></label>
+    <label for="timekeeper">Notes taken by<input type="text" id="timekeeper" data-save placeholder="Mark"></label>
+  </div>
+</header>
+
+<h2><span class="n">00</span>Running order</h2>
+<p class="lede">Numbers match the TODO table. Suggested times add up to about 55 minutes. Topics 2 and 5 are the same problem seen from two sides, so take them back to back.</p>
+<ol class="order">
+  <li><span class="n">1</span><a class="t" href="#t1">Anmol's model report</a><span class="w">10 min</span><span class="d">Reword "VPC", take two assumptions out, remove the CMU budget line</span></li>
+  <li><span class="n">2</span><a class="t" href="#t2">Which tier policy the client reviews</a><span class="w">15 min</span><span class="d">Yudi's 4 tiers or Anmol's 3; how Low-tier items are handled</span></li>
+  <li><span class="n">5</span><a class="t" href="#t5">Karina's dataset, PR #9</a><span class="w">10 min</span><span class="d">Draft labels, merge order with Yudi, the 86 Low-tier spans</span></li>
+  <li><span class="n">3</span><a class="t" href="#t3">Placeholder format</a><span class="w">10 min</span><span class="d">Zhexuan's long tokens or the short <code>[PERSON_1]</code> form</span></li>
+  <li><span class="n">4</span><a class="t" href="#t4">Broken links</a><span class="w">2 min</span><span class="d">26 links to personal laptops</span></li>
+  <li><span class="n">✓</span><a class="t" href="#wrap">Wrap-up: what we show and ask tomorrow</a><span class="w">8 min</span><span class="d">Fill the table at the end</span></li>
+</ol>
+<div class="chains">
+  <div class="chain"><span class="lab">How the topics connect</span>
+    <span class="node today">2 Tier policy</span><span class="arr">↔</span><span class="node today">5 Karina's 86 Low-tier spans</span><span class="arr">→</span><span class="node">D49 client reviews the table</span><span class="arr">→</span><span class="node">D70 leak targets</span></div>
+  <div class="chain">
+    <span class="node today">1 Anmol's report</span><span class="arr">→</span><span class="node">D51 GPU / VPC</span><span class="arr">+</span><span class="node">A15 documents</span><span class="arr">→</span><span class="node">become client questions</span></div>
+  <div class="chain">
+    <span class="node today">3 Placeholder</span><span class="arr">→</span><span class="node">A18 API v2</span><span class="arr">→</span><span class="node">Nov 15 contract freeze</span></div>
+</div>
+
+<!-- 1 -->
+<section class="item urgent" id="t1" data-topic="1" data-title="Anmol's model report">
+  <h2><span class="n">1</span>Anmol's model report</h2>
+  <div class="tags"><span class="tag due">fix before Monday</span><span class="tag">B72</span><span class="tag">A13</span><span class="tag">A15</span><span class="tag">D51</span><span class="tag">Anmol</span></div>
+  <p class="lede">File: <code>briefing-vpc-model-evaluation-en.md</code>, dated Oct 25, addressed to Inderpal, Alex and Urte.</p>
+
+  <h3>What the report says</h3>
+  <ul class="points">
+    <li>After fixing six defects in his test harness, Anmol ran 9 new configurations on the same 15 development emails used on Oct 19.</li>
+    <li><b>Best privacy:</b> Qwen 3.8 27B + GLiNER ("Config B"), sized for one 24–48 GB GPU. 7.4% of private characters left unmasked (Llama 3.3 70B on Oct 19: 16.2%), 9 of 10 confidential facts caught, 2.4 s per email. Cost: 21.7% of public text masked.</li>
+    <li><b>Least over-masking:</b> GPT-OSS 120B, sized for one 80 GB GPU. 5–12% of public text masked, but 17–27% of private characters leak.</li>
+    <li><b>No-LLM fallback:</b> rules + Presidio + GLiNER, 29.4% leakage in 0.11 s. Proposed as the degraded mode.</li>
+  </ul>
+  <p>The results are good news and worth showing. Four things in how they are written need to change first.</p>
+
+  <h3>What needs to change</h3>
+  <div class="issue">
+    <h4>a. "VPC" results were not run in a VPC</h4>
+    <p>The tables call the runs "VPC configurations" and "Tier 1 VPC". All nine ran on hosted free-tier APIs (Groq, OpenRouter). The report says so itself in the note under §4.1. The GPU tiers describe what the model <em>would</em> need, which is useful, but the 2.4 s latency is the hosted provider's speed, not a self-hosted GPU's.</p>
+    <p class="ev">Risk: the client reads "VPC" as "already tested in an environment like ours".</p>
+  </div>
+  <div class="issue">
+    <h4>b. Two open questions written as decided</h4>
+    <p>§1: "Virtual Gold will deploy the privacy gateway inside a dedicated Enterprise VPC rather than on end-user laptops." §1 and §7: the gateway "must redact … arbitrary enterprise documents" (contracts, tables, board memos, logs, transcripts).</p>
+    <p class="ev">Neither is agreed. Where the model runs is D51, open since Sep 15; the client told us on Sep 28 to test over the web or with Ollama. Input scope is A15: the deck and SOW say "English text and documents", contract 0.4.2 takes email only, and nobody has defined what a document request looks like.</p>
+  </div>
+  <div class="issue">
+    <h4>c. The CMU budget line</h4>
+    <p>§7: the next runs wait on "our $50.00 CMU OpenRouter allocation (requested via Prof. Randall Trzeciak)".</p>
+    <p class="ev">Decision log 2026-09-27: answer the client's hardware question with personal laptops only and do not raise the CMU route. Our funding is internal; the client does not need it.</p>
+  </div>
+  <div class="issue">
+    <h4>d. Scope of the evidence</h4>
+    <p>15 emails, covering 4 of the 15 business domains. The 8B and Qwen 9B comparison rows are older local runs on an earlier harness. Say this next to the headline numbers, not only in a footnote.</p>
+  </div>
+  <div class="rec"><span class="k">Recommendation</span>Anmol edits tonight. Retitle to something like "Model evaluation on hosted open-weight models, sized for client GPU tiers". Move the VPC and documents points into a "Questions for Virtual Gold" section. Delete the CMU sentence. Keep the results as they are.</div>
+
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="qa">
+      <label for="q1a"><span><span class="who">Ask Anmol</span> Can you make these edits tonight? By what time?</span><input type="text" id="q1a" data-save></label>
+      <label for="q1b"><span><span class="who">Ask Anmol</span> Which configuration do we lead with tomorrow: Config B (least leakage) or GPT-OSS 120B (least over-masking)?</span><input type="text" id="q1b" data-save></label>
+      <label for="q1c"><span><span class="who">Ask Anmol</span> Can Qwen 3.8 27B and GLiNER be self-hosted under their licences?</span><input type="text" id="q1c" data-save></label>
+      <label for="q1d"><span><span class="who">Ask all</span> Does the full report go to the client, or only a summary?</span><input type="text" id="q1d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">Decision</legend>
+      <label class="choice"><input type="radio" name="d1" id="d1a" value="A" data-save data-label="Anmol edits tonight; the edited report is shown and sent"><span><b>A</b>Anmol edits tonight; the edited report is shown and sent.</span></label>
+      <label class="choice"><input type="radio" name="d1" id="d1b" value="B" data-save data-label="Show a one-page summary tomorrow; the full report follows after edits"><span><b>B</b>Show a one-page summary tomorrow; the full report follows after edits.</span></label>
+      <label class="choice"><input type="radio" name="d1" id="d1c" value="C" data-save data-label="Hold the report until after the meeting"><span><b>C</b>Hold the report until after the meeting.</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o1">Owner<input type="text" id="o1" data-save></label>
+      <label for="w1">By when<input type="text" id="w1" data-save></label>
+    </div>
+    <label for="n1" class="k">Notes</label>
+    <textarea id="n1" data-save></textarea>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="item urgent" id="t2" data-topic="2" data-title="Which tier policy the client reviews">
+  <h2><span class="n">2</span>Which tier policy the client reviews</h2>
+  <div class="tags"><span class="tag due">decide tonight</span><span class="tag">A19</span><span class="tag">D49</span><span class="tag">D70</span><span class="tag">Yudi</span><span class="tag">Anmol</span></div>
+  <p class="lede">Yudi wrote <code>tier-table-client-review-en.docx</code> for the client to confirm. Anmol's numbers come from a harness that applies different rules. If both are shown, the client sees two policies.</p>
+
+  <h3>The four versions side by side</h3>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>Yudi's table (for the client)</th><th>Service on main</th><th>Anmol's harness</th><th>Midterm deck</th></tr>
+    <tr><td>Version</td><td>policy-0.1.3 (her branch)</td><td>policy-0.1.1</td><td>own config</td><td>Oct 5</td></tr>
+    <tr><td>Tiers</td><td>4: High, Medium, Low, Public</td><td>4</td><td>3: High, Medium, Low</td><td>3</td></tr>
+    <tr><td>Categories</td><td>22</td><td>21</td><td>18 dataset types + FACT</td><td>—</td></tr>
+    <tr><td>High</td><td class="num">redact at ≥ 0.2</td><td class="num">≥ 0.2</td><td class="num">≥ 0.2, plus a lock on rule hits</td><td class="num">≥ 0.2</td></tr>
+    <tr><td>Medium</td><td class="num">≥ 0.5, adjustable per request</td><td class="num">≥ 0.5</td><td class="num">≥ 0.5</td><td class="num">≥ 0.5</td></tr>
+    <tr><td><b>Low</b></td><td class="hl">kept unless 3+ different Low types appear in the same field</td><td class="hl">same</td><td class="hl">redacted at ≥ 0.5</td><td>kept on its own</td></tr>
+    <tr><td>Public</td><td class="num">kept unless ≥ 0.8</td><td class="num">kept unless ≥ 0.5</td><td>no Public tier</td><td>—</td></tr>
+    <tr><td>Unsure scores</td><td>—</td><td>—</td><td class="num">0.35–0.65 always redacted</td><td>—</td></tr>
+  </table></div>
+
+  <h3>Why it matters</h3>
+  <div class="issue">
+    <h4>The Low tier is where they really differ</h4>
+    <p>The service (and Yudi's table) keeps a Low item that appears alone, whatever the model says. Anmol's harness redacts it when the model scores it ≥ 0.5. So Anmol's leakage numbers were measured under a stricter rule than the service actually applies. Under the service's rule they would be worse.</p>
+    <p class="ev">Karina measured this directly (topic 5): 86 spans that must be redacted sit in the Low tier, 67 company names, 12 cities, 6 dates and 1 age. Run through the real <code>decide()</code> with the model 90% sure they are private, all 86 are still kept. The worst are deal counterparties (ORG) and dates of birth (DOB maps to DATE).</p>
+  </div>
+  <div class="rec"><span class="k">Recommendation</span>The client reviews <b>Yudi's 4-tier table</b>, because it is what the service implements and it is already written for the client. Before it goes out, add three proposals to it: confidential counterparties go to the term list or CODENAME (High); DOB gets its own type in Medium or High; ID numbers (case numbers, medical records) get a tier. Anmol re-scores against <code>policy.yaml</code> after the meeting so his numbers match the service.</div>
+
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="qa">
+      <label for="q2a"><span><span class="who">Ask Yudi</span> Is policy-0.1.3 on your branch the version in the docx? Anything changed since?</span><input type="text" id="q2a" data-save></label>
+      <label for="q2b"><span><span class="who">Ask Yudi</span> Should a confidently private Low item still be kept on its own? What was the reason for the 3-type rule?</span><input type="text" id="q2b" data-save></label>
+      <label for="q2c"><span><span class="who">Ask Anmol</span> Can the harness read <code>service/config/policy.yaml</code> instead of its own thresholds?</span><input type="text" id="q2c" data-save></label>
+      <label for="q2d"><span><span class="who">Ask all</span> Do we add the DOB, counterparty and ID-number proposals to the table before Monday?</span><input type="text" id="q2d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">Decision</legend>
+      <label class="choice"><input type="radio" name="d2" id="d2a" value="A" data-save data-label="Yudi's 4-tier table, as it is"><span><b>A</b>Yudi's 4-tier table, as it is.</span></label>
+      <label class="choice"><input type="radio" name="d2" id="d2b" value="B" data-save data-label="Yudi's 4-tier table with our proposals for DOB, counterparties and ID numbers"><span><b>B</b>Yudi's 4-tier table with our proposals for DOB, counterparties and ID numbers.</span></label>
+      <label class="choice"><input type="radio" name="d2" id="d2c" value="C" data-save data-label="Anmol's 3-tier rules; Yudi's table is rewritten"><span><b>C</b>Anmol's 3-tier rules; Yudi's table is rewritten.</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o2">Owner<input type="text" id="o2" data-save></label>
+      <label for="w2">By when<input type="text" id="w2" data-save></label>
+    </div>
+    <label for="n2" class="k">Notes</label>
+    <textarea id="n2" data-save></textarea>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="item urgent" id="t5" data-topic="5" data-title="Karina's dataset, PR #9">
+  <h2><span class="n">5</span>Karina's dataset, PR #9</h2>
+  <div class="tags"><span class="tag due">decide tonight</span><span class="tag">B46</span><span class="tag">A16</span><span class="tag">A19</span><span class="tag">Karina</span><span class="tag">Yudi</span></div>
+  <p class="lede">Opened Oct 25: the 100 emails as <code>data/baseline/baseline_v1.1.jsonl</code>, with a review workbook, a scorer and a script that runs the dataset through our real service code. I ran the scripts; every number she reports reproduces.</p>
+
+  <h3>What it adds</h3>
+  <ul class="points">
+    <li>Each email is also a valid service request (contract 0.4.2), and each span carries the service's own field offsets, type and tier, so the service's output can be scored with no conversion.</li>
+    <li>A <code>ground_truth</code> column (redact or retain): 1,054 spans, 1,006 redact and 48 retain. 984 agree with v1, 15 changed to retain (role mailboxes like <code>no-reply@</code>), 55 added (mostly names and amounts hidden inside confidential facts).</li>
+    <li>Baselines: rules in the service alone catch 66% of entities and 87% of emails leak something. The old regex floor: 40%, 96%.</li>
+  </ul>
+
+  <h3>What to settle</h3>
+  <div class="issue">
+    <h4>a. The labels are still a draft</h4>
+    <p>Every email is marked <code>gt_status: "draft: proposed by Claude, pending Karina's review"</code>. On Oct 5 Aarvin asked how we can trust labels an LLM generated. This ground truth was also proposed by an LLM; it answers him only once Karina has checked every row.</p>
+    <p class="ev">Her own README: "Don't tell the client the dataset is hand-labeled until every row in the workbook has a Karina check."</p>
+  </div>
+  <div class="issue">
+    <h4>b. Merge order with Yudi's branch</h4>
+    <p>Yudi's unmerged branch (<code>feat/privacy-detection-fixes</code>) moves the policy to 0.1.3: <code>BANK_ACCOUNT</code> becomes <code>ACCOUNT_NUMBER</code>, and <code>ADDRESS_PUBLIC</code> is added. Karina's file stores the 0.1.1 type names, and maps business addresses to <code>ADDRESS_HOME</code> because no public-address type existed. Whichever lands second leaves the other out of date.</p>
+  </div>
+  <div class="issue">
+    <h4>c. Findings that feed other topics</h4>
+    <ul class="points">
+      <li>The 86 Low-tier spans that are always kept: topic 2.</li>
+      <li>39 <code>ID_NUMBER</code> spans and 1 URL have no type in the policy. They are redacted by default, so nothing leaks, but public IDs get over-redacted.</li>
+      <li>v1 claimed 10 fully clean control emails; only 4 are (E007, E023, E052, E095).</li>
+      <li>For Yudi: 30 of the rules detector's 31 false positives are mailbox names like "Benefits Center" read as people; a few words in <code>NON_PERSON_WORDS</code> fix most.</li>
+      <li>Small: the check script writes <code>pred_rules.jsonl</code> into <code>data/baseline/</code>, which <code>.gitignore</code> does not exclude.</li>
+    </ul>
+  </div>
+  <div class="rec"><span class="k">Recommendation</span>Tomorrow say "the dataset is built and under manual review", not "hand-labelled". Merge Yudi's branch first, then Karina regenerates the type and tier fields against 0.1.3 and finishes her review on the same branch. I review PR #9 as "changes requested" until then.</div>
+
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="qa">
+      <label for="q5a"><span><span class="who">Ask Karina</span> How many rows are reviewed so far? When will all 1,054 be done?</span><input type="text" id="q5a" data-save></label>
+      <label for="q5b"><span><span class="who">Ask Karina, Yudi</span> Merge order: Yudi first, then Karina regenerates? Who does it, by when?</span><input type="text" id="q5b" data-save></label>
+      <label for="q5c"><span><span class="who">Ask Yudi</span> Will you add the mailbox words to <code>NON_PERSON_WORDS</code> on your branch?</span><input type="text" id="q5c" data-save></label>
+      <label for="q5d"><span><span class="who">Ask all</span> What exactly do we tell the client about the dataset tomorrow?</span><input type="text" id="q5d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">Decision: merge order</legend>
+      <label class="choice"><input type="radio" name="d5" id="d5a" value="A" data-save data-label="Yudi's branch first; Karina regenerates against policy 0.1.3"><span><b>A</b>Yudi's branch first; Karina regenerates against policy 0.1.3.</span></label>
+      <label class="choice"><input type="radio" name="d5" id="d5b" value="B" data-save data-label="Karina's PR first; Yudi updates the dataset types in her PR"><span><b>B</b>Karina's PR first; Yudi updates the dataset types in her PR.</span></label>
+      <label class="choice"><input type="radio" name="d5" id="d5c" value="C" data-save data-label="Hold both until the tier policy (topic 2) is final"><span><b>C</b>Hold both until the tier policy (topic 2) is final.</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o5">Owner<input type="text" id="o5" data-save></label>
+      <label for="w5">By when<input type="text" id="w5" data-save></label>
+    </div>
+    <label for="n5" class="k">Notes</label>
+    <textarea id="n5" data-save></textarea>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="item soon" id="t3" data-topic="3" data-title="Placeholder format">
+  <h2><span class="n">3</span>Placeholder format</h2>
+  <div class="tags"><span class="tag">A18</span><span class="tag">before Nov 15 freeze</span><span class="tag">Zhexuan</span><span class="tag">Anmol</span></div>
+  <p class="lede">Zhexuan's <code>briefing-encryption-api-{en,zh}.html</code> proposes API v2. It is a real piece of work and both modes are implemented. It also changes what a redacted email looks like.</p>
+
+  <h3>What v2 does</h3>
+  <ul class="points">
+    <li>New endpoints <code>/v2/redactions</code>, <code>/v2/restorations</code>, <code>DELETE /v2/groups/{group_id}</code>. The client passes its own conversation ID as <code>group_id</code>.</li>
+    <li>Each conversation gets its own random key, wrapped by a master key. Two modes: <code>mapping</code> (default) stores the encrypted originals on the server; <code>aes_siv</code> puts the encrypted original inside the token, so no mapping is stored.</li>
+    <li>Restore needs only the text: the token says which conversation it belongs to. State lives in Redis, shared across replicas, up to 24 hours.</li>
+  </ul>
+
+  <h3>Where it clashes</h3>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>Zhexuan's v2</th><th>Deck, Anmol's harness, contract 0.4.2</th></tr>
+    <tr><td>Looks like</td><td><code>[VG:2:…]</code>, long; grows with the original's length</td><td><code>[PERSON_1]</code>, short and typed</td></tr>
+    <tr><td>Tells the cloud model</td><td>that something was removed</td><td>what kind of thing was removed</td></tr>
+    <tr><td>Restore needs</td><td>only the text</td><td>the request ID</td></tr>
+    <tr><td>Stored state</td><td>per conversation, Redis, up to 24 h</td><td>per request (decision 2026-10-03)</td></tr>
+    <tr><td>Tested with a real model?</td><td class="hl">No. His briefing: "Real-model preservation of long tokens requires separate evaluation"</td><td>Yes, in Anmol's runs</td></tr>
+  </table></div>
+  <p class="ev" style="color:var(--muted);font-size:14px;margin-top:8px">The briefing is based on Zhexuan's local commit <code>c706bb6</code>. GitHub has the branch at an older commit without the close-conversation endpoint. He plans to open the PR after the client meeting.</p>
+  <div class="rec"><span class="k">Recommendation</span>No decision tomorrow. Show v2 as a proposal and ask the client two things: do they want to avoid storing originals at all (which argues for <code>aes_siv</code>), and does VG08 pass text through unchanged? Meanwhile Anmol runs a few emails with v2 tokens through his model to see whether they survive. Examples shown to the client use one format.</div>
+
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="qa">
+      <label for="q3a"><span><span class="who">Ask Zhexuan</span> Can a v2 token carry the type, e.g. <code>[VG:PERSON:…]</code>, so the model knows what was removed?</span><input type="text" id="q3a" data-save></label>
+      <label for="q3b"><span><span class="who">Ask Zhexuan</span> If the cloud model changes or drops a token, what does restore return?</span><input type="text" id="q3b" data-save></label>
+      <label for="q3c"><span><span class="who">Ask Zhexuan, Anmol</span> Who tests whether long tokens survive a real model, and on how many emails?</span><input type="text" id="q3c" data-save></label>
+      <label for="q3d"><span><span class="who">Ask all</span> Which format do the examples shown to the client use?</span><input type="text" id="q3d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">Decision</legend>
+      <label class="choice"><input type="radio" name="d3" id="d3a" value="A" data-save data-label="Present v2 as a proposal; ask the client; test token survival first"><span><b>A</b>Present v2 as a proposal; ask the client; test token survival first.</span></label>
+      <label class="choice"><input type="radio" name="d3" id="d3b" value="B" data-save data-label="Adopt v2 now; update the contract and the harness to its tokens"><span><b>B</b>Adopt v2 now; update the contract and the harness to its tokens.</span></label>
+      <label class="choice"><input type="radio" name="d3" id="d3c" value="C" data-save data-label="Keep [PERSON_1]; do not show v2 tomorrow"><span><b>C</b>Keep <code>[PERSON_1]</code>; do not show v2 tomorrow.</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o3">Owner<input type="text" id="o3" data-save></label>
+      <label for="w3">By when<input type="text" id="w3" data-save></label>
+    </div>
+    <label for="n3" class="k">Notes</label>
+    <textarea id="n3" data-save></textarea>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="item later" id="t4" data-topic="4" data-title="Broken links">
+  <h2><span class="n">4</span>Broken links</h2>
+  <div class="tags"><span class="tag">B72</span><span class="tag">Anmol</span><span class="tag">Zhexuan</span></div>
+  <p>Anmol's report has 24 links of the form <code>file:///Users/anmolsahu2k/…</code> (his harness, prompts, results). Zhexuan's briefing has 2, to <code>docs/api/conversation-keys-en.md</code> and <code>tokenization-v2-en.md</code> on his laptop. They open for nobody else, and they show local usernames and folder names to the client.</p>
+  <div class="rec"><span class="k">Recommendation</span>Replace each link with the plain file name for now. Once the PRs are on GitHub, link to GitHub.</div>
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="row2">
+      <label for="o4">Owner<input type="text" id="o4" data-save placeholder="Anmol, Zhexuan"></label>
+      <label for="w4">By when<input type="text" id="w4" data-save></label>
+    </div>
+    <label for="n4" class="k">Notes</label>
+    <textarea id="n4" data-save></textarea>
+  </div>
+</section>
+
+<!-- wrap -->
+<section class="item" id="wrap" data-topic="wrap" data-title="Tomorrow: what we show and ask">
+  <h2><span class="n">✓</span>Tomorrow: what we show and ask</h2>
+  <p class="lede">Fill this in at the end. It becomes the client page for Monday.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Who</th><th>Shows</th><th>Asks the client</th></tr>
+    <tr><td>Zhexuan</td><td><input type="text" id="s_z" data-save aria-label="Zhexuan shows" placeholder="API v2 as a proposal?"></td><td><input type="text" id="a_z" data-save aria-label="Zhexuan asks" placeholder="store originals or not; VG08 pass-through"></td></tr>
+    <tr><td>Anmol</td><td><input type="text" id="s_a" data-save aria-label="Anmol shows" placeholder="model results"></td><td><input type="text" id="a_a" data-save aria-label="Anmol asks" placeholder="GPU / VPC; documents"></td></tr>
+    <tr><td>Yudi</td><td><input type="text" id="s_y" data-save aria-label="Yudi shows" placeholder="rules + Presidio results; tier table"></td><td><input type="text" id="a_y" data-save aria-label="Yudi asks" placeholder="tiers; categories; leak rate per tier"></td></tr>
+    <tr><td>Karina</td><td><input type="text" id="s_k" data-save aria-label="Karina shows" placeholder="dataset under review"></td><td><input type="text" id="a_k" data-save aria-label="Karina asks" placeholder=""></td></tr>
+    <tr><td>Mark</td><td><input type="text" id="s_m" data-save aria-label="Mark shows" placeholder="status, schedule"></td><td><input type="text" id="a_m" data-save aria-label="Mark asks" placeholder="VG08 access; SOW signature"></td></tr>
+  </table></div>
+  <label for="n_wrap" class="k" style="display:block;margin-top:14px">Other decisions and action items</label>
+  <textarea id="n_wrap" data-save style="min-height:110px"></textarea>
+</section>
+
+<section class="export" aria-labelledby="exh">
+  <h2 id="exh"><span class="n">→</span>Save the notes</h2>
+  <p class="lede">Everything you type is kept in this browser only. When the meeting ends, make the Markdown and paste it to Claude; it becomes the meeting notes, the TODO update and the client page.</p>
+  <div class="btns">
+    <button type="button" id="mk">Make Markdown</button>
+    <button type="button" id="cp" class="ghost">Copy</button>
+    <button type="button" id="clr" class="ghost">Clear all fields</button>
+  </div>
+  <div class="confirm" id="clrask" hidden><span>Clear every field on this page?</span><button type="button" id="clryes">Clear</button><button type="button" id="clrno" class="ghost">Keep</button></div>
+  <p id="status" role="status">Not saved yet.</p>
+  <label for="mdout" class="k">Markdown</label>
+  <textarea id="mdout" readonly></textarea>
+</section>
+
+<footer>Chinese version: <a href="agenda-zh.html">agenda-zh.html</a>. Sources: <code>meetings/client/2026-10-26/</code>, PR #9, <code>todo/TODO.md</code> (A13, A15, A16, A18, A19, B46, B71, B72, D49, D51, D70).</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-team-2026-10-25-en';
+  var status=document.getElementById('status');
+  function fields(){return Array.prototype.slice.call(document.querySelectorAll('[data-save]'));}
+  function read(){var o={};fields().forEach(function(el){if(el.type==='radio'){if(el.checked)o[el.name]=el.id;}else{o[el.id]=el.value;}});return o;}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(read()));status.textContent='Saved in this browser at '+new Date().toLocaleTimeString()+'.';}catch(e){status.textContent='This browser is not saving. Make the Markdown before you close the page.';}}
+  function load(){var o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}if(!o)return;fields().forEach(function(el){if(el.type==='radio'){el.checked=(o[el.name]===el.id);}else if(o[el.id]!=null){el.value=o[el.id];}});status.textContent='Restored your earlier notes from this browser.';}
+  function v(id){var el=document.getElementById(id);return el?el.value.trim():'';}
+  function md(){
+    var out=['# Team meeting 2026-10-25: notes',''];
+    if(v('attendees'))out.push('Attendees: '+v('attendees'));
+    if(v('timekeeper'))out.push('Notes by: '+v('timekeeper'));
+    out.push('');
+    document.querySelectorAll('section[data-topic]').forEach(function(s){
+      var t=s.getAttribute('data-topic'),title=s.getAttribute('data-title');
+      out.push('## '+(t==='wrap'?'':t+'. ')+title);
+      var r=s.querySelector('input[type=radio]:checked');
+      if(r)out.push('- Decision: '+r.value+'. '+r.getAttribute('data-label'));
+      s.querySelectorAll('.qa label').forEach(function(l){var i=l.querySelector('input');var q=l.querySelector('span').textContent.replace(/\s+/g,' ').trim();if(i&&i.value.trim())out.push('- '+q+' → '+i.value.trim());});
+      if(t==='wrap'){
+        s.querySelectorAll('tr').forEach(function(tr){var c=tr.querySelectorAll('td');if(c.length===3){var a=c[1].querySelector('input').value.trim(),b=c[2].querySelector('input').value.trim();if(a||b)out.push('- '+c[0].textContent+': shows '+(a||'-')+'; asks '+(b||'-'));}});
+        if(v('n_wrap'))out.push('- Other: '+v('n_wrap'));
+      }else{
+        if(v('o'+t)||v('w'+t))out.push('- Owner: '+(v('o'+t)||'-')+' · by: '+(v('w'+t)||'-'));
+        if(v('n'+t))out.push('- Notes: '+v('n'+t));
+      }
+      out.push('');
+    });
+    return out.join('\n');
+  }
+  document.addEventListener('input',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.addEventListener('change',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.getElementById('mk').addEventListener('click',function(){document.getElementById('mdout').value=md();status.textContent='Markdown is ready below.';});
+  document.getElementById('cp').addEventListener('click',function(){var ta=document.getElementById('mdout');if(!ta.value)ta.value=md();var done=function(){status.textContent='Copied. Paste it to Claude.';};var fail=function(){ta.focus();ta.select();status.textContent='Copy was blocked. The text is selected; press Cmd+C.';};try{navigator.clipboard.writeText(ta.value).then(done,fail);}catch(e){fail();}});
+  document.getElementById('clr').addEventListener('click',function(){document.getElementById('clrask').hidden=false;});
+  document.getElementById('clrno').addEventListener('click',function(){document.getElementById('clrask').hidden=true;});
+  document.getElementById('clryes').addEventListener('click',function(){fields().forEach(function(el){if(el.type==='radio')el.checked=false;else el.value='';});document.getElementById('mdout').value='';try{localStorage.removeItem(KEY);}catch(e){}document.getElementById('clrask').hidden=true;status.textContent='All fields cleared.';});
+  load();
+})();
+</script>
+</body>
+</html>
