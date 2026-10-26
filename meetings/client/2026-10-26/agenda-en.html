@@ -287,12 +287,12 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   <h3>How each tier is handled</h3>
   <p style="font-size:15px">The local model gives each item a score: the probability that it is private. The tier sets the cut-off.</p>
   <div class="tablewrap"><table>
-    <thead><tr><th>Tier</th><th>Rule</th><th>Redacted when</th><th>Adjustable per request</th></tr></thead>
+    <thead><tr><th>Tier</th><th>Rule</th><th>Redacted when</th></tr></thead>
     <tbody>
-      <tr><td><b>High</b></td><td>Redact</td><td>Score ≥ 0.2, even when the model is fairly unsure</td><td>No</td></tr>
-      <tr><td><b>Medium</b></td><td>Redact</td><td>Score ≥ 0.5</td><td>Yes, the calling app may set its own threshold</td></tr>
-      <tr><td><b>Low</b></td><td>Keep, unless combined</td><td>3 or more different Low categories in the same field (e.g. city + employer + age)</td><td>No</td></tr>
-      <tr><td><b>Public</b></td><td>Keep if confidently public</td><td>Score ≥ 0.8</td><td>No</td></tr>
+      <tr><td><b>High</b></td><td>Redact</td><td>Score ≥ 0.2, even when the model is fairly unsure</td></tr>
+      <tr><td><b>Medium</b></td><td>Redact</td><td>Score ≥ 0.5</td></tr>
+      <tr><td><b>Low</b></td><td>Keep, unless combined</td><td>3 or more different Low categories in the same field (e.g. city + employer + age)</td></tr>
+      <tr><td><b>Public</b></td><td>Keep if confidently public</td><td>Score ≥ 0.8</td></tr>
     </tbody>
   </table></div>
   <p style="font-size:15px;margin-top:8px">Always redacted, whatever the score: your term list, words a request marks as forbidden, and items the model cannot classify. All thresholds are starting values, tuned later on the test set.</p>

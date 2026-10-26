@@ -288,12 +288,12 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   <h3>各 tier 怎麼處理</h3>
   <p style="font-size:15px">本地模型給每個項目一個分數，也就是它是隱私的機率。tier 決定門檻。</p>
   <div class="tablewrap"><table>
-    <thead><tr><th>Tier</th><th>規則</th><th>什麼時候遮</th><th>每個請求可調整</th></tr></thead>
+    <thead><tr><th>Tier</th><th>規則</th><th>什麼時候遮</th></tr></thead>
     <tbody>
-      <tr><td><b>High</b></td><td>遮</td><td>分數 ≥ 0.2，模型不太確定也遮</td><td>否</td></tr>
-      <tr><td><b>Medium</b></td><td>遮</td><td>分數 ≥ 0.5</td><td>是，呼叫的應用可以自訂門檻</td></tr>
-      <tr><td><b>Low</b></td><td>保留，除非組合出現</td><td>同一欄出現 3 種以上不同的 Low 類別（例如城市 + 雇主 + 年齡）</td><td>否</td></tr>
-      <tr><td><b>Public</b></td><td>確定公開就保留</td><td>分數 ≥ 0.8</td><td>否</td></tr>
+      <tr><td><b>High</b></td><td>遮</td><td>分數 ≥ 0.2，模型不太確定也遮</td></tr>
+      <tr><td><b>Medium</b></td><td>遮</td><td>分數 ≥ 0.5</td></tr>
+      <tr><td><b>Low</b></td><td>保留，除非組合出現</td><td>同一欄出現 3 種以上不同的 Low 類別（例如城市 + 雇主 + 年齡）</td></tr>
+      <tr><td><b>Public</b></td><td>確定公開就保留</td><td>分數 ≥ 0.8</td></tr>
     </tbody>
   </table></div>
   <p style="font-size:15px;margin-top:8px">不論分數一律遮：客戶的機密詞清單、請求標為禁止的字詞、模型無法分類的項目。所有門檻都是起始值，之後用測試集調。</p>
