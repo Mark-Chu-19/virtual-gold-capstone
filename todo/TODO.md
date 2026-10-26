@@ -10,6 +10,19 @@ Meeting cadence (US Eastern, all weekly): client Monday 18:00–19:00 · profess
 > Client notes for Sep 28 and Oct 5 are now on file (`meetings/client/2026-09-28/`, `2026-10-05/`, Gemini). There are no notes for the Sep 29 professor meeting or the Oct 2 team meeting. Where an earlier entry here, the Sep 27 team notes or a research document disagrees with the deck, the deck wins. The Oct 19 client meeting has Zhexuan's 9-slide report on file (service and privacy, then Anmol's model workstream), `meetings/client/2026-10-19/`; no Gemini notes for it yet. Materials for the Oct 26 client meeting (Zhexuan's encryption and API v2 briefing, Anmol's VPC model report, Yudi's rules + Presidio evaluation and tier table for review) are in `meetings/client/2026-10-26/`.
 > The decision log rows dated 2026-10-03 were written from the Oct 3 draft. The final deck adds **routing rules** and **"English text and documents"** as inputs; A14 and A15 track where that leaves the API contract.
 
+## For the team meeting, Sunday 2026-10-25 (before Monday's client meeting)
+
+The Oct 26 materials are in `meetings/client/2026-10-26/`. Settle these before they go to the client.
+
+| # | Topic | Items | What to settle |
+|---|---|---|---|
+| 1 | Anmol's VPC report | B72, A15, D51 | The "VPC" results ran on hosted free-tier APIs (Groq, OpenRouter), not in a VPC: reword. The report states as decided that the client deploys in a VPC and processes arbitrary enterprise documents; both are open. §7 names the $50 CMU OpenRouter allocation through the professor; D51 says not to raise the CMU route with the client |
+| 2 | Two tier policies | A19, D49 | Yudi's table: 4 tiers, 22 categories, Low redacted only when 3+ low categories appear together. Anmol's harness: 3 tiers, LOW redacted at score ≥ 0.5. Pick which one the client reviews tomorrow |
+| 3 | Placeholder format | A18 | Zhexuan's tokens are long `[VG:2:…]`; Anmol and the deck use `[PERSON_1]`. Untested whether a cloud model returns long tokens intact (Zhexuan's briefing says so too) |
+| 4 | Broken links | B72 | 24 `file://` links in Anmol's report and 2 in Zhexuan's point to their own laptops |
+
+B71 (code and PRs into GitHub) waits until after the client meeting: the three will open or update their PRs once the client has confirmed.
+
 ## For the team meeting, Friday 2026-10-23
 
 Bring these to today's meeting. Phase 1 starts Monday Oct 26, the same day as the next client meeting.
@@ -68,7 +81,7 @@ Bring these to today's meeting. Phase 1 starts Monday Oct 26, the same day as th
 | 64 | **Bring `docs/api/` up to date** (Zhexuan's files). (1) `service-interfaces-v0.4.2-zh.md` is still the pre-implementation plan: it cites 0.4.1, `development-schedule.md`, `protocols.py`, `pseudonym.py` and `structlog`, none of which exist, while the English file calls it "the original". (2) Neither file mentions `service/vg_redactor/privacy/` (PR #8); the English one still says "Owners are not confirmed yet". (3) `redaction-api-report-en-v0.4.2.md` puts the language before the version, unlike the other files. (4) The contract has no Chinese version. (5) Its session-retention text predates PR #8, which keeps HMAC keys instead of original values (Zhexuan's own Oct 19 report, slide 5) | Zhexuan | | [ ] |
 | 65 | **Review before merge.** PR #7 was merged by its author without a review, against the README rule "Nobody merges their own PR". Turn on branch protection (one approving review) or restate the rule to the team | Mark | next team meeting | [ ] |
 | 69 | **Matched model run.** Re-run Llama 3.1 8B, Qwen and Gemma 2 27B on the same pipeline revision and the same emails as the Oct 19 Llama 3.3 70B run; the 8B and Qwen figures are historical. The 15 emails cover 4 of the 15 business domains, so extend to the 60 development emails. Hosted runs keep failing on API credit limits: decide which provider and who pays. Feeds A13 | Anmol | Phase 1 | [ ] |
-| 71 | **Get the work behind the Oct 26 briefings into GitHub.** (1) Zhexuan: push `c706bb6` and open a PR for `fix/update-api-infra` (A18). (2) Yudi: open the PR for `feat/privacy-detection-fixes` (`d9cdf67`); the briefing says "PR #9" but #9 is now Karina's dataset PR. (3) Anmol: his harness (`benchmarks/2026-10-05-followup/`, prompts, calibration profile v1.4.0) is on no branch; the report's 24 links point to `file:///Users/anmolsahu2k/…` | Zhexuan, Yudi, Anmol | | [ ] |
+| 71 | **Get the work behind the Oct 26 briefings into GitHub.** (1) Zhexuan: push `c706bb6` and open a PR for `fix/update-api-infra` (A18). (2) Yudi: open the PR for `feat/privacy-detection-fixes` (`d9cdf67`); the briefing says "PR #9" but #9 is now Karina's dataset PR. (3) Anmol: his harness (`benchmarks/2026-10-05-followup/`, prompts, calibration profile v1.4.0) is on no branch; the report's 24 links point to `file:///Users/anmolsahu2k/…`. **Waiting until after the Oct 26 client meeting:** the three open or update their PRs once the client has confirmed | Zhexuan, Yudi, Anmol | after 2026-10-26 | [ ] |
 | 72 | **Fix the client-facing files before the meeting.** Anmol's report: calls hosted free-tier runs "VPC configurations" and states as fact that the client deploys in a VPC and processes "arbitrary enterprise documents" (A15, D51 are open); §7 names the $50 CMU OpenRouter allocation through the professor (D51 says not to raise the CMU route with the client); local `file://` links. Zhexuan's briefing: local `file://` links to `docs/api/`; the Chinese version is in Simplified Chinese | Anmol, Zhexuan | 2026-10-26 | [ ] |
 | 35 | **Close Karina's PRs #3, #4, #5.** Built for the vertical trading scenario; the 100-email dataset replaces them | Karina | | [ ] |
 

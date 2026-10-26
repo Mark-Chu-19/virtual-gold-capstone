@@ -10,6 +10,19 @@
 > 9/28 與 10/5 的客戶會議紀錄已歸檔(`meetings/client/2026-09-28/`、`2026-10-05/`,Gemini)。9/29 教授會議與 10/2 團隊會議沒有紀錄。這裡較早的條目、9/27 團隊筆記或研究文件與簡報不一致時,一律以簡報為準。10/19 客戶會議有 Zhexuan 的 9 頁報告(先講服務與隱私元件,再由 Anmol 講模型工作)在 `meetings/client/2026-10-19/`;那次還沒有 Gemini 紀錄。10/26 客戶會議的素材(Zhexuan 的加密與 API v2 簡介、Anmol 的 VPC 模型報告、Yudi 的規則 + Presidio 評測與給客戶審的分級表)在 `meetings/client/2026-10-26/`。
 > 決策紀錄中 2026-10-03 的各列是依 10/3 草稿寫的。定稿多了**路由規則**,輸入也改成**「英文文字與文件」**;這對 API contract 的影響由 A14、A15 追蹤。
 
+## 2026-10-25(週日)團隊會議要談的(週一客戶會議前)
+
+10/26 的素材在 `meetings/client/2026-10-26/`。給客戶看之前先講定這些。
+
+| # | 主題 | 項目 | 要講定的 |
+|---|---|---|---|
+| 1 | Anmol 的 VPC 報告 | B72、A15、D51 | 標成「VPC」的結果是用免費託管 API(Groq、OpenRouter)跑的,不是在 VPC 裡跑的,要改寫。報告把「客戶部署在 VPC」與「處理任意企業文件」寫成已定案,但兩者都還沒決定。§7 提到透過教授申請的 $50 CMU OpenRouter 額度;D51 說不要向客戶提 CMU 管道 |
+| 2 | 兩套分級規則 | A19、D49 | Yudi 的表:4 級、22 類,Low 要 3 類以上同時出現才遮。Anmol 的程式:3 級,LOW 分數 ≥ 0.5 就遮。明天客戶審哪一套要先講好 |
+| 3 | Placeholder 格式 | A18 | Zhexuan 的 token 是長的 `[VG:2:…]`;Anmol 與期中簡報用 `[PERSON_1]`。雲端模型會不會把長 token 原樣傳回還沒測過(Zhexuan 的簡介也這麼註明) |
+| 4 | 連結打不開 | B72 | Anmol 報告的 24 個、Zhexuan 的 2 個 `file://` 連結都指向他們自己的電腦 |
+
+B71(程式與 PR 放上 GitHub)等客戶會議之後再處理:三人會在客戶確認後才開 PR 或更新 PR。
+
 ## 2026-10-23(週五)團隊會議要談的
 
 今天的會議帶這些。Phase 1 下週一 10/26 開始,同一天也是下次客戶會議。
@@ -68,7 +81,7 @@
 | 64 | **更新 `docs/api/`**(Zhexuan 的檔案)。(1)`service-interfaces-v0.4.2-zh.md` 還是動工前的計畫:引用 0.4.1、`development-schedule.md`、`protocols.py`、`pseudonym.py`、`structlog`,這些都不存在,英文版卻稱它為「原版」。(2)兩份都沒提到 `service/vg_redactor/privacy/`(PR #8);英文版還寫「Owners are not confirmed yet」。(3)`redaction-api-report-en-v0.4.2.md` 把語言放在版本前面,和其他檔案不一致。(4)contract 沒有中文版。(5)其中 session 保留的描述寫在 PR #8 之前,PR #8 存的是 HMAC 金鑰而非原始值(Zhexuan 自己 10/19 報告第 5 頁也提到) | Zhexuan | | [ ] |
 | 65 | **合併前要審查。**PR #7 由作者自己合併、沒有經過審查,違反 README 的「Nobody merges their own PR」。開啟分支保護(至少一個核准),或再向團隊說明這條規則 | Mark | 下次團隊會議 | [ ] |
 | 69 | **同條件模型重跑。**用和 10/19 Llama 3.3 70B 相同的 pipeline 版本與信件,重跑 Llama 3.1 8B、Qwen 與 Gemma 2 27B;目前 8B 與 Qwen 的數字是舊結果。15 封信只涵蓋 15 個業務領域中的 4 個,應擴大到 60 封開發用信件。託管 API 一直因額度用完而失敗:決定用哪家、誰付費。供 A13 使用 | Anmol | Phase 1 | [ ] |
-| 71 | **把 10/26 簡介背後的程式放上 GitHub。**(1)Zhexuan:推上 `c706bb6`,並為 `fix/update-api-infra` 開 PR(A18)。(2)Yudi:為 `feat/privacy-detection-fixes`(`d9cdf67`)開 PR;簡介寫「PR #9」,但 #9 已是 Karina 的資料集 PR。(3)Anmol:他的 harness(`benchmarks/2026-10-05-followup/`、prompts、calibration profile v1.4.0)不在任何分支上;報告裡 24 個連結都指向 `file:///Users/anmolsahu2k/…` | Zhexuan、Yudi、Anmol | | [ ] |
+| 71 | **把 10/26 簡介背後的程式放上 GitHub。**(1)Zhexuan:推上 `c706bb6`,並為 `fix/update-api-infra` 開 PR(A18)。(2)Yudi:為 `feat/privacy-detection-fixes`(`d9cdf67`)開 PR;簡介寫「PR #9」,但 #9 已是 Karina 的資料集 PR。(3)Anmol:他的 harness(`benchmarks/2026-10-05-followup/`、prompts、calibration profile v1.4.0)不在任何分支上;報告裡 24 個連結都指向 `file:///Users/anmolsahu2k/…`。**等 10/26 客戶會議之後:**三人在客戶確認後才開 PR 或更新 PR | Zhexuan、Yudi、Anmol | 2026-10-26 之後 | [ ] |
 | 72 | **會議前修正要給客戶看的檔案。**Anmol 的報告:把免費託管 API 的結果稱為「VPC 設定」,並把「客戶部署在 VPC」「處理任意企業文件」寫成既定事實(A15、D51 都還沒定);§7 提到透過教授申請的 $50 CMU OpenRouter 額度(D51 說不要向客戶提 CMU 管道);還有本機 `file://` 連結。Zhexuan 的簡介:指向 `docs/api/` 的本機 `file://` 連結;中文版是簡體 | Anmol、Zhexuan | 2026-10-26 | [ ] |
 | 35 | **關掉 Karina 的 PR #3、#4、#5。**為 vertical 交易情境建的;已由 100 封信資料集取代 | Karina | | [ ] |
 
