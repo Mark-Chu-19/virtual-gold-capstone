@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Oct 26 Client Update</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; each topic is a card with evidence, a recommendation, then a fill-in block. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --field:#FBFCFD;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:36px 72px}
+.page{max-width:880px;margin:0 auto}
+header{padding-bottom:22px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.intro{margin:0 0 18px;font-size:17px;line-height:1.6;max-width:68ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0 0 18px;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400;flex:none}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.lede{color:var(--muted);margin:6px 0 14px;font-size:16px;line-height:1.65}
+p{margin:0 0 10px}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:7px}
+a{color:var(--cloud)}
+
+/* running order */
+.order{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 14px}
+.order li:hover{border-color:var(--gold)}
+.order a{color:inherit;text-decoration:none}
+.order .n{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.order .t{font-weight:600}
+.order .w{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.order .d{grid-column:2/-1;font-size:14px;color:var(--muted)}
+@media (max-width:600px){.order li{grid-template-columns:28px 1fr}.order .w{grid-column:2}}
+.chains{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 44px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;font-size:14px}
+.chain:last-child{margin-bottom:0}
+.chain .lab{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);width:100%}
+.node{border:1px solid var(--line);border-radius:999px;padding:3px 11px;background:var(--soft)}
+.node.today{border-color:var(--warn);background:var(--warn-soft);font-weight:600}
+.arr{color:var(--muted)}
+
+/* topic cards */
+section.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 22px 20px;margin-bottom:26px;scroll-margin-top:16px}
+section.item.urgent{border-left:4px solid var(--warn)}
+section.item.soon{border-left:4px solid var(--gold)}
+section.item.later{border-left:4px solid var(--cloud)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.due{background:var(--warn-soft);color:var(--warn)}
+.issue{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.issue h4{margin:0 0 6px;font-size:16px}
+.issue .ev{font-size:14px;color:var(--muted);margin:6px 0 0}
+.rec{background:var(--local-soft);border-radius:8px;padding:12px 14px;margin-top:14px}
+.rec .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--local);display:block;margin-bottom:4px}
+.tablewrap{overflow-x:auto;margin:6px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);background:var(--soft);font-weight:500}
+td.hl{background:var(--warn-soft)}
+.num{font-variant-numeric:tabular-nums}
+
+/* fill-in block */
+.fill{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;display:grid;gap:14px}
+.fill .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.qa{display:grid;gap:10px}
+.qa label{display:grid;gap:4px;font-size:15px}
+.qa .who{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+.choices{display:grid;gap:8px;border:0;padding:0;margin:0}
+.choices legend{padding:0;margin-bottom:6px}
+.choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font-size:15px}
+.choice:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.choice input{margin-top:4px;accent-color:var(--gold);flex:none}
+.choice b{font-family:var(--mono);font-size:12px;color:var(--gold);margin-right:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.row2{grid-template-columns:1fr}}
+.row2 label{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+input[type=text],textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{min-height:64px;resize:vertical;line-height:1.5}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.choice:focus-within{outline:2px solid var(--gold);outline-offset:1px}
+
+/* export */
+.export{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-top:10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+button{font:inherit;font-size:15px;font-weight:600;border-radius:8px;padding:8px 14px;border:1px solid var(--gold);background:var(--gold);color:var(--surface);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:focus-visible{outline:2px solid var(--cloud);outline-offset:2px}
+#status{font-size:13px;color:var(--muted)}
+#mdout{min-height:180px;font-family:var(--mono);font-size:13px}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+/* client-page additions */
+.tbd{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--warn-soft);color:var(--warn);margin-left:6px;vertical-align:middle}
+.draftbar{background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:10px 14px;font-size:14px;margin-bottom:22px}
+.mile{list-style:none;padding:0;margin:0 0 40px;display:grid;gap:0;border-left:2px solid var(--line)}
+.mile li{position:relative;padding:6px 0 12px 20px;font-size:15px}
+.mile li::before{content:"";position:absolute;left:-7px;top:11px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.mile li.done::before{background:var(--local);border-color:var(--local)}
+.mile li.now::before{background:var(--gold);border-color:var(--gold)}
+.mile .dt{font-family:var(--mono);font-size:12px;color:var(--muted);margin-right:8px;font-variant-numeric:tabular-nums}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:40px}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;min-width:0}
+.card h3{margin-top:0}
+.card .big{font-family:var(--serif);font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.card .cap{font-size:14px;color:var(--muted);margin-bottom:10px}
+.card ul{padding-left:18px;margin:8px 0 0;font-size:15px}
+.card .owner{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">Virtual Gold × CMU capstone · client meeting</div>
+  <h1>Progress since Oct 19, and what we need from you</h1>
+  <p class="intro">The service now runs on its own detection components, the model results improved, the test set is built, and the encryption design is implemented. Two parts are proposals we would like your view on: a revised tier table and the encryption modes. To finish Phase 1 on time we also need your answers on acceptable leak rates and where the service will run.</p>
+  <dl class="meta">
+    <div><dt>Meeting</dt><dd>Monday 2026-10-26, 18:00 ET</dd></div>
+    <div><dt>Attendees</dt><dd><input type="text" id="attendees" data-save aria-label="Attendees" placeholder="Inderpal, Alex, Aarvin, Urte; team"></dd></div>
+    <div><dt>Phase</dt><dd>Phase 1 starts today (Oct 26–Nov 8)</dd></div>
+  </dl>
+</header>
+
+<h2><span class="n">01</span>Where we are</h2>
+<p class="lede">Milestones from the midterm deck. Green is done, gold is in progress.</p>
+<ol class="mile">
+  <li class="done"><span class="dt">Oct 5</span>Midterm presentation</li>
+  <li class="done"><span class="dt">Oct 19</span>API contract 0.4.2 and service skeleton, with monitoring dashboard</li>
+  <li class="done"><span class="dt">Oct 23</span>Privacy components in the service: rules, Presidio, merging, scoring, placeholders</li>
+  <li class="done"><span class="dt">Oct 26</span>Conversation keys and both encryption modes in the service (off by default, proposal below)</li>
+  <li class="now"><span class="dt">Nov 1</span>End-to-end pipeline with the failure path (model prompts still being wired in)</li>
+  <li><span class="dt">Nov 8</span>Dashboard and load-test results; Phase 1 ends</li>
+  <li><span class="dt">Nov 2–15</span>Phase 2: VG08 integration; contract freeze Nov 15</li>
+  <li><span class="dt">Nov 22</span>Code freeze (soft freeze Nov 18)</li>
+  <li><span class="dt">Nov 30</span>Final presentation</li>
+</ol>
+
+<h2><span class="n">02</span>Progress since Oct 19</h2>
+<p class="lede">Four workstreams at a glance. Details for each follow in sections 03 to 06.</p>
+<div class="grid2">
+  <div class="card">
+    <span class="owner">Model · Anmol</span>
+    <h3>Model evaluation</h3>
+    <div class="big">7.4%</div>
+    <div class="cap">of private characters left unmasked, best configuration (Oct 19 best: 16.2%)</div>
+    <ul>
+      <li>Qwen 3.8 27B + GLiNER, sized for one 24–48 GB GPU; 9 of 10 confidential facts caught; 2.4 s per email</li>
+      <li>GPT-OSS 120B masks the least public text (5–12%) but leaks more</li>
+      <li>No-LLM fallback (rules + Presidio + GLiNER): 29.4% in 0.11 s</li>
+      <li>Tested on hosted open-weight model APIs; not yet deployed in a VPC. 15 emails, 4 of 15 business areas</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="owner">Detection · Yudi</span>
+    <h3>Rules and Presidio</h3>
+    <div class="big">8 fixes</div>
+    <div class="cap">from testing on 1,000 rows of an external labelled set (ai4privacy)</div>
+    <ul>
+      <li>Email 100% found; dates of birth 83%, phone 75%, government IDs 69%, names 68%</li>
+      <li>Fewer false positives on short codes, fiscal periods and order numbers</li>
+      <li>A revised tier table (policy 0.1.3) for your review</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="owner">Evaluation · Karina</span>
+    <h3>Test set</h3>
+    <div class="big">1,054</div>
+    <div class="cap">labelled items in 100 fictional executive emails</div>
+    <ul>
+      <li>Each email is also a valid service request, so service output scores with no conversion</li>
+      <li>Rules alone catch 66% of items; the model has to close the gap</li>
+      <li>Labelled against the current tier table (policy 0.1.1)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="owner">Service · Zhexuan</span>
+    <h3>Conversation keys and encryption</h3>
+    <div class="big">2 modes</div>
+    <div class="cap">each conversation gets its own key; both modes implemented</div>
+    <ul>
+      <li><code>mapping</code>: originals stored encrypted on the server</li>
+      <li><code>aes_siv</code>: the encrypted original travels inside the token; no mapping stored</li>
+      <li>Restore needs only the text; closing a conversation invalidates its tokens</li>
+    </ul>
+  </div>
+</div>
+
+<section class="item soon" aria-labelledby="h3d">
+  <h2 id="h3d"><span class="n">03</span>Detection: rules and Presidio</h2>
+  <div class="tags"><span class="tag">Yudi</span><span class="tag">Oct 25</span></div>
+  <p class="lede">We tested the fixed-format detectors on data, fixed the worst errors, and tested again. Context cases (loose address parts, company versus person, business secrets, health) are left to the model rather than hand-written rules.</p>
+  <h3>How we tested</h3>
+  <ul class="points">
+    <li>Dataset: ai4privacy pii-masking-400k, 1,000 English validation rows (synthetic, US and UK). Kept on our machines; its licence bars redistribution.</li>
+    <li>16 of its 17 labels map to our categories. Only types the tier table assigns to rules or Presidio are scored.</li>
+    <li>A labelled item counts as found if any detected span overlaps it.</li>
+  </ul>
+  <h3>Results after the fixes (rules and Presidio combined)</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Category</th><th class="num">Found</th><th class="num">Right category</th><th class="num">Precision</th></tr></thead>
+    <tbody>
+      <tr><td>EMAIL_PERSONAL</td><td class="num">100%</td><td class="num">100%</td><td class="num">100%</td></tr>
+      <tr><td>DATE (birth dates)</td><td class="num">83%</td><td class="num">83%</td><td class="num">–</td></tr>
+      <tr><td>PHONE_PERSONAL</td><td class="num">75%</td><td class="num">64%</td><td class="num">60%</td></tr>
+      <tr><td>CITY</td><td class="num">74%</td><td class="num">60%</td><td class="num">43%</td></tr>
+      <tr><td>GOV_ID</td><td class="num">69%</td><td class="num">36%</td><td class="num">63%</td></tr>
+      <tr><td>PERSON</td><td class="num">68%</td><td class="num">62%</td><td class="num">54%</td></tr>
+      <tr><td>ACCOUNT_NUMBER</td><td class="num">53%</td><td class="num">42%</td><td class="num">62%</td></tr>
+      <tr><td>ADDRESS_HOME</td><td class="num">40%</td><td class="num">4%</td><td class="num">–</td></tr>
+      <tr><td>CARD_NUMBER</td><td class="num">25%</td><td class="num">8%</td><td class="num">18%</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="points" style="font-size:15px;margin-top:10px">
+    <li>Precision is understated: the dataset leaves IMEIs, passports, crypto wallets and company names unlabelled, so correct hits on them count as errors.</li>
+    <li>Addresses: the dataset labels house number, street and ZIP separately, while our rule looks for a full US address. These parts are left to the model.</li>
+    <li>Cards: the dataset's card numbers are random (only 10% pass the checksum), so this row does not measure real cards.</li>
+    <li>Most of the recall comes from Presidio. Rules alone: email 100%, government IDs 32%, phone 28%.</li>
+  </ul>
+  <h3>Eight fixes</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>#</th><th>Problem</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td>Short codes like <code>x4521</code>, <code>Q3</code> taken as government IDs (High)</td><td>Keep only with context or 7+ characters</td></tr>
+      <tr><td class="num">2</td><td>"Email", "Reach" at sentence start taken as names</td><td>Drop single listed words at sentence start</td></tr>
+      <tr><td class="num">3</td><td><code>Q3</code> taken as a place; "age 42" as a date</td><td>Drop fiscal periods; retype to AGE</td></tr>
+      <tr><td class="num">4</td><td>Codes like <code>X501</code> taken as phone extensions</td><td>Stricter extension rule (rules phone precision 89% → 100%)</td></tr>
+      <tr><td class="num">5</td><td>No rules for addresses, ages or sign-off names</td><td>Added US address, age and "Thanks, Name" rules</td></tr>
+      <tr><td class="num">6</td><td>Order numbers passing the checksum taken as cards</td><td>Card numbers must start with 2–6</td></tr>
+      <tr><td class="num">7</td><td>Long digit strings taken as dates (Low)</td><td>Retype to ACCOUNT_NUMBER (High); Low-tier misses 14 → 2</td></tr>
+      <tr><td class="num">8</td><td>"Bank account" too narrow</td><td>Renamed ACCOUNT_NUMBER, covering bank, brokerage and client accounts (right category 23% → 42%)</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Still open</h3>
+  <ul class="points">
+    <li>Addresses split into parts are missed or tagged as city or date; left to the model.</li>
+    <li>Some SSNs and tax IDs tagged as phone numbers (High drops to Medium); document numbers like <code>FILE-201307-4379</code> tagged as phone.</li>
+    <li>Company names tagged as people.</li>
+    <li>Thresholds will be tuned once real emails and the model path are in.</li>
+  </ul>
+</section>
+
+<section class="item urgent" aria-labelledby="h4d">
+  <h2 id="h4d"><span class="n">04</span>Proposed tier table (policy 0.1.3)</h2>
+  <div class="tags"><span class="tag due">for your review: Q1</span><span class="tag">Yudi</span></div>
+  <p class="lede">22 categories in 4 tiers. Yudi proposes this revision because it matched the test data more accurately. The changes are ready and will be merged once you confirm. The full table is also in the attached document (<code>tier-table-client-review-en.docx</code>).</p>
+  <h3>Changes from the current table (0.1.1)</h3>
+  <ul class="points">
+    <li><b>BANK_ACCOUNT → ACCOUNT_NUMBER</b>: now covers bank, brokerage and client accounts, IBANs, crypto wallets and other long numeric IDs.</li>
+    <li><b>New ADDRESS_PUBLIC</b> (Public): published office and business addresses, so they are not treated as home addresses.</li>
+    <li><b>Public threshold 0.5 → 0.8</b>: a public-looking item is redacted only when the model is fairly sure it is private. Public contacts are meant to be shared; the risk is a personal number mistaken for a public one.</li>
+  </ul>
+  <h3>How each tier is handled</h3>
+  <p style="font-size:15px">The local model gives each item a score: the probability that it is private. The tier sets the cut-off.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Tier</th><th>Rule</th><th>Redacted when</th><th>Adjustable per request</th></tr></thead>
+    <tbody>
+      <tr><td><b>High</b></td><td>Redact</td><td>Score ≥ 0.2, even when the model is fairly unsure</td><td>No</td></tr>
+      <tr><td><b>Medium</b></td><td>Redact</td><td>Score ≥ 0.5</td><td>Yes, the calling app may set its own threshold</td></tr>
+      <tr><td><b>Low</b></td><td>Keep, unless combined</td><td>3 or more different Low categories in the same field (e.g. city + employer + age)</td><td>No</td></tr>
+      <tr><td><b>Public</b></td><td>Keep if confidently public</td><td>Score ≥ 0.8</td><td>No</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:15px;margin-top:8px">Always redacted, whatever the score: your term list, words a request marks as forbidden, and items the model cannot classify. All thresholds are starting values, tuned later on the test set.</p>
+  <h3>Categories</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Tier</th><th>Categories</th></tr></thead>
+    <tbody>
+      <tr><td><b>High</b></td><td>GOV_ID, CREDENTIAL, CARD_NUMBER, ACCOUNT_NUMBER, HEALTH, BUSINESS_CONFIDENTIAL, CODENAME, DEMOGRAPHIC</td></tr>
+      <tr><td><b>Medium</b></td><td>PERSON, PHONE_PERSONAL, EMAIL_PERSONAL, ADDRESS_HOME, NETWORK_ID, AMOUNT</td></tr>
+      <tr><td><b>Low</b></td><td>CITY, DATE, ORG, AGE, GENDER</td></tr>
+      <tr><td><b>Public</b></td><td>PHONE_PUBLIC, EMAIL_PUBLIC, ADDRESS_PUBLIC</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:15px;margin-top:8px">Personal-data tiers follow NIST SP 800-122 impact levels; health and demographic data are High per GDPR Art. 9. The business categories and the Public tier are our proposal; please check them against your data classification.</p>
+</section>
+
+<section class="item soon" aria-labelledby="h5d">
+  <h2 id="h5d"><span class="n">05</span>Encryption proposal: conversation keys, two modes</h2>
+  <div class="tags"><span class="tag due">for your view: Q6</span><span class="tag">Zhexuan</span></div>
+  <p class="lede">A second version of the API (v2) alongside the current one. Both modes are implemented and in the service, switched off by default. The current API is unchanged. We would like your view before we make it the default.</p>
+  <div class="grid2" style="margin-bottom:14px">
+    <div class="card">
+      <span class="owner">mapping · default</span>
+      <h3>Reference token + encrypted mapping</h3>
+      <ul>
+        <li>The token points to a server-side record; the original is encrypted before it is stored</li>
+        <li>Deleting a group's mappings invalidates its tokens</li>
+        <li>Needs persistent storage for mappings and keys</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="owner">aes_siv · alternative</span>
+      <h3>The token is the encrypted original</h3>
+      <ul>
+        <li>No original-value mapping is stored on the server</li>
+        <li>Same value and type in one conversation give the same token</li>
+        <li>Tokens grow with the length of the original; models must pass them through exactly</li>
+      </ul>
+    </div>
+  </div>
+  <h3>How it works</h3>
+  <ol class="points" style="padding-left:22px">
+    <li><b>Redact.</b> Your app sends the text with its own conversation ID (<code>group_id</code>). The first request creates a random key for that conversation; later requests reuse it.</li>
+    <li><b>Agent.</b> Agents pass the redacted message on unchanged. They never handle keys.</li>
+    <li><b>Restore.</b> Send the text back. Each token tells the service which conversation it belongs to; the service checks permissions and expiry, then restores.</li>
+    <li><b>Close.</b> When the conversation ends, close it with the same ID. Its tokens can no longer be restored.</li>
+  </ol>
+  <h3>Key protection</h3>
+  <p style="font-size:15px">Each conversation has its own random key, wrapped by a master key; separate keys are derived for each purpose. Callers never receive keys. A conversation lives up to 24 hours by default. Service copies share state through Redis.</p>
+  <h3>What a placeholder looks like</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th></th><th>Current API</th><th>v2 proposal</th></tr></thead>
+    <tbody>
+      <tr><td>Placeholder</td><td><code>[PERSON_1]</code>, short, shows the category</td><td><code>[VG:2:…]</code>, longer, grows with the original</td></tr>
+      <tr><td>Restore needs</td><td>The request ID</td><td>Only the text</td></tr>
+      <tr><td>State kept</td><td>Per request</td><td>Per conversation, up to 24 hours</td></tr>
+      <tr><td>Tested with real models</td><td>Yes, in the model evaluation</td><td>Not yet</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Next for v2</h3>
+  <ul class="points">
+    <li>Test whether real models keep the long tokens exactly.</li>
+    <li>Fix a check that mistakes some ordinary bracketed text for a token.</li>
+    <li>The technical documents are in our repository under <code>docs/api/</code>; we can share copies.</li>
+  </ul>
+</section>
+
+<section class="item soon" aria-labelledby="h6d">
+  <h2 id="h6d"><span class="n">06</span>Test set: 100 emails, 1,054 labelled items</h2>
+  <div class="tags"><span class="tag">Karina</span><span class="tag">baseline v1.1</span></div>
+  <p class="lede">The same 100 fictional executive emails as before, rebuilt so the service can be scored on them directly. This also answers Aarvin's question at the midterm about how we can trust labels an LLM produced: an LLM proposed the labels, and a person checks every one.</p>
+  <h3>What changed</h3>
+  <ul class="points">
+    <li><b>Each email is a service request.</b> It goes straight into the API, and each item carries the service's own field positions, category and tier, so results score with no conversion.</li>
+    <li><b>Every item is marked redact or keep.</b> 1,054 items: 1,006 to redact, 48 to keep. 984 agree with the first version, 15 moved to keep (e.g. <code>no-reply@</code> mailboxes, the company's public office address), and 55 were added (mostly names and amounts inside confidential facts).</li>
+    <li><b>Labelled against the current tier table (policy 0.1.1).</b> If you confirm 0.1.3, we update the categories.</li>
+    <li><b>Split:</b> 60 emails for development, 40 held back for one final test.</li>
+  </ul>
+  <h3>First scores</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Detector</th><th class="num">Items caught</th><th class="num">Emails that leak something</th></tr></thead>
+    <tbody>
+      <tr><td>Simple regular expressions (floor)</td><td class="num">40%</td><td class="num">96%</td></tr>
+      <tr><td>The service's rules alone</td><td class="num">66%</td><td class="num">87%</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:15px;margin-top:8px">Rules catch every email address and 79% of names, but no bank accounts, code names, health details or ID numbers. The model has to close that gap.</p>
+  <h3>What the test set tells us about the tier table</h3>
+  <ul class="points">
+    <li><b>86 items that should be redacted sit in the Low tier</b>: 67 company names, 12 cities, 6 dates, 1 age. Because a Low item seen alone is kept, the service would let all 86 through, even when the model is sure they are private. The worst are deal counterparties and dates of birth.</li>
+    <li><b>39 ID numbers</b> (case, medical record and order numbers) have no category yet. They are redacted by default, so nothing leaks, but public ones like filing numbers get over-masked.</li>
+    <li>Only 4 of the 100 emails are fully clean; the other 96 contain something to redact.</li>
+  </ul>
+  <p style="font-size:15px">These feed into Q1.</p>
+</section>
+
+<h2 style="margin-top:36px"><span class="n">07</span>What we need from you</h2>
+<p class="lede">In order of what blocks us soonest. Space under each for the answer.</p>
+
+<section class="item urgent" data-topic="Q1" data-title="Tier table">
+  <h2><span class="n">Q1</span>Is the proposed tier table right?</h2>
+  <div class="tags"><span class="tag due">blocks Phase 1 scoring</span><span class="tag">D49</span><span class="tag">section 04</span></div>
+  <ul class="points">
+    <li>Do you accept the three changes in 0.1.3 (ACCOUNT_NUMBER, ADDRESS_PUBLIC, Public at 0.8)?</li>
+    <li>Any categories to move? We would especially like your view on AMOUNT (Medium), ORG (Low) and DEMOGRAPHIC (High).</li>
+    <li>Dates of birth fall under DATE (Low) today. Should they be their own category, at Medium or High?</li>
+    <li>Deal counterparties are company names (Low). Should they go on your confidential term list (Q3) instead?</li>
+    <li>ID numbers (case, medical record, order numbers): which tier?</li>
+    <li>When the model is sure a Low item is private, should it still be kept when it appears alone?</li>
+    <li>Any categories to add, e.g. internal ticket IDs?</li>
+  </ul>
+  <div class="fill"><label for="n_Q1" class="k">Answer</label><textarea id="n_Q1" data-save></textarea></div>
+</section>
+
+<section class="item urgent" data-topic="Q2" data-title="Acceptable leak rate">
+  <h2><span class="n">Q2</span>What leak rate is acceptable per tier?</h2>
+  <div class="tags"><span class="tag due">before the final test</span><span class="tag">D70</span></div>
+  <p>This sets the final thresholds. We will run the 40 held-back emails once, after freezing the pipeline. Before that we need targets: the share of private text that may leak in each tier, how much over-masking of public text is tolerable, seconds per email, and what should happen when the model fails.</p>
+  <p style="font-size:15px;color:var(--muted)">The model figures in section 02 were measured with an earlier version of the tier rules. We will re-run them under the tier table you confirm, so they compare directly with these targets.</p>
+  <div class="fill"><label for="n_Q2" class="k">Answer</label><textarea id="n_Q2" data-save></textarea></div>
+</section>
+
+<section class="item urgent" data-topic="Q3" data-title="Confidential term list">
+  <h2><span class="n">Q3</span>Can you share a confidential term list?</h2>
+  <div class="tags"><span class="tag">D49</span></div>
+  <p>Project code names, deal names and counterparties cannot be detected reliably from text alone. A list, even a sample, lets the service treat them as High.</p>
+  <div class="fill"><label for="n_Q3" class="k">Answer</label><textarea id="n_Q3" data-save></textarea></div>
+</section>
+
+<section class="item soon" data-topic="Q4" data-title="Where the service runs">
+  <h2><span class="n">Q4</span>Where will the service run?</h2>
+  <div class="tags"><span class="tag">D51</span></div>
+  <p>The best model needs one 24–48 GB GPU; the next tier needs 80 GB. Will it run in your private cloud, and when can we test there? Until then we test on hosted open-weight models, as agreed on Sep 28.</p>
+  <div class="fill"><label for="n_Q4" class="k">Answer</label><textarea id="n_Q4" data-save></textarea></div>
+</section>
+
+<section class="item soon" data-topic="Q5" data-title="Documents and routing">
+  <h2><span class="n">Q5</span>Documents as input, and routing</h2>
+  <div class="tags"><span class="tag">A15</span><span class="tag">A14</span><span class="tag">before Nov 15 freeze</span></div>
+  <p>The SOW says "English text and documents". The service takes email today. Which document types matter for Phase 1 (contracts, tables, memos)? And for routing: should the service return a "keep local" status for a whole request, or does VG08 decide from the redacted items?</p>
+  <div class="fill"><label for="n_Q5" class="k">Answer</label><textarea id="n_Q5" data-save></textarea></div>
+</section>
+
+<section class="item soon" data-topic="Q6" data-title="Encryption mode and placeholders">
+  <h2><span class="n">Q6</span>Encryption mode and placeholders</h2>
+  <div class="tags"><span class="tag">A18</span><span class="tag">section 05</span><span class="tag">before Nov 15 freeze</span></div>
+  <ul class="points">
+    <li>Should the service never store original values (<code>aes_siv</code>), or is an encrypted server-side mapping acceptable (<code>mapping</code>)?</li>
+    <li>Do VG08 and your agents need to see the category of what was removed (<code>[PERSON_1]</code>), or is an opaque token (<code>[VG:2:…]</code>) fine?</li>
+    <li>Will VG08 and your agents pass placeholders through unchanged?</li>
+    <li>Can VG08 send its own conversation ID with each request, and close the conversation when it ends? Is a 24-hour maximum right?</li>
+  </ul>
+  <div class="fill"><label for="n_Q6" class="k">Answer</label><textarea id="n_Q6" data-save></textarea></div>
+</section>
+
+<section class="item later" data-topic="Q7" data-title="VG08 access and SOW">
+  <h2><span class="n">Q7</span>VG08 access and the SOW</h2>
+  <div class="tags"><span class="tag">D52</span><span class="tag">E68</span></div>
+  <p>Phase 2 starts Nov 2: when can we connect to VG08? And the Scope of Work given at the midterm is not signed yet; is anything holding it up?</p>
+  <div class="fill"><label for="n_Q7" class="k">Answer</label><textarea id="n_Q7" data-save></textarea></div>
+</section>
+
+<h2 style="margin-top:36px"><span class="n">08</span>Next two weeks</h2>
+<ul class="points" style="margin-bottom:30px">
+  <li>Wire the model prompts into the service; first end-to-end run by Nov 1</li>
+  <li>Apply the tier table you confirm, update the test set's categories, and score the service on the 60 development emails</li>
+  <li>Re-run the model evaluation under that tier table; extend from 15 to 60 emails</li>
+  <li>Encryption: test long tokens with real models, and fix the token check</li>
+</ul>
+
+<section class="export" aria-labelledby="exh">
+  <h2 id="exh"><span class="n">→</span>Save the answers</h2>
+  <p class="lede">Answers typed here stay in this browser. After the meeting, make the Markdown and paste it to Claude for the notes and TODO.</p>
+  <div class="btns"><button type="button" id="mk">Make Markdown</button><button type="button" id="cp" class="ghost">Copy</button></div>
+  <p id="status" role="status">Not saved yet.</p>
+  <label for="mdout" class="k">Markdown</label>
+  <textarea id="mdout" readonly></textarea>
+</section>
+
+<footer>Materials: <code>briefing-vpc-model-evaluation-en.md</code> (Anmol), <code>briefing-rules-presidio-eval-en.html</code> and <code>tier-table-client-review-en.docx</code> (Yudi), <code>briefing-encryption-api-en.html</code> (Zhexuan), test set README (Karina).</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-client-2026-10-26-en';
+  var status=document.getElementById('status');
+  function fields(){return Array.prototype.slice.call(document.querySelectorAll('[data-save]'));}
+  function save(){var o={};fields().forEach(function(el){o[el.id]=el.value;});try{localStorage.setItem(KEY,JSON.stringify(o));status.textContent='Saved in this browser at '+new Date().toLocaleTimeString()+'.';}catch(e){status.textContent='This browser is not saving. Make the Markdown before you close the page.';}}
+  function load(){var o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}if(!o)return;fields().forEach(function(el){if(o[el.id]!=null)el.value=o[el.id];});status.textContent='Restored earlier answers from this browser.';}
+  function md(){var out=['# Client meeting 2026-10-26: answers',''];var a=document.getElementById('attendees').value.trim();if(a)out.push('Attendees: '+a,'');document.querySelectorAll('section[data-topic]').forEach(function(s){var t=s.querySelector('textarea').value.trim();out.push('## '+s.getAttribute('data-topic')+'. '+s.getAttribute('data-title'));out.push(t||'(no answer)');out.push('');});return out.join('\n');}
+  document.addEventListener('input',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.getElementById('mk').addEventListener('click',function(){document.getElementById('mdout').value=md();status.textContent='Markdown is ready below.';});
+  document.getElementById('cp').addEventListener('click',function(){var ta=document.getElementById('mdout');if(!ta.value)ta.value=md();var fail=function(){ta.focus();ta.select();status.textContent='Copy was blocked. The text is selected; press Cmd+C.';};try{navigator.clipboard.writeText(ta.value).then(function(){status.textContent='Copied.';},fail);}catch(e){fail();}});
+  load();
+})();
+</script>
+</body>
+</html>
