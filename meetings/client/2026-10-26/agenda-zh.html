@@ -297,14 +297,33 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
     </tbody>
   </table></div>
   <p style="font-size:15px;margin-top:8px">不論分數一律遮：客戶的機密詞清單、請求標為禁止的字詞、模型無法分類的項目。所有門檻都是起始值，之後用測試集調。</p>
-  <h3>類別</h3>
+  <h3>類別，以及哪個偵測器找得到</h3>
+  <p style="font-size:15px">每封信都會跑三種偵測器，結果合併。本地模型找全部 22 類；固定格式的類別，規則和 Presidio（開源的個資工具）也抓得到。有 8 類只有模型能找。</p>
   <div class="tablewrap"><table>
-    <thead><tr><th>Tier</th><th>類別</th></tr></thead>
+    <thead><tr><th>類別</th><th>Tier</th><th>例子</th><th>也能偵測的</th></tr></thead>
     <tbody>
-      <tr><td><b>High</b></td><td>GOV_ID、CREDENTIAL、CARD_NUMBER、ACCOUNT_NUMBER、HEALTH、BUSINESS_CONFIDENTIAL、CODENAME、DEMOGRAPHIC</td></tr>
-      <tr><td><b>Medium</b></td><td>PERSON、PHONE_PERSONAL、EMAIL_PERSONAL、ADDRESS_HOME、NETWORK_ID、AMOUNT</td></tr>
-      <tr><td><b>Low</b></td><td>CITY、DATE、ORG、AGE、GENDER</td></tr>
-      <tr><td><b>Public</b></td><td>PHONE_PUBLIC、EMAIL_PUBLIC、ADDRESS_PUBLIC</td></tr>
+      <tr><td><code>GOV_ID</code></td><td>High</td><td>社會安全號碼、護照、駕照、ITIN</td><td>規則（SSN 格式）、Presidio</td></tr>
+      <tr><td><code>CREDENTIAL</code></td><td>High</td><td>密碼、API key、存取 token</td><td><i>只有模型</i></td></tr>
+      <tr><td><code>CARD_NUMBER</code></td><td>High</td><td>付款卡號</td><td>規則（校驗碼驗證）、Presidio</td></tr>
+      <tr><td><code>ACCOUNT_NUMBER</code></td><td>High</td><td>銀行、券商和客戶帳號、IBAN、加密錢包、其他長串數字 ID</td><td>Presidio</td></tr>
+      <tr><td><code>HEALTH</code></td><td>High</td><td>診斷、治療、病假</td><td><i>只有模型</i></td></tr>
+      <tr><td><code>BUSINESS_CONFIDENTIAL</code></td><td>High</td><td>未公開財務、交易條件、法律事務</td><td><i>只有模型</i></td></tr>
+      <tr><td><code>CODENAME</code></td><td>High</td><td>專案和交易代號、交易對象</td><td>規則（客戶的詞清單）</td></tr>
+      <tr><td><code>DEMOGRAPHIC</code></td><td>High</td><td>國籍、宗教、政治立場</td><td>Presidio</td></tr>
+      <tr><td><code>PERSON</code></td><td>Medium</td><td>人名</td><td>規則（信頭名字、信尾署名）、Presidio</td></tr>
+      <tr><td><code>PHONE_PERSONAL</code></td><td>Medium</td><td>個人電話和分機</td><td>規則、Presidio</td></tr>
+      <tr><td><code>EMAIL_PERSONAL</code></td><td>Medium</td><td>個人 email</td><td>規則、Presidio</td></tr>
+      <tr><td><code>ADDRESS_HOME</code></td><td>Medium</td><td>街道地址、郵政信箱</td><td>規則（美國格式）</td></tr>
+      <tr><td><code>NETWORK_ID</code></td><td>Medium</td><td>IP 和 MAC 位址</td><td>Presidio</td></tr>
+      <tr><td><code>AMOUNT</code></td><td>Medium</td><td>金額（$4.2M、USD 500k）</td><td>規則</td></tr>
+      <tr><td><code>CITY</code></td><td>Low</td><td>城市、國家</td><td>Presidio</td></tr>
+      <tr><td><code>DATE</code></td><td>Low</td><td>日期和時間</td><td>Presidio</td></tr>
+      <tr><td><code>ORG</code></td><td>Low</td><td>公司和組織名稱</td><td><i>只有模型</i></td></tr>
+      <tr><td><code>AGE</code></td><td>Low</td><td>「age 42」、「42-year-old」</td><td>規則、Presidio</td></tr>
+      <tr><td><code>GENDER</code></td><td>Low</td><td>性別</td><td><i>只有模型</i></td></tr>
+      <tr><td><code>PHONE_PUBLIC</code></td><td>Public</td><td>公司總機、客服專線</td><td><i>只有模型</i></td></tr>
+      <tr><td><code>EMAIL_PUBLIC</code></td><td>Public</td><td>info@、support@ 信箱</td><td><i>只有模型</i></td></tr>
+      <tr><td><code>ADDRESS_PUBLIC</code></td><td>Public</td><td>公開的辦公室和公司地址</td><td><i>只有模型</i></td></tr>
     </tbody>
   </table></div>
   <p style="font-size:15px;margin-top:8px">個人資料的 tier 依照 NIST SP 800-122 的影響等級；健康和人口特徵依 GDPR 第 9 條列為 High。</p>
