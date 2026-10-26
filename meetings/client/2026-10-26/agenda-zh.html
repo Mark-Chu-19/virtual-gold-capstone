@@ -368,7 +368,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 
 <section class="item soon" aria-labelledby="h5d">
   <h2 id="h5d"><span class="n">07</span>加密提案：對話金鑰，兩種模式</h2>
-  <div class="tags"><span class="tag due">聽客戶看法：Q6</span><span class="tag">Zhexuan</span></div>
+  <div class="tags"><span class="tag due">聽客戶看法：Q5</span><span class="tag">Zhexuan</span></div>
   <p class="lede">和現行 API 並存的第二版（v2）。兩種模式都已實作並放進服務，預設關閉，現行 API 不受影響。變成預設之前，想先聽客戶的看法。</p>
   <div class="grid2" style="margin-bottom:14px">
     <div class="card">
@@ -427,7 +427,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   <ul class="points">
     <li>0.1.3 的三個改動（ACCOUNT_NUMBER、ADDRESS_PUBLIC、Public 0.8）可以接受嗎？</li>
     <li>出生日期現在算 DATE（Low）。要不要獨立成一個類別，放 Medium 或 High？</li>
-    <li>交易對象是公司名稱（Low）。要不要改放進機密詞清單（Q3）？</li>
+    <li>交易對象是公司名稱（Low）。要不要改放進機密詞清單？</li>
     <li>編號（案件號、病歷號、訂單號）要放哪個 tier？</li>
     <li>模型很確定某個 Low 項目是隱私時，單獨出現還要保留嗎？</li>
   </ul>
@@ -442,29 +442,22 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   <div class="fill"><label for="n_Q2" class="k">答案</label><textarea id="n_Q2" data-save></textarea></div>
 </section>
 
-<section class="item urgent" data-topic="Q3" data-title="機密詞清單">
-  <h2><span class="n">Q3</span>能提供機密詞清單嗎？</h2>
-  <div class="tags"><span class="tag">D49</span></div>
-  <p>專案代號、交易名稱和交易對象，光看文字很難穩定偵測。有一份清單（樣本也可以），服務就能把它們當成 High。</p>
+<section class="item soon" data-topic="Q3" data-title="服務跑在哪裡">
+  <h2><span class="n">Q3</span>服務要跑在哪裡？</h2>
+  <div class="tags"><span class="tag">D51</span></div>
+  <p>最好的模型需要一張 24–48 GB 的 GPU，下一級需要 80 GB。會跑在客戶的私有雲嗎？什麼時候可以在那裡測？在那之前，照 9/28 的共識，我們用託管的開源模型測。</p>
   <div class="fill"><label for="n_Q3" class="k">答案</label><textarea id="n_Q3" data-save></textarea></div>
 </section>
 
-<section class="item soon" data-topic="Q4" data-title="服務跑在哪裡">
-  <h2><span class="n">Q4</span>服務要跑在哪裡？</h2>
-  <div class="tags"><span class="tag">D51</span></div>
-  <p>最好的模型需要一張 24–48 GB 的 GPU，下一級需要 80 GB。會跑在客戶的私有雲嗎？什麼時候可以在那裡測？在那之前，照 9/28 的共識，我們用託管的開源模型測。</p>
+<section class="item soon" data-topic="Q4" data-title="文件輸入和路由">
+  <h2><span class="n">Q4</span>文件輸入，以及路由</h2>
+  <div class="tags"><span class="tag">A15</span><span class="tag">A14</span><span class="tag">11/15 凍結前</span></div>
+  <p>SOW 寫的是「英文文字與文件」，服務現在只收 email。Phase 1 要支援哪些文件（合約、表格、備忘錄）？路由方面：服務要對整個請求回傳「留在本地」的狀態，還是由 VG08 依遮蔽的項目自己決定？</p>
   <div class="fill"><label for="n_Q4" class="k">答案</label><textarea id="n_Q4" data-save></textarea></div>
 </section>
 
-<section class="item soon" data-topic="Q5" data-title="文件輸入和路由">
-  <h2><span class="n">Q5</span>文件輸入，以及路由</h2>
-  <div class="tags"><span class="tag">A15</span><span class="tag">A14</span><span class="tag">11/15 凍結前</span></div>
-  <p>SOW 寫的是「英文文字與文件」，服務現在只收 email。Phase 1 要支援哪些文件（合約、表格、備忘錄）？路由方面：服務要對整個請求回傳「留在本地」的狀態，還是由 VG08 依遮蔽的項目自己決定？</p>
-  <div class="fill"><label for="n_Q5" class="k">答案</label><textarea id="n_Q5" data-save></textarea></div>
-</section>
-
-<section class="item soon" data-topic="Q6" data-title="加密模式和 placeholder">
-  <h2><span class="n">Q6</span>加密模式和 placeholder</h2>
+<section class="item soon" data-topic="Q5" data-title="加密模式和 placeholder">
+  <h2><span class="n">Q5</span>加密模式和 placeholder</h2>
   <div class="tags"><span class="tag">A18</span><span class="tag">見 07</span><span class="tag">11/15 凍結前</span></div>
   <ul class="points">
     <li>服務要完全不存原文（<code>aes_siv</code>），還是可以接受加密的伺服器對照表（<code>mapping</code>）？</li>
@@ -472,14 +465,14 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
     <li>VG08 和 agent 會原封不動傳遞 placeholder 嗎？</li>
     <li>VG08 能在每個請求帶上自己的對話 ID，並在對話結束時關閉嗎？最長 24 小時合適嗎？</li>
   </ul>
-  <div class="fill"><label for="n_Q6" class="k">答案</label><textarea id="n_Q6" data-save></textarea></div>
+  <div class="fill"><label for="n_Q5" class="k">答案</label><textarea id="n_Q5" data-save></textarea></div>
 </section>
 
-<section class="item later" data-topic="Q7" data-title="VG08 存取和 SOW">
-  <h2><span class="n">Q7</span>VG08 存取和 SOW</h2>
+<section class="item later" data-topic="Q6" data-title="VG08 存取和 SOW">
+  <h2><span class="n">Q6</span>VG08 存取和 SOW</h2>
   <div class="tags"><span class="tag">D52</span><span class="tag">E68</span></div>
   <p>Phase 2 11/2 開始：什麼時候可以連上 VG08？另外，期中給的 Scope of Work 還沒簽，有什麼卡住嗎？</p>
-  <div class="fill"><label for="n_Q7" class="k">答案</label><textarea id="n_Q7" data-save></textarea></div>
+  <div class="fill"><label for="n_Q6" class="k">答案</label><textarea id="n_Q6" data-save></textarea></div>
 </section>
 
 <h2 style="margin-top:36px"><span class="n">09</span>接下來兩週</h2>
