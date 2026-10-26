@@ -26,5 +26,5 @@ Before the Oct 26 client meeting. Agenda: [`agenda-en.html`](agenda-en.html). Ch
 
 ## Open
 
-- Anmol's report §7 names the $50 CMU OpenRouter allocation through the professor. The 2026-09-27 decision says not to raise the CMU route with the client. Mark decides whether to skip it when presenting or delete the sentence before sending.
+- **Decided 2026-10-26:** Anmol's report §7 names the $50 CMU OpenRouter allocation through the professor, and the 2026-09-27 decision says not to raise the CMU route with the client. Mark skips that sentence when presenting.
 - Karina pushes her review into PR #9 (B74). Until then the client page says "an LLM proposed the labels, and a person checks every one".

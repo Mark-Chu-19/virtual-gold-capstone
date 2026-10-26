@@ -16,7 +16,7 @@ Held before Monday's client meeting; Anmol was absent. Notes: [`meetings/team/20
 
 | # | Topic | Items | Outcome |
 |---|---|---|---|
-| 1 | Anmol's VPC report | B72, A15, D51 | Anmol absent, so the report goes to the client **unchanged**. The client page states the facts on its own: tested on hosted model APIs, not yet deployed in a VPC. The wording, the local links and the §7 CMU sentence wait for Anmol. Open: whether to skip or delete the §7 sentence before the report is shown or sent (Mark) |
+| 1 | Anmol's VPC report | B72, A15, D51 | Anmol absent, so the report goes to the client **unchanged**. The client page states the facts on its own: tested on hosted model APIs, not yet deployed in a VPC. The wording, the local links and the §7 CMU sentence wait for Anmol. Decided after the meeting: Mark skips the §7 sentence when presenting |
 | 2 | Two tier policies | A19, D49 | The client reviews **Yudi's policy-0.1.3** (22 categories, Public at 0.8). It is Yudi's proposal; he thinks it is more accurate and wants the client's view. Merged only after the client confirms (B71). The client page says the model figures will be re-run under the confirmed tier table (B69) |
 | 3 | Placeholder format | A18 | Zhexuan presents API v2 **as a proposal** and asks the client (client page Q6: store originals or not, category visible or not, pass-through, conversation ID and 24 h). His PR #10 was merged on 2026-10-26 (B73) |
 | 4 | Broken links | B72 | The two documents Zhexuan's briefing links to are in PR #10 (`docs/api/`), now on main. The repo is private, so the client page names `docs/api/` instead of linking. Anmol's 24 links wait for him |
