@@ -277,7 +277,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 <section class="item urgent" aria-labelledby="h4d">
   <h2 id="h4d"><span class="n">04</span>Proposed tier table (policy 0.1.3)</h2>
   <div class="tags"><span class="tag due">for your review: Q1</span><span class="tag">Yudi</span></div>
-  <p class="lede">22 categories in 4 tiers. Yudi proposes this revision because it matched the test data more accurately. The changes are ready and will be merged once you confirm. The full table is also in the attached document (<code>tier-table-client-review-en.docx</code>).</p>
+  <p class="lede">22 categories in 4 tiers. The tiers and categories were confirmed at our last meeting; Yudi proposes three changes because they matched the test data more accurately. The changes are ready and will be merged once you confirm. The full table is also in the attached document (<code>tier-table-client-review-en.docx</code>).</p>
   <h3>Changes from the current table (0.1.1)</h3>
   <ul class="points">
     <li><b>BANK_ACCOUNT → ACCOUNT_NUMBER</b>: now covers bank, brokerage and client accounts, IBANs, crypto wallets and other long numeric IDs.</li>
@@ -306,7 +306,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
       <tr><td><b>Public</b></td><td>PHONE_PUBLIC, EMAIL_PUBLIC, ADDRESS_PUBLIC</td></tr>
     </tbody>
   </table></div>
-  <p style="font-size:15px;margin-top:8px">Personal-data tiers follow NIST SP 800-122 impact levels; health and demographic data are High per GDPR Art. 9. The business categories and the Public tier are our proposal; please check them against your data classification.</p>
+  <p style="font-size:15px;margin-top:8px">Personal-data tiers follow NIST SP 800-122 impact levels; health and demographic data are High per GDPR Art. 9.</p>
 </section>
 
 <section class="item soon" aria-labelledby="h5m">
@@ -419,17 +419,16 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 <h2 style="margin-top:36px"><span class="n">08</span>What we need from you</h2>
 <p class="lede">In order of what blocks us soonest. Space under each for the answer.</p>
 
-<section class="item urgent" data-topic="Q1" data-title="Tier table">
-  <h2><span class="n">Q1</span>Is the proposed tier table right?</h2>
+<section class="item urgent" data-topic="Q1" data-title="Tier table: 0.1.3 changes and test-set findings">
+  <h2><span class="n">Q1</span>Tier table: the 0.1.3 changes and what the test set found</h2>
   <div class="tags"><span class="tag due">blocks Phase 1 scoring</span><span class="tag">D49</span><span class="tag">section 04</span></div>
+  <p>The tiers and categories stand as confirmed at our last meeting. Two things are new since then: the three changes in 0.1.3, and some cases the test set surfaced.</p>
   <ul class="points">
     <li>Do you accept the three changes in 0.1.3 (ACCOUNT_NUMBER, ADDRESS_PUBLIC, Public at 0.8)?</li>
-    <li>Any categories to move? We would especially like your view on AMOUNT (Medium), ORG (Low) and DEMOGRAPHIC (High).</li>
     <li>Dates of birth fall under DATE (Low) today. Should they be their own category, at Medium or High?</li>
     <li>Deal counterparties are company names (Low). Should they go on your confidential term list (Q3) instead?</li>
     <li>ID numbers (case, medical record, order numbers): which tier?</li>
     <li>When the model is sure a Low item is private, should it still be kept when it appears alone?</li>
-    <li>Any categories to add, e.g. internal ticket IDs?</li>
   </ul>
   <div class="fill"><label for="n_Q1" class="k">Answer</label><textarea id="n_Q1" data-save></textarea></div>
 </section>

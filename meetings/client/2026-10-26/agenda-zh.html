@@ -278,7 +278,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 <section class="item urgent" aria-labelledby="h4d">
   <h2 id="h4d"><span class="n">04</span>分級表提案（policy 0.1.3）</h2>
   <div class="tags"><span class="tag due">請客戶審：Q1</span><span class="tag">Yudi</span></div>
-  <p class="lede">22 個類別，4 個 tier。Yudi 提出這一版，因為在測試資料上比較準。改動已經準備好，客戶確認後就合併。完整的表也在附件（<code>tier-table-client-review-en.docx</code>）。</p>
+  <p class="lede">22 個類別，4 個 tier。tier 和類別上次會議已經確認；Yudi 提出三個改動，因為在測試資料上比較準。改動已經準備好，客戶確認後就合併。完整的表也在附件（<code>tier-table-client-review-en.docx</code>）。</p>
   <h3>和目前版本（0.1.1）的差別</h3>
   <ul class="points">
     <li><b>BANK_ACCOUNT → ACCOUNT_NUMBER</b>：現在涵蓋銀行、券商和客戶帳號、IBAN、加密錢包和其他長串數字 ID。</li>
@@ -307,7 +307,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
       <tr><td><b>Public</b></td><td>PHONE_PUBLIC、EMAIL_PUBLIC、ADDRESS_PUBLIC</td></tr>
     </tbody>
   </table></div>
-  <p style="font-size:15px;margin-top:8px">個人資料的 tier 依照 NIST SP 800-122 的影響等級；健康和人口特徵依 GDPR 第 9 條列為 High。商業類別和 Public tier 是我們的提案，請客戶對照他們的資料分級確認。</p>
+  <p style="font-size:15px;margin-top:8px">個人資料的 tier 依照 NIST SP 800-122 的影響等級；健康和人口特徵依 GDPR 第 9 條列為 High。</p>
 </section>
 
 <section class="item soon" aria-labelledby="h5m">
@@ -420,17 +420,16 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 <h2 style="margin-top:36px"><span class="n">08</span>需要客戶回答的問題</h2>
 <p class="lede">依照卡住我們的急迫程度排序。每題下面可以記錄答案。</p>
 
-<section class="item urgent" data-topic="Q1" data-title="分級表">
-  <h2><span class="n">Q1</span>分級表提案對嗎？</h2>
+<section class="item urgent" data-topic="Q1" data-title="分級表：0.1.3 的改動和測試集的發現">
+  <h2><span class="n">Q1</span>分級表：0.1.3 的改動和測試集的發現</h2>
   <div class="tags"><span class="tag due">卡住 Phase 1 評分</span><span class="tag">D49</span><span class="tag">見 04</span></div>
+  <p>tier 和類別維持上次會議確認的版本。之後新增兩件事：0.1.3 的三個改動，以及測試集發現的幾種情況。</p>
   <ul class="points">
     <li>0.1.3 的三個改動（ACCOUNT_NUMBER、ADDRESS_PUBLIC、Public 0.8）可以接受嗎？</li>
-    <li>有沒有類別要換 tier？特別想聽 AMOUNT（Medium）、ORG（Low）、DEMOGRAPHIC（High）的看法。</li>
     <li>出生日期現在算 DATE（Low）。要不要獨立成一個類別，放 Medium 或 High？</li>
     <li>交易對象是公司名稱（Low）。要不要改放進機密詞清單（Q3）？</li>
     <li>編號（案件號、病歷號、訂單號）要放哪個 tier？</li>
     <li>模型很確定某個 Low 項目是隱私時，單獨出現還要保留嗎？</li>
-    <li>有沒有要新增的類別，例如內部工單編號？</li>
   </ul>
   <div class="fill"><label for="n_Q1" class="k">答案</label><textarea id="n_Q1" data-save></textarea></div>
 </section>
