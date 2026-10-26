@@ -355,7 +355,8 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
       <tr><td>只用服務的規則</td><td class="num">66%</td><td class="num">87%</td></tr>
     </tbody>
   </table></div>
-  <p style="font-size:15px;margin-top:8px">規則抓到所有 email 和 79% 的人名，但銀行帳號、代號、健康資訊和編號一個都沒抓到。這部分要靠模型補。</p>
+  <p style="font-size:15px;margin-top:8px">兩列都是用目前服務裡的規則測的：尚未包含 03 的修正，也沒有 Presidio 和模型。03 裡 Yudi 的數字來自另一個外部資料集，所以兩段的數字不能直接比較。</p>
+  <p style="font-size:15px">規則抓到所有 email 和 79% 的人名，但銀行帳號、代號、健康資訊和編號一個都沒抓到。這部分要靠模型補。</p>
   <h3>測試集對分級表的啟示</h3>
   <ul class="points">
     <li><b>86 個應該遮的項目落在 Low</b>：67 個公司名、12 個城市、6 個日期、1 個年齡。Low 單獨出現時會保留，所以就算模型很確定是隱私，這 86 個也全部會放行。最嚴重的是交易對象和出生日期。</li>
@@ -486,6 +487,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 <ul class="points" style="margin-bottom:30px">
   <li>把模型 prompt 接進服務；11/1 前第一次端到端跑通</li>
   <li>套用客戶確認的分級表，更新測試集的類別，在 60 封開發用信件上為服務評分</li>
+  <li>在 100 封信上跑 Yudi 修正後的規則 + Presidio</li>
   <li>用那份分級表重跑模型評測；從 15 封擴大到 60 封</li>
   <li>加密：用真實模型測長 token，並修好 token 檢查</li>
 </ul>

@@ -354,7 +354,8 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
       <tr><td>The service's rules alone</td><td class="num">66%</td><td class="num">87%</td></tr>
     </tbody>
   </table></div>
-  <p style="font-size:15px;margin-top:8px">Rules catch every email address and 79% of names, but no bank accounts, code names, health details or ID numbers. The model has to close that gap.</p>
+  <p style="font-size:15px;margin-top:8px">Both rows use the rules currently in the service: they do not include the fixes in section 03, and they run without Presidio or the model. Yudi's numbers in section 03 come from a different, external dataset, so the two sections do not compare directly.</p>
+  <p style="font-size:15px">Rules catch every email address and 79% of names, but no bank accounts, code names, health details or ID numbers. The model has to close that gap.</p>
   <h3>What the test set tells us about the tier table</h3>
   <ul class="points">
     <li><b>86 items that should be redacted sit in the Low tier</b>: 67 company names, 12 cities, 6 dates, 1 age. Because a Low item seen alone is kept, the service would let all 86 through, even when the model is sure they are private. The worst are deal counterparties and dates of birth.</li>
@@ -485,6 +486,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 <ul class="points" style="margin-bottom:30px">
   <li>Wire the model prompts into the service; first end-to-end run by Nov 1</li>
   <li>Apply the tier table you confirm, update the test set's categories, and score the service on the 60 development emails</li>
+  <li>Run the rules with the section 03 fixes, plus Presidio, on the 100 emails</li>
   <li>Re-run the model evaluation under that tier table; extend from 15 to 60 emails</li>
   <li>Encryption: test long tokens with real models, and fix the token check</li>
 </ul>
