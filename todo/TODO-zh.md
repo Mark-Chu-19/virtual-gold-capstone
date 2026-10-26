@@ -10,19 +10,17 @@
 > 9/28 與 10/5 的客戶會議紀錄已歸檔(`meetings/client/2026-09-28/`、`2026-10-05/`,Gemini)。9/29 教授會議與 10/2 團隊會議沒有紀錄。這裡較早的條目、9/27 團隊筆記或研究文件與簡報不一致時,一律以簡報為準。10/19 客戶會議有 Zhexuan 的 9 頁報告(先講服務與隱私元件,再由 Anmol 講模型工作)在 `meetings/client/2026-10-19/`;那次還沒有 Gemini 紀錄。10/26 客戶會議的素材(Zhexuan 的加密與 API v2 簡介、Anmol 的 VPC 模型報告、Yudi 的規則 + Presidio 評測與給客戶審的分級表)在 `meetings/client/2026-10-26/`。
 > 決策紀錄中 2026-10-03 的各列是依 10/3 草稿寫的。定稿多了**路由規則**,輸入也改成**「英文文字與文件」**;這對 API contract 的影響由 A14、A15 追蹤。
 
-## 2026-10-25(週日)團隊會議要談的(週一客戶會議前)
+## 2026-10-25(週日)團隊會議:結論
 
-10/26 的素材在 `meetings/client/2026-10-26/`。給客戶看之前先講定這些。
+在週一客戶會議前舉行;Anmol 缺席。紀錄:[`meetings/team/2026-10-25/notes-zh.md`](../meetings/team/2026-10-25/notes-zh.md)。依這些結論做的客戶頁面是 `meetings/client/2026-10-26/agenda-en.html`(順序:Yudi、Anmol、Karina、Zhexuan)。
 
-| # | 主題 | 項目 | 要講定的 |
+| # | 主題 | 項目 | 結論 |
 |---|---|---|---|
-| 1 | Anmol 的 VPC 報告 | B72、A15、D51 | 標成「VPC」的結果是用免費託管 API(Groq、OpenRouter)跑的,不是在 VPC 裡跑的,要改寫。報告把「客戶部署在 VPC」與「處理任意企業文件」寫成已定案,但兩者都還沒決定。§7 提到透過教授申請的 $50 CMU OpenRouter 額度;D51 說不要向客戶提 CMU 管道 |
-| 2 | 兩套分級規則 | A19、D49 | Yudi 的表:4 級、22 類,Low 要 3 類以上同時出現才遮。Anmol 的程式:3 級,LOW 分數 ≥ 0.5 就遮。明天客戶審哪一套要先講好 |
-| 3 | Placeholder 格式 | A18 | Zhexuan 的 token 是長的 `[VG:2:…]`;Anmol 與期中簡報用 `[PERSON_1]`。雲端模型會不會把長 token 原樣傳回還沒測過(Zhexuan 的簡介也這麼註明) |
-| 4 | 連結打不開 | B72 | Anmol 報告的 24 個、Zhexuan 的 2 個 `file://` 連結都指向他們自己的電腦 |
-| 5 | Karina 的資料集 PR #9 | B46、A16、A19 | 標註仍是 Claude 提的草稿、等 Karina 複核:明天不要說資料是人工標註。Yudi 的分支(policy 0.1.3)把 `BANK_ACCOUNT` 改名為 `ACCOUNT_NUMBER` 並新增 `ADDRESS_PUBLIC`,資料集用的是 0.1.1 的類別:要講定合併順序。86 個應遮的片段(67 ORG、12 CITY、6 DATE、1 AGE)落在 Low 級,分數 0.9 也會放行(議題 2)。39 個 `ID_NUMBER` 片段在政策裡沒有類別。10 封「乾淨」的信只有 4 封真的乾淨 |
-
-B71(程式與 PR 放上 GitHub)等客戶會議之後再處理:三人會在客戶確認後才開 PR 或更新 PR。
+| 1 | Anmol 的 VPC 報告 | B72、A15、D51 | Anmol 缺席,報告**原樣**給客戶。客戶頁面自己照實寫:在託管模型 API 上測試,還沒部署到 VPC。措辭、本機連結與 §7 的 CMU 那句等 Anmol 回來再處理。待定:報告展示或寄出前,§7 那句要跳過還是刪掉(Mark) |
+| 2 | 兩套分級規則 | A19、D49 | 客戶審 **Yudi 的 policy-0.1.3**(22 類,Public 0.8)。這是 Yudi 的提案,他覺得比較準,想聽客戶看法。客戶確認後才合併(B71)。客戶頁面註明模型數字會用確認後的分級表重跑(B69) |
+| 3 | Placeholder 格式 | A18 | Zhexuan 把 API v2 **當作提案**展示並詢問客戶(客戶頁面 Q6:存不存原文、看不看得到類別、能否原樣傳遞、對話 ID 與 24 小時)。他的 PR #10 已於 2026-10-26 合併(B73) |
+| 4 | 連結打不開 | B72 | Zhexuan 簡介連到的兩份文件在 PR #10(`docs/api/`),已在 main。repo 是私有的,所以客戶頁面只寫 `docs/api/`,不放連結。Anmol 的 24 個連結等他處理 |
+| 5 | Karina 的資料集 PR #9 | B46、A16、A19、B74 | Karina **刻意用 policy 0.1.1**,因為 0.1.3 只是 Yudi 的提案:資料集沒有過時,也不用等 Yudi 的分支。客戶若確認 0.1.3,她再重新產生 `service_type` 與 `tier`。她說已複核完,但 PR 裡「Karina check」欄仍是空的、`gt_status` 仍是 draft(B74)。對客戶照她 README 的說法描述。86 個 Low 級片段、出生日期、交易對象與編號隨分級表一起問客戶(Q1)。`NON_PERSON_WORDS`(B75):之後再談 |
 
 ## 2026-10-23(週五)團隊會議要談的
 
@@ -42,8 +40,8 @@ B71(程式與 PR 放上 GitHub)等客戶會議之後再處理:三人會在客戶
 
 | # | 項目 | 說明 | 負責人 | 期限 | 完成 |
 |---|---|---|---|---|---|
-| 18 | **API v2 tokenization:要不要採用?** | Zhexuan 10/26 的簡介(`meetings/client/2026-10-26/briefing-encryption-api-*.html`)新增 `/v2/redactions`、`/v2/restorations` 與 `DELETE /v2/groups/{group_id}`:每個對話由客戶提供 `group_id`,每個對話一把隨機金鑰並由主金鑰 KEK 封裝,兩種模式(`mapping` 為預設,原文以 AES-SIV 加密後保存;`aes_siv` 把密文直接放進 token),多個實例共用 Redis,最長 24 小時。這超出 contract 0.4.2,也和 2026-10-03「對照表每次 redaction 各自保存」的決定不同。token 長得像 `[VG:2:…]`,長度隨原文增加,而簡報與 Anmol 的 harness 用的是 `[PERSON_1]`;雲端模型會不會把長 token 原樣傳回還沒測過(簡介自己也這麼說)。簡介依據的是本機 commit `c706bb6`;GitHub 上的 `fix/update-api-infra` 停在 `2977867`,缺關閉對話的端點與 conversation-keys 文件,也還沒開 PR。要在 11/15 contract 凍結前和 A14 一起決定 | Zhexuan、Mark | 11/15 前 | [ ] |
-| 19 | **統一一套分級政策。** | Yudi 給客戶的分級表(`meetings/client/2026-10-26/tier-table-client-review-en.docx`,policy-0.1.3-provisional)是**4 級、22 類**:High ≥ 0.2、Medium ≥ 0.5(每個請求可調)、Low 除非 3 種以上低級類別同時出現否則保留、Public 除非 ≥ 0.8 否則保留。Anmol 的 harness(10/26 報告 §3.2、§8)用**3 級**:HIGH 0.20 / MEDIUM 0.50 / LOW 0.50,類別是資料集的 18 類加 FACT,分數在 0.35–0.65 一律遮蔽。期中簡報是 3 級。要講定服務、harness 與資料集(PR #9 的 `tier` 取自 `policy.yaml`)用同一套,並說清楚客戶審的是哪一套 | Yudi、Anmol | 10/26 會議前 | [ ] |
+| 18 | **API v2 tokenization:要不要採用?** | Zhexuan 10/26 的簡介(`meetings/client/2026-10-26/briefing-encryption-api-*.html`)新增 `/v2/redactions`、`/v2/restorations` 與 `DELETE /v2/groups/{group_id}`:每個對話由客戶提供 `group_id`,每個對話一把隨機金鑰並由主金鑰 KEK 封裝,兩種模式(`mapping` 為預設,原文以 AES-SIV 加密後保存;`aes_siv` 把密文直接放進 token),多個實例共用 Redis,最長 24 小時。這超出 contract 0.4.2,也和 2026-10-03「對照表每次 redaction 各自保存」的決定不同。token 長得像 `[VG:2:…]`,長度隨原文增加,而簡報與 Anmol 的 harness 用的是 `[PERSON_1]`;雲端模型會不會把長 token 原樣傳回還沒測過(簡介自己也這麼說)。簡介依據的是本機 commit `c706bb6`;GitHub 上的 `fix/update-api-infra` 停在 `2977867`,缺關閉對話的端點與 conversation-keys 文件,也還沒開 PR。要在 11/15 contract 凍結前和 A14 一起決定 **10/25 團隊會議:**10/26 當作提案給客戶看,Zhexuan 想聽客戶看法(客戶頁面 Q6)。**10/26:PR #10 已合併**(`ade699b`,squash),含關閉對話端點與 `docs/api/` 的四份文件;沒設 `VG_TOKEN_KEYS` 時 v2 關閉,v1 不變。審查後續見 B73。仍待定:要不要把 v2 設為預設,以及用真實模型測長 token | Zhexuan、Mark | 11/15 前 | [ ] |
+| 19 | **統一一套分級政策。** | Yudi 給客戶的分級表(`meetings/client/2026-10-26/tier-table-client-review-en.docx`,policy-0.1.3-provisional)是**4 級、22 類**:High ≥ 0.2、Medium ≥ 0.5(每個請求可調)、Low 除非 3 種以上低級類別同時出現否則保留、Public 除非 ≥ 0.8 否則保留。Anmol 的 harness(10/26 報告 §3.2、§8)用**3 級**:HIGH 0.20 / MEDIUM 0.50 / LOW 0.50,類別是資料集的 18 類加 FACT,分數在 0.35–0.65 一律遮蔽。期中簡報是 3 級。要講定服務、harness 與資料集(PR #9 的 `tier` 取自 `policy.yaml`)用同一套,並說清楚客戶審的是哪一套 **10/25 團隊會議:**10/26 客戶審 Yudi 的 policy-0.1.3。Karina 的資料集在客戶確認前維持 0.1.1;Anmol 的數字用確認後的表重跑(B69) | Yudi、Anmol | 10/26 會議前 | [ ] |
 | 14 | **請求層級的路由:做還是不做?** | 定稿把「Tier + routing rules」列為交付物(第 5 頁),服務要「redact and apply routing」、VG08「check release eligibility」(第 33 頁),Phase 2 要「check routing before cloud use」(第 45 頁),dashboard 也統計路由狀態(第 37 頁)。給客戶的 SOW(`Scope of Work -  20261005.docx`)另外寫了「獨立的請求路由政策,決定整個請求留在本地還是可以送出」。但 2026-10-03 的決策紀錄寫不整封擋下(`LOCAL_ONLY`),API contract 0.4.2 拿掉了請求層級的判斷,`service/` 也沒有。要決定路由的意思(服務回傳一個狀態,還是 VG08 依 span 自己判斷)並寫進 contract,或向客戶說明範圍收窄。11/15 contract 凍結前一定要定 | Mark、Zhexuan | 下次客戶會議 | [ ] |
 | 15 | **輸入範圍:只有 email,還是英文文字與文件?** | 9/28 對齊「現階段輸入語言與文件限英文」;定稿(第 4、5、45 頁)與 SOW 都寫「English-language text and documents」,email 只是第一個 benchmark 格式。Contract 0.4.2 只接受 email 結構,附件與 OCR 列為不在範圍內。要決定「文件」請求在 API 裡長什麼樣子(純文字加來源標記?),或把說法限縮到 email。10/26:Anmol 的報告已預設「任意企業文件」,並規劃 6 種格式、18 份文件的測試(合約、表格、備忘錄、人資紀錄、日誌、逐字稿);這是計畫,不是決定 | Zhexuan、Mark | M4 前 | [ ] |
 | 16 | **評測的標準答案從哪來** | 10/5 對齊:找網路或 Kaggle 上已標註好的資料集當標準答案,起因是 Aarvin 問團隊怎麼信任 LLM 產生的測試案例。要決定它和 100 封信 benchmark 怎麼搭配:外部資料集拿來校正和算 recall,100 封信負責主管信件的情境案例(情境、攻擊、商業機密)?校正(A11)取決於這一點。10/19(Anmol):100 封信分成 60 封開發用、40 封保留測試(需遮的片段分別 591 與 380 個);保留的 40 封只在 pipeline 凍結、D70 的目標談妥後跑一次。10/26:Yudi 用外部已標註資料集 **ai4privacy pii-masking-400k** 的 1,000 筆英文資料評測規則 + Presidio;授權禁止再散布,只能留在本機,不能放進 `data/`。Karina 的 PR #9 加入 100 封信,並附人工複核的 `ground_truth` 欄 | Karina | Phase 1 | [ ] |
@@ -76,21 +74,24 @@ B71(程式與 PR 放上 GitHub)等客戶會議之後再處理:三人會在客戶
 | 43 | M4:VG08 整合(Phase 2,11/2–11/15);contract 凍結。需要 A14、A15 與 D52 | Zhexuan、Mark | 2026-11-15 | [ ] |
 | 44 | M5:程式凍結(軟凍結 11/18) | 全員 | 2026-11-22 | [ ] |
 | 45 | M6:期末報告 | Mark | 2026-11-30 | [ ] |
-| 46 | **評測資料集放進 repo**(`data/`):100 封虛構信件、999 個標註項目、18 種類型,JSONL 格式如第 41 頁。尚未 commit。內容是虛構的,符合「不放真實資料」的規則。**PR #9(Karina,2026-10-25 開)**把它放進 `data/baseline/baseline_v1.1.jsonl`,附複核工作表與 `score.py`;待審 | Karina | | [ ] |
+| 46 | **評測資料集放進 repo**(`data/`):100 封虛構信件、999 個標註項目、18 種類型,JSONL 格式如第 41 頁。尚未 commit。內容是虛構的,符合「不放真實資料」的規則。**PR #9(Karina,2026-10-25 開)**把它放進 `data/baseline/baseline_v1.1.jsonl`,附複核工作表與 `score.py`;待審 **10/25 團隊會議:**刻意用 policy 0.1.1,不用等 Yudi 的分支。Karina 說已複核完,PR 裡還看不到(B74) | Karina | | [ ] |
 | 47 | **先 baseline,再做消融**(第 19 頁):Rescriber 式 baseline → 加偵測器聯集 → 加名字擴散 → 加重複執行 → 加分級門檻。在一個子集上調,在保留子集上報告。主要指標是各等級的洩漏率;另外追蹤過度遮蔽、校正、每封信秒數。10/19:在 60 封開發用信件上調,在保留的 40 封上報告(A16)。Phase 1 為 10/26–11/8(第 45 頁) | Karina | 2026-11-08 | [ ] |
 | 48 | **架構文件 v0.4。**`docs/architecture/` 仍是 v0.3,也就是轉向前的混合架構。v0.4 寫好之前,以簡報(第 13、14、22–33 頁)與 `docs/api/` 為架構依據 | Mark | | [ ] |
 | 64 | **更新 `docs/api/`**(Zhexuan 的檔案)。(1)`service-interfaces-v0.4.2-zh.md` 還是動工前的計畫:引用 0.4.1、`development-schedule.md`、`protocols.py`、`pseudonym.py`、`structlog`,這些都不存在,英文版卻稱它為「原版」。(2)兩份都沒提到 `service/vg_redactor/privacy/`(PR #8);英文版還寫「Owners are not confirmed yet」。(3)`redaction-api-report-en-v0.4.2.md` 把語言放在版本前面,和其他檔案不一致。(4)contract 沒有中文版。(5)其中 session 保留的描述寫在 PR #8 之前,PR #8 存的是 HMAC 金鑰而非原始值(Zhexuan 自己 10/19 報告第 5 頁也提到) | Zhexuan | | [ ] |
 | 65 | **合併前要審查。**PR #7 由作者自己合併、沒有經過審查,違反 README 的「Nobody merges their own PR」。開啟分支保護(至少一個核准),或再向團隊說明這條規則 | Mark | 下次團隊會議 | [ ] |
-| 69 | **同條件模型重跑。**用和 10/19 Llama 3.3 70B 相同的 pipeline 版本與信件,重跑 Llama 3.1 8B、Qwen 與 Gemma 2 27B;目前 8B 與 Qwen 的數字是舊結果。15 封信只涵蓋 15 個業務領域中的 4 個,應擴大到 60 封開發用信件。託管 API 一直因額度用完而失敗:決定用哪家、誰付費。供 A13 使用 | Anmol | Phase 1 | [ ] |
-| 71 | **把 10/26 簡介背後的程式放上 GitHub。**(1)Zhexuan:推上 `c706bb6`,並為 `fix/update-api-infra` 開 PR(A18)。(2)Yudi:為 `feat/privacy-detection-fixes`(`d9cdf67`)開 PR;簡介寫「PR #9」,但 #9 已是 Karina 的資料集 PR。(3)Anmol:他的 harness(`benchmarks/2026-10-05-followup/`、prompts、calibration profile v1.4.0)不在任何分支上;報告裡 24 個連結都指向 `file:///Users/anmolsahu2k/…`。**等 10/26 客戶會議之後:**三人在客戶確認後才開 PR 或更新 PR | Zhexuan、Yudi、Anmol | 2026-10-26 之後 | [ ] |
-| 72 | **會議前修正要給客戶看的檔案。**Anmol 的報告:把免費託管 API 的結果稱為「VPC 設定」,並把「客戶部署在 VPC」「處理任意企業文件」寫成既定事實(A15、D51 都還沒定);§7 提到透過教授申請的 $50 CMU OpenRouter 額度(D51 說不要向客戶提 CMU 管道);還有本機 `file://` 連結。Zhexuan 的簡介:指向 `docs/api/` 的本機 `file://` 連結;中文版是簡體 | Anmol、Zhexuan | 2026-10-26 | [ ] |
+| 69 | **同條件模型重跑。**用和 10/19 Llama 3.3 70B 相同的 pipeline 版本與信件,重跑 Llama 3.1 8B、Qwen 與 Gemma 2 27B;目前 8B 與 Qwen 的數字是舊結果。15 封信只涵蓋 15 個業務領域中的 4 個,應擴大到 60 封開發用信件。託管 API 一直因額度用完而失敗:決定用哪家、誰付費。供 A13 使用 **10/25:**客戶頁面承諾用客戶確認的分級表重跑,讓數字能和 D70 的目標比較 | Anmol | Phase 1 | [ ] |
+| 71 | **把 10/26 簡介背後的程式放上 GitHub。**(1)Zhexuan:推上 `c706bb6`,並為 `fix/update-api-infra` 開 PR(A18)。(2)Yudi:為 `feat/privacy-detection-fixes`(`d9cdf67`)開 PR;簡介寫「PR #9」,但 #9 已是 Karina 的資料集 PR。(3)Anmol:他的 harness(`benchmarks/2026-10-05-followup/`、prompts、calibration profile v1.4.0)不在任何分支上;報告裡 24 個連結都指向 `file:///Users/anmolsahu2k/…`。**等 10/26 客戶會議之後:**三人在客戶確認後才開 PR 或更新 PR **10/26:**(1)完成,PR #10 已合併為 `ade699b`。(2)(3)仍等客戶 | Zhexuan、Yudi、Anmol | 2026-10-26 之後 | [ ] |
+| 72 | **會議前修正要給客戶看的檔案。**Anmol 的報告:把免費託管 API 的結果稱為「VPC 設定」,並把「客戶部署在 VPC」「處理任意企業文件」寫成既定事實(A15、D51 都還沒定);§7 提到透過教授申請的 $50 CMU OpenRouter 額度(D51 說不要向客戶提 CMU 管道);還有本機 `file://` 連結。Zhexuan 的簡介:指向 `docs/api/` 的本機 `file://` 連結;中文版是簡體 **10/25 團隊會議:**Anmol 缺席,報告原樣給;正確說法寫在客戶頁面。Zhexuan 連到的文件已隨 PR #10 進入 main | Anmol、Zhexuan | 2026-10-26 | [ ] |
+| 73 | **PR #10 後續**(2026-10-26 審查)。(1)用真實信件示範前要修:`wire.py:11`(`CANDIDATE`,不分大小寫的 `\[VG…`)與 `wire.py:14`(`LEGACY`,任何 `[Word_N]`)會把 `[VGA]`、`[Item_1]`、`[vgl. …]`、`VG:good` 這類一般文字當成 token,`/v2/redactions` 回 422、還原被擋。(2)Redis 掛掉時 `/readyz` 把整個服務報成 degraded,但 v1 不用 Redis。(3)idempotency 指紋是沒加鹽的 SHA-256,改用 HMAC。(4)刪掉用不到的格式 1 程式。(5)過長的 purpose 回 `invalid-token`,而不是長度錯誤 | Zhexuan | (1)真實信件示範前 | [ ] |
+| 74 | **把 Karina 的複核推進 PR #9。**她說每一列都看過了,但 PR 裡 `baseline_v1.1_review.xlsx` 的「Karina check」欄是空的(1,054 列),100 封信的 `gt_status` 都還是 `"draft: … pending Karina's review"`。填好欄位、更新 `gt_status`、push 到 `eval/benchmark-100`;之後審查並合併。在那之後才能說資料集經過人工複核 | Karina | | [ ] |
+| 75 | **信箱名稱被當成人名。**規則偵測器在 100 封信上的 31 個多遮裡,30 個是「Benefits Center」「SEC Filing Alerts」這類顯示名稱;在 `NON_PERSON_WORDS` 補詞可解決大部分(PR #9 README 第 7 點)。之後再談(10/25) | Yudi | | [ ] |
 | 35 | **關掉 Karina 的 PR #3、#4、#5。**為 vertical 交易情境建的;已由 100 封信資料集取代 | Karina | | [ ] |
 
 ## D. 等客戶回覆
 
 | # | 項目 | 詢問日期 | 回覆 |
 |---|---|---|---|
-| 49 | **審閱分級表與機密詞表。**沒有客戶提供的專案代號、交易名稱、主要往來對象清單,`business_confidential` 偵測不到;在那之前 `service/config/context_store.yaml` 是空的。這項與 D50–D52 原本在 10/3 草稿的最後一頁;定稿沒有放這四項請求,10/5 紀錄也沒有回覆,要再問一次。**10/26:分級表已可給客戶審**(`meetings/client/2026-10-26/tier-table-client-review-en.docx`,Yudi)。問題:分級對不對(AMOUNT 為 Medium、ORG 為 Low、DEMOGRAPHIC 為 High)、要不要加類別、每級可接受的洩漏率。先解決 A19 | 2026-10-05 | |
+| 49 | **審閱分級表與機密詞表。**沒有客戶提供的專案代號、交易名稱、主要往來對象清單,`business_confidential` 偵測不到;在那之前 `service/config/context_store.yaml` 是空的。這項與 D50–D52 原本在 10/3 草稿的最後一頁;定稿沒有放這四項請求,10/5 紀錄也沒有回覆,要再問一次。**10/26:分級表已可給客戶審**(`meetings/client/2026-10-26/tier-table-client-review-en.docx`,Yudi)。問題:分級對不對(AMOUNT 為 Medium、ORG 為 Low、DEMOGRAPHIC 為 High)、要不要加類別、每級可接受的洩漏率。先解決 A19 **10/26 要問(客戶頁面 Q1):**0.1.3 的三個改動;AMOUNT、ORG、DEMOGRAPHIC;出生日期是否獨立成一類(Medium 或 High);交易對象放進機密詞表;編號(案件號、病歷號、訂單號)的分級;模型很確定的 Low 項目單獨出現時是否仍保留;新增類別 | 2026-10-05 | |
 | 50 | **API 請求能否標示每段文字的來源?**(正文、引用串、主管自己打的字)。不一定受 NDA 限制 | 2026-09-28 | |
 | 51 | **本地模型用的 GPU 與沙盒。**2026-09-15 起未決。9/28 部分回覆:在有沙盒之前,先透過網路用雲端託管的開源模型測試,或在本地用 Ollama(例如 Gemma);資源申請先經 Aarvin 與 Alex,再由 Inderpal 核准(決策紀錄 2026-09-28)。Mark 已於 2026-09-27 告訴 Aarvin 團隊只有個人筆電。CMU Public Cloud Services 維持內部備案,不向客戶提 | 2026-09-15 | 部分回覆,2026-09-28 |
 | 52 | **開放 VG08 供整合。**Phase 2 於 11/2 開始 | 2026-10-05 | |
@@ -182,3 +183,5 @@ B71(程式與 PR 放上 GitHub)等客戶會議之後再處理:三人會在客戶
 | 2026-10-05 | **標準答案採用外部已標註好的資料集**(網路或 Kaggle),與產生出來的 benchmark 並用。兩者怎麼搭配見 A16 | 10/5 客戶會議紀錄 Decisions/Aligned。Aarvin 問產生出來的資料集怎麼信任;Mark 提出 Kaggle 的做法,Aarvin 支持 |
 | 2026-10-05 | **現階段只用一個模型。**之後服務改善了,再透過 helper 或 middleware 支援換模型 | 10/5 客戶會議紀錄 Decisions/Aligned(Aarvin) |
 | 2026-10-23 | **給客戶的原檔保留原名。**`docs/sow/Scope of Work -  20261005.docx` 與 `meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf` 是客戶實際收到的版本,不改名。10/3 的簡報草稿與 SOW v3 PDF 已移除 | Mark |
+| 2026-10-25 | **10/26 客戶會議:**客戶審 Yudi 的 policy-0.1.3(他的提案);API v2 當作 Zhexuan 的提案展示;Anmol 的報告原樣給(他缺席),客戶頁面寫明是在託管 API 上跑、不是 VPC;Karina 的資料集在客戶確認分級表前維持 policy 0.1.1,並照她 README 的說法描述。報告順序:Yudi、Anmol,再來 Karina 與 Zhexuan | 2026-10-25 團隊會議(紀錄在 `meetings/team/2026-10-25/`) |
+| 2026-10-26 | **API v2 合併進 main,預設關閉**(PR #10,`ade699b`)。在聽客戶意見前先合併,讓團隊展示同一個版本;要不要設為預設仍是 A18 | v1 不變;v2 需要 `VG_TOKEN_KEYS`;128 個測試通過;審查後續見 B73 |

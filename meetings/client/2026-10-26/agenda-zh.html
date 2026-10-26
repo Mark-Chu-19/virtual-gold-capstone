@@ -163,7 +163,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   <li class="done"><span class="dt">10/5</span>期中簡報</li>
   <li class="done"><span class="dt">10/19</span>API contract 0.4.2 和服務骨架，含監控儀表板</li>
   <li class="done"><span class="dt">10/23</span>隱私元件進入服務：規則、Presidio、合併、評分、placeholder</li>
-  <li class="done"><span class="dt">10/26</span>對話金鑰和兩種加密模式進入服務（預設關閉，見下方提案）</li>
+  <li class="done"><span class="dt">10/26</span>對話金鑰和兩種加密模式進入服務（預設關閉，見 07 的提案）</li>
   <li class="now"><span class="dt">11/1</span>端到端流程，含失敗處理（模型 prompt 還在接）</li>
   <li><span class="dt">11/8</span>儀表板和壓力測試結果；Phase 1 結束</li>
   <li><span class="dt">11/2–15</span>Phase 2：串接 VG08；11/15 contract 凍結</li>
@@ -172,8 +172,19 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 </ol>
 
 <h2><span class="n">02</span>10/19 以來的進度</h2>
-<p class="lede">四條工作線的摘要，細節在 03 到 06。</p>
+<p class="lede">四條工作線的摘要，細節在 03 到 07。</p>
 <div class="grid2">
+  <div class="card">
+    <span class="owner">偵測 · Yudi</span>
+    <h3>規則和 Presidio</h3>
+    <div class="big">8 個修正</div>
+    <div class="cap">用外部標註資料集（ai4privacy）1,000 筆測試後修正</div>
+    <ul>
+      <li>email 100% 抓到；出生日期 83%、電話 75%、證件號碼 69%、姓名 68%</li>
+      <li>短代碼、財報季度、訂單號碼的誤判變少</li>
+      <li>新版分級表（policy 0.1.3）請客戶審</li>
+    </ul>
+  </div>
   <div class="card">
     <span class="owner">模型 · Anmol</span>
     <h3>模型評測</h3>
@@ -184,17 +195,6 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
       <li>GPT-OSS 120B 誤遮的公開文字最少（5–12%），但漏得比較多</li>
       <li>不用 LLM 的備案（規則 + Presidio + GLiNER）：29.4%，0.11 秒</li>
       <li>在託管的開源模型 API 上測試，還沒部署到 VPC。15 封信，涵蓋 15 個業務領域中的 4 個</li>
-    </ul>
-  </div>
-  <div class="card">
-    <span class="owner">偵測 · Yudi</span>
-    <h3>規則和 Presidio</h3>
-    <div class="big">8 個修正</div>
-    <div class="cap">用外部標註資料集（ai4privacy）1,000 筆測試後修正</div>
-    <ul>
-      <li>email 100% 抓到；出生日期 83%、電話 75%、證件號碼 69%、姓名 68%</li>
-      <li>短代碼、財報季度、訂單號碼的誤判變少</li>
-      <li>新版分級表（policy 0.1.3）請客戶審</li>
     </ul>
   </div>
   <div class="card">
@@ -310,8 +310,63 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   <p style="font-size:15px;margin-top:8px">個人資料的 tier 依照 NIST SP 800-122 的影響等級；健康和人口特徵依 GDPR 第 9 條列為 High。商業類別和 Public tier 是我們的提案，請客戶對照他們的資料分級確認。</p>
 </section>
 
+<section class="item soon" aria-labelledby="h5m">
+  <h2 id="h5m"><span class="n">05</span>模型評測</h2>
+  <div class="tags"><span class="tag">Anmol</span><span class="tag">10/25</span></div>
+  <p class="lede">修掉測試程式的六個缺陷後，在 10/19 用的同一批 15 封開發用信件上跑了 9 種新設定。全部用託管的開源模型 API 跑，服務還沒部署到 VPC。GPU 大小指的是自架時每個模型需要的硬體。完整報告在附件（<code>briefing-vpc-model-evaluation-en.md</code>）。</p>
+  <h3>主要結果</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>設定</th><th>自架需要的 GPU</th><th class="num">隱私文字外洩</th><th class="num">公開文字誤遮</th><th class="num">機密事實抓到</th><th class="num">每封秒數</th></tr></thead>
+    <tbody>
+      <tr><td>規則 + Presidio（不用模型）</td><td>不需要</td><td class="num">42.8%</td><td class="num">2.3%</td><td class="num">10 個中 0 個</td><td class="num">0.00</td></tr>
+      <tr><td>規則 + Presidio + GLiNER（不用 LLM）</td><td>1 GB 以下</td><td class="num">29.4%</td><td class="num">6.6%</td><td class="num">10 個中 0 個</td><td class="num">0.11</td></tr>
+      <tr><td>Llama 3.3 70B（10/19 對照）</td><td>80 GB</td><td class="num">16.2%</td><td class="num">18.5%</td><td class="num">10 個中 6 個</td><td class="num">40.8</td></tr>
+      <tr><td><b>Qwen 3.8 27B + GLiNER</b>（最好）</td><td>24–48 GB</td><td class="num"><b>7.4%</b></td><td class="num">21.7%</td><td class="num">10 個中 9 個</td><td class="num">2.4</td></tr>
+      <tr><td>Qwen 3.8 27B</td><td>24–48 GB</td><td class="num">11.7%</td><td class="num">18.3%</td><td class="num">10 個中 9 個</td><td class="num">1.8</td></tr>
+      <tr><td>Qwen 3.8 27B，再由 Safeguard 20B 檢查</td><td>24–48 GB</td><td class="num">14.0%</td><td class="num">14.7%</td><td class="num">10 個中 8 個</td><td class="num">1.8</td></tr>
+      <tr><td>GPT-OSS 120B</td><td>80 GB</td><td class="num">22.9%</td><td class="num">11.5%</td><td class="num">10 個中 4 個</td><td class="num">2.3</td></tr>
+      <tr><td>GPT-OSS 120B，單次處理</td><td>80 GB</td><td class="num">27.0%</td><td class="num">5.4%</td><td class="num">10 個中 3 個</td><td class="num">1.6</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="points" style="font-size:15px;margin-top:10px">
+    <li>最好的設定把 10/19 的外洩率減半，一張 24–48 GB GPU 就放得下。代價是公開文字誤遮比較多。</li>
+    <li>GPT-OSS 120B 誤遮最少，但漏得比較多，而且需要 80 GB GPU。</li>
+    <li>不用 LLM 的設定（規則 + Presidio + GLiNER）可以當模型無法使用時的備案。</li>
+    <li>限制：15 封信，涵蓋 15 個業務領域中的 4 個；速度來自託管 API，不是客戶的硬體；用較早版本的 tier 規則量的（見 Q2）。</li>
+  </ul>
+</section>
+
+<section class="item soon" aria-labelledby="h6d">
+  <h2 id="h6d"><span class="n">06</span>測試集：100 封信，1,054 個標註項目</h2>
+  <div class="tags"><span class="tag">Karina</span><span class="tag">baseline v1.1</span></div>
+  <p class="lede">還是原本那 100 封虛構的主管信件，重新整理成服務可以直接評分的格式。這也回答了 Aarvin 在期中問的「LLM 產生的標註怎麼能信」：標註由 LLM 提出，再由人逐筆檢查。</p>
+  <h3>改了什麼</h3>
+  <ul class="points">
+    <li><b>每封信都是一個服務請求。</b>可以直接送進 API；每個項目帶有服務自己的欄位位置、類別和 tier，結果不用轉換就能評分。</li>
+    <li><b>每個項目標成遮或保留。</b>共 1,054 個：1,006 個要遮、48 個保留。984 個和第一版一致，15 個改成保留（例如 <code>no-reply@</code> 信箱、公司公開的辦公室地址），新增 55 個（大多是機密事實裡的人名和金額）。</li>
+    <li><b>照目前的分級表（policy 0.1.1）標註。</b>如果客戶確認 0.1.3，再更新類別。</li>
+    <li><b>切分：</b>60 封用來開發，40 封保留給最後一次測試。</li>
+  </ul>
+  <h3>初步分數</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>偵測方式</th><th class="num">抓到的項目</th><th class="num">有東西外洩的信</th></tr></thead>
+    <tbody>
+      <tr><td>簡單的正規表示式（下限）</td><td class="num">40%</td><td class="num">96%</td></tr>
+      <tr><td>只用服務的規則</td><td class="num">66%</td><td class="num">87%</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:15px;margin-top:8px">規則抓到所有 email 和 79% 的人名，但銀行帳號、代號、健康資訊和編號一個都沒抓到。這部分要靠模型補。</p>
+  <h3>測試集對分級表的啟示</h3>
+  <ul class="points">
+    <li><b>86 個應該遮的項目落在 Low</b>：67 個公司名、12 個城市、6 個日期、1 個年齡。Low 單獨出現時會保留，所以就算模型很確定是隱私，這 86 個也全部會放行。最嚴重的是交易對象和出生日期。</li>
+    <li><b>39 個編號</b>（案件號、病歷號、訂單號）還沒有類別。預設會遮，所以不會外洩，但申報文件編號這類公開的會被誤遮。</li>
+    <li>100 封裡只有 4 封完全沒有要遮的東西，其他 96 封都有。</li>
+  </ul>
+  <p style="font-size:15px">這些都放進 Q1。</p>
+</section>
+
 <section class="item soon" aria-labelledby="h5d">
-  <h2 id="h5d"><span class="n">05</span>加密提案：對話金鑰，兩種模式</h2>
+  <h2 id="h5d"><span class="n">07</span>加密提案：對話金鑰，兩種模式</h2>
   <div class="tags"><span class="tag due">聽客戶看法：Q6</span><span class="tag">Zhexuan</span></div>
   <p class="lede">和現行 API 並存的第二版（v2）。兩種模式都已實作並放進服務，預設關閉，現行 API 不受影響。變成預設之前，想先聽客戶的看法。</p>
   <div class="grid2" style="margin-bottom:14px">
@@ -361,36 +416,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   </ul>
 </section>
 
-<section class="item soon" aria-labelledby="h6d">
-  <h2 id="h6d"><span class="n">06</span>測試集：100 封信，1,054 個標註項目</h2>
-  <div class="tags"><span class="tag">Karina</span><span class="tag">baseline v1.1</span></div>
-  <p class="lede">還是原本那 100 封虛構的主管信件，重新整理成服務可以直接評分的格式。這也回答了 Aarvin 在期中問的「LLM 產生的標註怎麼能信」：標註由 LLM 提出，再由人逐筆檢查。</p>
-  <h3>改了什麼</h3>
-  <ul class="points">
-    <li><b>每封信都是一個服務請求。</b>可以直接送進 API；每個項目帶有服務自己的欄位位置、類別和 tier，結果不用轉換就能評分。</li>
-    <li><b>每個項目標成遮或保留。</b>共 1,054 個：1,006 個要遮、48 個保留。984 個和第一版一致，15 個改成保留（例如 <code>no-reply@</code> 信箱、公司公開的辦公室地址），新增 55 個（大多是機密事實裡的人名和金額）。</li>
-    <li><b>照目前的分級表（policy 0.1.1）標註。</b>如果客戶確認 0.1.3，再更新類別。</li>
-    <li><b>切分：</b>60 封用來開發，40 封保留給最後一次測試。</li>
-  </ul>
-  <h3>初步分數</h3>
-  <div class="tablewrap"><table>
-    <thead><tr><th>偵測方式</th><th class="num">抓到的項目</th><th class="num">有東西外洩的信</th></tr></thead>
-    <tbody>
-      <tr><td>簡單的正規表示式（下限）</td><td class="num">40%</td><td class="num">96%</td></tr>
-      <tr><td>只用服務的規則</td><td class="num">66%</td><td class="num">87%</td></tr>
-    </tbody>
-  </table></div>
-  <p style="font-size:15px;margin-top:8px">規則抓到所有 email 和 79% 的人名，但銀行帳號、代號、健康資訊和編號一個都沒抓到。這部分要靠模型補。</p>
-  <h3>測試集對分級表的啟示</h3>
-  <ul class="points">
-    <li><b>86 個應該遮的項目落在 Low</b>：67 個公司名、12 個城市、6 個日期、1 個年齡。Low 單獨出現時會保留，所以就算模型很確定是隱私，這 86 個也全部會放行。最嚴重的是交易對象和出生日期。</li>
-    <li><b>39 個編號</b>（案件號、病歷號、訂單號）還沒有類別。預設會遮，所以不會外洩，但申報文件編號這類公開的會被誤遮。</li>
-    <li>100 封裡只有 4 封完全沒有要遮的東西，其他 96 封都有。</li>
-  </ul>
-  <p style="font-size:15px">這些都放進 Q1。</p>
-</section>
-
-<h2 style="margin-top:36px"><span class="n">07</span>需要客戶回答的問題</h2>
+<h2 style="margin-top:36px"><span class="n">08</span>需要客戶回答的問題</h2>
 <p class="lede">依照卡住我們的急迫程度排序。每題下面可以記錄答案。</p>
 
 <section class="item urgent" data-topic="Q1" data-title="分級表">
@@ -412,7 +438,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   <h2><span class="n">Q2</span>每個 tier 可接受多少外洩？</h2>
   <div class="tags"><span class="tag due">最後測試之前</span><span class="tag">D70</span></div>
   <p>這決定最後的門檻。流程凍結後，40 封保留的信只跑一次。在那之前需要目標：每個 tier 可以漏多少隱私文字、公開文字誤遮多少可以接受、每封信幾秒、模型失敗時該怎麼處理。</p>
-  <p style="font-size:15px;color:var(--muted)">02 的模型數字是用較早版本的 tier 規則量的。客戶確認分級表後我們會重跑，讓數字可以直接跟這些目標比。</p>
+  <p style="font-size:15px;color:var(--muted)">05 的模型數字是用較早版本的 tier 規則量的。客戶確認分級表後我們會重跑，讓數字可以直接跟這些目標比。</p>
   <div class="fill"><label for="n_Q2" class="k">答案</label><textarea id="n_Q2" data-save></textarea></div>
 </section>
 
@@ -439,7 +465,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
 
 <section class="item soon" data-topic="Q6" data-title="加密模式和 placeholder">
   <h2><span class="n">Q6</span>加密模式和 placeholder</h2>
-  <div class="tags"><span class="tag">A18</span><span class="tag">見 05</span><span class="tag">11/15 凍結前</span></div>
+  <div class="tags"><span class="tag">A18</span><span class="tag">見 07</span><span class="tag">11/15 凍結前</span></div>
   <ul class="points">
     <li>服務要完全不存原文（<code>aes_siv</code>），還是可以接受加密的伺服器對照表（<code>mapping</code>）？</li>
     <li>VG08 和 agent 需要看得到被拿掉的是哪一類（<code>[PERSON_1]</code>），還是看不出類別的 token（<code>[VG:2:…]</code>）也可以？</li>
@@ -456,7 +482,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
   <div class="fill"><label for="n_Q7" class="k">答案</label><textarea id="n_Q7" data-save></textarea></div>
 </section>
 
-<h2 style="margin-top:36px"><span class="n">08</span>接下來兩週</h2>
+<h2 style="margin-top:36px"><span class="n">09</span>接下來兩週</h2>
 <ul class="points" style="margin-bottom:30px">
   <li>把模型 prompt 接進服務；11/1 前第一次端到端跑通</li>
   <li>套用客戶確認的分級表，更新測試集的類別，在 60 封開發用信件上為服務評分</li>
