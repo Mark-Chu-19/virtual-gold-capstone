@@ -20,6 +20,7 @@
 | 2 | 兩套分級規則 | A19、D49 | Yudi 的表:4 級、22 類,Low 要 3 類以上同時出現才遮。Anmol 的程式:3 級,LOW 分數 ≥ 0.5 就遮。明天客戶審哪一套要先講好 |
 | 3 | Placeholder 格式 | A18 | Zhexuan 的 token 是長的 `[VG:2:…]`;Anmol 與期中簡報用 `[PERSON_1]`。雲端模型會不會把長 token 原樣傳回還沒測過(Zhexuan 的簡介也這麼註明) |
 | 4 | 連結打不開 | B72 | Anmol 報告的 24 個、Zhexuan 的 2 個 `file://` 連結都指向他們自己的電腦 |
+| 5 | Karina 的資料集 PR #9 | B46、A16、A19 | 標註仍是 Claude 提的草稿、等 Karina 複核:明天不要說資料是人工標註。Yudi 的分支(policy 0.1.3)把 `BANK_ACCOUNT` 改名為 `ACCOUNT_NUMBER` 並新增 `ADDRESS_PUBLIC`,資料集用的是 0.1.1 的類別:要講定合併順序。86 個應遮的片段(67 ORG、12 CITY、6 DATE、1 AGE)落在 Low 級,分數 0.9 也會放行(議題 2)。39 個 `ID_NUMBER` 片段在政策裡沒有類別。10 封「乾淨」的信只有 4 封真的乾淨 |
 
 B71(程式與 PR 放上 GitHub)等客戶會議之後再處理:三人會在客戶確認後才開 PR 或更新 PR。
 

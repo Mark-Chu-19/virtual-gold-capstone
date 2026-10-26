@@ -20,6 +20,7 @@ The Oct 26 materials are in `meetings/client/2026-10-26/`. Settle these before t
 | 2 | Two tier policies | A19, D49 | Yudi's table: 4 tiers, 22 categories, Low redacted only when 3+ low categories appear together. Anmol's harness: 3 tiers, LOW redacted at score ≥ 0.5. Pick which one the client reviews tomorrow |
 | 3 | Placeholder format | A18 | Zhexuan's tokens are long `[VG:2:…]`; Anmol and the deck use `[PERSON_1]`. Untested whether a cloud model returns long tokens intact (Zhexuan's briefing says so too) |
 | 4 | Broken links | B72 | 24 `file://` links in Anmol's report and 2 in Zhexuan's point to their own laptops |
+| 5 | Karina's dataset, PR #9 | B46, A16, A19 | The labels are still a draft proposed by Claude, pending Karina's review: do not call the dataset hand-labelled tomorrow. Yudi's branch (policy 0.1.3) renames `BANK_ACCOUNT` to `ACCOUNT_NUMBER` and adds `ADDRESS_PUBLIC`, while the dataset carries the 0.1.1 types: agree the merge order. 86 must-redact spans (67 ORG, 12 CITY, 6 DATE, 1 AGE) sit in the Low tier and are kept even at score 0.9 (topic 2). 39 `ID_NUMBER` spans have no type in the policy. Only 4 of the 10 "clean" emails are clean |
 
 B71 (code and PRs into GitHub) waits until after the client meeting: the three will open or update their PRs once the client has confirmed.
 
