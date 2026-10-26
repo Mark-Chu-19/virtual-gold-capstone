@@ -32,16 +32,21 @@ def email_to_dict(email: EmailIn) -> dict:
     return email.model_dump(by_alias=True, exclude_none=True)
 
 
-def set_field(email_dict: dict, path: str, value: str) -> None:
-    """Write `value` into the dict form of an email at a path like email.to[0].name."""
+def set_field(email_dict: dict | EmailIn, path: str, value: str) -> None:
+    """Write into an email dict or an already validated model, preserving original offsets."""
+    def get(obj, key):
+        return obj[key] if isinstance(obj, dict) else getattr(obj, "from_" if key == "from" else key)
+
     parts = path.split(".")[1:]  # drop the leading "email"
     cur = email_dict
     for part in parts[:-1]:
         m = _IDX.match(part)
-        cur = cur[m.group(1)][int(m.group(2))] if m else cur[part]
+        cur = get(cur, m.group(1))[int(m.group(2))] if m else get(cur, part)
     last = parts[-1]
     m = _IDX.match(last)
     if m:
-        cur[m.group(1)][int(m.group(2))] = value
-    else:
+        get(cur, m.group(1))[int(m.group(2))] = value
+    elif isinstance(cur, dict):
         cur[last] = value
+    else:
+        setattr(cur, "from_" if last == "from" else last, value)
