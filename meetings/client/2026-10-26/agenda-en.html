@@ -296,33 +296,33 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
     </tbody>
   </table></div>
   <p style="font-size:15px;margin-top:8px">Always redacted, whatever the score: your term list, words a request marks as forbidden, and items the model cannot classify. All thresholds are starting values, tuned later on the test set.</p>
-  <h3>Categories and which detector finds them</h3>
-  <p style="font-size:15px">Three detectors run on every email and their results are merged. The local model looks for all 22 categories; pattern rules and Presidio (an open-source PII toolkit) also catch the fixed-format ones. 8 categories are found by the model only.</p>
+  <h3>Categories</h3>
+  <p style="font-size:15px">Three detectors run on every email and their results are merged: the local model, pattern rules and Presidio (an open-source PII toolkit).</p>
   <div class="tablewrap"><table>
-    <thead><tr><th>Category</th><th>Tier</th><th>Examples</th><th>Also found by</th></tr></thead>
+    <thead><tr><th>Category</th><th>Tier</th><th>Examples</th></tr></thead>
     <tbody>
-      <tr><td><code>GOV_ID</code></td><td>High</td><td>SSN, passport, driver's licence, ITIN</td><td>Rules (SSN format), Presidio</td></tr>
-      <tr><td><code>CREDENTIAL</code></td><td>High</td><td>Passwords, API keys, access tokens</td><td><i>Model only</i></td></tr>
-      <tr><td><code>CARD_NUMBER</code></td><td>High</td><td>Payment card numbers</td><td>Rules (checksum-validated), Presidio</td></tr>
-      <tr><td><code>ACCOUNT_NUMBER</code></td><td>High</td><td>Bank, brokerage and client account numbers, IBAN, crypto wallets, other long numeric IDs</td><td>Presidio</td></tr>
-      <tr><td><code>HEALTH</code></td><td>High</td><td>Diagnoses, treatments, medical leave</td><td><i>Model only</i></td></tr>
-      <tr><td><code>BUSINESS_CONFIDENTIAL</code></td><td>High</td><td>Unreleased financials, deal terms, legal matters</td><td><i>Model only</i></td></tr>
-      <tr><td><code>CODENAME</code></td><td>High</td><td>Project and deal code names, counterparties</td><td>Rules (your term list)</td></tr>
-      <tr><td><code>DEMOGRAPHIC</code></td><td>High</td><td>Nationality, religion, political affiliation</td><td>Presidio</td></tr>
-      <tr><td><code>PERSON</code></td><td>Medium</td><td>Names of people</td><td>Rules (header names, sign-off names), Presidio</td></tr>
-      <tr><td><code>PHONE_PERSONAL</code></td><td>Medium</td><td>Personal phone numbers and extensions</td><td>Rules, Presidio</td></tr>
-      <tr><td><code>EMAIL_PERSONAL</code></td><td>Medium</td><td>Personal email addresses</td><td>Rules, Presidio</td></tr>
-      <tr><td><code>ADDRESS_HOME</code></td><td>Medium</td><td>Street addresses, PO boxes</td><td>Rules (US formats)</td></tr>
-      <tr><td><code>NETWORK_ID</code></td><td>Medium</td><td>IP and MAC addresses</td><td>Presidio</td></tr>
-      <tr><td><code>AMOUNT</code></td><td>Medium</td><td>Money amounts ($4.2M, USD 500k)</td><td>Rules</td></tr>
-      <tr><td><code>CITY</code></td><td>Low</td><td>Cities, countries</td><td>Presidio</td></tr>
-      <tr><td><code>DATE</code></td><td>Low</td><td>Dates and times</td><td>Presidio</td></tr>
-      <tr><td><code>ORG</code></td><td>Low</td><td>Company and organisation names</td><td><i>Model only</i></td></tr>
-      <tr><td><code>AGE</code></td><td>Low</td><td>"age 42", "42-year-old"</td><td>Rules, Presidio</td></tr>
-      <tr><td><code>GENDER</code></td><td>Low</td><td>Gender</td><td><i>Model only</i></td></tr>
-      <tr><td><code>PHONE_PUBLIC</code></td><td>Public</td><td>Company switchboard, support lines</td><td><i>Model only</i></td></tr>
-      <tr><td><code>EMAIL_PUBLIC</code></td><td>Public</td><td>info@, support@ mailboxes</td><td><i>Model only</i></td></tr>
-      <tr><td><code>ADDRESS_PUBLIC</code></td><td>Public</td><td>Publicly listed office and business addresses</td><td><i>Model only</i></td></tr>
+      <tr><td><code>GOV_ID</code></td><td>High</td><td>SSN, passport, driver's licence, ITIN</td></tr>
+      <tr><td><code>CREDENTIAL</code></td><td>High</td><td>Passwords, API keys, access tokens</td></tr>
+      <tr><td><code>CARD_NUMBER</code></td><td>High</td><td>Payment card numbers</td></tr>
+      <tr><td><code>ACCOUNT_NUMBER</code></td><td>High</td><td>Bank, brokerage and client account numbers, IBAN, crypto wallets, other long numeric IDs</td></tr>
+      <tr><td><code>HEALTH</code></td><td>High</td><td>Diagnoses, treatments, medical leave</td></tr>
+      <tr><td><code>BUSINESS_CONFIDENTIAL</code></td><td>High</td><td>Unreleased financials, deal terms, legal matters</td></tr>
+      <tr><td><code>CODENAME</code></td><td>High</td><td>Project and deal code names, counterparties</td></tr>
+      <tr><td><code>DEMOGRAPHIC</code></td><td>High</td><td>Nationality, religion, political affiliation</td></tr>
+      <tr><td><code>PERSON</code></td><td>Medium</td><td>Names of people</td></tr>
+      <tr><td><code>PHONE_PERSONAL</code></td><td>Medium</td><td>Personal phone numbers and extensions</td></tr>
+      <tr><td><code>EMAIL_PERSONAL</code></td><td>Medium</td><td>Personal email addresses</td></tr>
+      <tr><td><code>ADDRESS_HOME</code></td><td>Medium</td><td>Street addresses, PO boxes</td></tr>
+      <tr><td><code>NETWORK_ID</code></td><td>Medium</td><td>IP and MAC addresses</td></tr>
+      <tr><td><code>AMOUNT</code></td><td>Medium</td><td>Money amounts ($4.2M, USD 500k)</td></tr>
+      <tr><td><code>CITY</code></td><td>Low</td><td>Cities, countries</td></tr>
+      <tr><td><code>DATE</code></td><td>Low</td><td>Dates and times</td></tr>
+      <tr><td><code>ORG</code></td><td>Low</td><td>Company and organisation names</td></tr>
+      <tr><td><code>AGE</code></td><td>Low</td><td>"age 42", "42-year-old"</td></tr>
+      <tr><td><code>GENDER</code></td><td>Low</td><td>Gender</td></tr>
+      <tr><td><code>PHONE_PUBLIC</code></td><td>Public</td><td>Company switchboard, support lines</td></tr>
+      <tr><td><code>EMAIL_PUBLIC</code></td><td>Public</td><td>info@, support@ mailboxes</td></tr>
+      <tr><td><code>ADDRESS_PUBLIC</code></td><td>Public</td><td>Publicly listed office and business addresses</td></tr>
     </tbody>
   </table></div>
   <p style="font-size:15px;margin-top:8px">Personal-data tiers follow NIST SP 800-122 impact levels; health and demographic data are High per GDPR Art. 9.</p>
