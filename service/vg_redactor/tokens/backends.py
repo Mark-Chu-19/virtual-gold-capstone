@@ -20,7 +20,8 @@ class Encoded:
 class TokenBackend(Protocol):
     def encode(self, parsed: Parsed, principal: Principal, raw: bytes, material=None) -> Encoded: ...
     def reference(self, parsed: Parsed, principal: Principal, material=None) -> str | None: ...
-    def decode(self, parsed: Parsed, principal: Principal, stored_value: str | None = None, material=None) -> str: ...
+    def decode(self, parsed: Parsed, principal: Principal, stored_value: str | None = None,
+               material=None, *, verified_reference: str | None = None) -> str: ...
 
 
 class AesSivBackend:
@@ -35,7 +36,7 @@ class AesSivBackend:
     def reference(self, parsed, principal, material=None):
         return None
 
-    def decode(self, parsed, principal, stored_value=None, material=None):
+    def decode(self, parsed, principal, stored_value=None, material=None, *, verified_reference=None):
         svc = self.service
         return AESSIV(svc.encryption_key(parsed, material)).decrypt(
             unb64(parsed.payload), [svc._header(parsed, principal)]).decode('utf-8')
@@ -66,10 +67,13 @@ class MappingBackend:
             raise ValueError('Invalid signature')
         return reference
 
-    def decode(self, parsed, principal, stored_value=None, material=None):
+    def decode(self, parsed, principal, stored_value=None, material=None, *, verified_reference=None):
         if stored_value is None:
             raise ValueError('Mapping missing')
         svc = self.service
-        reference = self.reference(parsed, principal, material)
+        # Restore already authenticates references before querying storage. Standalone calls
+        # still verify the token unless an authenticated reference is explicitly supplied.
+        reference = (verified_reference if verified_reference is not None else
+                     self.reference(parsed, principal, material))
         return AESSIV(svc.encryption_key(parsed, material)).decrypt(
             unb64(stored_value), [svc._mapping_aad(parsed, principal, reference)]).decode('utf-8')

@@ -163,7 +163,7 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
         ticket = None
         try:
             async with asyncio.timeout(settings.timeout_ms / 1000):
-                await context.prepare()
+                await context.check_available()
                 ticket, cached = await idempotency.begin(
                     request.headers.get("idempotency-key"), request.state.principal, req, mode,
                     request.state.request_id, math.ceil(settings.timeout_ms / 1000) + 10)

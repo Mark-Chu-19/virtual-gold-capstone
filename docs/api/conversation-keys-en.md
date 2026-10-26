@@ -43,6 +43,11 @@ tokenization:
   conversation_tombstone_seconds: 86400
 ```
 
+For a new group, creation is deferred until detection and assessment finish and token issuance
+starts, so model processing does not consume the first idle TTL. Existing active groups are
+renewed before processing, including their mapping retention. Closed or expired groups still
+fail before processing. Mapping publication reconciles concurrent extensions before returning.
+
 The response's `expires_at` is a snapshot of that shared deadline and may be extended later.
 It applies to the conversation, not to immutable individual tokens. AES-SIV activity also
 extends existing mapping retention so mixed-backend conversations remain recoverable.

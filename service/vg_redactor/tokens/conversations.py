@@ -156,6 +156,18 @@ class ConversationKeyManager:
             candidate = self._candidate(principal, group, ttl)
             raw = await self._io(self.store.ensure, principal.tenant_id, group, candidate['scope'],
                                  serialize(candidate), self._retain_until(candidate))
+        return await self._open_group(principal, group, raw, ttl=ttl)
+
+    async def check_available(self, principal, group, ttl):
+        """Renew an existing active group, but defer creation until token issuance."""
+        if '*' not in principal.groups and group not in principal.groups:
+            raise ProblemError(403, 'group-forbidden', 'Group access denied')
+        raw = await self._io(self.store.find, principal.tenant_id, group)
+        if raw is not None:
+            return await self._open_group(principal, group, raw, ttl=ttl)
+        return None
+
+    async def _open_group(self, principal, group, raw, *, ttl=None):
         try:
             key = await self._open(principal, raw, ttl=ttl)
             if key.group_id != group:
@@ -165,9 +177,9 @@ class ConversationKeyManager:
             raise ProblemError(410, 'conversation-unavailable',
                                'Conversation is expired or closed; use a new group_id') from None
 
-    async def load(self, principal: Principal, scope: str, version: str) -> ConversationKey:
+    async def load(self, principal: Principal, scope: str, version: str, *, ttl=None) -> ConversationKey:
         raw = await self._io(self.store.get, principal.tenant_id, scope)
-        key = await self._open(principal, raw)
+        key = await self._open(principal, raw, ttl=ttl)
         if key.version != version or key.scope != scope:
             raise UnavailableConversation()
         return key

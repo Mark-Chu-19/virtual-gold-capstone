@@ -146,7 +146,8 @@ class TokenService:
                 values = await self.store.get(group, [reference for _, reference, _ in entries])
                 for (p, reference, material), value in zip(entries, values, strict=True):
                     try:
-                        originals[p.text] = self.backends[p.mode].decode(p, principal, value, material)
+                        originals[p.text] = self.backends[p.mode].decode(
+                            p, principal, value, material, verified_reference=reference)
                     except (ValueError, InvalidTag, UnicodeError):
                         invalid.add(p.text)
         except Exception:
@@ -161,14 +162,17 @@ class TokenService:
     def context(self, request, principal, mode, ttl):
         self.require_enabled()
         self.check_group(principal, request.group_id)
-        return TokenContext(self, request, principal, mode, int(self.clock()) + ttl, ttl)
+        return TokenContext(self, request, principal, mode, ttl)
 
     async def delete_group(self, principal, group):
         self.require_enabled()
         self.check_group(principal, group)
+        scope = await self.conversations.scope_for_group(principal, group)
+        await self._delete_mappings(principal, group, scope)
+
+    async def _delete_mappings(self, principal, group, scope):
         groups = [self._storage_group(principal, kid, self.scope(principal, group, kid))
                   for kid in self.keys]
-        scope = await self.conversations.scope_for_group(principal, group)
         if scope:
             groups.append(self._storage_group(principal, 'conversation-1', scope))
         try:
@@ -179,8 +183,8 @@ class TokenService:
     async def close_conversation(self, principal, group):
         self.require_enabled()
         self.check_group(principal, group)
-        await self.conversations.close(principal, group)
-        await self.delete_group(principal, group)
+        scope = await self.conversations.close(principal, group)
+        await self._delete_mappings(principal, group, scope)
 
     async def validate_cached(self, body, principal):
         # A replay must not bypass closure/expiry of any conversation represented in its tokens.
@@ -200,14 +204,34 @@ class TokenContext:
     request: RedactionRequestV2
     principal: Principal
     mode: Mode
-    expires: int
     ttl: int
     key: ConversationKey | None = field(default=None, repr=False)
 
-    async def prepare(self):
-        self.key = await self.service.conversations.get_or_create(
+    @property
+    def expires(self):
+        if self.key is None:
+            raise RuntimeError('Conversation has not been prepared')
+        return self.key.expires_at
+
+    async def check_available(self):
+        self.key = await self.service.conversations.check_available(
             self.principal, self.request.group_id, self.ttl)
-        self.expires = self.key.expires_at
+        if self.key is not None:
+            await self._retain_mappings()
+
+    async def prepare(self):
+        if self.key is None:
+            self.key = await self.service.conversations.get_or_create(
+                self.principal, self.request.group_id, self.ttl)
+        else:
+            try:
+                self.key = await self.service.conversations.load(
+                    self.principal, self.key.scope, self.key.version, ttl=self.ttl)
+            except UnavailableConversation:
+                raise ProblemError(410, 'conversation-unavailable', 'Conversation expired or closed') from None
+        await self._retain_mappings()
+
+    async def _retain_mappings(self):
         try:
             await self.service.store.touch(self.service._storage_group(
                 self.principal, 'conversation-' + self.key.version, self.key.scope), self.expires)
@@ -254,17 +278,28 @@ class TokenContext:
                 mapping[encoded.reference] = encoded.stored_value
             token = f'[VG:2:{mode}:{c.type}:{scope}:{kid}:{payload}]'
             replacements.append((c.field, c.start, c.end, token))
-        # Publish all mapping entries atomically, before returning any tokens.
-        if mapping:
+        # Publish atomically and reconcile concurrent deadline extensions. Rewrite rather
+        # than just touch: a delayed first write may already have expired at its old deadline.
+        for _ in range(16):
+            published_expiry = self.expires
+            if mapping:
+                try:
+                    await svc.store.put(svc._storage_group(principal, 'conversation-' + kid, scope),
+                                        mapping, published_expiry)
+                except Exception:
+                    raise ProblemError(503, 'mapping-store-unavailable', 'Mapping storage unavailable') from None
+            # Closure during storage work must not issue tokens, including after a retry.
             try:
-                await svc.store.put(svc._storage_group(principal, 'conversation-' + kid, scope), mapping, self.expires)
-            except Exception:
-                raise ProblemError(503, 'mapping-store-unavailable', 'Mapping storage unavailable') from None
-        # Recheck after publishing mappings: closure during storage work must not issue tokens.
-        try:
-            await svc.conversations.load(principal, scope, kid)
-        except UnavailableConversation:
-            raise ProblemError(410, 'conversation-unavailable', 'Conversation expired or closed') from None
+                self.key = await svc.conversations.load(principal, scope, kid)
+            except UnavailableConversation:
+                raise ProblemError(410, 'conversation-unavailable', 'Conversation expired or closed') from None
+            if not mapping:
+                await self._retain_mappings()
+                break
+            if self.expires == published_expiry:
+                break
+        else:
+            raise ProblemError(503, 'conversation-busy', 'Conversation deadline update contention')
         for path, start, end, token in sorted(replacements, key=lambda r: (r[0], -r[1])):
             output[path] = output[path][:start] + token + output[path][end:]
         email = email_to_dict(req.email)

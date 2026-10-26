@@ -320,6 +320,105 @@ async def test_aes_extension_also_retains_existing_mapping_entries():
     assert (await svc.restore(token, Principal('tenant1'))).restore_decision == 'RESTORED'
 
 
+@pytest.mark.parametrize('adapter', ['memory', 'redis'])
+@pytest.mark.parametrize('delayed_past_deadline', [False, True])
+async def test_first_mapping_write_keeps_concurrent_aes_extension(adapter, delayed_past_deadline, monkeypatch):
+    start = int(time.time())
+    now = [start]
+    monkeypatch.setattr(time, 'time', lambda: now[0])
+    client = fakeredis.aioredis.FakeRedis(decode_responses=True) if adapter == 'redis' else None
+    store = RedisMappingStore('', client=client) if client is not None else MemoryMappingStore()
+    svc = service(store, clock=lambda: now[0])
+    entered, release = asyncio.Event(), asyncio.Event()
+    put = store.put
+
+    async def paused_put(*args):
+        entered.set()
+        await release.wait()
+        await put(*args)
+
+    monkeypatch.setattr(store, 'put', paused_put)
+    pending = asyncio.create_task(render(svc, mode='mapping', ttl=60))
+    try:
+        await asyncio.wait_for(entered.wait(), 1)
+        aes, extended = await render(svc, mode='aes_siv', ttl=120)
+        if delayed_past_deadline:
+            now[0] = start + 61
+    finally:
+        release.set()
+    try:
+        mapping, context = await pending
+        assert context.expires == extended.expires
+        now[0] = start + 61
+        for token in (mapping, aes):
+            outcome = await svc.restore(token, Principal('tenant1'))
+            assert outcome.restored_text == '202-555-0102'
+        now[0] += 60
+        assert (await svc.restore(mapping, Principal('tenant1'))).restore_decision == 'BLOCKED'
+    finally:
+        if client is not None:
+            await client.aclose()
+
+
+@pytest.mark.parametrize('mode', ['mapping', 'aes_siv'])
+async def test_first_request_short_ttl_starts_after_detection(settings, components, model, mode):
+    now = [int(time.time())]
+    app = create_app(configure(settings), components, model)
+    app.state.tokens.clock = lambda: now[0]
+    generate = model.generate
+    observed_records = []
+
+    async def slow_model(*args, **kwargs):
+        # Model processing takes longer than the requested idle TTL. No key should yet exist.
+        observed_records.append(await app.state.tokens.conversations.store.find('tenant1', 'workflow1'))
+        now[0] += 2
+        return await generate(*args, **kwargs)
+
+    model.generate = slow_model
+    request = body(mode, tokenization={'mode': mode, 'ttl_seconds': 1})
+    async with client_for(app) as client:
+        result = await client.post('/v2/redactions', json=request,
+                                   headers={'Idempotency-Key': 'short-ttl'})
+        assert result.status_code == 200, result.text
+        assert not result.json()['degraded']
+        assert observed_records == [None, None]
+        assert result.json()['tokenization']['expires_at'] == now[0] + 1
+        text = result.json()['redacted_email']['body']
+        restored = await client.post('/v2/restorations', json={'text': text})
+        assert restored.json()['restored_text'] == request['email']['body']
+        replay = await client.post('/v2/redactions', json=request,
+                                   headers={'Idempotency-Key': 'short-ttl'})
+        assert replay.status_code == 200 and replay.headers['Idempotency-Replayed'] == 'true'
+        now[0] += 1
+        assert (await client.post('/v2/restorations', json={'text': text})).json()['restore_decision'] == 'BLOCKED'
+        # The fix must not revive a genuinely expired conversation.
+        assert (await client.post('/v2/redactions', json=body(mode))).status_code == 410
+
+
+async def test_existing_mapping_is_retained_during_model_processing(settings, components, model, monkeypatch):
+    now = [int(time.time())]
+    monkeypatch.setattr(time, 'time', lambda: now[0])
+    app = create_app(configure(settings), components, model)
+    app.state.tokens.clock = lambda: now[0]
+    async with client_for(app) as client:
+        initial = await client.post('/v2/redactions', json=body(
+            'mapping', tokenization={'mode': 'mapping', 'ttl_seconds': 10}))
+        assert initial.status_code == 200
+        text = initial.json()['redacted_email']['body']
+        now[0] += 9
+        generate = model.generate
+
+        async def slow_model(*args, **kwargs):
+            now[0] += 2
+            return await generate(*args, **kwargs)
+
+        model.generate = slow_model
+        result = await client.post('/v2/redactions', json=body(
+            'aes_siv', tokenization={'mode': 'aes_siv', 'ttl_seconds': 60}))
+        assert result.status_code == 200, result.text
+        assert (await client.post('/v2/restorations', json={'text': text})).json()['restored_text'] == body()['email']['body']
+
+
 async def test_explicit_rewrap_does_not_extend_deadline():
     start = int(time.time()); now = [start]
     store = MemoryMappingStore(); svc = service(store, clock=lambda: now[0])
