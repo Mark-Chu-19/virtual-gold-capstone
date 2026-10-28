@@ -3,7 +3,7 @@
 The same 100 fictional executive emails as v1, with three changes:
 
 1. **Each email is also a service request.** A `request` object validates against `RedactionRequest` in `service/vg_redactor/contracts/types.py` (contract 0.4.2), so it can go straight to `/v1/redactions`.
-2. **Each span carries the service's own coordinates and types.** `field`, `field_start` and `field_end` follow the contract's FieldPath. `service_type` and `tier` follow `service/config/policy.yaml` 0.1.1.
+2. **Each span carries the service's own coordinates and types.** `field`, `field_start` and `field_end` follow the contract's FieldPath. `service_type` and `tier` follow `service/config/policy.yaml` 0.1.3.
 3. **A `ground_truth` column, reviewed by hand.** Each span is `redact` or `retain`. This answers Aarvin's question from the Oct 5 midterm about how we can trust LLM-generated labels: a person checks every label.
 
 **Status: draft until Karina's review is done.** Claude proposed the ground truth on Oct 24. Karina checks every row in `baseline_v1.1_review.xlsx`. Every email has `gt_status: "draft: proposed by Claude, pending Karina's review"`, and that status should only change once the review is finished.
@@ -39,7 +39,7 @@ The original v1 labels are kept inside v1.1 (`type` and `must_mask` on every spa
     "type": "FIN_ACCOUNT", "must_mask": true,
     "ground_truth": "redact", "gt_note": "",
     "field": "email.body", "field_start": 261, "field_end": 275,
-    "service_type": "BANK_ACCOUNT", "tier": "high", "in_policy": true,
+    "service_type": "ACCOUNT_NUMBER", "tier": "high", "in_policy": true,
     "source": "v1"
   }]
 }
@@ -90,7 +90,7 @@ Three role mailboxes stay `redact` because they do reveal something private: out
 2. **The v1 README overstates its negative controls.** It says ten emails have nothing that must be masked. Only four are fully clean (E007, E023, E052, E095). The other six (E014, E031, E045, E059, E071, E085) still contain recipient names or addresses. They are still useful for measuring over-masking, but the claim should change.
 3. **86 must-redact spans fall in the Low tier**: 67 ORG, 12 CITY, 6 DATE and 1 AGE. `decide()` keeps a Low-tier item unless 3 different Low-tier types appear in the same field. Running the real `decide()` on these spans, with the model fully confident they are private (score 0.9), all 86 are still kept (`isolated_low_tier`), so the service would let every one of them through. The worst cases are dates of birth (DOB maps to DATE) and deal counterparties (ORG). Counterparties belong in the client's term list (TODO D49). DOB likely needs its own Medium or High type. This is a policy decision for the team.
 4. **40 spans have no type in policy.yaml**: 39 ID_NUMBER (case numbers, medical record numbers, order numbers) and 1 plain URL. They are marked `in_policy: false`. The service already handles unknown types safely: `Policy.tier_of()` calls them High and `decide()` redacts them (`cannot_classify_default_redact`), so `tier` says `high`. The 5 ID_NUMBER spans marked `retain` (public filing and SKU numbers) will be over-redacted until ID_NUMBER gets a real tier. URLs that contain a token, key or password map to CREDENTIAL.
-5. **Contract mismatches.** 0.4.2 has no `bcc`, so E043's Bcc address is placed in `cc`. List recipients with no address ("All Employees") are dropped, which affects 7 emails, none with labels. Business addresses map to ADDRESS_HOME because there is no business-address type. Quoted and forwarded text stays in `email.body` (E003, E099), the way a raw email arrives. Splitting it out is the segmentation step's job.
+5. **Contract mismatches.** 0.4.2 has no `bcc`, so E043's Bcc address is placed in `cc`. List recipients with no address ("All Employees") are dropped, which affects 7 emails, none with labels. Policy 0.1.3 adds ADDRESS_PUBLIC, so the employer's own bill-to address in E006 is ADDRESS_PUBLIC. Office addresses that are private in context (E073 clinic location, E086 unannounced HQ lease) stay ADDRESS_HOME with ground truth redact. Quoted and forwarded text stays in `email.body` (E003, E099), the way a raw email arrives. Splitting it out is the segmentation step's job.
 6. **Regex floor scores moved slightly.** Against the v1.1 ground truth: recall 0.40, leak rate 96%, fact recall 0.00. By tier, 32% of emails leak a High-tier span, 96% leak a Medium-tier span and 50% leak a Low-tier span. `--truth must_mask` reproduces the v1 recall and leak rate exactly. `extra_masks` drops from 12 to 5, because some of the regex's "extra" masks now land on spans added in review.
 
 7. **The team's rules detector needs a fix (for Yudi).** `rules.py` takes every header display name as a person, and `NON_PERSON_WORDS` misses many mailbox names. "Concur Expense", "Benefits Center", "Ethics Hotline", "SEC Filing Alerts", "Google Calendar", "FDIC Updates", "BGE Billing" and similar names get flagged as PERSON, and so do their parts elsewhere in the text ("Expense", "Treasury", "FDIC"). That accounts for 30 of the 31 extra masks below. Adding words like alerts, updates, billing, center, hotline, calendar, workflow, screening, escalations and insights to `NON_PERSON_WORDS` would fix most of them.
