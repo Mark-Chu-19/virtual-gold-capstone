@@ -19,7 +19,7 @@
 | 1 | 還原設計 | A18、B76、B77 | 客戶:由伺服器產生識別碼並回傳,客戶還原時送回。團隊:名稱 **Session Hash ID**、**每個請求一個**、由伺服器建立、`mapping` 模式;Zhexuan 10/30 前完成,Anmol 把流程圖寄給 Aarvin。「每個請求」和名稱裡的「Session」由 Anmol 與 Zhexuan 對齊 |
 | 2 | 整合 | B41、B43、B78、D51 | 客戶希望 Nov 2。團隊:**Nov 2 只做合約測試,完整整合 Nov 9**。prompt 搬進服務、部署與選模型,都等 Anmol 向 CMU 申請的運算資源 |
 | 3 | 分級表 | A19、B71、D49 | **客戶核准 0.1.3。**PR #11 於 2026-10-28 合併(`6b1f3c7`):main 是 policy 0.1.3。8 項偵測修正留在 `feat/privacy-detection-fixes`,在 60 封開發信驗證後再合併。商業類別:在 Slack 提議。Q1 細節沒討論,Nov 2 再問客戶 |
-| 4 | Karina 的資料集 | B46、B74 | 依 2026-10-28 PR #9 的留言改成 0.1.3(11 個 `ACCOUNT_NUMBER`、1 個 `ADDRESS_PUBLIC`、README)。40 個 `ID_NUMBER`/`URL` 維持 `in_policy: false`、`tier: high` |
+| 4 | Karina 的資料集 | B46、B74 | 依 PR #9 的留言改成 0.1.3,審查後 **2026-10-29 合併(`a0d8e71`)**:1,058 個項目(1,009 遮、49 保留),每一列 Karina check 都是 OK。39 個 `ID_NUMBER`/`URL` 維持 `in_policy: false`、`tier: high` |
 | 5 | Mark | B79 | Slack 摘要(含 Gemini 的更正);修訂時程;Nov 2 要問的問題 |
 
 ## 2026-10-25(週日)團隊會議:結論
@@ -86,7 +86,7 @@
 | 43 | M4:VG08 整合(Phase 2,11/2–11/15);contract 凍結。需要 A14、A15 與 D52 **10/27:**Nov 2 只做合約測試;接上客戶 agent 的完整整合改到 Nov 9 | Zhexuan、Mark | 2026-11-15 | [ ] |
 | 44 | M5:程式凍結(軟凍結 11/18) | 全員 | 2026-11-22 | [ ] |
 | 45 | M6:期末報告 | Mark | 2026-11-30 | [ ] |
-| 46 | **評測資料集放進 repo**(`data/`):100 封虛構信件、999 個標註項目、18 種類型,JSONL 格式如第 41 頁。尚未 commit。內容是虛構的,符合「不放真實資料」的規則。**PR #9(Karina,2026-10-25 開)**把它放進 `data/baseline/baseline_v1.1.jsonl`,附複核工作表與 `score.py`;待審 **10/25 團隊會議:**刻意用 policy 0.1.1,不用等 Yudi 的分支。Karina 說已複核完,PR 裡還看不到(B74) **10/28:**main 是 0.1.3;依 PR #9 留言改標(11 個 `BANK_ACCOUNT` → `ACCOUNT_NUMBER`、雇主帳單地址 → `ADDRESS_PUBLIC`、README);`ID_NUMBER`/`URL` 不變 | Karina | | [ ] |
+| 46 | **評測資料集放進 repo**(`data/`):100 封虛構信件、999 個標註項目、18 種類型,JSONL 格式如第 41 頁。尚未 commit。內容是虛構的,符合「不放真實資料」的規則。**PR #9(Karina,2026-10-25 開)**把它放進 `data/baseline/baseline_v1.1.jsonl`,附複核工作表與 `score.py`;待審 **10/25 團隊會議:**刻意用 policy 0.1.1,不用等 Yudi 的分支。Karina 說已複核完,PR 裡還看不到(B74) **10/28:**main 是 0.1.3;依 PR #9 留言改標(11 個 `BANK_ACCOUNT` → `ACCOUNT_NUMBER`、雇主帳單地址 → `ADDRESS_PUBLIC`、README);`ID_NUMBER`/`URL` 不變 **2026-10-29 完成:**PR #9 合併(`a0d8e71`)。`data/baseline/baseline_v1.1.jsonl` 用 policy 0.1.3:1,058 個項目(1,009 遮、49 保留),87 個 Low 層要遮,39 個沒有類別。用來驗證 Yudi 的修正和 Anmol 的模型 | Karina | | [x] |
 | 47 | **先 baseline,再做消融**(第 19 頁):Rescriber 式 baseline → 加偵測器聯集 → 加名字擴散 → 加重複執行 → 加分級門檻。在一個子集上調,在保留子集上報告。主要指標是各等級的洩漏率;另外追蹤過度遮蔽、校正、每封信秒數。10/19:在 60 封開發用信件上調,在保留的 40 封上報告(A16)。Phase 1 為 10/26–11/8(第 45 頁) | Karina | 2026-11-08 | [ ] |
 | 48 | **架構文件 v0.4。**`docs/architecture/` 仍是 v0.3,也就是轉向前的混合架構。v0.4 寫好之前,以簡報(第 13、14、22–33 頁)與 `docs/api/` 為架構依據 | Mark | | [ ] |
 | 64 | **更新 `docs/api/`**(Zhexuan 的檔案)。(1)`service-interfaces-v0.4.2-zh.md` 還是動工前的計畫:引用 0.4.1、`development-schedule.md`、`protocols.py`、`pseudonym.py`、`structlog`,這些都不存在,英文版卻稱它為「原版」。(2)兩份都沒提到 `service/vg_redactor/privacy/`(PR #8);英文版還寫「Owners are not confirmed yet」。(3)`redaction-api-report-en-v0.4.2.md` 把語言放在版本前面,和其他檔案不一致。(4)contract 沒有中文版。(5)其中 session 保留的描述寫在 PR #8 之前,PR #8 存的是 HMAC 金鑰而非原始值(Zhexuan 自己 10/19 報告第 5 頁也提到) | Zhexuan | | [ ] |
@@ -95,7 +95,7 @@
 | 71 | **把 10/26 簡介背後的程式放上 GitHub。**(1)Zhexuan:推上 `c706bb6`,並為 `fix/update-api-infra` 開 PR(A18)。(2)Yudi:為 `feat/privacy-detection-fixes`(`d9cdf67`)開 PR;簡介寫「PR #9」,但 #9 已是 Karina 的資料集 PR。(3)Anmol:他的 harness(`benchmarks/2026-10-05-followup/`、prompts、calibration profile v1.4.0)不在任何分支上;報告裡 24 個連結都指向 `file:///Users/anmolsahu2k/…`。**等 10/26 客戶會議之後:**三人在客戶確認後才開 PR 或更新 PR **10/26:**(1)完成,PR #10 已合併為 `ade699b`。(2)(3)仍等客戶 **10/28:**(1)已由 PR #10 完成。(2)Yudi 拆開了:分級表以 PR #11 合併;8 項修正留在分支,在 60 封開發信驗證後再合併 | Zhexuan、Yudi、Anmol | 2026-10-26 之後 | [ ] |
 | 72 | **會議前修正要給客戶看的檔案。**Anmol 的報告:把免費託管 API 的結果稱為「VPC 設定」,並把「客戶部署在 VPC」「處理任意企業文件」寫成既定事實(A15、D51 都還沒定);§7 提到透過教授申請的 $50 CMU OpenRouter 額度(D51 說不要向客戶提 CMU 管道);還有本機 `file://` 連結。Zhexuan 的簡介:指向 `docs/api/` 的本機 `file://` 連結;中文版是簡體 **10/25 團隊會議:**Anmol 缺席,報告原樣給;正確說法寫在客戶頁面。Zhexuan 連到的文件已隨 PR #10 進入 main | Anmol、Zhexuan | 2026-10-26 | [ ] |
 | 73 | **PR #10 後續**(2026-10-26 審查)。(1)用真實信件示範前要修:`wire.py:11`(`CANDIDATE`,不分大小寫的 `\[VG…`)與 `wire.py:14`(`LEGACY`,任何 `[Word_N]`)會把 `[VGA]`、`[Item_1]`、`[vgl. …]`、`VG:good` 這類一般文字當成 token,`/v2/redactions` 回 422、還原被擋。(2)Redis 掛掉時 `/readyz` 把整個服務報成 degraded,但 v1 不用 Redis。(3)idempotency 指紋是沒加鹽的 SHA-256,改用 HMAC。(4)刪掉用不到的格式 1 程式。(5)過長的 purpose 回 `invalid-token`,而不是長度錯誤 | Zhexuan | (1)真實信件示範前 | [ ] |
-| 74 | **把 Karina 的複核推進 PR #9。**她說每一列都看過了,但 PR 裡 `baseline_v1.1_review.xlsx` 的「Karina check」欄是空的(1,054 列),100 封信的 `gt_status` 都還是 `"draft: … pending Karina's review"`。填好欄位、更新 `gt_status`、push 到 `eval/benchmark-100`;之後審查並合併。在那之後才能說資料集經過人工複核 | Karina | | [ ] |
+| 74 | **把 Karina 的複核推進 PR #9。**她說每一列都看過了,但 PR 裡 `baseline_v1.1_review.xlsx` 的「Karina check」欄是空的(1,054 列),100 封信的 `gt_status` 都還是 `"draft: … pending Karina's review"`。填好欄位、更新 `gt_status`、push 到 `eval/benchmark-100`;之後審查並合併。在那之後才能說資料集經過人工複核 | Karina **2026-10-29 完成:**拿掉 `gt_status`(`ground_truth` 欄就是狀態);1,058 列 Karina check 都是 `OK`(`89ee71a`),README 改成已複核 | | [x] |
 | 75 | **信箱名稱被當成人名。**規則偵測器在 100 封信上的 31 個多遮裡,30 個是「Benefits Center」「SEC Filing Alerts」這類顯示名稱;在 `NON_PERSON_WORDS` 補詞可解決大部分(PR #9 README 第 7 點)。之後再談(10/25) | Yudi | | [ ] |
 | 76 | **v2 改成伺服器產生 Session Hash ID。**每個請求一個,伺服器遮蔽時建立並隨文字回傳,客戶還原時送回;`mapping` 模式。同時修好 B73 的 token 檢查 | Zhexuan | 2026-10-30 | [ ] |
 | 77 | **還原設計的流程圖寄給 Aarvin。**先和 Zhexuan 對齊:每個請求一個 ID,回覆裡混了多輪 placeholder 就要帶多個 ID;「Session」聽起來是每個對話一個 | Anmol | 盡快 | [ ] |
@@ -204,3 +204,4 @@
 | 2026-10-26 | **客戶核准分級表(policy 0.1.3)**;還原用的識別碼由伺服器產生,不由客戶產生;還原用加密;預計 Nov 2 接上客戶的 agent;只用一個模型,不在執行時切換 | 10/26 Gemini 紀錄(Aarvin、Inderpal) |
 | 2026-10-27 | **Session Hash ID,每個請求一個,由伺服器建立,`mapping` 模式。**Nov 2 只做合約測試;完整整合 Nov 9,要看 CMU 運算資源 | 團隊會議;每個請求還是每個對話由 Anmol 與 Zhexuan 對齊 |
 | 2026-10-28 | **main 是 policy 0.1.3**(PR #11,`6b1f3c7`)。偵測修正留在分支,在 60 封開發信驗證後再合併 | 含 Presidio 130 個測試通過 |
+| 2026-10-29 | **Baseline v1.1 合併**(PR #9,`a0d8e71`):policy 0.1.3 標註,ground truth 經 Karina 複核 | 請求格式、位置與 tier 都檢查過,分數和 README 一致 |
