@@ -6,7 +6,7 @@ The same 100 fictional executive emails as v1, with three changes:
 2. **Each span carries the service's own coordinates and types.** `field`, `field_start` and `field_end` follow the contract's FieldPath. `service_type` and `tier` follow `service/config/policy.yaml` 0.1.3.
 3. **A `ground_truth` column, reviewed by hand.** Each span is `redact` or `retain`. This answers Aarvin's question from the Oct 5 midterm about how we can trust LLM-generated labels: a person checks every label.
 
-**Status: draft until Karina's review is done.** Claude proposed the ground truth on Oct 24. Karina checks every row in `baseline_v1.1_review.xlsx`. There is no separate status field: the `ground_truth` column is the review status, and it becomes final once every row has a Karina check.
+**Status: reviewed.** Claude proposed the ground truth on Oct 24 and Karina checked every row in `baseline_v1.1_review.xlsx` (`Karina check` is `OK` on all 1,058 rows). There is no separate status field: the `ground_truth` column is the final label.
 
 The original v1 labels are kept inside v1.1 (`type` and `must_mask` on every span), so v1 scores can still be reproduced with `--truth must_mask`. The separate v1 file is in the Drive zip from Sep 27 and in the Capstone project if it is ever needed.
 
@@ -85,7 +85,7 @@ Three role mailboxes stay `redact` because they do reveal something private: out
 
 ## What to notice
 
-1. **The labels are still a draft.** Don't tell the client the dataset is hand-labeled until every row in the workbook has a Karina check.
+1. **Every label was checked by hand.** Karina reviewed all 1,058 rows in the workbook, so the dataset can be described to the client as hand-checked.
 2. **The v1 README overstates its negative controls.** It says ten emails have nothing that must be masked. Only four are fully clean (E007, E023, E052, E095). The other six (E014, E031, E045, E059, E071, E085) still contain recipient names or addresses. They are still useful for measuring over-masking, but the claim should change.
 3. **87 must-redact spans fall in the Low tier**: 68 ORG, 11 CITY, 7 DATE and 1 AGE. `decide()` keeps a Low-tier item unless 3 different Low-tier types appear in the same field. Running the real `decide()` on these spans, with the model fully confident they are private (score 0.9), all 87 are still kept (`isolated_low_tier`), so the service would let every one of them through. The worst cases are dates of birth (DOB maps to DATE) and deal counterparties (ORG). Counterparties belong in the client's term list (TODO D49). DOB likely needs its own Medium or High type. This is a policy decision for the team.
 4. **39 spans have no type in policy.yaml**: 38 ID_NUMBER (case numbers, medical record numbers, order numbers) and 1 plain URL. They are marked `in_policy: false`. The service already handles unknown types safely: `Policy.tier_of()` calls them High and `decide()` redacts them (`cannot_classify_default_redact`), so `tier` says `high`. The 5 ID_NUMBER spans marked `retain` (public filing and SKU numbers) will be over-redacted until ID_NUMBER gets a real tier. URLs that contain a token, key or password map to CREDENTIAL.
