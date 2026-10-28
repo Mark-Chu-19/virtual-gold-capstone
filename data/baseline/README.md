@@ -6,7 +6,7 @@ The same 100 fictional executive emails as v1, with three changes:
 2. **Each span carries the service's own coordinates and types.** `field`, `field_start` and `field_end` follow the contract's FieldPath. `service_type` and `tier` follow `service/config/policy.yaml` 0.1.3.
 3. **A `ground_truth` column, reviewed by hand.** Each span is `redact` or `retain`. This answers Aarvin's question from the Oct 5 midterm about how we can trust LLM-generated labels: a person checks every label.
 
-**Status: draft until Karina's review is done.** Claude proposed the ground truth on Oct 24. Karina checks every row in `baseline_v1.1_review.xlsx`. Every email has `gt_status: "draft: proposed by Claude, pending Karina's review"`, and that status should only change once the review is finished.
+**Status: draft until Karina's review is done.** Claude proposed the ground truth on Oct 24. Karina checks every row in `baseline_v1.1_review.xlsx`. There is no separate status field: the `ground_truth` column is the review status, and it becomes final once every row has a Karina check.
 
 The original v1 labels are kept inside v1.1 (`type` and `must_mask` on every span), so v1 scores can still be reproduced with `--truth must_mask`. The separate v1 file is in the Drive zip from Sep 27 and in the Capstone project if it is ever needed.
 
@@ -33,7 +33,6 @@ The original v1 labels are kept inside v1.1 (`type` and `must_mask` on every spa
               "to": [{"name": "Victor Ames", "address": "vames@tidewaterrb.com"}], "cc": [], "body": "Hi Victor, ..."}
   },
   "field_offsets": {"email.from.name": 6, "email.from.address": 21, "email.to[0].name": 49, "email.to[0].address": 62, "email.subject": 94, "email.body": 145},
-  "gt_status": "draft: proposed by Claude, pending Karina's review",
   "spans": [{
     "start": 406, "end": 420, "text": "4402 1187 9930",
     "type": "FIN_ACCOUNT", "must_mask": true,
