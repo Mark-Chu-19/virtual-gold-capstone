@@ -56,13 +56,13 @@ The original v1 labels are kept inside v1.1 (`type` and `must_mask` on every spa
 
 ## What changed from v1
 
-**1,054 spans: 1,006 `redact`, 48 `retain`.** v1 had 999 spans: 971 must_mask and 28 ok either way.
+**1,058 spans: 1,009 `redact`, 49 `retain`.** v1 had 999 spans: 971 must_mask and 28 ok either way.
 
 | | Spans | What |
 |---|---|---|
-| Agree with v1 | 984 | 7 of them carry a note: kept as redact but worth a look, or the type changed |
+| Agree with v1 | 984 | 9 of them carry a note: kept as redact but worth a look, or the type changed |
 | Changed to `retain` | 15 | 12 role or system mailboxes, 1 company business address, and "Abuela" twice |
-| Added | 55 | 28 entities inside FACT clauses, 11 missed facts or health details, 16 other misses |
+| Added | 59 | 29 entities inside FACT clauses, 12 missed facts or health details, 18 other misses |
 
 **Changed to `retain`.** These were all must_mask in v1. Each has a reason in `gt_note`.
 
@@ -77,22 +77,22 @@ Three role mailboxes stay `redact` because they do reveal something private: out
 
 **Added.**
 
-1. **Entities inside FACT clauses (28).** A FACT only needs 50% coverage to count as caught, so a name inside one could leak while the score still looks fine. Each entity now has its own span. The serious ones are a patient name (E093 "Tanya Brooks") and a whistleblower subject (E013 "Carl Dennison").
-2. **Missed facts and health details (11).** For example, the impairment memo (E005), a missed regulatory filing (E017), medical leave (E018), a drug test (E055), and unannounced deals and delays (E028, E060, E066, E067).
-3. **Other misses (16).** A greeting name (E075 "Dan"), the CEO's destination in a security brief (E083 "Mexico City"), outside counsel (E004), sender names that give away a doctor or broker (E073, E074), and some amounts. Five public items were added as `retain` so the decision is on record: published tariff rates (E094), a support email address (E031), a public SKU (E058) and a retail price (E065).
+1. **Entities inside FACT clauses (29).** A FACT only needs 50% coverage to count as caught, so a name inside one could leak while the score still looks fine. Each entity now has its own span. The serious ones are a patient name (E093 "Tanya Brooks"), a whistleblower subject (E013 "Carl Dennison") and the cancer center that gives away a diagnosis (E021 "MD Anderson").
+2. **Missed facts and health details (12).** For example, the impairment memo (E005), a missed regulatory filing (E017), medical leave (E018), a drug test (E055), unreported injury complaints and litigation (E058), and unannounced deals and delays (E028, E060, E066, E067).
+3. **Other misses (18).** A greeting name (E075 "Dan"), the CEO's destination and dates in a security brief (E083 "Mexico City", "Oct 26 to 28"), outside counsel (E004), sender names that give away a doctor or broker (E073, E074), and some amounts. Six public items were added as `retain` so the decision is on record: published tariff rates (E094), a support email address (E031), an IT desk extension (E047), a public SKU (E058) and a retail price (E065).
 
-**Type changes (2).** E021 FACT to HEALTH (a family member's cancer treatment). E055 driver license number from ID_NUMBER to GOV_ID.
+**Type changes (4).** E021 FACT to HEALTH (a family member's cancer treatment). E055 driver license number from ID_NUMBER to GOV_ID. E077 utility account number from ID_NUMBER to ACCOUNT_NUMBER (policy 0.1.3 covers client account numbers). E083 hotel and street from CITY to ADDRESS_HOME (private in context; as CITY the service would keep it).
 
 ## What to notice
 
 1. **The labels are still a draft.** Don't tell the client the dataset is hand-labeled until every row in the workbook has a Karina check.
 2. **The v1 README overstates its negative controls.** It says ten emails have nothing that must be masked. Only four are fully clean (E007, E023, E052, E095). The other six (E014, E031, E045, E059, E071, E085) still contain recipient names or addresses. They are still useful for measuring over-masking, but the claim should change.
-3. **86 must-redact spans fall in the Low tier**: 67 ORG, 12 CITY, 6 DATE and 1 AGE. `decide()` keeps a Low-tier item unless 3 different Low-tier types appear in the same field. Running the real `decide()` on these spans, with the model fully confident they are private (score 0.9), all 86 are still kept (`isolated_low_tier`), so the service would let every one of them through. The worst cases are dates of birth (DOB maps to DATE) and deal counterparties (ORG). Counterparties belong in the client's term list (TODO D49). DOB likely needs its own Medium or High type. This is a policy decision for the team.
-4. **40 spans have no type in policy.yaml**: 39 ID_NUMBER (case numbers, medical record numbers, order numbers) and 1 plain URL. They are marked `in_policy: false`. The service already handles unknown types safely: `Policy.tier_of()` calls them High and `decide()` redacts them (`cannot_classify_default_redact`), so `tier` says `high`. The 5 ID_NUMBER spans marked `retain` (public filing and SKU numbers) will be over-redacted until ID_NUMBER gets a real tier. URLs that contain a token, key or password map to CREDENTIAL.
+3. **87 must-redact spans fall in the Low tier**: 68 ORG, 11 CITY, 7 DATE and 1 AGE. `decide()` keeps a Low-tier item unless 3 different Low-tier types appear in the same field. Running the real `decide()` on these spans, with the model fully confident they are private (score 0.9), all 87 are still kept (`isolated_low_tier`), so the service would let every one of them through. The worst cases are dates of birth (DOB maps to DATE) and deal counterparties (ORG). Counterparties belong in the client's term list (TODO D49). DOB likely needs its own Medium or High type. This is a policy decision for the team.
+4. **39 spans have no type in policy.yaml**: 38 ID_NUMBER (case numbers, medical record numbers, order numbers) and 1 plain URL. They are marked `in_policy: false`. The service already handles unknown types safely: `Policy.tier_of()` calls them High and `decide()` redacts them (`cannot_classify_default_redact`), so `tier` says `high`. The 5 ID_NUMBER spans marked `retain` (public filing and SKU numbers) will be over-redacted until ID_NUMBER gets a real tier. URLs that contain a token, key or password map to CREDENTIAL.
 5. **Contract mismatches.** 0.4.2 has no `bcc`, so E043's Bcc address is placed in `cc`. List recipients with no address ("All Employees") are dropped, which affects 7 emails, none with labels. Policy 0.1.3 adds ADDRESS_PUBLIC, so the employer's own bill-to address in E006 is ADDRESS_PUBLIC. Office addresses that are private in context (E073 clinic location, E086 unannounced HQ lease) stay ADDRESS_HOME with ground truth redact. Quoted and forwarded text stays in `email.body` (E003, E099), the way a raw email arrives. Splitting it out is the segmentation step's job.
-6. **Regex floor scores moved slightly.** Against the v1.1 ground truth: recall 0.40, leak rate 96%, fact recall 0.00. By tier, 32% of emails leak a High-tier span, 96% leak a Medium-tier span and 50% leak a Low-tier span. `--truth must_mask` reproduces the v1 recall and leak rate exactly. `extra_masks` drops from 12 to 5, because some of the regex's "extra" masks now land on spans added in review.
+6. **Regex floor scores moved slightly.** Against the v1.1 ground truth: recall 0.40, leak rate 96%, fact recall 0.00. By tier, 32% of emails leak a High-tier span, 96% leak a Medium-tier span and 51% leak a Low-tier span. `--truth must_mask` reproduces the v1 recall and leak rate exactly. `extra_masks` drops from 12 to 4, because some of the regex's "extra" masks now land on spans added in review.
 
-7. **The team's rules detector needs a fix (for Yudi).** `rules.py` takes every header display name as a person, and `NON_PERSON_WORDS` misses many mailbox names. "Concur Expense", "Benefits Center", "Ethics Hotline", "SEC Filing Alerts", "Google Calendar", "FDIC Updates", "BGE Billing" and similar names get flagged as PERSON, and so do their parts elsewhere in the text ("Expense", "Treasury", "FDIC"). That accounts for 30 of the 31 extra masks below. Adding words like alerts, updates, billing, center, hotline, calendar, workflow, screening, escalations and insights to `NON_PERSON_WORDS` would fix most of them.
+7. **The team's rules detector needs a fix (for Yudi).** `rules.py` takes every header display name as a person, and `NON_PERSON_WORDS` misses many mailbox names. "Concur Expense", "Benefits Center", "Ethics Hotline", "SEC Filing Alerts", "Google Calendar", "FDIC Updates", "BGE Billing" and similar names get flagged as PERSON, and so do their parts elsewhere in the text ("Expense", "Treasury", "FDIC"). That accounts for all 30 extra masks below. Adding words like alerts, updates, billing, center, hotline, calendar, workflow, screening, escalations and insights to `NON_PERSON_WORDS` would fix most of them.
 
 ## Tested against the team's code
 
@@ -100,7 +100,7 @@ Three role mailboxes stay `redact` because they do reveal something private: out
 
 1. All 100 `request` objects validate with the real `RedactionRequest` model.
 2. The real segmentation step produces exactly the fields in `field_offsets`, at exactly those offsets, for every email.
-3. The real `rules.py` runs on every request, and its output scores directly with `score.py`, with no conversion. Rules alone: recall 0.66, leak rate 87%, fact recall 0.00, extra masks 31. By tier, 46% of emails leak a High-tier span and 66% a Medium-tier span. Rules catch every email address and 79% of names, but no bank accounts, codenames, health details or ID numbers. The model has to close that gap.
+3. The real `rules.py` runs on every request, and its output scores directly with `score.py`, with no conversion. Rules alone: recall 0.66, leak rate 87%, fact recall 0.00, extra masks 30. By tier, 46% of emails leak a High-tier span and 66% a Medium-tier span. Rules catch every email address and 79% of names, but no bank accounts, codenames, health details or ID numbers. The model has to close that gap.
 4. The real `decide()` confirms the Low-tier gap in note 3.
 
 ## Scoring
