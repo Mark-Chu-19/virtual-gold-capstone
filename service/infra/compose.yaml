@@ -1,0 +1,12 @@
+# Development persistence for the v2 mapping backend. Production Redis belongs on a private
+# network with authentication/TLS, appropriate memory limits, backups and noeviction.
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: [redis-server, --appendonly, 'yes', --appendfsync, always, --maxmemory-policy, noeviction]
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - token-data:/data
+volumes:
+  token-data:

@@ -15,7 +15,7 @@ from ..contracts.errors import (DeadlineExceeded, ModelCallError, ModelOutputUnp
                                 RecognizerError, RuleEngineError, high_tier_fixed)
 from ..contracts.fields import iter_fields
 from ..contracts.types import (Candidate, Decision, LabelState, RedactionRequest, RedactionResponse,
-                               RecordInfo, ScoredCandidate)
+                               RecordInfo, RedactionRequestV2, ScoredCandidate)
 from ..model.client import ModelGateway
 from ..obs.audit import AuditLog
 from ..obs.metrics import Metrics
@@ -36,15 +36,15 @@ class Orchestrator:
     mode_probe: dict = field(default_factory=dict)
 
     # ------------------------------------------------------------------------------------------
-    async def redact(self, req: RedactionRequest, rid: str) -> RedactionResponse:
-        """Caller must have reserved a record slot for `rid`; released here on any failure."""
+    async def redact(self, req: RedactionRequest | RedactionRequestV2, rid: str, *, token_context=None) -> RedactionResponse:
+        """V1 callers reserve a record slot; v2 uses its token backend without legacy records."""
         s, c, m = self.settings, self.components, self.metrics
         deadline = Deadline(s.timeout_ms)
         timings: dict[str, float] = {}
         t0 = time.perf_counter()
         try:
             async with asyncio.timeout(s.timeout_ms / 1000):
-                resp, mode = await self._run(req, rid, deadline, timings)
+                resp, mode = await self._run(req, rid, deadline, timings, token_context)
         except TimeoutError:
             self.records.release(rid)
             raise DeadlineExceeded() from None
@@ -55,7 +55,7 @@ class Orchestrator:
         return resp
 
     # ------------------------------------------------------------------------------------------
-    async def _run(self, req, rid, deadline, timings) -> tuple[RedactionResponse, str]:
+    async def _run(self, req, rid, deadline, timings, token_context=None) -> tuple[RedactionResponse, str]:
         s, c, m = self.settings, self.components, self.metrics
         ov = req.policy.overrides
         loop = asyncio.get_running_loop()
@@ -141,17 +141,21 @@ class Orchestrator:
             m.degraded.labels(degraded.reason, degraded.stage).inc()
 
         with m.stage("pseudonymize", timings):
-            labels = (self.records.label_state(req.session_id, self._ttl(req))
-                      if req.session_id else LabelState())
-            out = c.pseudonymize(req.purpose, req.email, decisions, labels)
-
-        rec = self.records.commit(rid, out.mapping if req.mapping.retain else None,
-                                  self._ttl(req), req.session_id)
+            if token_context is not None:
+                out = await token_context.render(decisions)
+                rec = None
+            else:
+                labels = (self.records.label_state(req.session_id, self._ttl(req))
+                          if req.session_id else LabelState())
+                out = c.pseudonymize(req.purpose, req.email, decisions, labels)
+                rec = self.records.commit(rid, out.mapping if req.mapping.retain else None,
+                                          self._ttl(req), req.session_id)
         mode = "degraded" if degraded else "normal"
         for sp in out.spans:
             m.spans.labels(sp.tier, sp.action, mode).inc()
         with m.stage("audit", timings):
-            self._audit(rid, out, degraded, timings, raw_scores)
+            self._audit(rid, out, degraded, timings, raw_scores,
+                        token_context.mode if token_context else "legacy")
 
         return RedactionResponse(
             request_id=rid, degraded=degraded is not None,
@@ -159,7 +163,7 @@ class Orchestrator:
             degraded_stage=degraded.stage if degraded else None,
             redacted_email=out.redacted_email, redacted_purpose=out.redacted_purpose,
             spans=out.spans, record=RecordInfo(expires_at=rec.expires_at_iso,
-                                               mapping_retained=rec.mapping_retained),
+                                               mapping_retained=rec.mapping_retained) if rec else None,
             policy_version=c.policy.version, model_version=self.model.version,
             prompt_versions={"detection": c.detection_prompt_version,
                              "assessment": c.assessment_prompt_version},
@@ -209,9 +213,10 @@ class Orchestrator:
                     start = i + len(term)
         return self.components.merge_candidates(out)
 
-    def _audit(self, rid, out, degraded, timings, raw_scores):
+    def _audit(self, rid, out, degraded, timings, raw_scores, token_backend="legacy"):
         self.audit.write({
             "request_id": rid, "ts": time.time(), "degraded": degraded is not None,
+            "token_backend": token_backend,
             "degraded_reason": degraded.reason if degraded else None,
             "degraded_stage": degraded.stage if degraded else None,
             "spans": [{"type": sp.type, "tier": sp.tier, "action": sp.action,

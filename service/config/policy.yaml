@@ -1,17 +1,19 @@
 # Tier table, taxonomy and thresholds. PROVISIONAL: thresholds and taxonomy are for client review
 # (Open Questions 4 and 5). High tier cannot be overridden per request.
-policy_version: "policy-0.1.1-provisional"
+policy_version: "policy-0.1.3-provisional"
 low_tier_combine_count: 3
+# Initial thresholds, to be revised from golden-dataset evaluation. Public is above Medium: a
+# public number or mailbox is redacted only when the model is fairly sure it is private.
 tiers:
   high:   {rule: redact, threshold: 0.2}
   medium: {rule: redact, threshold: 0.5}
   low:    {rule: retain_unless_combined, threshold: null}
-  public: {rule: retain_if_confident, threshold: 0.5}   # score = P(private); retain when below
+  public: {rule: retain_if_confident, threshold: 0.8}   # score = P(private); retain when below
 taxonomy:
   GOV_ID: high
   CREDENTIAL: high
   CARD_NUMBER: high
-  BANK_ACCOUNT: high
+  ACCOUNT_NUMBER: high  # bank, brokerage and client account numbers; long unlabelled digit strings
   HEALTH: high
   BUSINESS_CONFIDENTIAL: high
   CODENAME: high
@@ -29,3 +31,4 @@ taxonomy:
   GENDER: low
   PHONE_PUBLIC: public
   EMAIL_PUBLIC: public
+  ADDRESS_PUBLIC: public  # publicly listed business address; the model tells it from a home address

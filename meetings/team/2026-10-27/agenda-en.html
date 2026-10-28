@@ -1,0 +1,488 @@
+<title>Oct 27 Team Meeting</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; each topic is a card with evidence, a recommendation, then a fill-in block. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --field:#FBFCFD;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:36px 72px}
+.page{max-width:880px;margin:0 auto}
+header{padding-bottom:22px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.intro{margin:0 0 18px;font-size:17px;line-height:1.6;max-width:68ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0 0 18px;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400;flex:none}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.lede{color:var(--muted);margin:6px 0 14px;font-size:16px;line-height:1.65}
+p{margin:0 0 10px}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:7px}
+a{color:var(--cloud)}
+
+/* running order */
+.order{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 14px}
+.order li:hover{border-color:var(--gold)}
+.order a{color:inherit;text-decoration:none}
+.order .n{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.order .t{font-weight:600}
+.order .w{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.order .d{grid-column:2/-1;font-size:14px;color:var(--muted)}
+@media (max-width:600px){.order li{grid-template-columns:28px 1fr}.order .w{grid-column:2}}
+.chains{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 44px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;font-size:14px}
+.chain:last-child{margin-bottom:0}
+.chain .lab{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);width:100%}
+.node{border:1px solid var(--line);border-radius:999px;padding:3px 11px;background:var(--soft)}
+.node.today{border-color:var(--warn);background:var(--warn-soft);font-weight:600}
+.arr{color:var(--muted)}
+
+/* topic cards */
+section.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 22px 20px;margin-bottom:26px;scroll-margin-top:16px}
+section.item.urgent{border-left:4px solid var(--warn)}
+section.item.soon{border-left:4px solid var(--gold)}
+section.item.later{border-left:4px solid var(--cloud)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.due{background:var(--warn-soft);color:var(--warn)}
+.issue{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.issue h4{margin:0 0 6px;font-size:16px}
+.issue .ev{font-size:14px;color:var(--muted);margin:6px 0 0}
+.rec{background:var(--local-soft);border-radius:8px;padding:12px 14px;margin-top:14px}
+.rec .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--local);display:block;margin-bottom:4px}
+.tablewrap{overflow-x:auto;margin:6px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);background:var(--soft);font-weight:500}
+td.hl{background:var(--warn-soft)}
+.num{font-variant-numeric:tabular-nums}
+
+/* fill-in block */
+.fill{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;display:grid;gap:14px}
+.fill .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.qa{display:grid;gap:10px}
+.qa label{display:grid;gap:4px;font-size:15px}
+.qa .who{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+.choices{display:grid;gap:8px;border:0;padding:0;margin:0}
+.choices legend{padding:0;margin-bottom:6px}
+.choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font-size:15px}
+.choice:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.choice input{margin-top:4px;accent-color:var(--gold);flex:none}
+.choice b{font-family:var(--mono);font-size:12px;color:var(--gold);margin-right:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.row2{grid-template-columns:1fr}}
+.row2 label{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+input[type=text],textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{min-height:64px;resize:vertical;line-height:1.5}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.choice:focus-within{outline:2px solid var(--gold);outline-offset:1px}
+
+/* export */
+.export{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-top:10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+button{font:inherit;font-size:15px;font-weight:600;border-radius:8px;padding:8px 14px;border:1px solid var(--gold);background:var(--gold);color:var(--surface);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:focus-visible{outline:2px solid var(--cloud);outline-offset:2px}
+#status{font-size:13px;color:var(--muted)}
+#mdout{min-height:180px;font-family:var(--mono);font-size:13px}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+<header>
+  <div class="eyebrow">Virtual Gold · team meeting · internal</div>
+  <h1>After Monday: what the client decided, and what we still have to agree</h1>
+  <p class="intro">On Monday the client approved the tier table, asked for a different restore design and wants to connect their agent next Monday. Several of these points were settled quickly, and each of us may have heard them a little differently. Today we agree what they mean, who does what before Nov 2, and what goes into the summary Mark posts on Slack.</p>
+  <dl class="meta">
+    <div><dt>When</dt><dd>Tuesday 2026-10-27</dd></div>
+    <div><dt>Source</dt><dd>Gemini notes of the Oct 26 client meeting</dd></div>
+    <div><dt>Next client meeting</dt><dd>Monday 2026-11-02, 18:00 ET</dd></div>
+    <div><dt>Tracked in</dt><dd><code>todo/TODO.md</code></dd></div>
+  </dl>
+  <div class="row2">
+    <label for="attendees">Attendees<input type="text" id="attendees" data-save placeholder="Mark, Anmol, Yudi, Zhexuan, Karina"></label>
+    <label for="timekeeper">Notes taken by<input type="text" id="timekeeper" data-save placeholder="Mark"></label>
+  </div>
+</header>
+
+<h2><span class="n">00</span>Running order</h2>
+<p class="lede">Topic 1 comes first because it changes the API, and integration next Monday (topic 2) depends on it. The suggested times add up to about 60 minutes.</p>
+<ol class="order">
+  <li><span class="n">R</span><a class="t" href="#recap">Recap and corrections to the Gemini notes</a><span class="w">5 min</span><span class="d">What the client decided; what the notes got wrong</span></li>
+  <li><span class="n">1</span><a class="t" href="#t1">Restore design: a key the server issues</a><span class="w">15 min</span><span class="d">Aarvin's design against API v2; per conversation or per request; which mode</span></li>
+  <li><span class="n">2</span><a class="t" href="#t2">Integration with their agent on Nov 2</a><span class="w">15 min</span><span class="d">What we connect, where it runs, which model</span></li>
+  <li><span class="n">3</span><a class="t" href="#t3">Tier table approved: next steps</a><span class="w">10 min</span><span class="d">Merge 0.1.3, commercial categories, the Q1 questions left open</span></li>
+  <li><span class="n">4</span><a class="t" href="#t4">Hardware, and the CMU route</a><span class="w">5 min</span><span class="d">CMU came up in front of the client; who asks for what</span></li>
+  <li><span class="n">5</span><a class="t" href="#t5">Timeline to Nov 30</a><span class="w">5 min</span><span class="d">What Mark posts on Slack</span></li>
+  <li><span class="n">6</span><a class="t" href="#t6">Smaller items</a><span class="w">5 min</span><span class="d">Contract to Aarvin, new models, unanswered questions, open PRs</span></li>
+</ol>
+<div class="chains">
+  <div class="chain"><span class="lab">How the topics connect</span>
+    <span class="node today">1 Restore design</span><span class="arr">→</span><span class="node">Anmol's flow diagram to the client</span><span class="arr">→</span><span class="node today">2 Integration Nov 2</span><span class="arr">→</span><span class="node">5 Timeline</span></div>
+  <div class="chain">
+    <span class="node today">3 Tier table</span><span class="arr">→</span><span class="node">merge 0.1.3 (B71)</span><span class="arr">→</span><span class="node">Karina scores 60 emails</span><span class="arr">→</span><span class="node">leak targets (Q2, D70)</span></div>
+  <div class="chain">
+    <span class="node today">4 Hardware</span><span class="arr">→</span><span class="node">Qwen 27B on a 24–48 GB GPU</span><span class="arr">+</span><span class="node">Gemma 4 and Mistral runs</span></div>
+</div>
+
+<!-- recap -->
+<section class="item later" id="recap">
+  <h2><span class="n">R</span>What happened on Monday</h2>
+  <div class="tags"><span class="tag">client meeting 2026-10-26</span><span class="tag">Gemini notes</span></div>
+  <p class="lede">From <code>meetings/client/2026-10-26/notes-gemini-en.pdf</code>. Present for the client: Inderpal, Aarvin, Urte.</p>
+
+  <h3>What the client decided</h3>
+  <ul class="points">
+    <li><b>Tier table approved.</b> Aarvin: it looks good enough, represents severity correctly, no blockers. Mark said the commercial categories are weak and asked the team to propose more on Slack.</li>
+    <li><b>Restore design changed.</b> Aarvin does not want the client to generate request IDs. The server should generate a key when it redacts, return it with the redacted text, and the client sends it back to restore. Inderpal: redaction is for the primary user only.</li>
+    <li><b>Encryption for restore.</b> Encryption and decryption with one key per conversation and request, replacing placeholders with encrypted output.</li>
+    <li><b>Integration next Monday (Nov 2)</b>, then testing. Inderpal asked if the system is ready to connect to their agent.</li>
+    <li><b>One local model, no switching at runtime</b> (Aarvin).</li>
+  </ul>
+
+  <h3>Next steps from the notes</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Who</th><th>Action</th></tr>
+    <tr><td>Mark</td><td>Revise the timeline and share it on Slack; share the meeting summary on Slack</td></tr>
+    <tr><td>Anmol</td><td>Draw a flow diagram of the API and key process and email it for review</td></tr>
+    <tr><td>Anmol</td><td>Send the contract documents to Aarvin</td></tr>
+    <tr><td>Anmol</td><td>Evaluate Gemma 4 and Mistral once compute credits arrive</td></tr>
+    <tr><td>Karina</td><td>Update the test set categories to the confirmed tier table; score the service on the 60 development emails</td></tr>
+    <tr><td>Everyone</td><td>Integrate by Monday; start testing; ask CMU for hardware; sort out resource problems on Slack</td></tr>
+  </table></div>
+
+  <h3>Not answered on Monday</h3>
+  <ul class="points">
+    <li><b>Q1 details:</b> dates of birth, deal counterparties, ID numbers, Low items kept when alone.</li>
+    <li><b>Q2</b> acceptable leak rate per tier. <b>Q3</b> where the service runs. <b>Q4</b> documents and routing.</li>
+    <li><b>Q5</b> category visible in the placeholder or not; whether VG08 passes placeholders through unchanged.</li>
+    <li><b>Q6</b> SOW signature. VG08 access is implied by Monday's integration but not confirmed.</li>
+  </ul>
+
+  <h3>Fix these before the summary goes on Slack</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Gemini wrote</th><th>Correct</th></tr>
+    <tr><td>The test set has 155 items, 107 to redact</td><td>1,054 items: 1,006 to redact, 48 to keep</td></tr>
+    <tr><td>The 86 Low-tier items would be redacted and could reach the cloud</td><td>They are <b>kept</b>, because a Low item seen alone is not redacted. That is why they reach the cloud</td></tr>
+    <tr><td>"Yudi's current rules caught 66%"</td><td>The rules on main caught 66%, without Yudi's 8 fixes and without Presidio</td></tr>
+    <tr><td>Rules tested on a private dataset</td><td>ai4privacy pii-masking-400k, a public external dataset; its licence bars redistribution, so we keep it local</td></tr>
+    <tr><td>Qwen, 3.827 billion parameters</td><td>Qwen 3.8 27B (27 billion parameters)</td></tr>
+    <tr><td>AES with the conversation ID as the passphrase</td><td>In API v2, each conversation gets a random key, wrapped by a master key. The ID only selects the key; it is not the key</td></tr>
+    <tr><td>"Hash key"</td><td>What the server returns is an identifier for the conversation's key, not a hash. Agree on a name in topic 1</td></tr>
+  </table></div>
+  <div class="fill">
+    <label for="nR" class="k">Other corrections</label>
+    <textarea id="nR" data-save></textarea>
+  </div>
+</section>
+
+<!-- 1 -->
+<section class="item urgent" id="t1" data-topic="1" data-title="Restore design: a key the server issues">
+  <h2><span class="n">1</span>Restore design: a key the server issues</h2>
+  <div class="tags"><span class="tag due">before Nov 2</span><span class="tag">A18</span><span class="tag">B73</span><span class="tag">Zhexuan</span><span class="tag">Anmol</span></div>
+  <p class="lede">API v2 (PR #10, on main and switched off) expects the client to send its own conversation ID, <code>group_id</code>. Aarvin asked for the reverse: the server creates the identifier and returns it. Anmol agreed to draw the flow and email it. Zhexuan owns the code, so the diagram and the code have to describe the same design.</p>
+
+  <h3>Side by side</h3>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>API v2 today</th><th>What Aarvin asked for</th></tr>
+    <tr><td>Who creates the ID</td><td>The client (<code>group_id</code>)</td><td class="hl">The server, on the first redaction</td></tr>
+    <tr><td>What the client sends to redact</td><td>Text + <code>group_id</code></td><td>The text only</td></tr>
+    <tr><td>What it gets back</td><td>Redacted text</td><td>Redacted text + the key ID</td></tr>
+    <tr><td>Restore</td><td>The text only; each token names its conversation</td><td>The text + the key ID</td></tr>
+    <tr><td>Placeholder</td><td><code>[VG:2:…]</code>, grows with the original</td><td>"Encrypted output" (not specified further)</td></tr>
+  </table></div>
+
+  <h3>What we need to settle</h3>
+  <div class="issue">
+    <h4>a. One key per conversation, or per request?</h4>
+    <p>The notes say both: "one hash key per conversation and request". With one key per request, a multi-turn conversation gets a new key each turn, and the agent cannot restore text that mixes tokens from two turns. With one key per conversation, the client has to send the key ID back on the second redaction so the server reuses it.</p>
+  </div>
+  <div class="issue">
+    <h4>b. Which mode?</h4>
+    <p>"Encrypted output replacing placeholders" sounds like <code>aes_siv</code>: no stored mapping, a longer token. Whether a cloud model returns long tokens intact is still untested. Anmol's demo on Monday showed the short <code>[PERSON_1]</code> form from his prototype, not the v2 token.</p>
+  </div>
+  <div class="issue">
+    <h4>c. Fix the token check before real use</h4>
+    <p>B73: the v2 token check (<code>wire.py</code> lines 11 and 14) treats ordinary text such as <code>[VGA]</code> or <code>[Item_1]</code> as a token and rejects it. It has to be fixed before the client's agent sends real traffic.</p>
+  </div>
+  <div class="rec"><span class="k">Recommendation</span>One key per conversation. The server creates it on the first redaction and returns its ID; the client sends the ID back on later redactions in the same conversation and on restore. This keeps most of v2: only who creates the ID changes. Zhexuan and Anmol agree the flow today; Anmol emails the diagram to Aarvin by Wednesday and asks him to confirm per conversation or per request.</div>
+
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="qa">
+      <label for="q1a"><span><span class="who">Ask Zhexuan</span> How much of v2 changes if the server creates the ID? Can it be ready by Friday?</span><input type="text" id="q1a" data-save></label>
+      <label for="q1b"><span><span class="who">Ask all</span> What do we call it in the API and the diagram (key ID, conversation ID, session token)?</span><input type="text" id="q1b" data-save></label>
+      <label for="q1c"><span><span class="who">Ask Anmol</span> When does the diagram go to Aarvin? Does Zhexuan review it first?</span><input type="text" id="q1c" data-save></label>
+      <label for="q1d"><span><span class="who">Ask all</span> Which mode for Nov 2: <code>mapping</code> or <code>aes_siv</code>? Who tests long tokens with a real model?</span><input type="text" id="q1d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">Decision</legend>
+      <label class="choice"><input type="radio" name="d1" id="d1a" value="A" data-save data-label="One key per conversation, created by the server; the client sends its ID back"><span><b>A</b>One key per conversation, created by the server; the client sends its ID back.</span></label>
+      <label class="choice"><input type="radio" name="d1" id="d1b" value="B" data-save data-label="One key per request, created by the server"><span><b>B</b>One key per request, created by the server.</span></label>
+      <label class="choice"><input type="radio" name="d1" id="d1c" value="C" data-save data-label="Keep v2 as it is and explain the client-supplied ID to Aarvin again"><span><b>C</b>Keep v2 as it is and explain the client-supplied ID to Aarvin again.</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o1">Owner<input type="text" id="o1" data-save placeholder="Zhexuan (code), Anmol (diagram)"></label>
+      <label for="w1">By when<input type="text" id="w1" data-save></label>
+    </div>
+    <label for="n1" class="k">Notes</label>
+    <textarea id="n1" data-save></textarea>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="item urgent" id="t2" data-topic="2" data-title="Integration with their agent on Nov 2">
+  <h2><span class="n">2</span>Integration with their agent on Nov 2</h2>
+  <div class="tags"><span class="tag due">Mon Nov 2</span><span class="tag">B41</span><span class="tag">B43</span><span class="tag">D52</span><span class="tag">all</span></div>
+  <p class="lede">The client expects to connect their agent next Monday and start testing. We have two things that could be connected, and neither is ready as it stands.</p>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>Anmol's prototype gateway</th><th>The service (<code>service/</code>)</th></tr>
+    <tr><td>What it is</td><td>The demo from Monday: detection, assessment and masking with a model</td><td>The API we document: contract 0.4.2, v1 and v2</td></tr>
+    <tr><td>Model path</td><td>Works, through a hosted API (Groq)</td><td>Prompts and parsers are still stubs; due Nov 1 (B41)</td></tr>
+    <tr><td>Restore design</td><td>Stored mappings, <code>[PERSON_1]</code></td><td>v2 keys, needs topic 1's change</td></tr>
+    <tr><td>Runs on</td><td>A laptop</td><td>Docker and Redis; not deployed anywhere yet</td></tr>
+  </table></div>
+  <h3>What we need to settle</h3>
+  <ul class="points">
+    <li><b>What we connect.</b> The service is what we hand over at the end, so integrating anything else means doing it twice.</li>
+    <li><b>Where it runs.</b> Their agent needs to reach it over the network. Is it a URL we host, or do they run our container?</li>
+    <li><b>Which model.</b> Until hardware exists (topic 4), the model runs through a hosted API. That sends text to a third party, so we test with fictional email only, and the client needs to know that.</li>
+    <li><b>What we need from them.</b> VG08 access (D52), how their agent calls us, and test data.</li>
+  </ul>
+  <div class="rec"><span class="k">Recommendation</span>Connect the service, not the prototype: move Anmol's prompts into the service this week (B41), with the hosted model behind it. If that is not ready, Monday becomes a contract test against v2 with fictional emails, and we tell Aarvin by Thursday. Mark asks Aarvin today what their agent needs (endpoint, auth, test data).</div>
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="qa">
+      <label for="q2a"><span><span class="who">Ask Anmol and Zhexuan</span> Can the prototype's prompts be in the service by Friday?</span><input type="text" id="q2a" data-save></label>
+      <label for="q2b"><span><span class="who">Ask Zhexuan</span> Where do we host it for Monday, and who sets it up?</span><input type="text" id="q2b" data-save></label>
+      <label for="q2c"><span><span class="who">Ask all</span> Which model and which provider for Monday?</span><input type="text" id="q2c" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">Decision</legend>
+      <label class="choice"><input type="radio" name="d2" id="d2a" value="A" data-save data-label="Connect the service, with the model path wired in by Friday"><span><b>A</b>Connect the service, with the model path wired in by Friday.</span></label>
+      <label class="choice"><input type="radio" name="d2" id="d2b" value="B" data-save data-label="Connect Anmol's prototype for now; move to the service later"><span><b>B</b>Connect Anmol's prototype for now; move to the service later.</span></label>
+      <label class="choice"><input type="radio" name="d2" id="d2c" value="C" data-save data-label="Monday is a contract test only; full integration the week after"><span><b>C</b>Monday is a contract test only; full integration the week after.</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o2">Owner<input type="text" id="o2" data-save></label>
+      <label for="w2">By when<input type="text" id="w2" data-save></label>
+    </div>
+    <label for="n2" class="k">Notes</label>
+    <textarea id="n2" data-save></textarea>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="item soon" id="t3" data-topic="3" data-title="Tier table approved: next steps">
+  <h2><span class="n">3</span>Tier table approved: next steps</h2>
+  <div class="tags"><span class="tag">A19</span><span class="tag">B71</span><span class="tag">B46</span><span class="tag">D49</span><span class="tag">Yudi</span><span class="tag">Karina</span></div>
+  <p class="lede">Aarvin approved Yudi's policy 0.1.3. We had agreed to merge Yudi's branch once the client confirmed, and Karina then updates the test set. Two things are still open: the commercial categories Mark asked for, and the Q1 questions nobody answered.</p>
+  <ul class="points">
+    <li><b>Merge 0.1.3 now.</b> Yudi opens the PR from <code>feat/privacy-detection-fixes</code>; someone reviews it; Karina regenerates <code>service_type</code> and <code>tier</code> in PR #9 and scores the service on the 60 development emails.</li>
+    <li><b>Commercial categories.</b> Mark said account numbers, organisations and amounts are weak. Proposals go on Slack. Adding them later makes a 0.1.4 and means relabelling again, so set a deadline.</li>
+    <li><b>Q1 left open.</b> Dates of birth, deal counterparties, ID numbers, Low items kept when alone. We propose a default for each, write it into 0.1.4 and ask the client to confirm on Nov 2.</li>
+    <li><b>The two columns in Yudi's docx</b> ("adjustable per request", "also found by"): are they in 0.1.3 or not?</li>
+  </ul>
+  <div class="rec"><span class="k">Recommendation</span>Merge 0.1.3 this week as approved, so Karina can score on it. Collect commercial proposals on Slack until Thursday; Yudi turns them and the Q1 defaults into 0.1.4 for Nov 2.</div>
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="qa">
+      <label for="q3a"><span><span class="who">Ask Yudi</span> When is the 0.1.3 PR open? Who reviews it?</span><input type="text" id="q3a" data-save></label>
+      <label for="q3b"><span><span class="who">Ask Karina</span> When can you score the 60 emails on 0.1.3? Is your review pushed into PR #9 (B74)?</span><input type="text" id="q3b" data-save></label>
+      <label for="q3c"><span><span class="who">Ask all</span> Defaults for dates of birth, counterparties, ID numbers, Low alone?</span><input type="text" id="q3c" data-save></label>
+    </div>
+    <div class="row2">
+      <label for="o3">Owner<input type="text" id="o3" data-save placeholder="Yudi, Karina"></label>
+      <label for="w3">By when<input type="text" id="w3" data-save></label>
+    </div>
+    <label for="n3" class="k">Notes</label>
+    <textarea id="n3" data-save></textarea>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="item soon" id="t4" data-topic="4" data-title="Hardware, and the CMU route">
+  <h2><span class="n">4</span>Hardware, and the CMU route</h2>
+  <div class="tags"><span class="tag">D51</span><span class="tag">A13</span><span class="tag">B58</span><span class="tag">Mark</span><span class="tag">Anmol</span></div>
+  <p class="lede">On Monday Anmol said we requested credits from CMU for more model runs, and Mark said we would sort out hardware with CMU. The notes list "contact CMU for hardware" as a group action.</p>
+  <ul class="points">
+    <li><b>This changes an earlier decision.</b> On 2026-09-27 we decided not to raise the CMU route with the client. On 2026-10-03 the SOW said the client covers paid resources and agrees them in advance. Both now need a fresh decision.</li>
+    <li><b>What we need.</b> Qwen 3.8 27B + GLiNER needs one 24–48 GB GPU. Gemma 4 and Mistral need API credits (B58).</li>
+    <li><b>Q3 is still open.</b> Where the service runs in production is the client's answer, whatever CMU provides for testing.</li>
+  </ul>
+  <div class="rec"><span class="k">Recommendation</span>Treat the Sep 27 rule as superseded, since the client has now heard it. Use CMU for testing compute only, and keep asking the client where production runs (Q3). One person makes the CMU request, with an exact list.</div>
+  <div class="fill">
+    <span class="k">Record</span>
+    <div class="qa">
+      <label for="q4a"><span><span class="who">Ask Anmol</span> What did you request from CMU, and when is the answer due?</span><input type="text" id="q4a" data-save></label>
+      <label for="q4b"><span><span class="who">Ask all</span> Who asks CMU for a GPU, and for which dates?</span><input type="text" id="q4b" data-save></label>
+    </div>
+    <div class="row2">
+      <label for="o4">Owner<input type="text" id="o4" data-save></label>
+      <label for="w4">By when<input type="text" id="w4" data-save></label>
+    </div>
+    <label for="n4" class="k">Notes</label>
+    <textarea id="n4" data-save></textarea>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="item soon" id="t5" data-topic="5" data-title="Timeline to Nov 30">
+  <h2><span class="n">5</span>Timeline to Nov 30</h2>
+  <div class="tags"><span class="tag">B41–B45</span><span class="tag">Mark</span></div>
+  <p class="lede">Mark posts the revised timeline on Slack after today. The milestones are from the midterm deck; the right column is what Monday changed.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Date</th><th>Milestone</th><th>Change after Monday</th><th>Owner</th></tr>
+    <tr><td class="num">Oct 28</td><td>Restore flow diagram to Aarvin</td><td class="hl">new</td><td><input type="text" id="tl1" data-save aria-label="Owner, diagram" placeholder="Anmol"></td></tr>
+    <tr><td class="num">Oct 30</td><td>Server-issued key in v2; token check fixed; 0.1.3 merged</td><td class="hl">new</td><td><input type="text" id="tl2" data-save aria-label="Owner, v2 change" placeholder="Zhexuan, Yudi"></td></tr>
+    <tr><td class="num">Nov 1</td><td>M2: end-to-end pipeline with the failure path</td><td>now also the integration build</td><td><input type="text" id="tl3" data-save aria-label="Owner, M2" placeholder="Zhexuan, Anmol"></td></tr>
+    <tr><td class="num">Nov 2</td><td>Integration with the client's agent; testing starts</td><td class="hl">moved from "Phase 2 starts"</td><td><input type="text" id="tl4" data-save aria-label="Owner, integration" placeholder="all"></td></tr>
+    <tr><td class="num">Nov 8</td><td>M3: dashboard and load test; Phase 1 ends; 60-email scores</td><td>adds Karina's scores</td><td><input type="text" id="tl5" data-save aria-label="Owner, M3" placeholder="Zhexuan, Karina"></td></tr>
+    <tr><td class="num">Nov 15</td><td>M4: VG08 integration done; contract freeze</td><td>contract includes the key change</td><td><input type="text" id="tl6" data-save aria-label="Owner, M4" placeholder="Zhexuan, Mark"></td></tr>
+    <tr><td class="num">Nov 18 / 22</td><td>Soft freeze / code freeze; run the 40 held-back emails once</td><td>needs leak targets (Q2) first</td><td><input type="text" id="tl7" data-save aria-label="Owner, freeze" placeholder="all, Karina"></td></tr>
+    <tr><td class="num">Nov 30</td><td>Final presentation</td><td></td><td><input type="text" id="tl8" data-save aria-label="Owner, final" placeholder="Mark"></td></tr>
+  </table></div>
+  <div class="rec"><span class="k">Recommendation</span>Keep Nov 2 for integration and Nov 15 for the contract freeze. If topic 2 ends with "contract test only", move full integration to Nov 9 and leave the later dates unchanged. Each owner confirms their date today; Mark posts the table on Slack tonight.</div>
+  <div class="fill">
+    <label for="n5" class="k">Changes to the timeline</label>
+    <textarea id="n5" data-save></textarea>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="item later" id="t6" data-topic="6" data-title="Smaller items">
+  <h2><span class="n">6</span>Smaller items</h2>
+  <div class="tags"><span class="tag">E68</span><span class="tag">B58</span><span class="tag">B72</span><span class="tag">B73</span><span class="tag">B74</span></div>
+  <ul class="points">
+    <li><b>Contract to Aarvin (Anmol).</b> Which document: the SOW from the midterm (still unsigned, E68), or something else? Mark should see it before it goes.</li>
+    <li><b>Gemma 4 and Mistral (Anmol).</b> Waits for credits (topic 4). Aarvin wants one model in the end, so these runs decide whether Qwen 3.8 27B stays.</li>
+    <li><b>Questions for Nov 2.</b> Q2 leak targets, Q4 documents and routing, Q5 placeholder details, Q6 SOW, plus the Q1 defaults from topic 3.</li>
+    <li><b>Anmol's report (B72).</b> Already shown. Do the "VPC" wording, the §7 CMU sentence and the local links still need fixing, now that CMU is out in the open?</li>
+    <li><b>Open PRs.</b> PR #9 waits for Karina's review (B74); B73 follow-ups on v2; Yudi's 0.1.3 PR.</li>
+  </ul>
+  <div class="rec"><span class="k">Recommendation</span>
+    <ul class="points">
+      <li>Contract: Anmol sends Mark the document first; it goes to Aarvin with Mark in copy. If it is the SOW, ask about the signature in the same email (E68).</li>
+      <li>New models: they do not block Nov 2. Qwen 3.8 27B + GLiNER stays the default until Gemma 4 or Mistral beats it on the same 15 emails.</li>
+      <li>Nov 2 questions: Mark collects them in one list by Friday, so the client page is ready before the meeting.</li>
+      <li>Anmol's report: change "VPC" to "hosted APIs, sized for a VPC" and replace the local links. The CMU sentence can stay, if topic 4 decides CMU is open.</li>
+      <li>PRs: each one gets a named reviewer today. Zhexuan reviews Yudi's PR; Yudi reviews Karina's.</li>
+    </ul>
+  </div>
+  <div class="fill">
+    <div class="row2">
+      <label for="o6">Owners<input type="text" id="o6" data-save></label>
+      <label for="w6">By when<input type="text" id="w6" data-save></label>
+    </div>
+    <label for="n6" class="k">Notes</label>
+    <textarea id="n6" data-save></textarea>
+  </div>
+</section>
+
+<section class="item" id="wrap" data-topic="wrap" data-title="Before we leave">
+  <h2><span class="n">✓</span>Before we leave</h2>
+  <p class="lede">Fill this in at the end. It becomes the Slack summary and the TODO update.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Who</th><th>Does what by Nov 2</th></tr>
+    <tr><td>Mark</td><td><input type="text" id="s_m" data-save aria-label="Mark" placeholder="Slack summary and timeline; ask Aarvin what their agent needs"></td></tr>
+    <tr><td>Zhexuan</td><td><input type="text" id="s_z" data-save aria-label="Zhexuan" placeholder="server-issued key in v2; token check; hosting for Monday"></td></tr>
+    <tr><td>Anmol</td><td><input type="text" id="s_a" data-save aria-label="Anmol" placeholder="flow diagram; prompts into the service; contract to Aarvin"></td></tr>
+    <tr><td>Yudi</td><td><input type="text" id="s_y" data-save aria-label="Yudi" placeholder="0.1.3 PR; 0.1.4 with commercial categories"></td></tr>
+    <tr><td>Karina</td><td><input type="text" id="s_k" data-save aria-label="Karina" placeholder="review into PR #9; relabel to 0.1.3; score 60 emails"></td></tr>
+  </table></div>
+  <label for="n_wrap" class="k" style="display:block;margin-top:14px">Other decisions and action items</label>
+  <textarea id="n_wrap" data-save style="min-height:110px"></textarea>
+</section>
+
+<section class="export" aria-labelledby="exh">
+  <h2 id="exh"><span class="n">→</span>Save the notes</h2>
+  <p class="lede">Everything you type is kept in this browser only. When the meeting ends, make the Markdown and paste it to Claude; it becomes the meeting notes, the Slack summary and the TODO update.</p>
+  <div class="btns">
+    <button type="button" id="mk">Make Markdown</button>
+    <button type="button" id="cp" class="ghost">Copy</button>
+    <button type="button" id="clr" class="ghost">Clear all fields</button>
+  </div>
+  <div class="confirm" id="clrask" hidden><span>Clear every field on this page?</span><button type="button" id="clryes">Clear</button><button type="button" id="clrno" class="ghost">Keep</button></div>
+  <p id="status" role="status">Not saved yet.</p>
+  <label for="mdout" class="k">Markdown</label>
+  <textarea id="mdout" readonly></textarea>
+</section>
+
+<footer>Chinese version: <a href="agenda-zh.html">agenda-zh.html</a>. Sources: <code>meetings/client/2026-10-26/notes-gemini-en.pdf</code>, <code>docs/api/conversation-keys-en.md</code>, <code>todo/TODO.md</code> (A13, A18, A19, B41, B46, B58, B71–B74, D49, D51, D52, D70, E68).</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-team-2026-10-27-en';
+  var L={"h1": "# Team meeting 2026-10-27: notes", "att": "Attendees: ", "by": "Notes by: ", "recap": "Corrections to the Gemini notes", "dec": "Decision: ", "owner": "Owner: ", "when": " · by: ", "notes": "Notes: ", "other": "Other: ", "saved": "Saved in this browser at ", "savedEnd": ".", "nosave": "This browser is not saving. Make the Markdown before you close the page.", "restored": "Restored your earlier notes from this browser.", "ready": "Markdown is ready below.", "copied": "Copied. Paste it to Claude.", "blocked": "Copy was blocked. The text is selected; press Cmd+C.", "cleared": "All fields cleared."};
+  var status=document.getElementById('status');
+  function fields(){return Array.prototype.slice.call(document.querySelectorAll('[data-save]'));}
+  function read(){var o={};fields().forEach(function(el){if(el.type==='radio'){if(el.checked)o[el.name]=el.id;}else{o[el.id]=el.value;}});return o;}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(read()));status.textContent=L.saved+new Date().toLocaleTimeString()+L.savedEnd;}catch(e){status.textContent=L.nosave;}}
+  function load(){var o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}if(!o)return;fields().forEach(function(el){if(el.type==='radio'){el.checked=(o[el.name]===el.id);}else if(o[el.id]!=null){el.value=o[el.id];}});status.textContent=L.restored;}
+  function v(id){var el=document.getElementById(id);return el?el.value.trim():'';}
+  function md(){
+    var out=[L.h1,''];
+    if(v('attendees'))out.push(L.att+v('attendees'));
+    if(v('timekeeper'))out.push(L.by+v('timekeeper'));
+    out.push('');
+    if(v('nR'))out.push('## '+L.recap,v('nR'),'');
+    document.querySelectorAll('section[data-topic]').forEach(function(s){
+      var t=s.getAttribute('data-topic'),title=s.getAttribute('data-title');
+      out.push('## '+(t==='wrap'?'':t+'. ')+title);
+      var r=s.querySelector('input[type=radio]:checked');
+      if(r)out.push('- '+L.dec+r.value+'. '+r.getAttribute('data-label'));
+      s.querySelectorAll('.qa label').forEach(function(l){var i=l.querySelector('input');var q=l.querySelector('span').textContent.replace(/\s+/g,' ').trim();if(i&&i.value.trim())out.push('- '+q+' → '+i.value.trim());});
+      if(t==='5'){s.querySelectorAll('tr').forEach(function(tr){var c=tr.querySelectorAll('td');if(c.length===4){var i=c[3].querySelector('input');var o=i.value.trim()||'-';out.push('- '+c[0].textContent+': '+c[1].textContent+' ('+L.owner+o+')');}});}
+      if(t==='wrap'){
+        s.querySelectorAll('tr').forEach(function(tr){var c=tr.querySelectorAll('td');if(c.length===2){var a=c[1].querySelector('input').value.trim();if(a)out.push('- '+c[0].textContent+': '+a);}});
+        if(v('n_wrap'))out.push('- '+L.other+v('n_wrap'));
+      }else{
+        if(v('o'+t)||v('w'+t))out.push('- '+L.owner+(v('o'+t)||'-')+L.when+(v('w'+t)||'-'));
+        if(v('n'+t))out.push('- '+L.notes+v('n'+t));
+      }
+      out.push('');
+    });
+    return out.join('\n');
+  }
+  document.addEventListener('input',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.addEventListener('change',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.getElementById('mk').addEventListener('click',function(){document.getElementById('mdout').value=md();status.textContent=L.ready;});
+  document.getElementById('cp').addEventListener('click',function(){var ta=document.getElementById('mdout');if(!ta.value)ta.value=md();var done=function(){status.textContent=L.copied;};var fail=function(){ta.focus();ta.select();status.textContent=L.blocked;};try{navigator.clipboard.writeText(ta.value).then(done,fail);}catch(e){fail();}});
+  document.getElementById('clr').addEventListener('click',function(){document.getElementById('clrask').hidden=false;});
+  document.getElementById('clrno').addEventListener('click',function(){document.getElementById('clrask').hidden=true;});
+  document.getElementById('clryes').addEventListener('click',function(){fields().forEach(function(el){if(el.type==='radio')el.checked=false;else el.value='';});document.getElementById('mdout').value='';try{localStorage.removeItem(KEY);}catch(e){}document.getElementById('clrask').hidden=true;status.textContent=L.cleared;});
+  load();
+})();
+</script>

@@ -15,3 +15,13 @@ model:
   backend: stub                   # stub | ollama
   ollama_url: http://127.0.0.1:11434
   model_name: llama3:8b
+
+# V2 is enabled only when VG_TOKEN_KEYS supplies a persistent keyring.
+# memory is development-only; choose redis for independent processes/hosts.
+tokenization:
+  default_mode: mapping          # mapping | aes_siv; optional per-request override
+  store: memory                  # memory | redis (VG_TOKEN_STORE overrides)
+  redis_url: redis://127.0.0.1:6379/0  # VG_REDIS_URL; Redis >= 7
+  active_key_id: k1               # VG_ACTIVE_TOKEN_KEY_ID overrides
+  conversation_max_lifetime_seconds: 86400  # hard cap from first creation
+  conversation_tombstone_seconds: 86400     # retain closed/expired group identity after hard cap

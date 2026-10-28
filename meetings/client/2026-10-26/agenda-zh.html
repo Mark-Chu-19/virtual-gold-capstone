@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>10/26 客戶會議</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; each topic is a card with evidence, a recommendation, then a fill-in block. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --field:#FBFCFD;
+  --serif:"Source Serif 4","PingFang TC","Noto Serif TC",Georgia,serif;
+  --sans:"Source Sans 3","PingFang TC","Noto Sans TC","Microsoft JhengHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:36px 72px}
+.page{max-width:880px;margin:0 auto}
+header{padding-bottom:22px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.intro{margin:0 0 18px;font-size:17px;line-height:1.6;max-width:68ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0 0 18px;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400;flex:none}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.lede{color:var(--muted);margin:6px 0 14px;font-size:16px;line-height:1.65}
+p{margin:0 0 10px}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:7px}
+a{color:var(--cloud)}
+
+/* running order */
+.order{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 14px}
+.order li:hover{border-color:var(--gold)}
+.order a{color:inherit;text-decoration:none}
+.order .n{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.order .t{font-weight:600}
+.order .w{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.order .d{grid-column:2/-1;font-size:14px;color:var(--muted)}
+@media (max-width:600px){.order li{grid-template-columns:28px 1fr}.order .w{grid-column:2}}
+.chains{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 44px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;font-size:14px}
+.chain:last-child{margin-bottom:0}
+.chain .lab{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);width:100%}
+.node{border:1px solid var(--line);border-radius:999px;padding:3px 11px;background:var(--soft)}
+.node.today{border-color:var(--warn);background:var(--warn-soft);font-weight:600}
+.arr{color:var(--muted)}
+
+/* topic cards */
+section.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 22px 20px;margin-bottom:26px;scroll-margin-top:16px}
+section.item.urgent{border-left:4px solid var(--warn)}
+section.item.soon{border-left:4px solid var(--gold)}
+section.item.later{border-left:4px solid var(--cloud)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.due{background:var(--warn-soft);color:var(--warn)}
+.issue{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.issue h4{margin:0 0 6px;font-size:16px}
+.issue .ev{font-size:14px;color:var(--muted);margin:6px 0 0}
+.rec{background:var(--local-soft);border-radius:8px;padding:12px 14px;margin-top:14px}
+.rec .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--local);display:block;margin-bottom:4px}
+.tablewrap{overflow-x:auto;margin:6px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);background:var(--soft);font-weight:500}
+td.hl{background:var(--warn-soft)}
+.num{font-variant-numeric:tabular-nums}
+
+/* fill-in block */
+.fill{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;display:grid;gap:14px}
+.fill .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.qa{display:grid;gap:10px}
+.qa label{display:grid;gap:4px;font-size:15px}
+.qa .who{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+.choices{display:grid;gap:8px;border:0;padding:0;margin:0}
+.choices legend{padding:0;margin-bottom:6px}
+.choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font-size:15px}
+.choice:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.choice input{margin-top:4px;accent-color:var(--gold);flex:none}
+.choice b{font-family:var(--mono);font-size:12px;color:var(--gold);margin-right:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.row2{grid-template-columns:1fr}}
+.row2 label{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+input[type=text],textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{min-height:64px;resize:vertical;line-height:1.5}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.choice:focus-within{outline:2px solid var(--gold);outline-offset:1px}
+
+/* export */
+.export{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-top:10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+button{font:inherit;font-size:15px;font-weight:600;border-radius:8px;padding:8px 14px;border:1px solid var(--gold);background:var(--gold);color:var(--surface);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:focus-visible{outline:2px solid var(--cloud);outline-offset:2px}
+#status{font-size:13px;color:var(--muted)}
+#mdout{min-height:180px;font-family:var(--mono);font-size:13px}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+/* client-page additions */
+.tbd{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--warn-soft);color:var(--warn);margin-left:6px;vertical-align:middle}
+.draftbar{background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:10px 14px;font-size:14px;margin-bottom:22px}
+.mile{list-style:none;padding:0;margin:0 0 40px;display:grid;gap:0;border-left:2px solid var(--line)}
+.mile li{position:relative;padding:6px 0 12px 20px;font-size:15px}
+.mile li::before{content:"";position:absolute;left:-7px;top:11px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.mile li.done::before{background:var(--local);border-color:var(--local)}
+.mile li.now::before{background:var(--gold);border-color:var(--gold)}
+.mile .dt{font-family:var(--mono);font-size:12px;color:var(--muted);margin-right:8px;font-variant-numeric:tabular-nums}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:40px}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;min-width:0}
+.card h3{margin-top:0}
+.card .big{font-family:var(--serif);font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.card .cap{font-size:14px;color:var(--muted);margin-bottom:10px}
+.card ul{padding-left:18px;margin:8px 0 0;font-size:15px}
+.card .owner{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">Virtual Gold × CMU capstone · 客戶會議 · 中文對照</div>
+  <h1>10/19 以來的進度，以及需要客戶回答的問題</h1>
+  <p class="intro">服務現在用自己的偵測元件跑，模型結果變好了，測試集建好了，加密設計也實作完成。其中兩部分是提案，想聽客戶的看法：新版分級表和兩種加密模式。另外，為了讓 Phase 1 準時完成，還需要客戶回答可接受的外洩率和服務要跑在哪裡。</p>
+  <p class="intro" style="font-size:15px;color:var(--muted)">這是英文版 <code>agenda-en.html</code> 的中文對照，內容一致，給組內參考。給客戶看的是英文版。</p>
+  <dl class="meta">
+    <div><dt>會議</dt><dd>2026-10-26（週一）18:00 ET</dd></div>
+    <div><dt>出席</dt><dd><input type="text" id="attendees" data-save aria-label="出席" placeholder="Inderpal、Alex、Aarvin、Urte；組員"></dd></div>
+    <div><dt>階段</dt><dd>Phase 1 今天開始（10/26–11/8）</dd></div>
+  </dl>
+</header>
+
+<h2><span class="n">01</span>目前進度</h2>
+<p class="lede">期中簡報裡的里程碑。綠色是完成，金色是進行中。</p>
+<ol class="mile">
+  <li class="done"><span class="dt">10/5</span>期中簡報</li>
+  <li class="done"><span class="dt">10/19</span>API contract 0.4.2 和服務骨架，含監控儀表板</li>
+  <li class="done"><span class="dt">10/23</span>隱私元件進入服務：規則、Presidio、合併、評分、placeholder</li>
+  <li class="done"><span class="dt">10/26</span>對話金鑰和兩種加密模式進入服務（預設關閉，見 07 的提案）</li>
+  <li class="now"><span class="dt">11/1</span>端到端流程，含失敗處理（模型 prompt 還在接）</li>
+  <li><span class="dt">11/8</span>儀表板和壓力測試結果；Phase 1 結束</li>
+  <li><span class="dt">11/2–15</span>Phase 2：串接 VG08；11/15 contract 凍結</li>
+  <li><span class="dt">11/22</span>程式碼凍結（11/18 軟凍結）</li>
+  <li><span class="dt">11/30</span>期末簡報</li>
+</ol>
+
+<h2><span class="n">02</span>10/19 以來的進度</h2>
+<p class="lede">四條工作線的摘要，細節在 03 到 07。</p>
+<div class="grid2">
+  <div class="card">
+    <span class="owner">偵測 · Yudi</span>
+    <h3>規則和 Presidio</h3>
+    <div class="big">8 個修正</div>
+    <div class="cap">用外部標註資料集（ai4privacy）1,000 筆測試後修正</div>
+    <ul>
+      <li>email 100% 抓到；出生日期 83%、電話 75%、證件號碼 69%、姓名 68%</li>
+      <li>短代碼、財報季度、訂單號碼的誤判變少</li>
+      <li>新版分級表（policy 0.1.3）請客戶審</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="owner">模型 · Anmol</span>
+    <h3>模型評測</h3>
+    <div class="big">7.4%</div>
+    <div class="cap">隱私字元沒被遮的比例，最好的設定（10/19 最好是 16.2%）</div>
+    <ul>
+      <li>Qwen 3.8 27B + GLiNER，一張 24–48 GB GPU 就能跑；10 個機密事實抓到 9 個；每封信 2.4 秒</li>
+      <li>GPT-OSS 120B 誤遮的公開文字最少（5–12%），但漏得比較多</li>
+      <li>不用 LLM 的備案（規則 + Presidio + GLiNER）：29.4%，0.11 秒</li>
+      <li>在託管的開源模型 API 上測試，還沒部署到 VPC。15 封信，涵蓋 15 個業務領域中的 4 個</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="owner">評測 · Karina</span>
+    <h3>測試集</h3>
+    <div class="big">1,054</div>
+    <div class="cap">個標註項目，在 100 封虛構的主管信件裡</div>
+    <ul>
+      <li>每封信同時是合法的服務請求，服務輸出不用轉換就能評分</li>
+      <li>只用規則抓到 66%，剩下的要靠模型</li>
+      <li>照目前的分級表（policy 0.1.1）標註</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="owner">服務 · Zhexuan</span>
+    <h3>對話金鑰和加密</h3>
+    <div class="big">2 種模式</div>
+    <div class="cap">每段對話有自己的金鑰；兩種模式都已實作</div>
+    <ul>
+      <li><code>mapping</code>：原文加密後存在伺服器</li>
+      <li><code>aes_siv</code>：加密後的原文直接放在 token 裡，伺服器不存對照表</li>
+      <li>還原只需要文字；關閉對話後，它的 token 就失效</li>
+    </ul>
+  </div>
+</div>
+
+<section class="item soon" aria-labelledby="h3d">
+  <h2 id="h3d"><span class="n">03</span>偵測：規則和 Presidio</h2>
+  <div class="tags"><span class="tag">Yudi</span><span class="tag">10/25</span></div>
+  <p class="lede">先用資料測固定格式的偵測器，修最嚴重的錯，再測一次。需要看上下文的情況（拆開的地址、公司還是人名、商業機密、健康資訊）交給模型，不手寫規則。</p>
+  <h3>怎麼測的</h3>
+  <ul class="points">
+    <li>資料集：ai4privacy pii-masking-400k，1,000 筆英文驗證資料（合成，美國和英國）。只放在本機，授權不允許再散布。</li>
+    <li>它的 17 個標籤有 16 個對得到我們的類別。只評分表裡交給規則或 Presidio 的類別。</li>
+    <li>標註項目只要和任何偵測到的片段重疊，就算抓到。</li>
+  </ul>
+  <h3>修正後的結果（規則和 Presidio 合併）</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>類別</th><th class="num">抓到</th><th class="num">類別正確</th><th class="num">精確率</th></tr></thead>
+    <tbody>
+      <tr><td>EMAIL_PERSONAL</td><td class="num">100%</td><td class="num">100%</td><td class="num">100%</td></tr>
+      <tr><td>DATE（出生日期）</td><td class="num">83%</td><td class="num">83%</td><td class="num">–</td></tr>
+      <tr><td>PHONE_PERSONAL</td><td class="num">75%</td><td class="num">64%</td><td class="num">60%</td></tr>
+      <tr><td>CITY</td><td class="num">74%</td><td class="num">60%</td><td class="num">43%</td></tr>
+      <tr><td>GOV_ID</td><td class="num">69%</td><td class="num">36%</td><td class="num">63%</td></tr>
+      <tr><td>PERSON</td><td class="num">68%</td><td class="num">62%</td><td class="num">54%</td></tr>
+      <tr><td>ACCOUNT_NUMBER</td><td class="num">53%</td><td class="num">42%</td><td class="num">62%</td></tr>
+      <tr><td>ADDRESS_HOME</td><td class="num">40%</td><td class="num">4%</td><td class="num">–</td></tr>
+      <tr><td>CARD_NUMBER</td><td class="num">25%</td><td class="num">8%</td><td class="num">18%</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="points" style="font-size:15px;margin-top:10px">
+    <li>精確率被低估：資料集沒標 IMEI、護照、加密錢包和公司名稱，抓對了也被算成錯。</li>
+    <li>地址：資料集把門牌、街道、郵遞區號分開標，我們的規則找的是完整的美國地址。這些零散部分交給模型。</li>
+    <li>卡號：資料集的卡號是隨機產生的（只有 10% 通過校驗碼），所以這一列不代表真實卡號的表現。</li>
+    <li>抓到的大多來自 Presidio。只用規則：email 100%、證件號碼 32%、電話 28%。</li>
+  </ul>
+  <h3>八個修正</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>#</th><th>問題</th><th>修正</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td><code>x4521</code>、<code>Q3</code> 這類短代碼被當成證件號碼（High）</td><td>有上下文或 7 個字元以上才保留</td></tr>
+      <tr><td class="num">2</td><td>句首的「Email」、「Reach」被當成人名</td><td>句首單獨出現的清單詞丟掉</td></tr>
+      <tr><td class="num">3</td><td><code>Q3</code> 被當成地點；「age 42」被當成日期</td><td>丟掉財報季度；改成 AGE</td></tr>
+      <tr><td class="num">4</td><td><code>X501</code> 這類代碼被當成電話分機</td><td>分機規則變嚴（規則的電話精確率 89% → 100%）</td></tr>
+      <tr><td class="num">5</td><td>沒有地址、年齡、信尾署名的規則</td><td>新增美國地址、年齡和「Thanks, 名字」規則</td></tr>
+      <tr><td class="num">6</td><td>通過校驗碼的訂單號碼被當成卡號</td><td>卡號必須以 2–6 開頭</td></tr>
+      <tr><td class="num">7</td><td>長串數字被當成日期（Low）</td><td>改成 ACCOUNT_NUMBER（High）；掉到 Low 的從 14 個降到 2 個</td></tr>
+      <tr><td class="num">8</td><td>「銀行帳號」範圍太窄</td><td>改名 ACCOUNT_NUMBER，涵蓋銀行、券商和客戶帳號（類別正確 23% → 42%）</td></tr>
+    </tbody>
+  </table></div>
+  <h3>還沒解決</h3>
+  <ul class="points">
+    <li>拆開的地址會漏掉，或被標成城市、日期；交給模型。</li>
+    <li>部分 SSN 和稅號被標成電話（High 降成 Medium）；<code>FILE-201307-4379</code> 這類文件編號被標成電話。</li>
+    <li>公司名稱被標成人名。</li>
+    <li>門檻等真實信件和模型接上後再調。</li>
+  </ul>
+</section>
+
+<section class="item urgent" aria-labelledby="h4d">
+  <h2 id="h4d"><span class="n">04</span>分級表提案（policy 0.1.3）</h2>
+  <div class="tags"><span class="tag due">請客戶審：Q1</span><span class="tag">Yudi</span></div>
+  <p class="lede">22 個類別，4 個 tier。tier 和類別上次會議已經確認；Yudi 提出三個改動，因為在測試資料上比較準。改動已經準備好，客戶確認後就合併。完整的表也在附件（<code>tier-table-client-review-en.docx</code>）。</p>
+  <h3>和目前版本（0.1.1）的差別</h3>
+  <ul class="points">
+    <li><b>BANK_ACCOUNT → ACCOUNT_NUMBER</b>：現在涵蓋銀行、券商和客戶帳號、IBAN、加密錢包和其他長串數字 ID。</li>
+    <li><b>新增 ADDRESS_PUBLIC</b>（Public）：公開的辦公室和公司地址，不再被當成住家地址。</li>
+    <li><b>Public 門檻 0.5 → 0.8</b>：看起來公開的項目，要模型相當確定是隱私才遮。公開的聯絡方式本來就是要給人的，風險在於把個人電話誤當成公開電話。</li>
+  </ul>
+  <h3>各 tier 怎麼處理</h3>
+  <p style="font-size:15px">本地模型給每個項目一個分數，也就是它是隱私的機率。tier 決定門檻。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Tier</th><th>規則</th><th>什麼時候遮</th></tr></thead>
+    <tbody>
+      <tr><td><b>High</b></td><td>遮</td><td>分數 ≥ 0.2，模型不太確定也遮</td></tr>
+      <tr><td><b>Medium</b></td><td>遮</td><td>分數 ≥ 0.5</td></tr>
+      <tr><td><b>Low</b></td><td>保留，除非組合出現</td><td>同一欄出現 3 種以上不同的 Low 類別（例如城市 + 雇主 + 年齡）</td></tr>
+      <tr><td><b>Public</b></td><td>確定公開就保留</td><td>分數 ≥ 0.8</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:15px;margin-top:8px">不論分數一律遮：客戶的機密詞清單、請求標為禁止的字詞、模型無法分類的項目。所有門檻都是起始值，之後用測試集調。</p>
+  <h3>類別</h3>
+  <p style="font-size:15px">每封信都會跑三種偵測器，結果合併：本地模型、規則和 Presidio（開源的個資工具）。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>類別</th><th>Tier</th><th>例子</th></tr></thead>
+    <tbody>
+      <tr><td><code>GOV_ID</code></td><td>High</td><td>社會安全號碼、護照、駕照、ITIN</td></tr>
+      <tr><td><code>CREDENTIAL</code></td><td>High</td><td>密碼、API key、存取 token</td></tr>
+      <tr><td><code>CARD_NUMBER</code></td><td>High</td><td>付款卡號</td></tr>
+      <tr><td><code>ACCOUNT_NUMBER</code></td><td>High</td><td>銀行、券商和客戶帳號、IBAN、加密錢包、其他長串數字 ID</td></tr>
+      <tr><td><code>HEALTH</code></td><td>High</td><td>診斷、治療、病假</td></tr>
+      <tr><td><code>BUSINESS_CONFIDENTIAL</code></td><td>High</td><td>未公開財務、交易條件、法律事務</td></tr>
+      <tr><td><code>CODENAME</code></td><td>High</td><td>專案和交易代號、交易對象</td></tr>
+      <tr><td><code>DEMOGRAPHIC</code></td><td>High</td><td>國籍、宗教、政治立場</td></tr>
+      <tr><td><code>PERSON</code></td><td>Medium</td><td>人名</td></tr>
+      <tr><td><code>PHONE_PERSONAL</code></td><td>Medium</td><td>個人電話和分機</td></tr>
+      <tr><td><code>EMAIL_PERSONAL</code></td><td>Medium</td><td>個人 email</td></tr>
+      <tr><td><code>ADDRESS_HOME</code></td><td>Medium</td><td>街道地址、郵政信箱</td></tr>
+      <tr><td><code>NETWORK_ID</code></td><td>Medium</td><td>IP 和 MAC 位址</td></tr>
+      <tr><td><code>AMOUNT</code></td><td>Medium</td><td>金額（$4.2M、USD 500k）</td></tr>
+      <tr><td><code>CITY</code></td><td>Low</td><td>城市、國家</td></tr>
+      <tr><td><code>DATE</code></td><td>Low</td><td>日期和時間</td></tr>
+      <tr><td><code>ORG</code></td><td>Low</td><td>公司和組織名稱</td></tr>
+      <tr><td><code>AGE</code></td><td>Low</td><td>「age 42」、「42-year-old」</td></tr>
+      <tr><td><code>GENDER</code></td><td>Low</td><td>性別</td></tr>
+      <tr><td><code>PHONE_PUBLIC</code></td><td>Public</td><td>公司總機、客服專線</td></tr>
+      <tr><td><code>EMAIL_PUBLIC</code></td><td>Public</td><td>info@、support@ 信箱</td></tr>
+      <tr><td><code>ADDRESS_PUBLIC</code></td><td>Public</td><td>公開的辦公室和公司地址</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:15px;margin-top:8px">個人資料的 tier 依照 NIST SP 800-122 的影響等級；健康和人口特徵依 GDPR 第 9 條列為 High。</p>
+</section>
+
+<section class="item soon" aria-labelledby="h5m">
+  <h2 id="h5m"><span class="n">05</span>模型評測</h2>
+  <div class="tags"><span class="tag">Anmol</span><span class="tag">10/25</span></div>
+  <p class="lede">修掉測試程式的六個缺陷後，在 10/19 用的同一批 15 封開發用信件上跑了 9 種新設定。全部用託管的開源模型 API 跑，服務還沒部署到 VPC。GPU 大小指的是自架時每個模型需要的硬體。完整報告（<code>briefing-vpc-model-evaluation-en.md</code>）在會議中說明。</p>
+  <h3>主要結果</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>設定</th><th>自架需要的 GPU</th><th class="num">隱私文字外洩</th><th class="num">公開文字誤遮</th><th class="num">機密事實抓到</th><th class="num">每封秒數</th></tr></thead>
+    <tbody>
+      <tr><td>規則 + Presidio（不用模型）</td><td>不需要</td><td class="num">42.8%</td><td class="num">2.3%</td><td class="num">10 個中 0 個</td><td class="num">0.00</td></tr>
+      <tr><td>規則 + Presidio + GLiNER（不用 LLM）</td><td>1 GB 以下</td><td class="num">29.4%</td><td class="num">6.6%</td><td class="num">10 個中 0 個</td><td class="num">0.11</td></tr>
+      <tr><td>Llama 3.3 70B（10/19 對照）</td><td>80 GB</td><td class="num">16.2%</td><td class="num">18.5%</td><td class="num">10 個中 6 個</td><td class="num">40.8</td></tr>
+      <tr><td><b>Qwen 3.8 27B + GLiNER</b>（最好）</td><td>24–48 GB</td><td class="num"><b>7.4%</b></td><td class="num">21.7%</td><td class="num">10 個中 9 個</td><td class="num">2.4</td></tr>
+      <tr><td>Qwen 3.8 27B</td><td>24–48 GB</td><td class="num">11.7%</td><td class="num">18.3%</td><td class="num">10 個中 9 個</td><td class="num">1.8</td></tr>
+      <tr><td>Qwen 3.8 27B，再由 Safeguard 20B 檢查</td><td>24–48 GB</td><td class="num">14.0%</td><td class="num">14.7%</td><td class="num">10 個中 8 個</td><td class="num">1.8</td></tr>
+      <tr><td>GPT-OSS 120B</td><td>80 GB</td><td class="num">22.9%</td><td class="num">11.5%</td><td class="num">10 個中 4 個</td><td class="num">2.3</td></tr>
+      <tr><td>GPT-OSS 120B，單次處理</td><td>80 GB</td><td class="num">27.0%</td><td class="num">5.4%</td><td class="num">10 個中 3 個</td><td class="num">1.6</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="points" style="font-size:15px;margin-top:10px">
+    <li>最好的設定把 10/19 的外洩率減半，一張 24–48 GB GPU 就放得下。代價是公開文字誤遮比較多。</li>
+    <li>GPT-OSS 120B 誤遮最少，但漏得比較多，而且需要 80 GB GPU。</li>
+    <li>不用 LLM 的設定（規則 + Presidio + GLiNER）可以當模型無法使用時的備案。</li>
+    <li>限制：15 封信，涵蓋 15 個業務領域中的 4 個；速度來自託管 API，不是客戶的硬體；用較早版本的 tier 規則量的（見 Q2）。</li>
+  </ul>
+</section>
+
+<section class="item soon" aria-labelledby="h6d">
+  <h2 id="h6d"><span class="n">06</span>測試集：100 封信，1,054 個標註項目</h2>
+  <div class="tags"><span class="tag">Karina</span><span class="tag">baseline v1.1</span></div>
+  <p class="lede">還是原本那 100 封虛構的主管信件，重新整理成服務可以直接評分的格式。這也回答了 Aarvin 在期中問的「LLM 產生的標註怎麼能信」：標註由 LLM 提出，再由人逐筆檢查。</p>
+  <h3>改了什麼</h3>
+  <ul class="points">
+    <li><b>每封信都是一個服務請求。</b>可以直接送進 API；每個項目帶有服務自己的欄位位置、類別和 tier，結果不用轉換就能評分。</li>
+    <li><b>每個項目標成遮或保留。</b>共 1,054 個：1,006 個要遮、48 個保留。984 個和第一版一致，15 個改成保留（例如 <code>no-reply@</code> 信箱、公司公開的辦公室地址），新增 55 個（大多是機密事實裡的人名和金額）。</li>
+    <li><b>照目前的分級表（policy 0.1.1）標註。</b>如果客戶確認 0.1.3，再更新類別。</li>
+    <li><b>切分：</b>60 封用來開發，40 封保留給最後一次測試。</li>
+  </ul>
+  <h3>初步分數</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>偵測方式</th><th class="num">抓到的項目</th><th class="num">有東西外洩的信</th></tr></thead>
+    <tbody>
+      <tr><td>簡單的正規表示式（下限）</td><td class="num">40%</td><td class="num">96%</td></tr>
+      <tr><td>只用服務的規則</td><td class="num">66%</td><td class="num">87%</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:15px;margin-top:8px">兩列都是用目前服務裡的規則測的：尚未包含 03 的修正，也沒有 Presidio 和模型。03 裡 Yudi 的數字來自另一個外部資料集，所以兩段的數字不能直接比較。</p>
+  <p style="font-size:15px">規則抓到所有 email 和 79% 的人名，但銀行帳號、代號、健康資訊和編號一個都沒抓到。這部分要靠模型補。</p>
+  <h3>測試集對分級表的啟示</h3>
+  <ul class="points">
+    <li><b>86 個應該遮的項目落在 Low</b>：67 個公司名、12 個城市、6 個日期、1 個年齡。Low 單獨出現時會保留，所以就算模型很確定是隱私，這 86 個也全部會放行。最嚴重的是交易對象和出生日期。</li>
+    <li><b>39 個編號</b>（案件號、病歷號、訂單號）還沒有類別。預設會遮，所以不會外洩，但申報文件編號這類公開的會被誤遮。</li>
+    <li>100 封裡只有 4 封完全沒有要遮的東西，其他 96 封都有。</li>
+  </ul>
+  <p style="font-size:15px">這些都放進 Q1。</p>
+</section>
+
+<section class="item soon" aria-labelledby="h5d">
+  <h2 id="h5d"><span class="n">07</span>加密提案：對話金鑰，兩種模式</h2>
+  <div class="tags"><span class="tag due">聽客戶看法：Q5</span><span class="tag">Zhexuan</span></div>
+  <p class="lede">和現行 API 並存的第二版（v2）。兩種模式都已實作並放進服務，預設關閉，現行 API 不受影響。變成預設之前，想先聽客戶的看法。</p>
+  <div class="grid2" style="margin-bottom:14px">
+    <div class="card">
+      <span class="owner">mapping · 預設</span>
+      <h3>參照 token + 加密對照表</h3>
+      <ul>
+        <li>token 指向伺服器上的紀錄；原文先加密再存</li>
+        <li>刪掉某個 group 的對照表，它的 token 就失效</li>
+        <li>需要持久儲存對照表和金鑰</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="owner">aes_siv · 替代方案</span>
+      <h3>token 就是加密後的原文</h3>
+      <ul>
+        <li>伺服器不存原文對照表</li>
+        <li>同一段對話裡，相同的值和類別得到相同的 token</li>
+        <li>token 隨原文變長；模型必須原封不動傳回</li>
+      </ul>
+    </div>
+  </div>
+  <h3>流程</h3>
+  <ol class="points" style="padding-left:22px">
+    <li><b>遮蔽。</b>客戶的應用送出文字和自己的對話 ID（<code>group_id</code>）。第一個請求為這段對話產生隨機金鑰，之後的請求沿用。</li>
+    <li><b>Agent。</b>Agent 把遮蔽後的訊息原樣往下傳，不碰金鑰。</li>
+    <li><b>還原。</b>把文字送回來。每個 token 會指出它屬於哪段對話；服務檢查權限和期限後還原。</li>
+    <li><b>關閉。</b>對話結束時用同一個 ID 關閉，它的 token 就不能再還原。</li>
+  </ol>
+  <h3>金鑰保護</h3>
+  <p style="font-size:15px">每段對話有自己的隨機金鑰，由主金鑰封裝；不同用途各自衍生金鑰。呼叫端拿不到金鑰。對話預設最長 24 小時。多個服務實例透過 Redis 共用狀態。</p>
+  <h3>Placeholder 長什麼樣子</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th></th><th>現行 API</th><th>v2 提案</th></tr></thead>
+    <tbody>
+      <tr><td>Placeholder</td><td><code>[PERSON_1]</code>，短，看得出類別</td><td><code>[VG:2:…]</code>，比較長，隨原文變長</td></tr>
+      <tr><td>還原需要</td><td>request ID</td><td>只要文字</td></tr>
+      <tr><td>保存的狀態</td><td>每個請求</td><td>每段對話，最長 24 小時</td></tr>
+      <tr><td>用真實模型測過</td><td>有，在模型評測裡</td><td>還沒</td></tr>
+    </tbody>
+  </table></div>
+  <h3>v2 接下來</h3>
+  <ul class="points">
+    <li>測真實模型會不會原封不動保留長 token。</li>
+    <li>修一個會把部分一般的方括號文字誤判成 token 的檢查。</li>
+    <li>技術文件在 repo 的 <code>docs/api/</code>，需要的話可以給客戶一份。</li>
+  </ul>
+</section>
+
+<h2 style="margin-top:36px"><span class="n">08</span>需要客戶回答的問題</h2>
+<p class="lede">依照卡住我們的急迫程度排序。每題下面可以記錄答案。</p>
+
+<section class="item urgent" data-topic="Q1" data-title="分級表：0.1.3 的改動和測試集的發現">
+  <h2><span class="n">Q1</span>分級表：0.1.3 的改動和測試集的發現</h2>
+  <div class="tags"><span class="tag due">卡住 Phase 1 評分</span><span class="tag">D49</span><span class="tag">見 04</span></div>
+  <p>tier 和類別維持上次會議確認的版本。之後新增兩件事：0.1.3 的三個改動，以及測試集發現的幾種情況。</p>
+  <ul class="points">
+    <li>0.1.3 的三個改動（ACCOUNT_NUMBER、ADDRESS_PUBLIC、Public 0.8）可以接受嗎？</li>
+    <li>出生日期現在算 DATE（Low）。要不要獨立成一個類別，放 Medium 或 High？</li>
+    <li>交易對象是公司名稱，所以現在算 Low。應該放哪個 tier？</li>
+    <li>編號（案件號、病歷號、訂單號）要放哪個 tier？</li>
+    <li>模型很確定某個 Low 項目是隱私時，單獨出現還要保留嗎？</li>
+  </ul>
+  <div class="fill"><label for="n_Q1" class="k">答案</label><textarea id="n_Q1" data-save></textarea></div>
+</section>
+
+<section class="item urgent" data-topic="Q2" data-title="可接受的外洩率">
+  <h2><span class="n">Q2</span>每個 tier 可接受多少外洩？</h2>
+  <div class="tags"><span class="tag due">最後測試之前</span><span class="tag">D70</span></div>
+  <p>這決定最後的門檻。流程凍結後，40 封保留的信只跑一次。在那之前需要目標：每個 tier 可以漏多少隱私文字、公開文字誤遮多少可以接受、每封信幾秒、模型失敗時該怎麼處理。</p>
+  <p style="font-size:15px;color:var(--muted)">05 的模型數字是用較早版本的 tier 規則量的。客戶確認分級表後我們會重跑，讓數字可以直接跟這些目標比。</p>
+  <div class="fill"><label for="n_Q2" class="k">答案</label><textarea id="n_Q2" data-save></textarea></div>
+</section>
+
+<section class="item soon" data-topic="Q3" data-title="服務跑在哪裡">
+  <h2><span class="n">Q3</span>服務要跑在哪裡？</h2>
+  <div class="tags"><span class="tag">D51</span></div>
+  <p>最好的模型需要一張 24–48 GB 的 GPU，下一級需要 80 GB。會跑在客戶的私有雲嗎？什麼時候可以在那裡測？在那之前，照 9/28 的共識，我們用託管的開源模型測。</p>
+  <div class="fill"><label for="n_Q3" class="k">答案</label><textarea id="n_Q3" data-save></textarea></div>
+</section>
+
+<section class="item soon" data-topic="Q4" data-title="文件輸入和路由">
+  <h2><span class="n">Q4</span>文件輸入，以及路由</h2>
+  <div class="tags"><span class="tag">A15</span><span class="tag">A14</span><span class="tag">11/15 凍結前</span></div>
+  <p>SOW 寫的是「英文文字與文件」，服務現在只收 email。Phase 1 要支援哪些文件（合約、表格、備忘錄）？路由方面：服務要對整個請求回傳「留在本地」的狀態，還是由 VG08 依遮蔽的項目自己決定？</p>
+  <div class="fill"><label for="n_Q4" class="k">答案</label><textarea id="n_Q4" data-save></textarea></div>
+</section>
+
+<section class="item soon" data-topic="Q5" data-title="加密模式和 placeholder">
+  <h2><span class="n">Q5</span>加密模式和 placeholder</h2>
+  <div class="tags"><span class="tag">A18</span><span class="tag">見 07</span><span class="tag">11/15 凍結前</span></div>
+  <ul class="points">
+    <li>服務要完全不存原文（<code>aes_siv</code>），還是可以接受加密的伺服器對照表（<code>mapping</code>）？</li>
+    <li>VG08 和 agent 需要看得到被拿掉的是哪一類（<code>[PERSON_1]</code>），還是看不出類別的 token（<code>[VG:2:…]</code>）也可以？</li>
+    <li>VG08 和 agent 會原封不動傳遞 placeholder 嗎？</li>
+    <li>VG08 能在每個請求帶上自己的對話 ID，並在對話結束時關閉嗎？最長 24 小時合適嗎？</li>
+  </ul>
+  <div class="fill"><label for="n_Q5" class="k">答案</label><textarea id="n_Q5" data-save></textarea></div>
+</section>
+
+<section class="item later" data-topic="Q6" data-title="VG08 存取和 SOW">
+  <h2><span class="n">Q6</span>VG08 存取和 SOW</h2>
+  <div class="tags"><span class="tag">D52</span><span class="tag">E68</span></div>
+  <p>Phase 2 11/2 開始：什麼時候可以連上 VG08？另外，期中給的 Scope of Work 還沒簽，有什麼卡住嗎？</p>
+  <div class="fill"><label for="n_Q6" class="k">答案</label><textarea id="n_Q6" data-save></textarea></div>
+</section>
+
+<h2 style="margin-top:36px"><span class="n">09</span>接下來兩週</h2>
+<ul class="points" style="margin-bottom:30px">
+  <li>把模型 prompt 接進服務；11/1 前第一次端到端跑通</li>
+  <li>套用客戶確認的分級表，更新測試集的類別，在 60 封開發用信件上為服務評分</li>
+  <li>在 100 封信上跑 Yudi 修正後的規則 + Presidio</li>
+  <li>用那份分級表重跑模型評測；從 15 封擴大到 60 封</li>
+  <li>加密：用真實模型測長 token，並修好 token 檢查</li>
+</ul>
+
+<section class="export" aria-labelledby="exh">
+  <h2 id="exh"><span class="n">→</span>保存答案</h2>
+  <p class="lede">輸入的內容只存在這個瀏覽器裡。會議結束後按「產生 Markdown」，貼給 Claude，就會變成會議紀錄和 TODO 更新。</p>
+  <div class="btns"><button type="button" id="mk">產生 Markdown</button><button type="button" id="cp" class="ghost">複製</button></div>
+  <p id="status" role="status">尚未保存。</p>
+  <label for="mdout" class="k">Markdown</label>
+  <textarea id="mdout" readonly></textarea>
+</section>
+
+<footer>素材：<code>briefing-vpc-model-evaluation-en.md</code>（Anmol）、<code>briefing-rules-presidio-eval-en.html</code> 和 <code>tier-table-client-review-en.docx</code>（Yudi）、<code>briefing-encryption-api-zh.html</code>（Zhexuan）、測試集 README（Karina）。英文版：<a href="agenda-en.html">agenda-en.html</a>。</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-client-2026-10-26-zh';
+  var status=document.getElementById('status');
+  function fields(){return Array.prototype.slice.call(document.querySelectorAll('[data-save]'));}
+  function save(){var o={};fields().forEach(function(el){o[el.id]=el.value;});try{localStorage.setItem(KEY,JSON.stringify(o));status.textContent='已保存在這個瀏覽器（'+new Date().toLocaleTimeString()+'）。';}catch(e){status.textContent='這個瀏覽器無法保存。關閉頁面前請先產生 Markdown。';}}
+  function load(){var o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}if(!o)return;fields().forEach(function(el){if(o[el.id]!=null)el.value=o[el.id];});status.textContent='已還原這個瀏覽器先前輸入的內容。';}
+  function md(){var out=['# 2026-10-26 客戶會議：答案',''];var a=document.getElementById('attendees').value.trim();if(a)out.push('出席：'+a,'');document.querySelectorAll('section[data-topic]').forEach(function(s){var t=s.querySelector('textarea').value.trim();out.push('## '+s.getAttribute('data-topic')+'. '+s.getAttribute('data-title'));out.push(t||'（沒有答案）');out.push('');});return out.join('\n');}
+  document.addEventListener('input',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.getElementById('mk').addEventListener('click',function(){document.getElementById('mdout').value=md();status.textContent='Markdown 已產生在下方。';});
+  document.getElementById('cp').addEventListener('click',function(){var ta=document.getElementById('mdout');if(!ta.value)ta.value=md();var fail=function(){ta.focus();ta.select();status.textContent='複製被瀏覽器擋下。文字已選取，請按 Cmd+C。';};try{navigator.clipboard.writeText(ta.value).then(function(){status.textContent='已複製。';},fail);}catch(e){fail();}});
+  load();
+})();
+</script>
+</body>
+</html>

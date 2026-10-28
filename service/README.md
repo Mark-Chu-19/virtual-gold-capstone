@@ -18,7 +18,8 @@ To run without Presidio, install `pip install -e ".[dev]"` and start with
 
 Monitoring (Prometheus + Grafana, 8-panel dashboard, traffic generator): see `dashboards/README.md`.
 
-Single process only: request records live in memory, so run one worker.
+V1 request records live in memory and require one process. V2 can use shared Redis
+for independent replicas; see the v2 setup below.
 
 | Path | Owner | What |
 |---|---|---|
@@ -31,3 +32,22 @@ Single process only: request records live in memory, so run one worker.
 
 To plug in a real component, build the `Components` bundle in `main.py` with your function in
 place of the stub; the contract tests in `tests/` should keep passing.
+
+## V2: mapping or AES-SIV tokens
+
+V2 supports `tokenization.mode: mapping | aes_siv`, restoration directly from message text,
+shared Redis mappings, tenant/group permissions and optional cross-instance idempotency.
+V1 remains compatible. Configure a persistent `VG_TOKEN_KEYS` keyring to enable v2; use
+Redis for independent replicas (memory is development-only). No plaintext mapping is retained
+in AES-SIV mode; both modes now require persistent conversation key records. Real-model token preservation still needs evaluation.
+
+See [the v2 contract and setup](../docs/api/tokenization-v2-en.md) /
+[中文说明](../docs/api/tokenization-v2-zh.md). `infra/compose.yaml` supplies development Redis;
+`scripts/evaluate_tokens.py` compares both modes through local Ollama without changing notebooks.
+
+Conversation Key Manager now creates independent random conversation secrets, wraps them with
+`VG_TOKEN_KEYS`, and derives separate encryption/signing keys. New format-2 tokens are stable
+within a conversation and remain self-routing; format-1 tokens still restore during migration.
+`DELETE /v2/groups/{group_id}` closes a conversation, unlike `/mappings` which only clears mappings.
+See [conversation key lifecycle](../docs/api/conversation-keys-en.md) /
+[会话密钥说明](../docs/api/conversation-keys-zh.md).

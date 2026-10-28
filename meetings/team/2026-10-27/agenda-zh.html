@@ -1,0 +1,489 @@
+<title>10/27 團隊會議</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column; each topic is a card with evidence, a recommendation, then a fill-in block. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --field:#FBFCFD;
+  --serif:"Source Serif 4","Noto Serif TC","PingFang TC",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","PingFang TC","Noto Sans TC","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:36px 72px}
+.page{max-width:880px;margin:0 auto}
+header{padding-bottom:22px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.intro{margin:0 0 18px;font-size:17px;line-height:1.6;max-width:68ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0 0 18px;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400;flex:none}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.lede{color:var(--muted);margin:6px 0 14px;font-size:16px;line-height:1.65}
+p{margin:0 0 10px}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:7px}
+a{color:var(--cloud)}
+
+/* running order */
+.order{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 14px}
+.order li:hover{border-color:var(--gold)}
+.order a{color:inherit;text-decoration:none}
+.order .n{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.order .t{font-weight:600}
+.order .w{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.order .d{grid-column:2/-1;font-size:14px;color:var(--muted)}
+@media (max-width:600px){.order li{grid-template-columns:28px 1fr}.order .w{grid-column:2}}
+.chains{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 44px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;font-size:14px}
+.chain:last-child{margin-bottom:0}
+.chain .lab{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);width:100%}
+.node{border:1px solid var(--line);border-radius:999px;padding:3px 11px;background:var(--soft)}
+.node.today{border-color:var(--warn);background:var(--warn-soft);font-weight:600}
+.arr{color:var(--muted)}
+
+/* topic cards */
+section.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 22px 20px;margin-bottom:26px;scroll-margin-top:16px}
+section.item.urgent{border-left:4px solid var(--warn)}
+section.item.soon{border-left:4px solid var(--gold)}
+section.item.later{border-left:4px solid var(--cloud)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.due{background:var(--warn-soft);color:var(--warn)}
+.issue{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.issue h4{margin:0 0 6px;font-size:16px}
+.issue .ev{font-size:14px;color:var(--muted);margin:6px 0 0}
+.rec{background:var(--local-soft);border-radius:8px;padding:12px 14px;margin-top:14px}
+.rec .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--local);display:block;margin-bottom:4px}
+.tablewrap{overflow-x:auto;margin:6px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);background:var(--soft);font-weight:500}
+td.hl{background:var(--warn-soft)}
+.num{font-variant-numeric:tabular-nums}
+
+/* fill-in block */
+.fill{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;display:grid;gap:14px}
+.fill .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.qa{display:grid;gap:10px}
+.qa label{display:grid;gap:4px;font-size:15px}
+.qa .who{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+.choices{display:grid;gap:8px;border:0;padding:0;margin:0}
+.choices legend{padding:0;margin-bottom:6px}
+.choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font-size:15px}
+.choice:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.choice input{margin-top:4px;accent-color:var(--gold);flex:none}
+.choice b{font-family:var(--mono);font-size:12px;color:var(--gold);margin-right:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.row2{grid-template-columns:1fr}}
+.row2 label{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+input[type=text],textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{min-height:64px;resize:vertical;line-height:1.5}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.choice:focus-within{outline:2px solid var(--gold);outline-offset:1px}
+
+/* export */
+.export{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-top:10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+button{font:inherit;font-size:15px;font-weight:600;border-radius:8px;padding:8px 14px;border:1px solid var(--gold);background:var(--gold);color:var(--surface);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:focus-visible{outline:2px solid var(--cloud);outline-offset:2px}
+#status{font-size:13px;color:var(--muted)}
+#mdout{min-height:180px;font-family:var(--mono);font-size:13px}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<script>document.documentElement.lang='zh-Hant';</script>
+<div class="page">
+
+<header>
+  <div class="eyebrow">Virtual Gold · 團隊會議 · 內部</div>
+  <h1>週一之後：客戶決定了什麼，我們還要對齊什麼</h1>
+  <p class="intro">週一客戶核准了分級表，要求換一種還原設計，並希望下週一就接上他們的 agent。這幾件事在會上很快帶過，每個人聽到的可能不太一樣。今天要對齊它們的意思、Nov 2 前誰做什麼，以及 Mark 要貼到 Slack 的摘要內容。</p>
+  <dl class="meta">
+    <div><dt>時間</dt><dd>2026-10-27（週二）</dd></div>
+    <div><dt>來源</dt><dd>10/26 客戶會議的 Gemini 紀錄</dd></div>
+    <div><dt>下次客戶會議</dt><dd>2026-11-02（週一）18:00 ET</dd></div>
+    <div><dt>追蹤</dt><dd><code>todo/TODO-zh.md</code></dd></div>
+  </dl>
+  <div class="row2">
+    <label for="attendees">出席<input type="text" id="attendees" data-save placeholder="Mark、Anmol、Yudi、Zhexuan、Karina"></label>
+    <label for="timekeeper">記錄<input type="text" id="timekeeper" data-save placeholder="Mark"></label>
+  </div>
+</header>
+
+<h2><span class="n">00</span>議程順序</h2>
+<p class="lede">議題 1 先談，因為它會改 API，而下週一的整合（議題 2）要靠它。建議時間合計約 60 分鐘。</p>
+<ol class="order">
+  <li><span class="n">R</span><a class="t" href="#recap">回顧，以及 Gemini 紀錄要更正的地方</a><span class="w">5 分</span><span class="d">客戶決定了什麼；紀錄寫錯了什麼</span></li>
+  <li><span class="n">1</span><a class="t" href="#t1">還原設計：由伺服器發的金鑰</a><span class="w">15 分</span><span class="d">Aarvin 的設計與 API v2 的差異；每個對話還是每個請求；用哪種模式</span></li>
+  <li><span class="n">2</span><a class="t" href="#t2">Nov 2 接上客戶的 agent</a><span class="w">15 分</span><span class="d">接哪個、跑在哪、用哪個模型</span></li>
+  <li><span class="n">3</span><a class="t" href="#t3">分級表已核准：下一步</a><span class="w">10 分</span><span class="d">合併 0.1.3、商業類別、Q1 沒回答的問題</span></li>
+  <li><span class="n">4</span><a class="t" href="#t4">硬體，以及 CMU 管道</a><span class="w">5 分</span><span class="d">CMU 在客戶面前被提到了；誰去要什麼</span></li>
+  <li><span class="n">5</span><a class="t" href="#t5">到 Nov 30 的時程</a><span class="w">5 分</span><span class="d">Mark 要貼到 Slack 的版本</span></li>
+  <li><span class="n">6</span><a class="t" href="#t6">其他小事</a><span class="w">5 分</span><span class="d">給 Aarvin 的合約、新模型、沒回答的問題、未合併的 PR</span></li>
+</ol>
+<div class="chains">
+  <div class="chain"><span class="lab">議題之間的關係</span>
+    <span class="node today">1 還原設計</span><span class="arr">→</span><span class="node">Anmol 的流程圖給客戶</span><span class="arr">→</span><span class="node today">2 Nov 2 整合</span><span class="arr">→</span><span class="node">5 時程</span></div>
+  <div class="chain">
+    <span class="node today">3 分級表</span><span class="arr">→</span><span class="node">合併 0.1.3（B71）</span><span class="arr">→</span><span class="node">Karina 評分 60 封</span><span class="arr">→</span><span class="node">外洩目標（Q2、D70）</span></div>
+  <div class="chain">
+    <span class="node today">4 硬體</span><span class="arr">→</span><span class="node">Qwen 27B 需 24–48 GB GPU</span><span class="arr">+</span><span class="node">Gemma 4 與 Mistral 測試</span></div>
+</div>
+
+<!-- recap -->
+<section class="item later" id="recap">
+  <h2><span class="n">R</span>週一發生了什麼</h2>
+  <div class="tags"><span class="tag">客戶會議 2026-10-26</span><span class="tag">Gemini 紀錄</span></div>
+  <p class="lede">出自 <code>meetings/client/2026-10-26/notes-gemini-en.pdf</code>。客戶出席：Inderpal、Aarvin、Urte。</p>
+
+  <h3>客戶的決定</h3>
+  <ul class="points">
+    <li><b>分級表核准。</b>Aarvin：看起來夠好，嚴重程度表達正確，沒有阻礙。Mark 說商業類別偏弱，請組員在 Slack 提議更多類別。</li>
+    <li><b>還原設計要改。</b>Aarvin 不希望由客戶產生請求 ID。改成伺服器在遮蔽時產生一把金鑰，和遮蔽後的文字一起回傳，客戶還原時再送回來。Inderpal：遮蔽只服務主要使用者。</li>
+    <li><b>還原用加密。</b>每個對話與請求一把金鑰，加密與解密；用加密後的輸出取代 placeholder。</li>
+    <li><b>下週一（Nov 2）整合</b>，接著測試。Inderpal 問系統是否已能接上他們的 agent。</li>
+    <li><b>只用一個本地模型，不在執行時切換</b>（Aarvin）。</li>
+  </ul>
+
+  <h3>紀錄裡的下一步</h3>
+  <div class="tablewrap"><table>
+    <tr><th>誰</th><th>做什麼</th></tr>
+    <tr><td>Mark</td><td>修訂時程並貼到 Slack；把會議摘要貼到 Slack</td></tr>
+    <tr><td>Anmol</td><td>畫 API 與金鑰流程的流程圖，email 給大家確認</td></tr>
+    <tr><td>Anmol</td><td>把合約文件寄給 Aarvin</td></tr>
+    <tr><td>Anmol</td><td>拿到運算額度後評估 Gemma 4 與 Mistral</td></tr>
+    <tr><td>Karina</td><td>依確認後的分級表更新測試集類別；用 60 封開發信評分服務</td></tr>
+    <tr><td>全體</td><td>週一前整合；開始測試；向 CMU 申請硬體；在 Slack 處理資源問題</td></tr>
+  </table></div>
+
+  <h3>週一沒有得到答案的</h3>
+  <ul class="points">
+    <li><b>Q1 細節：</b>出生日期、交易對象、編號、Low 單獨出現時保留。</li>
+    <li><b>Q2</b> 每級可接受的外洩率。<b>Q3</b> 服務跑在哪裡。<b>Q4</b> 文件與路由。</li>
+    <li><b>Q5</b> placeholder 要不要顯示類別；VG08 會不會原樣傳遞 placeholder。</li>
+    <li><b>Q6</b> SOW 簽署。週一要整合，表示 VG08 會開放，但沒有明確確認。</li>
+  </ul>
+
+  <h3>貼到 Slack 前要更正的地方</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Gemini 寫的</th><th>正確的</th></tr>
+    <tr><td>測試集 155 個項目，107 個要遮</td><td>1,054 個項目：1,006 個要遮，48 個保留</td></tr>
+    <tr><td>86 個 Low 項目會被遮蔽，可能送到雲端</td><td>它們會被<b>保留</b>，因為 Low 項目單獨出現時不遮，所以才會送到雲端</td></tr>
+    <tr><td>「Yudi 目前的規則抓到 66%」</td><td>是 main 上的規則抓到 66%，不含 Yudi 的 8 項修正，也沒有 Presidio</td></tr>
+    <tr><td>規則是在私有資料集上測的</td><td>ai4privacy pii-masking-400k，是公開的外部資料集；授權禁止再散布，所以只放本機</td></tr>
+    <tr><td>Qwen，38.27 億參數</td><td>Qwen 3.8 27B（270 億參數）</td></tr>
+    <tr><td>用對話 ID 當 AES 的密碼</td><td>API v2 每個對話有一把隨機金鑰，由主金鑰包起來。ID 只是用來找到金鑰，本身不是金鑰</td></tr>
+    <tr><td>「Hash key」</td><td>伺服器回傳的是對話金鑰的識別碼，不是雜湊值。議題 1 一起決定名稱</td></tr>
+  </table></div>
+  <div class="fill">
+    <label for="nR" class="k">其他更正</label>
+    <textarea id="nR" data-save></textarea>
+  </div>
+</section>
+
+<!-- 1 -->
+<section class="item urgent" id="t1" data-topic="1" data-title="還原設計：由伺服器發的金鑰">
+  <h2><span class="n">1</span>還原設計：由伺服器發的金鑰</h2>
+  <div class="tags"><span class="tag due">Nov 2 前</span><span class="tag">A18</span><span class="tag">B73</span><span class="tag">Zhexuan</span><span class="tag">Anmol</span></div>
+  <p class="lede">API v2（PR #10，已在 main，預設關閉）要客戶自己送對話 ID，也就是 <code>group_id</code>。Aarvin 要的正好相反：由伺服器產生識別碼再回傳。Anmol 答應畫流程圖並 email 出去。程式是 Zhexuan 負責的，所以流程圖和程式必須是同一個設計。</p>
+
+  <h3>對照</h3>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>現在的 API v2</th><th>Aarvin 要的</th></tr>
+    <tr><td>誰產生 ID</td><td>客戶（<code>group_id</code>）</td><td class="hl">伺服器，在第一次遮蔽時</td></tr>
+    <tr><td>遮蔽時客戶送什麼</td><td>文字 + <code>group_id</code></td><td>只有文字</td></tr>
+    <tr><td>回傳什麼</td><td>遮蔽後的文字</td><td>遮蔽後的文字 + 金鑰 ID</td></tr>
+    <tr><td>還原</td><td>只要文字；每個 token 自帶所屬對話</td><td>文字 + 金鑰 ID</td></tr>
+    <tr><td>Placeholder</td><td><code>[VG:2:…]</code>，隨原文變長</td><td>「加密後的輸出」（沒有細說）</td></tr>
+  </table></div>
+
+  <h3>要決定的事</h3>
+  <div class="issue">
+    <h4>a. 每個對話一把金鑰，還是每個請求一把？</h4>
+    <p>紀錄裡兩個都寫了：「每個對話與請求一把 hash key」。如果每個請求一把，多輪對話每一輪都換一把，agent 就無法還原混了兩輪 token 的文字。如果每個對話一把，客戶第二次遮蔽時要把金鑰 ID 送回來，伺服器才能沿用。</p>
+  </div>
+  <div class="issue">
+    <h4>b. 用哪種模式？</h4>
+    <p>「用加密後的輸出取代 placeholder」聽起來是 <code>aes_siv</code>：不存對照表，token 比較長。雲端模型會不會把長 token 原封不動傳回來，還沒測過。Anmol 週一的 demo 用的是他原型裡的短格式 <code>[PERSON_1]</code>，不是 v2 的 token。</p>
+  </div>
+  <div class="issue">
+    <h4>c. 正式使用前先修 token 檢查</h4>
+    <p>B73：v2 的 token 檢查（<code>wire.py</code> 第 11、14 行）會把 <code>[VGA]</code>、<code>[Item_1]</code> 這類一般文字當成 token 擋掉。客戶的 agent 開始送真實流量前一定要修好。</p>
+  </div>
+  <div class="rec"><span class="k">建議</span>每個對話一把金鑰。伺服器在第一次遮蔽時建立並回傳 ID；同一對話之後的遮蔽與還原，客戶都把 ID 送回來。這樣 v2 大部分保留，只改「誰產生 ID」。今天 Zhexuan 和 Anmol 先對齊流程；Anmol 週三前把流程圖 email 給 Aarvin，請他確認是每個對話還是每個請求。</div>
+
+  <div class="fill">
+    <span class="k">紀錄</span>
+    <div class="qa">
+      <label for="q1a"><span><span class="who">問 Zhexuan</span> 改成伺服器產生 ID，v2 要改多少？週五前做得完嗎？</span><input type="text" id="q1a" data-save></label>
+      <label for="q1b"><span><span class="who">問全體</span> API 和流程圖裡要叫它什麼（key ID、conversation ID、session token）？</span><input type="text" id="q1b" data-save></label>
+      <label for="q1c"><span><span class="who">問 Anmol</span> 流程圖何時寄給 Aarvin？要不要先給 Zhexuan 看？</span><input type="text" id="q1c" data-save></label>
+      <label for="q1d"><span><span class="who">問全體</span> Nov 2 用 <code>mapping</code> 還是 <code>aes_siv</code>？誰用真實模型測長 token？</span><input type="text" id="q1d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">決定</legend>
+      <label class="choice"><input type="radio" name="d1" id="d1a" value="A" data-save data-label="每個對話一把，由伺服器建立；客戶把 ID 送回來"><span><b>A</b>每個對話一把，由伺服器建立；客戶把 ID 送回來。</span></label>
+      <label class="choice"><input type="radio" name="d1" id="d1b" value="B" data-save data-label="每個請求一把，由伺服器建立"><span><b>B</b>每個請求一把，由伺服器建立。</span></label>
+      <label class="choice"><input type="radio" name="d1" id="d1c" value="C" data-save data-label="維持 v2 現狀，再向 Aarvin 說明由客戶提供 ID 的設計"><span><b>C</b>維持 v2 現狀，再向 Aarvin 說明由客戶提供 ID 的設計。</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o1">負責人<input type="text" id="o1" data-save placeholder="Zhexuan（程式）、Anmol（流程圖）"></label>
+      <label for="w1">期限<input type="text" id="w1" data-save></label>
+    </div>
+    <label for="n1" class="k">備註</label>
+    <textarea id="n1" data-save></textarea>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="item urgent" id="t2" data-topic="2" data-title="Nov 2 接上客戶的 agent">
+  <h2><span class="n">2</span>Nov 2 接上客戶的 agent</h2>
+  <div class="tags"><span class="tag due">Nov 2（週一）</span><span class="tag">B41</span><span class="tag">B43</span><span class="tag">D52</span><span class="tag">全體</span></div>
+  <p class="lede">客戶預期下週一接上他們的 agent 並開始測試。我們有兩樣東西可以接，但兩樣現在都還沒準備好。</p>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>Anmol 的原型 gateway</th><th>服務（<code>service/</code>）</th></tr>
+    <tr><td>是什麼</td><td>週一的 demo：用模型偵測、評估、遮蔽</td><td>我們文件寫的 API：合約 0.4.2、v1 與 v2</td></tr>
+    <tr><td>模型路徑</td><td>可運作，透過託管 API（Groq）</td><td>prompt 與 parser 還是空殼；Nov 1 到期（B41）</td></tr>
+    <tr><td>還原設計</td><td>存對照表，<code>[PERSON_1]</code></td><td>v2 金鑰，要先做議題 1 的修改</td></tr>
+    <tr><td>跑在</td><td>筆電</td><td>Docker 與 Redis；還沒部署到任何地方</td></tr>
+  </table></div>
+  <h3>要決定的事</h3>
+  <ul class="points">
+    <li><b>接哪一個。</b>最後要交付的是服務，接別的東西等於要做兩次。</li>
+    <li><b>跑在哪裡。</b>他們的 agent 要能透過網路連到。是我們架一個 URL，還是他們跑我們的 container？</li>
+    <li><b>用哪個模型。</b>硬體到位前（議題 4），模型走託管 API，文字會送到第三方，所以只能用虛構信件測試，也要讓客戶知道。</li>
+    <li><b>需要客戶提供什麼。</b>VG08 存取（D52）、他們的 agent 怎麼呼叫我們、測試資料。</li>
+  </ul>
+  <div class="rec"><span class="k">建議</span>接服務，不接原型：這週把 Anmol 的 prompt 搬進服務（B41），後面接託管模型。如果來不及，週一就改成用虛構信件對 v2 做合約測試，週四前告訴 Aarvin。Mark 今天先問 Aarvin 他們的 agent 需要什麼（endpoint、認證、測試資料）。</div>
+  <div class="fill">
+    <span class="k">紀錄</span>
+    <div class="qa">
+      <label for="q2a"><span><span class="who">問 Anmol 與 Zhexuan</span> 原型的 prompt 週五前能搬進服務嗎？</span><input type="text" id="q2a" data-save></label>
+      <label for="q2b"><span><span class="who">問 Zhexuan</span> 週一要架在哪裡？誰負責架？</span><input type="text" id="q2b" data-save></label>
+      <label for="q2c"><span><span class="who">問全體</span> 週一用哪個模型、哪個供應商？</span><input type="text" id="q2c" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">決定</legend>
+      <label class="choice"><input type="radio" name="d2" id="d2a" value="A" data-save data-label="接服務，週五前接好模型路徑"><span><b>A</b>接服務，週五前接好模型路徑。</span></label>
+      <label class="choice"><input type="radio" name="d2" id="d2b" value="B" data-save data-label="先接 Anmol 的原型，之後再換成服務"><span><b>B</b>先接 Anmol 的原型，之後再換成服務。</span></label>
+      <label class="choice"><input type="radio" name="d2" id="d2c" value="C" data-save data-label="週一只做合約測試，完整整合延後一週"><span><b>C</b>週一只做合約測試，完整整合延後一週。</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o2">負責人<input type="text" id="o2" data-save></label>
+      <label for="w2">期限<input type="text" id="w2" data-save></label>
+    </div>
+    <label for="n2" class="k">備註</label>
+    <textarea id="n2" data-save></textarea>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="item soon" id="t3" data-topic="3" data-title="分級表已核准：下一步">
+  <h2><span class="n">3</span>分級表已核准：下一步</h2>
+  <div class="tags"><span class="tag">A19</span><span class="tag">B71</span><span class="tag">B46</span><span class="tag">D49</span><span class="tag">Yudi</span><span class="tag">Karina</span></div>
+  <p class="lede">Aarvin 核准了 Yudi 的 policy 0.1.3。我們先前說好客戶確認後就合併 Yudi 的分支，Karina 再更新測試集。還有兩件事沒定：Mark 提的商業類別，以及 Q1 沒人回答的問題。</p>
+  <ul class="points">
+    <li><b>現在合併 0.1.3。</b>Yudi 從 <code>feat/privacy-detection-fixes</code> 開 PR，找人審；Karina 在 PR #9 重新產生 <code>service_type</code> 與 <code>tier</code>，再用 60 封開發信評分服務。</li>
+    <li><b>商業類別。</b>Mark 說帳號、組織、金額偏弱。提議貼在 Slack。之後再加會變成 0.1.4，測試集要再標一次，所以要訂期限。</li>
+    <li><b>Q1 沒回答的。</b>出生日期、交易對象、編號、Low 單獨出現時保留。我們每一項先提一個預設值，寫進 0.1.4，Nov 2 請客戶確認。</li>
+    <li><b>Yudi docx 裡那兩欄</b>（「每次請求可調整門檻」、「也能偵測的」）：到底算不算 0.1.3 的內容？</li>
+  </ul>
+  <div class="rec"><span class="k">建議</span>這週照核准的版本合併 0.1.3，讓 Karina 能用它評分。商業類別的提議在 Slack 收到週四；Yudi 把它們和 Q1 的預設值整理成 0.1.4，Nov 2 提給客戶。</div>
+  <div class="fill">
+    <span class="k">紀錄</span>
+    <div class="qa">
+      <label for="q3a"><span><span class="who">問 Yudi</span> 0.1.3 的 PR 何時開？誰審？</span><input type="text" id="q3a" data-save></label>
+      <label for="q3b"><span><span class="who">問 Karina</span> 何時能用 0.1.3 評分 60 封？複核推進 PR #9 了嗎（B74）？</span><input type="text" id="q3b" data-save></label>
+      <label for="q3c"><span><span class="who">問全體</span> 出生日期、交易對象、編號、Low 單獨出現，各自的預設值？</span><input type="text" id="q3c" data-save></label>
+    </div>
+    <div class="row2">
+      <label for="o3">負責人<input type="text" id="o3" data-save placeholder="Yudi、Karina"></label>
+      <label for="w3">期限<input type="text" id="w3" data-save></label>
+    </div>
+    <label for="n3" class="k">備註</label>
+    <textarea id="n3" data-save></textarea>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="item soon" id="t4" data-topic="4" data-title="硬體，以及 CMU 管道">
+  <h2><span class="n">4</span>硬體，以及 CMU 管道</h2>
+  <div class="tags"><span class="tag">D51</span><span class="tag">A13</span><span class="tag">B58</span><span class="tag">Mark</span><span class="tag">Anmol</span></div>
+  <p class="lede">週一 Anmol 說我們向 CMU 申請了額度來跑更多模型，Mark 也說會和 CMU 處理硬體。紀錄把「向 CMU 申請硬體」列成全體的待辦。</p>
+  <ul class="points">
+    <li><b>這改變了先前的決定。</b>2026-09-27 我們決定不向客戶提 CMU 管道。2026-10-03 的 SOW 寫的是付費資源由客戶負擔、事先講好。這兩條現在都要重新決定。</li>
+    <li><b>需要什麼。</b>Qwen 3.8 27B + GLiNER 要一張 24–48 GB 的 GPU。Gemma 4 與 Mistral 要 API 額度（B58）。</li>
+    <li><b>Q3 還沒答。</b>正式環境跑在哪裡要客戶回答，不管 CMU 提供什麼測試資源。</li>
+  </ul>
+  <div class="rec"><span class="k">建議</span>既然客戶已經聽到了，9/27 那條就視為作廢。CMU 只用在測試運算，正式環境在哪裡（Q3）繼續問客戶。由一個人帶著明確清單去向 CMU 申請。</div>
+  <div class="fill">
+    <span class="k">紀錄</span>
+    <div class="qa">
+      <label for="q4a"><span><span class="who">問 Anmol</span> 向 CMU 申請了什麼？什麼時候會有回覆？</span><input type="text" id="q4a" data-save></label>
+      <label for="q4b"><span><span class="who">問全體</span> 誰去向 CMU 申請 GPU？要哪段時間？</span><input type="text" id="q4b" data-save></label>
+    </div>
+    <div class="row2">
+      <label for="o4">負責人<input type="text" id="o4" data-save></label>
+      <label for="w4">期限<input type="text" id="w4" data-save></label>
+    </div>
+    <label for="n4" class="k">備註</label>
+    <textarea id="n4" data-save></textarea>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="item soon" id="t5" data-topic="5" data-title="到 Nov 30 的時程">
+  <h2><span class="n">5</span>到 Nov 30 的時程</h2>
+  <div class="tags"><span class="tag">B41–B45</span><span class="tag">Mark</span></div>
+  <p class="lede">今天會後 Mark 把修訂後的時程貼到 Slack。里程碑來自期中簡報；右邊一欄是週一之後的變動。</p>
+  <div class="tablewrap"><table>
+    <tr><th>日期</th><th>里程碑</th><th>週一之後的變動</th><th>負責人</th></tr>
+    <tr><td class="num">Oct 28</td><td>還原流程圖寄給 Aarvin</td><td class="hl">新增</td><td><input type="text" id="tl1" data-save aria-label="負責人，流程圖" placeholder="Anmol"></td></tr>
+    <tr><td class="num">Oct 30</td><td>v2 改成伺服器發金鑰；修好 token 檢查；合併 0.1.3</td><td class="hl">新增</td><td><input type="text" id="tl2" data-save aria-label="負責人，v2 修改" placeholder="Zhexuan、Yudi"></td></tr>
+    <tr><td class="num">Nov 1</td><td>M2：含失敗路徑的端到端流程</td><td>同時是整合用的版本</td><td><input type="text" id="tl3" data-save aria-label="負責人，M2" placeholder="Zhexuan、Anmol"></td></tr>
+    <tr><td class="num">Nov 2</td><td>接上客戶的 agent；開始測試</td><td class="hl">原本是「Phase 2 開始」</td><td><input type="text" id="tl4" data-save aria-label="負責人，整合" placeholder="全體"></td></tr>
+    <tr><td class="num">Nov 8</td><td>M3：dashboard 與壓測；Phase 1 結束；60 封的分數</td><td>加入 Karina 的分數</td><td><input type="text" id="tl5" data-save aria-label="負責人，M3" placeholder="Zhexuan、Karina"></td></tr>
+    <tr><td class="num">Nov 15</td><td>M4：完成 VG08 整合；合約凍結</td><td>合約要包含金鑰的修改</td><td><input type="text" id="tl6" data-save aria-label="負責人，M4" placeholder="Zhexuan、Mark"></td></tr>
+    <tr><td class="num">Nov 18 / 22</td><td>軟凍結 / 程式凍結；40 封保留信跑一次</td><td>要先有外洩目標（Q2）</td><td><input type="text" id="tl7" data-save aria-label="負責人，凍結" placeholder="全體、Karina"></td></tr>
+    <tr><td class="num">Nov 30</td><td>期末簡報</td><td></td><td><input type="text" id="tl8" data-save aria-label="負責人，期末" placeholder="Mark"></td></tr>
+  </table></div>
+  <div class="rec"><span class="k">建議</span>整合維持 Nov 2，合約凍結維持 Nov 15。如果議題 2 的結論是「只做合約測試」，完整整合改到 Nov 9，之後的日期不動。每位負責人今天確認自己的日期；Mark 今晚把表貼到 Slack。</div>
+  <div class="fill">
+    <label for="n5" class="k">時程的修改</label>
+    <textarea id="n5" data-save></textarea>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="item later" id="t6" data-topic="6" data-title="其他小事">
+  <h2><span class="n">6</span>其他小事</h2>
+  <div class="tags"><span class="tag">E68</span><span class="tag">B58</span><span class="tag">B72</span><span class="tag">B73</span><span class="tag">B74</span></div>
+  <ul class="points">
+    <li><b>給 Aarvin 的合約（Anmol）。</b>是哪一份：期中給的 SOW（還沒簽，E68），還是別的？寄出前 Mark 要先看過。</li>
+    <li><b>Gemma 4 與 Mistral（Anmol）。</b>等額度（議題 4）。Aarvin 最後只要一個模型，所以這些測試決定 Qwen 3.8 27B 是否留下。</li>
+    <li><b>Nov 2 要問的。</b>Q2 外洩目標、Q4 文件與路由、Q5 placeholder 細節、Q6 SOW，加上議題 3 的 Q1 預設值。</li>
+    <li><b>Anmol 的報告（B72）。</b>已經給客戶看過了。既然 CMU 已經公開，「VPC」的措辭、§7 的 CMU 那句和本機連結還要不要改？</li>
+    <li><b>未合併的 PR。</b>PR #9 等 Karina 的複核（B74）；v2 的 B73 後續；Yudi 的 0.1.3 PR。</li>
+  </ul>
+  <div class="rec"><span class="k">建議</span>
+    <ul class="points">
+      <li>合約：Anmol 先把文件給 Mark 看，寄給 Aarvin 時副本給 Mark。如果是 SOW，同一封信順便問簽署狀況（E68）。</li>
+      <li>新模型：不影響 Nov 2。在同樣 15 封信上，Gemma 4 或 Mistral 贏過之前，預設維持 Qwen 3.8 27B + GLiNER。</li>
+      <li>Nov 2 要問的：Mark 週五前整理成一份清單，會前把客戶頁面準備好。</li>
+      <li>Anmol 的報告：「VPC」改成「託管 API，依 VPC 規格估算」，本機連結換掉。如果議題 4 決定 CMU 可以公開，CMU 那句可以留著。</li>
+      <li>PR：今天每個 PR 都指定審查人。Zhexuan 審 Yudi 的，Yudi 審 Karina 的。</li>
+    </ul>
+  </div>
+  <div class="fill">
+    <div class="row2">
+      <label for="o6">負責人<input type="text" id="o6" data-save></label>
+      <label for="w6">期限<input type="text" id="w6" data-save></label>
+    </div>
+    <label for="n6" class="k">備註</label>
+    <textarea id="n6" data-save></textarea>
+  </div>
+</section>
+
+<section class="item" id="wrap" data-topic="wrap" data-title="散會前">
+  <h2><span class="n">✓</span>散會前</h2>
+  <p class="lede">最後填這裡。會變成 Slack 摘要和 TODO 更新。</p>
+  <div class="tablewrap"><table>
+    <tr><th>誰</th><th>Nov 2 前做什麼</th></tr>
+    <tr><td>Mark</td><td><input type="text" id="s_m" data-save aria-label="Mark" placeholder="Slack 摘要與時程；問 Aarvin 他們的 agent 需要什麼"></td></tr>
+    <tr><td>Zhexuan</td><td><input type="text" id="s_z" data-save aria-label="Zhexuan" placeholder="v2 改成伺服器發金鑰；token 檢查；週一的部署"></td></tr>
+    <tr><td>Anmol</td><td><input type="text" id="s_a" data-save aria-label="Anmol" placeholder="流程圖；prompt 搬進服務；合約給 Aarvin"></td></tr>
+    <tr><td>Yudi</td><td><input type="text" id="s_y" data-save aria-label="Yudi" placeholder="0.1.3 PR；含商業類別的 0.1.4"></td></tr>
+    <tr><td>Karina</td><td><input type="text" id="s_k" data-save aria-label="Karina" placeholder="複核推進 PR #9；改標成 0.1.3；評分 60 封"></td></tr>
+  </table></div>
+  <label for="n_wrap" class="k" style="display:block;margin-top:14px">其他決定與待辦</label>
+  <textarea id="n_wrap" data-save style="min-height:110px"></textarea>
+</section>
+
+<section class="export" aria-labelledby="exh">
+  <h2 id="exh"><span class="n">→</span>儲存紀錄</h2>
+  <p class="lede">輸入的內容只存在這個瀏覽器。會議結束後產生 Markdown 貼給 Claude，它會變成會議紀錄、Slack 摘要和 TODO 更新。</p>
+  <div class="btns">
+    <button type="button" id="mk">產生 Markdown</button>
+    <button type="button" id="cp" class="ghost">複製</button>
+    <button type="button" id="clr" class="ghost">清空所有欄位</button>
+  </div>
+  <div class="confirm" id="clrask" hidden><span>確定清空這頁的所有欄位？</span><button type="button" id="clryes">清空</button><button type="button" id="clrno" class="ghost">保留</button></div>
+  <p id="status" role="status">尚未儲存。</p>
+  <label for="mdout" class="k">Markdown</label>
+  <textarea id="mdout" readonly></textarea>
+</section>
+
+<footer>英文版：<a href="agenda-en.html">agenda-en.html</a>。來源：<code>meetings/client/2026-10-26/notes-gemini-en.pdf</code>、<code>docs/api/conversation-keys-zh.md</code>、<code>todo/TODO-zh.md</code>（A13、A18、A19、B41、B46、B58、B71–B74、D49、D51、D52、D70、E68）。</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-team-2026-10-27-zh';
+  var L={"h1": "# 團隊會議 2026-10-27：紀錄", "att": "出席：", "by": "記錄：", "recap": "Gemini 紀錄的更正", "dec": "決定：", "owner": "負責人：", "when": " · 期限：", "notes": "備註：", "other": "其他：", "saved": "已存在這個瀏覽器，時間 ", "savedEnd": "。", "nosave": "這個瀏覽器無法儲存。關閉頁面前請先產生 Markdown。", "restored": "已從這個瀏覽器還原先前的紀錄。", "ready": "Markdown 已產生在下方。", "copied": "已複製，貼給 Claude 即可。", "blocked": "無法自動複製。文字已選取，請按 Cmd+C。", "cleared": "所有欄位已清空。"};
+  var status=document.getElementById('status');
+  function fields(){return Array.prototype.slice.call(document.querySelectorAll('[data-save]'));}
+  function read(){var o={};fields().forEach(function(el){if(el.type==='radio'){if(el.checked)o[el.name]=el.id;}else{o[el.id]=el.value;}});return o;}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(read()));status.textContent=L.saved+new Date().toLocaleTimeString()+L.savedEnd;}catch(e){status.textContent=L.nosave;}}
+  function load(){var o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}if(!o)return;fields().forEach(function(el){if(el.type==='radio'){el.checked=(o[el.name]===el.id);}else if(o[el.id]!=null){el.value=o[el.id];}});status.textContent=L.restored;}
+  function v(id){var el=document.getElementById(id);return el?el.value.trim():'';}
+  function md(){
+    var out=[L.h1,''];
+    if(v('attendees'))out.push(L.att+v('attendees'));
+    if(v('timekeeper'))out.push(L.by+v('timekeeper'));
+    out.push('');
+    if(v('nR'))out.push('## '+L.recap,v('nR'),'');
+    document.querySelectorAll('section[data-topic]').forEach(function(s){
+      var t=s.getAttribute('data-topic'),title=s.getAttribute('data-title');
+      out.push('## '+(t==='wrap'?'':t+'. ')+title);
+      var r=s.querySelector('input[type=radio]:checked');
+      if(r)out.push('- '+L.dec+r.value+'. '+r.getAttribute('data-label'));
+      s.querySelectorAll('.qa label').forEach(function(l){var i=l.querySelector('input');var q=l.querySelector('span').textContent.replace(/\s+/g,' ').trim();if(i&&i.value.trim())out.push('- '+q+' → '+i.value.trim());});
+      if(t==='5'){s.querySelectorAll('tr').forEach(function(tr){var c=tr.querySelectorAll('td');if(c.length===4){var i=c[3].querySelector('input');var o=i.value.trim()||'-';out.push('- '+c[0].textContent+': '+c[1].textContent+' ('+L.owner+o+')');}});}
+      if(t==='wrap'){
+        s.querySelectorAll('tr').forEach(function(tr){var c=tr.querySelectorAll('td');if(c.length===2){var a=c[1].querySelector('input').value.trim();if(a)out.push('- '+c[0].textContent+': '+a);}});
+        if(v('n_wrap'))out.push('- '+L.other+v('n_wrap'));
+      }else{
+        if(v('o'+t)||v('w'+t))out.push('- '+L.owner+(v('o'+t)||'-')+L.when+(v('w'+t)||'-'));
+        if(v('n'+t))out.push('- '+L.notes+v('n'+t));
+      }
+      out.push('');
+    });
+    return out.join('\n');
+  }
+  document.addEventListener('input',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.addEventListener('change',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.getElementById('mk').addEventListener('click',function(){document.getElementById('mdout').value=md();status.textContent=L.ready;});
+  document.getElementById('cp').addEventListener('click',function(){var ta=document.getElementById('mdout');if(!ta.value)ta.value=md();var done=function(){status.textContent=L.copied;};var fail=function(){ta.focus();ta.select();status.textContent=L.blocked;};try{navigator.clipboard.writeText(ta.value).then(done,fail);}catch(e){fail();}});
+  document.getElementById('clr').addEventListener('click',function(){document.getElementById('clrask').hidden=false;});
+  document.getElementById('clrno').addEventListener('click',function(){document.getElementById('clrask').hidden=true;});
+  document.getElementById('clryes').addEventListener('click',function(){fields().forEach(function(el){if(el.type==='radio')el.checked=false;else el.value='';});document.getElementById('mdout').value='';try{localStorage.removeItem(KEY);}catch(e){}document.getElementById('clrask').hidden=true;status.textContent=L.cleared;});
+  load();
+})();
+</script>
