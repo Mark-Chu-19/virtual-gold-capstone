@@ -20,7 +20,7 @@ ENTITY_MAP: dict[str, str | None] = {
     "US_SSN": "GOV_ID", "US_PASSPORT": "GOV_ID", "US_DRIVER_LICENSE": "GOV_ID",
     "US_ITIN": "GOV_ID", "MEDICAL_LICENSE": "GOV_ID",
     "CREDIT_CARD": "CARD_NUMBER",
-    "IBAN_CODE": "BANK_ACCOUNT", "US_BANK_NUMBER": "BANK_ACCOUNT", "CRYPTO": "BANK_ACCOUNT",
+    "IBAN_CODE": "ACCOUNT_NUMBER", "US_BANK_NUMBER": "ACCOUNT_NUMBER", "CRYPTO": "ACCOUNT_NUMBER",
     "IP_ADDRESS": "NETWORK_ID", "MAC_ADDRESS": "NETWORK_ID",
     "NRP": "DEMOGRAPHIC",   # nationality, religious or political group
     "URL": None,            # mostly public links; also fires inside email addresses
