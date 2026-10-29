@@ -5,11 +5,8 @@ from fastapi.responses import JSONResponse
 from ..contracts.errors import PROBLEM_PREFIX, ProblemError
 
 
-def problem_response(err: ProblemError, request_id: str, *, include_request_id: bool = True) -> JSONResponse:
-    body = {"type": PROBLEM_PREFIX + err.type, "title": err.title, "status": err.status,
-            "request_id": request_id}
-    if not include_request_id:
-        body.pop("request_id")
+def problem_response(err: ProblemError, request_id: str) -> JSONResponse:
+    body = {"type": PROBLEM_PREFIX + err.type, "title": err.title, "status": err.status}
     if err.detail:
         body["detail"] = err.detail
     if err.violations:

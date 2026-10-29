@@ -330,16 +330,16 @@ async def test_api_with_privacy_components(settings, model, privacy_config, use_
            "from": {"name": "Dana Whitfield", "address": "dana@example.test"},
            "body": "Blue Harbor closes. Reserve up $1.84M. Call 202-555-0102.\n- Dana"}}
     async with await _client(settings, model, comps) as c:
-        r = await c.post("/v1/redactions", json=req, headers=HEADERS)
+        r = await c.post("/v3/redaction", json=req, headers=HEADERS)
         assert r.status_code == 200
         out = r.json()
         body_out = out["redacted_email"]["body"]
         for secret in ("Blue Harbor", "$1.84M", "202-555-0102", "Dana"):
             assert secret not in body_out
         assert "Dana" not in str(out["redacted_email"]["from"])
-        assert out["context_store_version"] == "ctx-test"
-        rid = out["request_id"]
-        back = await c.post(f"/v1/redactions/{rid}/restore", json={"reply_text": body_out},
+        assert (await c.get("/v3/info", headers=HEADERS)).json()["context_store_version"] == "ctx-test"
+        sid = out["session_id"]
+        back = await c.post("/v3/restore", json={"session_id": sid, "text": body_out},
                             headers=HEADERS)
         # Variants of one person restore to the full name ("- Dana" -> "- Dana Whitfield").
         assert back.json()["restored_text"] == req["email"]["body"].replace(
@@ -359,11 +359,11 @@ async def test_api_term_list_inside_a_header_name_is_redacted_even_at_low_score(
     comps = build_components(presidio=False)
     comps = replace(comps, context_store=FileContextStore(
         "ctx-test", {"Whitfield"}, set(), POLICY.high_types()))
-    req = {"purpose": "Summarise", "mapping": {"retain": True}, "email": {
+    req = {"purpose": "Summarise", "email": {
         "from": {"name": "Dana Whitfield", "address": "dana@example.test"},
         "body": "Thanks, Dana Whitfield"}}
     async with await _client(settings, LowScoreModel(), comps) as c:
-        out = (await c.post("/v1/redactions", json=req, headers=HEADERS)).json()
+        out = (await c.post("/v3/redaction", json=req, headers=HEADERS)).json()
     assert "Whitfield" not in out["redacted_email"]["body"]
     assert "Whitfield" not in str(out["redacted_email"]["from"])
 

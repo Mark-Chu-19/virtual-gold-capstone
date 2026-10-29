@@ -15,34 +15,34 @@ class Clock:
 def test_store_ttl_capacity_tombstones():
     clk = Clock(); removed = []
     s = RecordStore(2, 100, clock=clk, on_remove=removed.append)
-    s.reserve("a"); s.commit("a", {"[X_1]": "v"}, 10, None)
-    s.reserve("b"); s.commit("b", None, 50, None)
+    s.reserve("a"); s.commit("a", {"[X_1]": "v"}, 10, tenant_id="tenant")
+    s.reserve("b"); s.commit("b", {}, 50, tenant_id="tenant")
     with pytest.raises(CapacityExhausted):
         s.reserve("c")
     s.release("c")
     clk.t = 11
     with pytest.raises(RecordGone):
-        s.get("a")
+        s.get("a", tenant_id="tenant")
     assert removed == ["expired"]
     s.reserve("c")                                  # slot freed by expiry
-    assert s.delete("b") is True and s.delete("b") is False
+    assert s.delete("b", tenant_id="tenant") is True and s.delete("b", tenant_id="tenant") is False
     with pytest.raises(RecordGone):
-        s.get("b")
+        s.get("b", tenant_id="tenant")
     with pytest.raises(RecordNotFound):
-        s.get("zzz")
+        s.get("zzz", tenant_id="tenant")
     clk.t = 500                                     # tombstones are bounded by max_ttl
     s.sweep()
     with pytest.raises(RecordNotFound):
-        s.get("b")
+        s.get("b", tenant_id="tenant")
 
 
 def test_delete_unknown_id_does_not_create_tombstones():
     removed = []
     store = RecordStore(1, 100, on_remove=removed.append)
     for rid in ("unknown-a", "unknown-b", "unknown-c"):
-        assert store.delete(rid) is False
+        assert store.delete(rid, tenant_id="tenant") is False
         with pytest.raises(RecordNotFound):
-            store.get(rid)
+            store.get(rid, tenant_id="tenant")
     assert store._tombstones == {}
     assert removed == []
 
@@ -51,39 +51,17 @@ def test_repeated_delete_does_not_extend_tombstone_retention():
     clk = Clock(); removed = []
     store = RecordStore(1, 100, clock=clk, on_remove=removed.append)
     store.reserve("a")
-    rec = store.commit("a", {"[X_1]": "value"}, 100, None)
-    assert store.delete("a") is True
+    rec = store.commit("a", {"[X_1]": "value"}, 100, tenant_id="tenant")
+    assert store.delete("a", tenant_id="tenant") is True
     assert rec.mapping is None
     clk.t = 90
-    assert store.delete("a") is False
+    assert store.delete("a", tenant_id="tenant") is False
     with pytest.raises(RecordGone):
-        store.get("a")
+        store.get("a", tenant_id="tenant")
     clk.t = 101
     with pytest.raises(RecordNotFound):
-        store.get("a")
+        store.get("a", tenant_id="tenant")
     assert removed == ["deleted"]
-
-
-def test_session_state_survives_delete_until_latest_record_ttl():
-    clk = Clock()
-    store = RecordStore(2, 100, clock=clk)
-    state = store.label_state("session", 10)
-    state.labels["PERSON|example"] = "[PERSON_1]"
-    state.counters["PERSON"] = 1
-    for rid, ttl in (("a", 10), ("b", 50)):
-        store.reserve(rid)
-        store.commit(rid, {"[PERSON_1]": "Example"}, ttl, "session")
-    assert store.delete("a") is True
-    assert store.delete("b") is True
-    clk.t = 11
-    store.sweep()
-    assert store._sessions["session"][0] is state
-    assert state.labels == {"PERSON|example": "[PERSON_1]"}
-    clk.t = 50
-    store.sweep()
-    assert "session" not in store._sessions
-    fresh = store.label_state("session", 10)
-    assert fresh.labels == {} and fresh.counters == {}
 
 
 def test_merge_unions_overlaps():

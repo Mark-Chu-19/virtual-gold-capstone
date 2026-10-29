@@ -1,15 +1,9 @@
-"""Pseudonymisation (`pseudonymize`). Privacy Research.
+"""Pseudonymisation with consistent aliases within one redaction.
 
-Same as the 0.4.2 stub, plus one rule: every variant of a header person ("Dana Whitfield",
-"Dana", "Whitfield") shares one placeholder, and the mapping restores it to the full name.
-Ambiguous parts (a first name two header people share) keep their own placeholder.
-
-Across a session, an alias learnt from an earlier email ("Dana" -> Dana Whitfield) is reused
-for a bare "Dana" later, until an email shows "Dana" belongs to two people. From then on the
-alias is marked ambiguous for the rest of the session and a bare "Dana" gets its own label.
-
-Session label keys never hold the original text: they are HMACs under a key generated at
-startup, so the session state left after a DELETE contains no names or values.
+Every unambiguous variant of a header person ("Dana Whitfield", "Dana", "Whitfield")
+shares one placeholder and restores to the full name. Ambiguous aliases retain their
+own labels. V3 supplies a fresh LabelState for each request; no aliases survive it.
+Label keys use a per-process HMAC so they do not contain original entity text.
 """
 from __future__ import annotations
 
@@ -18,12 +12,12 @@ import hmac
 import secrets
 
 from ..contracts.fields import email_to_dict, iter_fields, set_field
+from ..contracts.placeholders import literal_placeholders, next_placeholder
 from ..contracts.types import Decision, EmailIn, LabelState, PseudonymResult, SpanOut
 from .names import alias_table, ambiguous_parts, clean_person_name
 
 
-# Per-process key: the session state lives in this process only, and a fresh key per process
-# stops anyone from recovering common names by hashing a dictionary.
+# A fresh process key prevents recovering label keys with an unkeyed dictionary hash.
 _LABEL_KEY = secrets.token_bytes(32)
 
 
@@ -60,7 +54,7 @@ def pseudonymize(purpose: str, email: EmailIn, decisions: list[Decision],
     ambiguous = ambiguous_parts(people)
     for part in ambiguous:  # seen as two people here: never resolve it to one person again
         labels.labels[_alias_key("PERSON", part)] = AMBIGUOUS
-    mapping: dict[str, str] = {}
+    mapping = literal_placeholders(fields.values(), labels)
     spans: list[SpanOut] = []
     placeholder_for: dict[int, str] = {}
 
@@ -78,10 +72,9 @@ def pseudonymize(purpose: str, email: EmailIn, decisions: list[Decision],
             key = label_key(t, person or value)
             ph = ph or labels.labels.get(key)
             if ph is None:
-                labels.counters[t] = labels.counters.get(t, 0) + 1
-                ph = f"[{t}_{labels.counters[t]}]"
+                ph = next_placeholder(t, labels)
                 labels.labels[key] = ph
-            if person:  # remember this person's aliases for later emails in the session
+            if person:  # remember aliases within this redaction
                 for alias, full in aliases.items():
                     if full == person:
                         slot = _alias_key(t, alias)

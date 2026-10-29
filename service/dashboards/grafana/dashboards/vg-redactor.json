@@ -19,7 +19,7 @@
    "id": 1,
    "title": "1. Request rate and status codes",
    "type": "timeseries",
-   "description": "POST /v1/redactions requests per second, by HTTP status.",
+   "description": "POST /v3/redaction requests per second, by HTTP status.",
    "datasource": {
     "type": "prometheus",
     "uid": "prometheus"
@@ -36,7 +36,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "sum by (status) (rate(vg_http_requests_total{route=\"/v1/redactions\"}[1m]))",
+     "expr": "sum by (status) (rate(vg_http_requests_total{route=\"/v3/redaction\"}[1m]))",
      "legendFormat": "{{status}}",
      "refId": "A"
     }
@@ -78,7 +78,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "sum(rate(vg_http_requests_total{route=\"/v1/redactions\",status=~\"2..\"}[5m])) / (sum(rate(vg_http_requests_total{route=\"/v1/redactions\",status=~\"2..\"}[5m])) + (sum(rate(vg_http_requests_total{route=\"/v1/redactions\",status=~\"5..\"}[5m])) or vector(0)))",
+     "expr": "sum(rate(vg_http_requests_total{route=\"/v3/redaction\",status=~\"2..\"}[5m])) / (sum(rate(vg_http_requests_total{route=\"/v3/redaction\",status=~\"2..\"}[5m])) + (sum(rate(vg_http_requests_total{route=\"/v3/redaction\",status=~\"5..\"}[5m])) or vector(0)))",
      "legendFormat": "",
      "refId": "A"
     }

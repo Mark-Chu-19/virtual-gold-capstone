@@ -1,18 +1,34 @@
-"""V3 mapping payload adapters. Both preserve the existing short placeholder format.
-
-AES-SIV encrypts the entire mapping at rest; it is distinct from V2's self-routing
-encrypted tokens. Reuse the validated token keyring and canonical wire helpers.
-"""
+"""Plaintext or AES-SIV-encrypted V3 mapping payloads with identical placeholders."""
 from __future__ import annotations
 
+import base64
 import hmac
+import re
 import json
 from typing import Protocol
 
 from cryptography.hazmat.primitives.ciphers.aead import AESSIV
 
 from ..contracts.errors import ProblemError
-from ..tokens.wire import b64, packed, unb64
+from .encoding import b64, packed, unb64
+
+
+def decode_keyring(keys: dict[str, str], active_key_id: str) -> dict[str, bytes]:
+    """Validate configured AES-256-SIV keys once at startup; never include secrets in errors."""
+    decoded = {}
+    for kid, encoded in keys.items():
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,32}", kid):
+            raise ValueError("Invalid session key identifier")
+        try:
+            raw = base64.b64decode(encoded, validate=True)
+        except ValueError:
+            raise ValueError("Session keys must be standard base64") from None
+        if len(raw) != 64:
+            raise ValueError("AES-256-SIV requires a 64-byte key")
+        decoded[kid] = raw
+    if decoded and active_key_id not in decoded:
+        raise ValueError("Active session key is missing from keyring")
+    return decoded
 
 
 class RestorationBackend(Protocol):
@@ -35,7 +51,7 @@ class AesMappingBackend:
     def _cipher(self, kid):
         if kid not in self.keys:
             raise ProblemError(503, "session-key-unavailable", "Session encryption key unavailable")
-        # Separate V3 payload keys from V2 token and conversation encryption keys.
+        # Derive a purpose-specific key for authenticated V3 mapping payloads.
         key = hmac.digest(self.keys[kid], b"vg-v3-mapping-aes-siv-v1", "sha512")
         return AESSIV(key)
 

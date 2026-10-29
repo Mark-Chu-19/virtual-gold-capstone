@@ -1,5 +1,7 @@
 # Conversation Key Manager
 
+> 历史设计文档：V1/V2 实现已删除，不代表当前服务接口。当前契约见 [V3 API](sessions-v3-zh.md)。
+
 V2 现在使用 conversation 独立随机密钥材料签发格式 2 的 token。脱敏与恢复的请求结构保持不变。
 `group_id` 对应 API key 所属 tenant 下的 conversation，直接复用业务会话 ID。
 省略时仍使用 `default`，因此同一 tenant 下省略 ID 的请求会共用同一个会话。

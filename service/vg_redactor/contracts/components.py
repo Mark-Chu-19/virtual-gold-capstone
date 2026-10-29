@@ -1,7 +1,6 @@
 """The component bundle the orchestrator is wired with.
 
-Each field is a plain callable with the signature below (documented in
-service-interfaces-v0.4.2-en.md section 4). Teammates replace stubs by providing a real callable
+Each field is a plain callable with the signature below. Teammates replace stubs with a callable
 with the same signature; nothing else in the service changes.
 """
 from __future__ import annotations
@@ -57,10 +56,11 @@ class Components:
     # decide_degraded(...): redact every candidate, confidence None (fail-safe path).
     decide_degraded: Callable[[list[Candidate], Policy], list[Decision]]
     # pseudonymize(...): [TYPE_n] placeholders, mapping stays local, same entity = same label.
+    # Reserve original literal labels and identity-map them so roundtrips cannot rewrite literals.
     pseudonymize: Callable[[str, EmailIn, list[Decision], LabelState], PseudonymResult]
     # restore(reply, mapping): exact-match placeholders; BLOCKED if any is unknown.
     restore: Callable[[str, dict[str, str]], RestoreOutcome]
-    # ---- data + versions (the versions are reported in every response and in /v1/info)
+    # ---- data + versions (versions are retained in audit and reported by /v3/info)
     policy: Policy
     context_store: ContextStore
     detection_prompt_version: str

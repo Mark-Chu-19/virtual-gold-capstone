@@ -20,7 +20,6 @@ UNKNOWN = "sid_00000000000000000000000000"
 
 def body():
     req = copy.deepcopy(EMAIL_REQ)
-    req.pop("mapping")
     return req
 
 
@@ -44,13 +43,13 @@ async def test_minimal_contract_roundtrip_and_independent_requests(client, app):
     assert first.headers["X-Request-ID"] != result["session_id"]
     second = (await post_json(client, REDACT, body())).json()
     assert second["session_id"] != result["session_id"]
-    assert app.state.records.stats()["active"] == 0
+    assert app.state.records.stats()["active"] == 2
     for _ in range(2):
         response = await post_json(client, RESTORE, restore_body(result))
         assert response.status_code == 200, response.text
         assert response.json() == {"restored_text": body()["email"]["body"]}
         assert response.headers["X-Request-ID"] != first.headers["X-Request-ID"]
-    # The unprotected legacy lookup must never reach the V3 store.
+    # Retired APIs are not registered.
     legacy = await post_json(client, f'/v1/redactions/{result["session_id"]}/restore',
                              {"reply_text": "[PHONE_1]"})
     assert legacy.status_code == 404
@@ -113,7 +112,7 @@ async def test_expiry_and_tombstone_cleanup(client, app):
     store = app.state.sessions.records
     store._clock = lambda: clock[0]
     result = (await post_json(client, REDACT, body())).json()
-    record = store.get(result["session_id"])
+    record = store.get(result["session_id"], tenant_id=hash_key(KEY))
     clock[0] = record.expires_at
     assert (await post_json(client, RESTORE, restore_body(result))).status_code == 410
     assert record.mapping is None
@@ -222,13 +221,13 @@ async def test_timeout_releases_reservation(client, app, settings, monkeypatch):
 
 
 async def test_aes_backend_switch_key_rotation_and_tampering(settings, components, model):
-    settings.tokenization.keys = {"k1": base64.b64encode(bytes(range(64))).decode()}
+    settings.v3.keys = {"k1": base64.b64encode(bytes(range(64))).decode()}
     settings.v3.backend = "aes_siv"
     app = create_app(settings, components, model)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t",
                                 headers={"Authorization": "Bearer " + KEY}) as client:
         encrypted = (await post_json(client, REDACT, body())).json()
-        record = app.state.sessions.records.get(encrypted["session_id"])
+        record = app.state.sessions.records.get(encrypted["session_id"], tenant_id=hash_key(KEY))
         assert record.backend == "aes_siv"
         assert "202-555-0102" not in json.dumps(record.mapping)
         backend = app.state.sessions.backends["aes_siv"]
@@ -237,12 +236,12 @@ async def test_aes_backend_switch_key_rotation_and_tampering(settings, component
         newer = (await post_json(client, REDACT, body())).json()
         app.state.sessions.backend = "mapping"
         plain = (await post_json(client, REDACT, body())).json()
-        assert app.state.sessions.records.get(plain["session_id"]).backend == "mapping"
+        assert app.state.sessions.records.get(plain["session_id"], tenant_id=hash_key(KEY)).backend == "mapping"
         for result in (encrypted, newer, plain):
             assert (await post_json(client, RESTORE, restore_body(result))).json() == {
                 "restored_text": body()["email"]["body"]}
         # Ciphertext is bound to both tenant and session ID.
-        newer_record = app.state.sessions.records.get(newer["session_id"])
+        newer_record = app.state.sessions.records.get(newer["session_id"], tenant_id=hash_key(KEY))
         newer_record.mapping = dict(record.mapping)
         assert (await post_json(client, RESTORE, restore_body(newer))).status_code == 503
         del backend.keys["k1"]
@@ -251,7 +250,7 @@ async def test_aes_backend_switch_key_rotation_and_tampering(settings, component
 
 def test_aes_requires_keys(settings, components, model):
     settings.v3.backend = "aes_siv"
-    with pytest.raises(ValueError, match="VG_TOKEN_KEYS"):
+    with pytest.raises(ValueError, match="VG_SESSION_KEYS"):
         create_app(settings, components, model)
 
 

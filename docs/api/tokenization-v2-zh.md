@@ -1,5 +1,7 @@
 # V2 可逆 token API
 
+> 历史设计文档：V1/V2 实现已删除，不代表当前服务接口。当前契约见 [V3 API](sessions-v3-zh.md)。
+
 V2 在现有检测、评估和决策流程后增加 Mapping / AES-SIV 两个后端。恢复只需要消息和鉴权，
 不再需要 redaction ID 或 mode。v1 接口保持兼容，但记录仍在进程内存中，不能任意跨实例路由。
 

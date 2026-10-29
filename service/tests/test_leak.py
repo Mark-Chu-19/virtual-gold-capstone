@@ -5,7 +5,7 @@ import logging
 
 from conftest import EMAIL_REQ, post_json
 
-R = "/v1/redactions"
+R = "/v3/redaction"
 CANARIES = ["CANARY-412-555-0182", "zxqperson@canary.test", "CANARYSSN 987-65-4321", "Project Falcon"]
 
 
@@ -22,15 +22,15 @@ async def test_no_canaries_anywhere(client, model, app, settings, caplog):
     logging.getLogger("vg_redactor").propagate = True
     outputs = []
     r = await post_json(client, R, canary_request()); outputs.append(r.text)
-    rid = r.json()["request_id"]
-    rr = await post_json(client, f"{R}/{rid}/restore", {"reply_text": "[PHONE_1] [EMAIL_1]"})
+    sid = r.json()["session_id"]
+    rr = await post_json(client, "/v3/restore", {"session_id": sid, "text": "[PHONE_1] [EMAIL_1]"})
     assert "412-555-0182" in rr.text  # restore legitimately returns the original to the caller
     model.mode["assessment"] = "garbage"  # degraded path too
     outputs.append((await post_json(client, R, canary_request())).text)
     bad = canary_request(); bad["email"]["body"] = 5
     outputs.append((await post_json(client, R, bad)).text)
-    outputs.append((await client.get("/v1/info")).text)
-    await client.delete(f"{R}/{rid}")
+    outputs.append((await client.get("/v3/info")).text)
+    await client.request("DELETE", R, json={"session_id": sid})
 
     log_text = "\n".join(rec.getMessage() + json.dumps(getattr(rec, "fields", {})) for rec in caplog.records)
     audit_text = open(settings.audit_log_path, encoding="utf8").read()

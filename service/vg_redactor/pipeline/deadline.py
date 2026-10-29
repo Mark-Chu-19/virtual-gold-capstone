@@ -3,6 +3,8 @@ from __future__ import annotations
 import time
 from typing import Callable
 
+from ..contracts.errors import DeadlineExceeded
+
 
 class Deadline:
     """End-to-end budget for one request (`timeout_ms`)."""
@@ -19,6 +21,11 @@ class Deadline:
 
     def expired(self) -> bool:
         return self.remaining_ms() <= 0
+
+    def check(self) -> None:
+        """Also enforce deadlines after synchronous steps that cannot yield cancellation."""
+        if self.expired():
+            raise DeadlineExceeded()
 
     def model_budget_ms(self, call_cap_ms: int, reserve_ms: int) -> int:
         """Time one model call may take, keeping `reserve_ms` free for the degraded path."""

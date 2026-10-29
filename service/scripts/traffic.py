@@ -26,16 +26,16 @@ SAMPLES = [
 
 async def one(client: httpx.AsyncClient, stats: dict) -> None:
     body = {"purpose": "Summarize this email",
-            "email": {"subject": "Update", "body": random.choice(SAMPLES)},
-            "mapping": {"retain": True}}
+            "email": {"subject": "Update", "body": random.choice(SAMPLES)}}
     try:
-        r = await client.post("/v1/redactions", json=body)
+        r = await client.post("/v3/redaction", json=body)
         stats[r.status_code] = stats.get(r.status_code, 0) + 1
         if r.status_code == 200 and random.random() < 0.3:
-            rid = r.json()["request_id"]
-            await client.post(f"/v1/redactions/{rid}/restore", json={"reply_text": "[PHONE_1]"})
+            result = r.json()
+            sid = result["session_id"]
+            await client.post("/v3/restore", json={"session_id": sid, "text": result["redacted_email"]["body"]})
             if random.random() < 0.5:
-                await client.delete(f"/v1/redactions/{rid}")
+                await client.request("DELETE", "/v3/redaction", json={"session_id": sid})
     except httpx.HTTPError:
         stats["error"] = stats.get("error", 0) + 1
 

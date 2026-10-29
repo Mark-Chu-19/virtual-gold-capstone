@@ -1,6 +1,6 @@
-# vg_redactor: local redaction service (contract 0.4.2)
+# vg_redactor: local redaction service (V3)
 
-W9 skeleton: gateway, record store, model adapter, orchestrator, metrics, audit log. The Privacy
+Gateway, record store, model adapter, orchestrator, metrics and audit log. The Privacy
 Research components (`vg_redactor/privacy/`) are wired in by default; the remaining components
 (prompts and parsers) run as **stubs** (`vg_redactor/stubs/components.py`) behind the exact
 signatures in `vg_redactor/contracts/components.py`.
@@ -18,8 +18,7 @@ To run without Presidio, install `pip install -e ".[dev]"` and start with
 
 Monitoring (Prometheus + Grafana, 8-panel dashboard, traffic generator): see `dashboards/README.md`.
 
-V1 request records live in memory and require one process. V2 can use shared Redis
-for independent replicas; see the v2 setup below.
+V3 records live in memory. Run one worker; restart loses all restoration records.
 
 | Path | Owner | What |
 |---|---|---|
@@ -33,39 +32,34 @@ for independent replicas; see the v2 setup below.
 To plug in a real component, build the `Components` bundle in `main.py` with your function in
 place of the stub; the contract tests in `tests/` should keep passing.
 
-## V2: mapping or AES-SIV tokens
+## V3 API
 
-V2 supports `tokenization.mode: mapping | aes_siv`, restoration directly from message text,
-shared Redis mappings, tenant/group permissions and optional cross-instance idempotency.
-V1 remains compatible. Configure a persistent `VG_TOKEN_KEYS` keyring to enable v2; use
-Redis for independent replicas (memory is development-only). No plaintext mapping is retained
-in AES-SIV mode; both modes now require persistent conversation key records. Real-model token preservation still needs evaluation.
+Only V3 is served. V1/V2 routes and their token/conversation/Redis machinery have been removed;
+they were development iterations and were never offered as supported customer APIs.
 
-See [the v2 contract and setup](../docs/api/tokenization-v2-en.md) /
-[中文说明](../docs/api/tokenization-v2-zh.md). `infra/compose.yaml` supplies development Redis;
-`scripts/evaluate_tokens.py` compares both modes through local Ollama without changing notebooks.
+| Method | Path | JSON request | Success |
+|---|---|---|---|
+| POST | `/v3/redaction` | `{purpose, email, policy?}` | `{session_id, redacted_email, redacted_purpose, expires_at, degraded}` |
+| POST | `/v3/restore` | `{session_id, text}` | `{restored_text}` |
+| DELETE | `/v3/redaction` | `{session_id}` | 204, no body |
+| GET | `/v3/info` | none | versions, policy, limits and restoration configuration |
+| GET | `/healthz` | none | `{status: "ok"}` |
+| GET | `/readyz` | none | `{mode, components}` |
 
-Conversation Key Manager now creates independent random conversation secrets, wraps them with
-`VG_TOKEN_KEYS`, and derives separate encryption/signing keys. New format-2 tokens are stable
-within a conversation and remain self-routing; format-1 tokens still restore during migration.
-`DELETE /v2/groups/{group_id}` closes a conversation, unlike `/mappings` which only clears mappings.
-See [conversation key lifecycle](../docs/api/conversation-keys-en.md) /
-[会话密钥说明](../docs/api/conversation-keys-zh.md).
+All routes except health/readiness require `Authorization: Bearer <API_KEY>` from `VG_API_KEYS`.
+By default each key is an isolated tenant. `VG_API_IDENTITIES` maps SHA256 key digests to
+`{tenant_id}` when multiple keys should share records. Clients retain only `session_id`;
+`X-Request-ID` is an optional diagnostic header. Each redaction is independent, with no
+client-provided session, group or conversation context. Literal placeholders already in the input
+are preserved without colliding with generated labels. Expanded restoration output is limited by
+`max_restored_bytes` (default 1 MiB), checked before replacement. Invalid Unicode is rejected before
+retention; timed-out workers and response-serialization failures cannot leave usable records.
 
-## V3: server-issued session ID
+Backend selection is internal (`v3.backend`): `mapping` is the default, `aes_siv` encrypts the
+entire mapping while preserving short placeholders. AES needs a persistent `VG_SESSION_KEYS`
+JSON keyring (`{key_id: base64_encoded_64_bytes}`); `VG_ACTIVE_SESSION_KEY_ID` selects the active
+key. Keep old keys until their records expire. Keys are never returned or committed.
+There is no Redis dependency or shared session storage. Service version is 3.0.0, contract v3.
 
-`POST /v3/redaction` returns only `session_id`, redacted email/purpose, `expires_at`, and
-`degraded`. `POST /v3/restore` accepts `{session_id, text}` and returns `{restored_text}`.
-`DELETE /v3/redaction` accepts a JSON body `{session_id}` and returns 204 with no body.
-Clients only retain the business `session_id`; `X-Request-ID` is an optional diagnostic header.
-Each ID represents one independent redaction, with no client-provided session or context.
-
-V3 reuses the existing pipeline and exact-match restore. It always retains a tenant-bound
-record, using plaintext mappings by default. Backend selection is internal (`v3.backend`),
-with an optional AES-SIV adapter encrypting the entire mapping using the existing token keyring.
-This preserves short placeholders and differs from V2's self-routing encrypted tokens.
-Each record selects its own backend on restore. V1/V2 contracts remain compatible.
-
-V3 records are currently in a separate in-memory store: one process only, no recovery after
-restart, even when V2 uses Redis. See the [V3 API contract](../docs/api/sessions-v3-zh.md)
-for payloads, errors, retention, permissions and backend configuration.
+See the [English V3 contract](../docs/api/sessions-v3-en.md) /
+[中文接口说明](../docs/api/sessions-v3-zh.md). Earlier API documents are historical design references.

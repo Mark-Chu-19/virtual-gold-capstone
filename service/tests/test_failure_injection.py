@@ -1,31 +1,34 @@
 """Failure-injection table (development-schedule W10). Every failure must fail safe."""
 import asyncio
-import copy
+import json
 
 import pytest
 
 from conftest import EMAIL_REQ, post_json
 
-R = "/v1/redactions"
+R = "/v3/redaction"
 
 
-def assert_degraded(j, reason, stage):
-    assert j["degraded"] is True and j["degraded_reason"] == reason and j["degraded_stage"] == stage
-    assert j["spans"], "rule candidates must still be found"
-    assert all(s["action"] == "redact" and s["confidence"] is None and s["reason"] == "degraded_redact_all"
-               for s in j["spans"])
-    assert all(set(s["detectors"]) <= {"rules", "presidio"} for s in j["spans"])
+def assert_degraded(j, reason, stage, settings):
+    assert j["degraded"] is True
+    assert "degraded_reason" not in j and "spans" not in j
     assert "202-555-0102" not in j["redacted_email"]["body"]
+    # Detailed decisions belong to audit, not the client response.
+    audit = json.loads(open(settings.audit_log_path, encoding="utf8").read().splitlines()[-1])
+    assert audit["degraded_reason"] == reason and audit["degraded_stage"] == stage
+    assert audit["spans"], "rule candidates must still be found"
+    assert all(s["action"] == "redact" and s["confidence"] is None
+               and s["reason"] == "degraded_redact_all" for s in audit["spans"])
 
 
 @pytest.mark.parametrize("mode,reason", [("down", "model_unavailable"), ("timeout", "model_timeout"),
                                          ("garbage", "model_output_unparseable")])
 @pytest.mark.parametrize("prompt,stage", [("detection", "detection"), ("assessment", "assessment")])
-async def test_model_failures_degrade(client, model, mode, reason, prompt, stage):
+async def test_model_failures_degrade(client, model, mode, reason, prompt, stage, settings):
     model.mode[prompt] = mode
     r = await post_json(client, R, EMAIL_REQ)
-    assert r.status_code == 200 and r.headers["X-Degraded"] == "true"
-    assert_degraded(r.json(), reason, stage)
+    assert r.status_code == 200 and "X-Degraded" not in r.headers
+    assert_degraded(r.json(), reason, stage, settings)
 
 
 async def test_hanging_model_degrades_within_timeout(client, model, settings):
@@ -33,22 +36,22 @@ async def test_hanging_model_degrades_within_timeout(client, model, settings):
     loop = asyncio.get_running_loop(); t = loop.time()
     r = await post_json(client, R, EMAIL_REQ)
     assert r.status_code == 200 and loop.time() - t < settings.timeout_ms / 1000
-    assert_degraded(r.json(), "model_timeout", "detection")
+    assert_degraded(r.json(), "model_timeout", "detection", settings)
 
 
 async def test_degraded_still_restores(client, model):
     model.mode["assessment"] = "down"
-    rid = (await post_json(client, R, EMAIL_REQ)).json()["request_id"]
-    r = await post_json(client, f"{R}/{rid}/restore", {"reply_text": "[PHONE_1]"})
-    assert r.json()["restore_decision"] == "RESTORED"
+    sid = (await post_json(client, R, EMAIL_REQ)).json()["session_id"]
+    r = await post_json(client, "/v3/restore", {"session_id": sid, "text": "[PHONE_1]"})
+    assert r.json() == {"restored_text": "202-555-0102"}
 
 
-async def test_presidio_failure_is_degraded_200(client, components):
+async def test_presidio_failure_is_degraded_200(client, components, settings):
     def boom(segs): raise RuntimeError("presidio exploded")
     components.detect_presidio = boom
     r = await post_json(client, R, EMAIL_REQ)
     assert r.status_code == 200
-    assert_degraded(r.json(), "recognizer_failure", "detection")
+    assert_degraded(r.json(), "recognizer_failure", "detection", settings)
 
 
 async def test_rule_engine_failure_is_500_and_releases_slot(client, components, app):
@@ -72,7 +75,7 @@ async def test_capacity_exhausted_503(settings, components, model):
         r = await post_json(c, R, EMAIL_REQ)
         assert r.status_code == 503 and r.headers["Retry-After"]
         rid_first = list(app.state.records._records)[0]
-        await c.delete(f"{R}/{rid_first}")  # frees the slot
+        await c.request("DELETE", R, json={"session_id": rid_first})  # frees the slot
         assert (await post_json(c, R, EMAIL_REQ)).status_code == 200
 
 
@@ -83,13 +86,6 @@ async def test_end_to_end_timeout_504(client, components, settings):
     components.detect_rules = slow
     r = await post_json(client, R, EMAIL_REQ)
     assert r.status_code == 504 and r.json()["type"] == "urn:vg:problem:deadline-exceeded"
-
-
-async def test_record_expiry_gives_410(client, app):
-    body = copy.deepcopy(EMAIL_REQ); body["mapping"]["ttl_seconds"] = 1
-    rid = (await post_json(client, R, body)).json()["request_id"]
-    await asyncio.sleep(1.2)
-    assert (await post_json(client, f"{R}/{rid}/restore", {"reply_text": "x"})).status_code == 410
 
 
 async def test_readyz_reports_degraded_when_model_down(client, model, app):
