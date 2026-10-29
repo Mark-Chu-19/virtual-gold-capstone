@@ -1,6 +1,6 @@
 """Privacy Research components: detection rules, Presidio, merge, calibration, decision and the
 context store. Each depends only on `contracts/`; `main.build_components` wires them in.
-Prompts and parsers belong to Model Work. Restore keeps the stub version, which already meets the 0.4.2
+Prompts and parsers belong to Model Work. Restore keeps the stub version, which already meets the exact-match
 contract; pseudonymisation adds header-name variant grouping.
 """
 from .calibration import fit_table, load_table, make_calibrate

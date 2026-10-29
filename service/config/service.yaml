@@ -4,6 +4,7 @@ model_call_timeout_ms: 6000       # provisional, set from load tests
 degraded_reserve_ms: 1500         # time kept free so the degraded path can finish
 model_concurrency: 1
 max_request_bytes: 262144
+max_restored_bytes: 1048576       # UTF-8 text bytes, checked before expanding placeholders
 default_ttl_seconds: 3600
 max_ttl_seconds: 86400
 max_records: 1000
@@ -16,12 +17,8 @@ model:
   ollama_url: http://127.0.0.1:11434
   model_name: llama3:8b
 
-# V2 is enabled only when VG_TOKEN_KEYS supplies a persistent keyring.
-# memory is development-only; choose redis for independent processes/hosts.
-tokenization:
-  default_mode: mapping          # mapping | aes_siv; optional per-request override
-  store: memory                  # memory | redis (VG_TOKEN_STORE overrides)
-  redis_url: redis://127.0.0.1:6379/0  # VG_REDIS_URL; Redis >= 7
-  active_key_id: k1               # VG_ACTIVE_TOKEN_KEY_ID overrides
-  conversation_max_lifetime_seconds: 86400  # hard cap from first creation
-  conversation_tombstone_seconds: 86400     # retain closed/expired group identity after hard cap
+# Backend selection is internal. Both modes retain one payload per server-issued session_id.
+# aes_siv encrypts the whole mapping; inject a persistent keyring with VG_SESSION_KEYS.
+v3:
+  backend: mapping
+  active_key_id: k1  # VG_ACTIVE_SESSION_KEY_ID overrides

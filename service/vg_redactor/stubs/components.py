@@ -21,12 +21,10 @@ import re
 from ..contracts.components import Components, ContextStore
 from ..contracts.errors import ModelOutputUnparseable
 from ..contracts.fields import email_to_dict, iter_fields, set_field
+from ..contracts.placeholders import PLACEHOLDER_RE, literal_placeholders, next_placeholder
 from ..contracts.policy import Policy
 from ..contracts.types import (Candidate, Decision, EmailIn, LabelState, Overrides, PseudonymResult,
                                RestoreOutcome, ScoredCandidate, Segment, SpanOut)
-
-PLACEHOLDER_RE = re.compile(r"\[[A-Za-z]+_\d+\]")
-
 
 class StubContextStore:
     """Read-only term list and allow-list, loaded once at startup (contract: static context store).
@@ -280,13 +278,14 @@ def pseudonymize(purpose: str, email: EmailIn, decisions: list[Decision],
     ORIGINAL field text so earlier replacements do not shift later offsets (the stub applies them
     right to left); use placeholders shaped like "[TYPE_n]" (letters, underscore, digits; the
     restore step relies on this shape); give the same real-world entity the same placeholder
-    within one `LabelState` (it is shared across requests of one session and stays inside the
+    within one `LabelState` (V3 creates a fresh state per redaction; it stays inside the
     service); return `spans` for EVERY decision (retained ones too), never containing the
     original value; return `redacted_email` in the same shape as the input email (see
     contracts/fields.set_field). The mapping must never be logged.
+    Original literal placeholders must be identity-mapped, and new labels must avoid them.
     """
     fields = iter_fields(purpose, email)
-    mapping: dict[str, str] = {}
+    mapping = literal_placeholders(fields.values(), labels)
     spans: list[SpanOut] = []
     placeholder_for: dict[int, str] = {}
     ordered = sorted(decisions, key=lambda d: (d.candidate.field, d.candidate.start))
@@ -298,8 +297,7 @@ def pseudonymize(purpose: str, email: EmailIn, decisions: list[Decision],
             ph = labels.labels.get(key)
             if ph is None:
                 t = _ph_type(c.type)
-                labels.counters[t] = labels.counters.get(t, 0) + 1
-                ph = f"[{t}_{labels.counters[t]}]"
+                ph = next_placeholder(t, labels)
                 labels.labels[key] = ph
             mapping[ph] = original
             placeholder_for[id(d)] = ph

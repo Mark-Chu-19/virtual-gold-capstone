@@ -1,5 +1,7 @@
 # Virtual Gold Capstone — Hybrid Local/Cloud AI Assistant
 
+Current service API: **V3 only**. See the [service README](service/README.md) and [V3 contract](docs/api/sessions-v3-en.md) / [中文接口](docs/api/sessions-v3-zh.md). Earlier API contracts are historical references.
+
 CMU MISM Capstone, Fall 2026, for **Virtual Gold Inc** (AI consulting, Brooklyn NY).
 Client contact: Urte Jesina. Team: 5 people.
 

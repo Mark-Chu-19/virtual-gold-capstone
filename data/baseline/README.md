@@ -2,7 +2,7 @@
 
 The same 100 fictional executive emails as v1, with three changes:
 
-1. **Each email is also a service request.** A `request` object validates against `RedactionRequest` in `service/vg_redactor/contracts/types.py` (contract 0.4.2), so it can go straight to `/v1/redactions`.
+1. **Each email is also a service request.** A `request` object validates against `RedactionRequestV3` in `service/vg_redactor/contracts/types.py` (V3 contract), so it can go straight to `/v3/redaction`.
 2. **Each span carries the service's own coordinates and types.** `field`, `field_start` and `field_end` follow the contract's FieldPath. `service_type` and `tier` follow `service/config/policy.yaml` 0.1.3.
 3. **A `ground_truth` column, reviewed by hand.** Each span is `redact` or `retain`. This answers Aarvin's question from the Oct 5 midterm about how we can trust LLM-generated labels: a person checks every label.
 
@@ -98,7 +98,7 @@ Three role mailboxes stay `redact` because they do reveal something private: out
 
 `check_with_service.py` imports the service from `service/` and runs four checks:
 
-1. All 100 `request` objects validate with the real `RedactionRequest` model.
+1. All 100 `request` objects validate with the real `RedactionRequestV3` model.
 2. The real segmentation step produces exactly the fields in `field_offsets`, at exactly those offsets, for every email.
 3. The real `rules.py` runs on every request, and its output scores directly with `score.py`, with no conversion. Rules alone: recall 0.66, leak rate 87%, fact recall 0.00, extra masks 30. By tier, 46% of emails leak a High-tier span and 66% a Medium-tier span. Rules catch every email address and 79% of names, but no bank accounts, codenames, health details or ID numbers. The model has to close that gap.
 4. The real `decide()` confirms the Low-tier gap in note 3.
@@ -111,7 +111,7 @@ python score.py baseline_v1.1.jsonl pred.jsonl                    # grades again
 python score.py baseline_v1.1.jsonl pred.jsonl --truth must_mask  # v1 labels, for old numbers
 ```
 
-Predictions can use v1 text offsets (`start`, `end`) or the service's response spans (`field`, `start`, `end`). Service spans with `"action": "retain"` are ignored. v1.1 adds `leak_rate_by_tier`, the primary metric on deck slide 19.
+Predictions can use v1 text offsets (`start`, `end`) or the service's internal component spans (`field`, `start`, `end`; V3 omits spans from HTTP responses). Service spans with `"action": "retain"` are ignored. v1.1 adds `leak_rate_by_tier`, the primary metric on deck slide 19.
 
 ## Checks run on this version
 

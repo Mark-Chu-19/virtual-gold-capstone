@@ -1,5 +1,7 @@
 # V2 reversible token API
 
+> Historical design reference: V1/V2 implementations have been removed. For the active service contract, see [V3 API](sessions-v3-en.md).
+
 V2 adds Mapping and AES-SIV backends to the existing detect/assess/decide pipeline. V1
 (`/v1/redactions`, record-based restore/delete) remains compatible and process-local.
 V2 restoration takes the message and authentication only: no redaction ID or mode is needed.

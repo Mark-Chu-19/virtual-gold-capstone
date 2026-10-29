@@ -27,10 +27,6 @@ class Metrics:
                                           ["prompt"], buckets=_B, registry=r)
         self.degraded = Counter("vg_degraded_total", "Degraded responses", ["reason", "stage"], registry=r)
         self.spans = Counter("vg_spans_total", "Spans decided", ["tier", "action", "mode"], registry=r)
-        self.token_redactions = Counter("vg_token_redactions_total", "V2 token redactions",
-                                        ["backend", "mode"], registry=r)
-        self.token_restorations = Counter("vg_token_restorations_total", "V2 restore outcomes",
-                                          ["decision"], registry=r)
         self.records_active = Gauge("vg_records_active", "Live request records", registry=r)
         self.records_capacity = Gauge("vg_records_capacity", "Record capacity", registry=r)
         self.records_removed = Counter("vg_records_removed_total", "Records removed", ["reason"], registry=r)

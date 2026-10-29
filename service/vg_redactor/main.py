@@ -1,4 +1,4 @@
-"""Entry point. V1 records are process-local; v2 supports independent Redis-backed replicas."""
+"""V3 service entry point. Session records are process-local; run one worker."""
 from __future__ import annotations
 
 import os

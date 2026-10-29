@@ -4,7 +4,7 @@
 Usage (from the repo root, with the service's dependencies installed):
     python data/baseline/check_with_service.py
 
-1. Validates every `request` with RedactionRequest (service/vg_redactor/contracts/types.py).
+1. Validates every `request` with RedactionRequestV3 (service/vg_redactor/contracts/types.py).
 2. Segments each request and checks every field lands at `field_offsets`.
 3. Runs the real rules detector (service/vg_redactor/privacy/rules.py) and scores it.
 4. Feeds the labelled spans to decide() with a confident model score (0.9) and counts the
@@ -18,7 +18,7 @@ HERE = Path(__file__).resolve().parent
 SERVICE = HERE.parent.parent / "service"
 sys.path.insert(0, str(SERVICE))
 
-from vg_redactor.contracts.types import Candidate, Overrides, RedactionRequest, ScoredCandidate
+from vg_redactor.contracts.types import Candidate, Overrides, RedactionRequestV3, ScoredCandidate
 from vg_redactor.contracts.policy import Policy
 from vg_redactor.privacy import FileContextStore, decide, detect_rules
 from vg_redactor.stubs.components import segment
@@ -29,7 +29,7 @@ data = [json.loads(l) for l in open(HERE / "baseline_v1.1.jsonl", encoding="utf-
 
 preds, gap = [], Counter()
 for e in data:
-    req = RedactionRequest.model_validate(e["request"])
+    req = RedactionRequestV3.model_validate(e["request"])
     segs = segment(req.purpose, req.email)
     for s in segs:
         if s.field != "purpose":

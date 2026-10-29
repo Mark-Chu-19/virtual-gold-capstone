@@ -1,5 +1,7 @@
 # Conversation Key Manager
 
+> Historical design reference: V1/V2 implementations have been removed. For the active service contract, see [V3 API](sessions-v3-en.md).
+
 V2 now issues format-2 tokens using independent random conversation secrets. Redaction and
 restoration request bodies are unchanged. `group_id` identifies the conversation within the
 API key's tenant; provide the existing business conversation ID. Omitting it still uses

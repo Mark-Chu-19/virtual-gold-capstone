@@ -24,7 +24,6 @@ EMAIL_REQ = {
         "thread": [{"message_id": "m-1", "source": "quoted_thread",
                     "text": "Our public support line is 800-555-0100."}],
     },
-    "mapping": {"retain": True},
 }
 
 

@@ -1,5 +1,7 @@
 # Service Engineering 实现方案与组件接口(契约 0.4.2 草案)
 
+> 历史设计文档：V1/V2 实现已删除，不代表当前服务接口。当前契约见 [V3 API](sessions-v3-zh.md)。
+
 **状态:** 草案,待团队确认 · **Owner:** Zhexuan Ye · **基于:** API 契约 0.4.1、midterm slides、架构图 v1、development-schedule
 
 ## 背景
