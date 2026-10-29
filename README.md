@@ -1,5 +1,7 @@
 # Virtual Gold Capstone — Hybrid Local/Cloud AI Assistant
 
+Current service API: **V3 only**. See the [service README](service/README.md) and [V3 contract](docs/api/sessions-v3-en.md) / [中文接口](docs/api/sessions-v3-zh.md). Earlier API contracts are historical references.
+
 CMU MISM Capstone, Fall 2026, for **Virtual Gold Inc** (AI consulting, Brooklyn NY).
 Client contact: Urte Jesina. Team: 5 people.
 
@@ -9,7 +11,7 @@ We are building and evaluating a **local sanitization service**: a standalone HT
 >
 > **Current baseline: the midterm deck as presented on 2026-10-05** [`meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf`](<meetings/client/2026-10-05/Midterm Client Presentation Slides(Virtual Gold).pdf>) (49 slides) is the team consensus, agreed inside the team and with the professor. Where any older document disagrees with it, the deck wins. Its decisions are in the `todo/TODO.md` decision log; slide numbers there refer to this deck.
 
-## Where we are (Week 9, updated 2026-10-23)
+## Where we are (Week 10, updated 2026-10-25)
 
 | Item | Status |
 |---|---|
@@ -20,8 +22,8 @@ We are building and evaluating a **local sanitization service**: a standalone HT
 | Privacy Research components (rules, Presidio, merge, calibration, decision, pseudonymisation) | Done 2026-10-23, PR #8: `service/vg_redactor/privacy/` |
 | End-to-end pipeline with failure path (M2) | In progress, due 2026-11-01; prompts and parsers are still stubs |
 | **Open: request-level routing and "documents" as input.** The final deck and the SOW include both; contract 0.4.2 has neither | To decide, `todo/TODO.md` A14, A15 |
-| Evaluation dataset: 100 fictional executive emails, 999 labelled items, 18 types | Built (Karina); not yet committed to `data/`. Oct 5: also source an already-labelled external dataset as ground truth (A16) |
-| Model | Benchmarked Llama 3.1 8B and Qwen 2.5 7B; Gemma 4 next; one model for now (A13) |
+| Evaluation dataset: 100 fictional executive emails, 999 labelled items, 18 types | Built (Karina); split 60 development / 40 reserved test (Oct 19); not yet committed to `data/`. Oct 5: also source an already-labelled external dataset as ground truth (A16) |
+| Model | Oct 25 (Anmol): Qwen 3.8 27B + GLiNER on one 24–48 GB GPU leaks least on the 15 development emails (7.4% of private characters), GPT-OSS 120B over-masks least; rules + Presidio + GLiNER as the no-LLM fallback. Measured on hosted free-tier APIs, not a VPC; one model for now (A13) |
 | GPU / sandbox for the local model | Waiting on the client since 2026-09-15; test over the web or with Ollama meanwhile |
 | Architecture document v0.4 | Not started; the deck and `docs/api/` stand in until then |
 
@@ -58,8 +60,10 @@ Milestones from the deck: Oct 11 contract 0.4.2 and service skeleton · Nov 1 en
 | Client meeting Sep 28 (Mon): presented the horizontal architecture; aligned on English-only input, two test phases (standalone, then VG08), testing early with cloud-hosted open-source models or Ollama; Slack workspace and Drive set up | Agenda and Gemini notes in `meetings/client/2026-09-28/` |
 | Midterm deck agreed by the team and the professor | 2026-10-03 |
 | Midterm presentation Oct 5 (Mon): 49-slide deck; preliminary benchmark (local models beat rules + Presidio, close to the cloud model); aligned on an external labelled dataset as ground truth and one model for now | Deck and Gemini notes in `meetings/client/2026-10-05/` |
+| Client meeting Oct 19 (Mon): Zhexuan's report on the service and privacy components, then Anmol's model workstream (benchmark split 60/40, 15-email model comparison, Llama 3.3 70B recommendation) | Report in `meetings/client/2026-10-19/`; no Gemini notes yet |
 | PR #7 (Zhexuan): contract 0.4.2, service skeleton, dashboard | Merged 2026-10-19 |
 | PR #8 (Yudi): Privacy Research components | Merged 2026-10-23 |
+| Materials for the Oct 26 client meeting: API v2 tokenization and encryption (Zhexuan), VPC model report (Anmol), rules + Presidio evaluation and the tier table for client review (Yudi). They disagree on the tier policy and the token format (A18, A19) | `meetings/client/2026-10-26/` |
 
 ## Read this first
 
@@ -132,8 +136,11 @@ Sections in the document:
 │   │   │                          briefing-security-deidentification-en.html (Yudi)
 │   │   │                          financial-data-sources-en.pdf · email-aarvin-onboarding-en.md
 │   │   ├── 2026-09-28/            agenda-{en,zh}.html · notes-gemini-en.pdf
-│   │   └── 2026-10-05/            Midterm Client Presentation Slides(Virtual Gold).pdf   the midterm deck as given, the current baseline
-│   │                              notes-gemini-en.pdf
+│   │   ├── 2026-10-05/            Midterm Client Presentation Slides(Virtual Gold).pdf   the midterm deck as given, the current baseline
+│   │   │                          notes-gemini-en.pdf
+│   │   ├── 2026-10-19/            Virtual-Gold-Report-8e9421d.html   Zhexuan's report as given: service, privacy, Anmol's model results
+│   │   └── 2026-10-26/            briefing-encryption-api-{en,zh}.html (Zhexuan) · briefing-vpc-model-evaluation-en.md (Anmol)
+│   │                              briefing-rules-presidio-eval-en.html · tier-table-client-review-en.docx (Yudi)
 │   ├── team/                      internal team meetings, not shared with the client
 │   │   ├── 2026-09-18/            agenda-en.html · agenda-zh.html
 │   │   ├── 2026-09-27/            agenda-{en,zh}.html · notes-{en,zh}.md · deferred-{en,zh}.md
@@ -156,7 +163,7 @@ Rule of thumb: `docs/` is what we author and hand over (API contract, architectu
 - Every bilingual file carries a language suffix: `-en` or `-zh`. The exception is `todo/TODO.md`, which is English (`TODO-zh.md` is the Chinese copy).
 - Meeting folders are `YYYY-MM-DD`. Inside: `agenda-<lang>.html` for the running order, `briefing-<topic>-<lang>.html` for a presentation piece one workstream brings, `slides-<topic>-<lang>.pdf` for a full slide deck, `notes-<source>-<lang>` for what comes out (`gemini` = the auto-generated notes, `zh` = our translation), `email-<who>-<topic>-<lang>.md` for correspondence that belongs to that meeting.
 - Versions live in the filename: `architecture-v0.3-*`, `Scope of Work v3`, `-v0.4.2`. A new version is a new file; old versions stay for history.
-- Files exactly as the client received them keep their original name: `Scope of Work -  20261005.docx`, `Midterm Client Presentation Slides(Virtual Gold).pdf`.
+- Files exactly as the client received them keep their original name: `Scope of Work -  20261005.docx`, `Midterm Client Presentation Slides(Virtual Gold).pdf`, `Virtual-Gold-Report-8e9421d.html`.
 
 ## Meeting cadence
 

@@ -1,6 +1,6 @@
-# vg_redactor: local redaction service (contract 0.4.2)
+# vg_redactor: local redaction service (V3)
 
-W9 skeleton: gateway, record store, model adapter, orchestrator, metrics, audit log. The Privacy
+Gateway, record store, model adapter, orchestrator, metrics and audit log. The Privacy
 Research components (`vg_redactor/privacy/`) are wired in by default; the remaining components
 (prompts and parsers) run as **stubs** (`vg_redactor/stubs/components.py`) behind the exact
 signatures in `vg_redactor/contracts/components.py`.
@@ -18,7 +18,7 @@ To run without Presidio, install `pip install -e ".[dev]"` and start with
 
 Monitoring (Prometheus + Grafana, 8-panel dashboard, traffic generator): see `dashboards/README.md`.
 
-Single process only: request records live in memory, so run one worker.
+V3 records live in memory. Run one worker; restart loses all restoration records.
 
 | Path | Owner | What |
 |---|---|---|
@@ -31,3 +31,35 @@ Single process only: request records live in memory, so run one worker.
 
 To plug in a real component, build the `Components` bundle in `main.py` with your function in
 place of the stub; the contract tests in `tests/` should keep passing.
+
+## V3 API
+
+Only V3 is served. V1/V2 routes and their token/conversation/Redis machinery have been removed;
+they were development iterations and were never offered as supported customer APIs.
+
+| Method | Path | JSON request | Success |
+|---|---|---|---|
+| POST | `/v3/redaction` | `{purpose, email, policy?}` | `{session_id, redacted_email, redacted_purpose, expires_at, degraded}` |
+| POST | `/v3/restore` | `{session_id, text}` | `{restored_text}` |
+| DELETE | `/v3/redaction` | `{session_id}` | 204, no body |
+| GET | `/v3/info` | none | versions, policy, limits and restoration configuration |
+| GET | `/healthz` | none | `{status: "ok"}` |
+| GET | `/readyz` | none | `{mode, components}` |
+
+All routes except health/readiness require `Authorization: Bearer <API_KEY>` from `VG_API_KEYS`.
+By default each key is an isolated tenant. `VG_API_IDENTITIES` maps SHA256 key digests to
+`{tenant_id}` when multiple keys should share records. Clients retain only `session_id`;
+`X-Request-ID` is an optional diagnostic header. Each redaction is independent, with no
+client-provided session, group or conversation context. Literal placeholders already in the input
+are preserved without colliding with generated labels. Expanded restoration output is limited by
+`max_restored_bytes` (default 1 MiB), checked before replacement. Invalid Unicode is rejected before
+retention; timed-out workers and response-serialization failures cannot leave usable records.
+
+Backend selection is internal (`v3.backend`): `mapping` is the default, `aes_siv` encrypts the
+entire mapping while preserving short placeholders. AES needs a persistent `VG_SESSION_KEYS`
+JSON keyring (`{key_id: base64_encoded_64_bytes}`); `VG_ACTIVE_SESSION_KEY_ID` selects the active
+key. Keep old keys until their records expire. Keys are never returned or committed.
+There is no Redis dependency or shared session storage. Service version is 3.0.0, contract v3.
+
+See the [English V3 contract](../docs/api/sessions-v3-en.md) /
+[中文接口说明](../docs/api/sessions-v3-zh.md). Earlier API documents are historical design references.

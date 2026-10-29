@@ -1,4 +1,4 @@
-"""Entry point: `python -m vg_redactor.main` (single process; records live in memory)."""
+"""V3 service entry point. Session records are process-local; run one worker."""
 from __future__ import annotations
 
 import os
@@ -51,4 +51,4 @@ def build():
 if __name__ == "__main__":
     settings, app, metrics = build()
     start_http_server(settings.metrics_port, addr=settings.metrics_host, registry=metrics.registry)
-    uvicorn.run(app, host="127.0.0.1", port=8080)  # one worker only: records are in-process
+    uvicorn.run(app, host=settings.host, port=settings.port)  # one process per instance

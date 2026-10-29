@@ -1,5 +1,7 @@
 # Local Redaction Service — API Contract Summary
 
+> Historical design reference: V1/V2 implementations have been removed. For the active service contract, see [V3 API](sessions-v3-en.md).
+
 **Version:** 0.4.2-draft &nbsp;|&nbsp; **Status:** Draft for team and client review &nbsp;|&nbsp; **Owner:** Service Engineering
 
 **Changelog (0.4.2):** Pinned down details the first implementation needs; no change to the

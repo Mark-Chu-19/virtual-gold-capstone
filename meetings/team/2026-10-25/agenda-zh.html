@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>10/25 組內會議</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; each topic is a card with evidence, a recommendation, then a fill-in block. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#1C2530; --muted:#5B6875; --line:#D3DAE2; --soft:#E9EDF2;
+  --local:#2A6E68; --local-soft:#E1EFEC; --cloud:#4B6A9B; --cloud-soft:#E5ECF6;
+  --gold:#A8842C; --gold-soft:#F4ECD8; --warn:#B4562A; --warn-soft:#F6E6DE; --field:#FBFCFD;
+  --serif:"Source Serif 4","PingFang TC","Noto Serif TC",Georgia,serif;
+  --sans:"Source Sans 3","PingFang TC","Noto Sans TC","Microsoft JhengHei","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ls:.08em;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+    --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+    --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A21; --surface:#1C2430; --ink:#E6EBF1; --muted:#9AA7B5; --line:#33404E; --soft:#232D3A;
+  --local:#5FB3AB; --local-soft:#1E3532; --cloud:#8FA9D6; --cloud-soft:#25314A;
+  --gold:#D4AE56; --gold-soft:#3A3120; --warn:#E0865E; --warn-soft:#3F2A20; --field:#18202A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:36px 72px}
+.page{max-width:880px;margin:0 auto}
+header{padding-bottom:22px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;margin:10px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.intro{margin:0 0 18px;font-size:17px;line-height:1.6;max-width:68ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin:0 0 18px;font-size:15px}
+.meta div{display:flex;flex-direction:column;gap:2px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:0}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;display:flex;align-items:baseline;gap:12px;text-wrap:balance;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400;flex:none}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:500}
+.lede{color:var(--muted);margin:6px 0 14px;font-size:16px;line-height:1.65}
+p{margin:0 0 10px}
+code,.ref{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+ul.points{padding-left:20px;margin:0}
+ul.points li{margin-bottom:7px}
+a{color:var(--cloud)}
+
+/* running order */
+.order{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 14px}
+.order li:hover{border-color:var(--gold)}
+.order a{color:inherit;text-decoration:none}
+.order .n{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.order .t{font-weight:600}
+.order .w{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted)}
+.order .d{grid-column:2/-1;font-size:14px;color:var(--muted)}
+@media (max-width:600px){.order li{grid-template-columns:28px 1fr}.order .w{grid-column:2}}
+.chains{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 44px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;font-size:14px}
+.chain:last-child{margin-bottom:0}
+.chain .lab{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);width:100%}
+.node{border:1px solid var(--line);border-radius:999px;padding:3px 11px;background:var(--soft)}
+.node.today{border-color:var(--warn);background:var(--warn-soft);font-weight:600}
+.arr{color:var(--muted)}
+
+/* topic cards */
+section.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 22px 20px;margin-bottom:26px;scroll-margin-top:16px}
+section.item.urgent{border-left:4px solid var(--warn)}
+section.item.soon{border-left:4px solid var(--gold)}
+section.item.later{border-left:4px solid var(--cloud)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.due{background:var(--warn-soft);color:var(--warn)}
+.issue{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.issue h4{margin:0 0 6px;font-size:16px}
+.issue .ev{font-size:14px;color:var(--muted);margin:6px 0 0}
+.rec{background:var(--local-soft);border-radius:8px;padding:12px 14px;margin-top:14px}
+.rec .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--local);display:block;margin-bottom:4px}
+.tablewrap{overflow-x:auto;margin:6px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--muted);background:var(--soft);font-weight:500}
+td.hl{background:var(--warn-soft)}
+.num{font-variant-numeric:tabular-nums}
+
+/* fill-in block */
+.fill{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;display:grid;gap:14px}
+.fill .k{font-family:var(--mono);font-size:11px;letter-spacing:var(--ls);text-transform:uppercase;color:var(--gold)}
+.qa{display:grid;gap:10px}
+.qa label{display:grid;gap:4px;font-size:15px}
+.qa .who{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+.choices{display:grid;gap:8px;border:0;padding:0;margin:0}
+.choices legend{padding:0;margin-bottom:6px}
+.choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font-size:15px}
+.choice:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.choice input{margin-top:4px;accent-color:var(--gold);flex:none}
+.choice b{font-family:var(--mono);font-size:12px;color:var(--gold);margin-right:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.row2{grid-template-columns:1fr}}
+.row2 label{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+input[type=text],textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{min-height:64px;resize:vertical;line-height:1.5}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.choice:focus-within{outline:2px solid var(--gold);outline-offset:1px}
+
+/* export */
+.export{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-top:10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+button{font:inherit;font-size:15px;font-weight:600;border-radius:8px;padding:8px 14px;border:1px solid var(--gold);background:var(--gold);color:var(--surface);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:focus-visible{outline:2px solid var(--cloud);outline-offset:2px}
+#status{font-size:13px;color:var(--muted)}
+#mdout{min-height:180px;font-family:var(--mono);font-size:13px}
+.confirm{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">Virtual Gold · 組內會議 · 內部</div>
+  <h1>明天客戶會看到什麼</h1>
+  <p class="intro">四位組員都替週一的客戶會議準備了資料。把這些檔案放在一起看，有幾個地方說法互相矛盾，其中一份還把我們還沒決定的事寫成已經定案。今晚要把五件事講定，讓客戶週一看到的內容正確，而且每份資料說法一致。</p>
+  <dl class="meta">
+    <div><dt>時間</dt><dd>2026-10-25（週日）</dd></div>
+    <div><dt>客戶會議</dt><dd>2026-10-26（週一）18:00 ET</dd></div>
+    <div><dt>素材</dt><dd><code>meetings/client/2026-10-26/</code></dd></div>
+    <div><dt>追蹤</dt><dd><code>todo/TODO-zh.md</code> 10/25 那段</dd></div>
+  </dl>
+  <div class="row2">
+    <label for="attendees">出席<input type="text" id="attendees" data-save placeholder="Mark、Anmol、Yudi、Zhexuan、Karina"></label>
+    <label for="timekeeper">記錄人<input type="text" id="timekeeper" data-save placeholder="Mark"></label>
+  </div>
+</header>
+
+<h2><span class="n">00</span>進行順序</h2>
+<p class="lede">編號和 TODO 表一致。建議時間加起來約 55 分鐘。議題 2 和 5 是同一個問題的兩面，排在一起討論。</p>
+<ol class="order">
+  <li><span class="n">1</span><a class="t" href="#t1">Anmol 的模型報告</a><span class="w">10 分</span><span class="d">改掉「VPC」的說法、拿掉兩個假設、刪掉 CMU 預算那句</span></li>
+  <li><span class="n">2</span><a class="t" href="#t2">客戶要審哪一套分級規則</a><span class="w">15 分</span><span class="d">Yudi 的 4 級還是 Anmol 的 3 級；Low 級怎麼處理</span></li>
+  <li><span class="n">5</span><a class="t" href="#t5">Karina 的資料集 PR #9</a><span class="w">10 分</span><span class="d">標註還是草稿、和 Yudi 的合併順序、86 個 Low 級片段</span></li>
+  <li><span class="n">3</span><a class="t" href="#t3">Placeholder 格式</a><span class="w">10 分</span><span class="d">Zhexuan 的長 token，還是短的 <code>[PERSON_1]</code></span></li>
+  <li><span class="n">4</span><a class="t" href="#t4">連結打不開</a><span class="w">2 分</span><span class="d">26 個指向個人電腦的連結</span></li>
+  <li><span class="n">✓</span><a class="t" href="#wrap">收尾：明天要展示什麼、問什麼</a><span class="w">8 分</span><span class="d">填最後那張表</span></li>
+</ol>
+<div class="chains">
+  <div class="chain"><span class="lab">議題之間的關係</span>
+    <span class="node today">2 分級規則</span><span class="arr">↔</span><span class="node today">5 Karina 的 86 個 Low 級片段</span><span class="arr">→</span><span class="node">D49 客戶審分級表</span><span class="arr">→</span><span class="node">D70 洩漏率目標</span></div>
+  <div class="chain">
+    <span class="node today">1 Anmol 的報告</span><span class="arr">→</span><span class="node">D51 GPU / VPC</span><span class="arr">+</span><span class="node">A15 文件輸入</span><span class="arr">→</span><span class="node">改成問客戶的問題</span></div>
+  <div class="chain">
+    <span class="node today">3 Placeholder</span><span class="arr">→</span><span class="node">A18 API v2</span><span class="arr">→</span><span class="node">11/15 contract 凍結</span></div>
+</div>
+
+<!-- 1 -->
+<section class="item urgent" id="t1" data-topic="1" data-title="Anmol 的模型報告">
+  <h2><span class="n">1</span>Anmol 的模型報告</h2>
+  <div class="tags"><span class="tag due">週一前要改</span><span class="tag">B72</span><span class="tag">A13</span><span class="tag">A15</span><span class="tag">D51</span><span class="tag">Anmol</span></div>
+  <p class="lede">檔案：<code>briefing-vpc-model-evaluation-en.md</code>，10/25，收件人寫的是 Inderpal、Alex、Urte。</p>
+
+  <h3>報告內容</h3>
+  <ul class="points">
+    <li>Anmol 修掉測試程式的六個缺陷後，在 10/19 用的同一批 15 封開發用信件上，跑了 9 種新設定。</li>
+    <li><b>隱私保護最好：</b>Qwen 3.8 27B + GLiNER（「Config B」），一張 24–48 GB 的 GPU 就能跑。隱私字元漏遮 7.4%（10/19 的 Llama 3.3 70B 是 16.2%），10 個機密事實抓到 9 個，每封信 2.4 秒。代價是公開文字被遮了 21.7%。</li>
+    <li><b>誤遮最少：</b>GPT-OSS 120B，需要一張 80 GB 的 GPU。公開文字只遮 5–12%，但隱私字元漏 17–27%。</li>
+    <li><b>不用 LLM 的備案：</b>規則 + Presidio + GLiNER，洩漏 29.4%，0.11 秒。提議當作降級模式。</li>
+  </ul>
+  <p>結果本身是好消息，值得給客戶看。但寫法有四個地方要先改。</p>
+
+  <h3>要改的地方</h3>
+  <div class="issue">
+    <h4>a. 標成「VPC」的結果其實不是在 VPC 跑的</h4>
+    <p>表格寫的是「VPC configurations」、「Tier 1 VPC」，但九種設定都是用免費額度的託管 API（Groq、OpenRouter）跑的，報告自己在 §4.1 下方的註解也有寫。GPU 分級描述的是模型「需要」什麼硬體，這部分有用；但 2.4 秒是託管服務的速度，不是自架 GPU 的速度。</p>
+    <p class="ev">風險：客戶會把「VPC」理解成「已經在跟我們類似的環境測過」。</p>
+  </div>
+  <div class="issue">
+    <h4>b. 兩個還沒決定的事寫成了定案</h4>
+    <p>§1：「Virtual Gold 會把隱私閘道部署在專屬的企業 VPC，而不是使用者的筆電」。§1 和 §7：閘道「必須處理……任意企業文件」（合約、表格、董事會備忘錄、日誌、逐字稿）。</p>
+    <p class="ev">這兩件都還沒談定。模型跑在哪是 D51，9/15 就問了，到現在還沒答案；9/28 客戶說先用網路或 Ollama 測。輸入範圍是 A15：期中簡報和 SOW 寫「英文文字與文件」，contract 0.4.2 只收 email，也還沒人定義「文件」請求長什麼樣。</p>
+  </div>
+  <div class="issue">
+    <h4>c. CMU 預算那句</h4>
+    <p>§7：之後的測試要等「透過 Randall Trzeciak 教授申請的 $50 CMU OpenRouter 額度」。</p>
+    <p class="ev">決策紀錄 2026-09-27：客戶問硬體時只回答用個人筆電，不提 CMU 管道。經費是我們內部的事，客戶不需要知道。</p>
+  </div>
+  <div class="issue">
+    <h4>d. 證據的範圍</h4>
+    <p>只有 15 封信，涵蓋 15 個業務領域中的 4 個。8B 和 Qwen 9B 的對照數字是用舊版測試程式在本機跑的。這些要寫在主要數字旁邊，不能只放在註腳。</p>
+  </div>
+  <div class="rec"><span class="k">建議</span>Anmol 今晚改。標題改成類似「以託管開源模型評測，並依客戶 GPU 等級估算」。VPC 和文件這兩點移到「要請 Virtual Gold 確認的問題」。刪掉 CMU 那句。結果數字不用動。</div>
+
+  <div class="fill">
+    <span class="k">記錄</span>
+    <div class="qa">
+      <label for="q1a"><span><span class="who">問 Anmol</span>今晚能改完嗎？幾點前？</span><input type="text" id="q1a" data-save></label>
+      <label for="q1b"><span><span class="who">問 Anmol</span>明天主打哪個設定：Config B（洩漏最少）還是 GPT-OSS 120B（誤遮最少）？</span><input type="text" id="q1b" data-save></label>
+      <label for="q1c"><span><span class="who">問 Anmol</span>Qwen 3.8 27B 和 GLiNER 的授權允許自架嗎？</span><input type="text" id="q1c" data-save></label>
+      <label for="q1d"><span><span class="who">問大家</span>完整報告要給客戶，還是只給摘要？</span><input type="text" id="q1d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">決定</legend>
+      <label class="choice"><input type="radio" name="d1" id="d1a" value="A" data-save data-label="Anmol 今晚改，明天展示並寄出修改版"><span><b>A</b>Anmol 今晚改，明天展示並寄出修改版。</span></label>
+      <label class="choice"><input type="radio" name="d1" id="d1b" value="B" data-save data-label="明天只給一頁摘要，完整報告改完再寄"><span><b>B</b>明天只給一頁摘要，完整報告改完再寄。</span></label>
+      <label class="choice"><input type="radio" name="d1" id="d1c" value="C" data-save data-label="報告等會議後再說"><span><b>C</b>報告等會議後再說。</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o1">負責人<input type="text" id="o1" data-save></label>
+      <label for="w1">期限<input type="text" id="w1" data-save></label>
+    </div>
+    <label for="n1" class="k">筆記</label>
+    <textarea id="n1" data-save></textarea>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="item urgent" id="t2" data-topic="2" data-title="客戶要審哪一套分級規則">
+  <h2><span class="n">2</span>客戶要審哪一套分級規則</h2>
+  <div class="tags"><span class="tag due">今晚決定</span><span class="tag">A19</span><span class="tag">D49</span><span class="tag">D70</span><span class="tag">Yudi</span><span class="tag">Anmol</span></div>
+  <p class="lede">Yudi 寫了 <code>tier-table-client-review-en.docx</code> 要給客戶確認。Anmol 的數字則來自一套規則不同的測試程式。兩份都拿出來的話，客戶會看到兩套規則。</p>
+
+  <h3>四個版本並排</h3>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>Yudi 的表（給客戶）</th><th>main 上的服務</th><th>Anmol 的測試程式</th><th>期中簡報</th></tr>
+    <tr><td>版本</td><td>policy-0.1.3（她的分支）</td><td>policy-0.1.1</td><td>自己的設定</td><td>10/5</td></tr>
+    <tr><td>級數</td><td>4：High、Medium、Low、Public</td><td>4</td><td>3：High、Medium、Low</td><td>3</td></tr>
+    <tr><td>類別</td><td>22</td><td>21</td><td>資料集的 18 類 + FACT</td><td>—</td></tr>
+    <tr><td>High</td><td class="num">分數 ≥ 0.2 就遮</td><td class="num">≥ 0.2</td><td class="num">≥ 0.2，規則命中直接鎖定</td><td class="num">≥ 0.2</td></tr>
+    <tr><td>Medium</td><td class="num">≥ 0.5，每個請求可調</td><td class="num">≥ 0.5</td><td class="num">≥ 0.5</td><td class="num">≥ 0.5</td></tr>
+    <tr><td><b>Low</b></td><td class="hl">保留，除非同一欄位出現 3 種以上不同的 Low 類別</td><td class="hl">同左</td><td class="hl">分數 ≥ 0.5 就遮</td><td>單獨出現就保留</td></tr>
+    <tr><td>Public</td><td class="num">保留，除非 ≥ 0.8</td><td class="num">保留，除非 ≥ 0.5</td><td>沒有 Public 級</td><td>—</td></tr>
+    <tr><td>不確定的分數</td><td>—</td><td>—</td><td class="num">0.35–0.65 一律遮</td><td>—</td></tr>
+  </table></div>
+
+  <h3>為什麼重要</h3>
+  <div class="issue">
+    <h4>真正的差別在 Low 級</h4>
+    <p>服務（以及 Yudi 的表）遇到單獨出現的 Low 項目，不管模型怎麼判斷都保留。Anmol 的測試程式則是模型分數 ≥ 0.5 就遮。所以 Anmol 的洩漏數字是在比服務更嚴的規則下量的；換成服務實際的規則，數字會更差。</p>
+    <p class="ev">Karina 直接量到了這件事（議題 5）：有 86 個應該遮的片段落在 Low 級，包括 67 個公司名、12 個城市、6 個日期、1 個年齡。丟進真正的 <code>decide()</code>，就算模型 90% 確定是隱私，86 個還是全部放行。最嚴重的是交易對象（ORG）和出生日期（DOB 對應到 DATE）。</p>
+  </div>
+  <div class="rec"><span class="k">建議</span>給客戶審 <b>Yudi 的 4 級表</b>，因為服務實作的就是這套，而且表已經寫成給客戶看的格式。送出前先加三個提議：機密的交易對象放進客戶的機密詞清單或 CODENAME（High）；出生日期獨立成一個類別，放 Medium 或 High；編號類（案件號、病歷號）給一個分級。會後 Anmol 改用 <code>policy.yaml</code> 重算，讓他的數字和服務一致。</div>
+
+  <div class="fill">
+    <span class="k">記錄</span>
+    <div class="qa">
+      <label for="q2a"><span><span class="who">問 Yudi</span>docx 裡的版本就是妳分支上的 policy-0.1.3 嗎？之後有再改嗎？</span><input type="text" id="q2a" data-save></label>
+      <label for="q2b"><span><span class="who">問 Yudi</span>模型很確定是隱私的 Low 項目，單獨出現時還要保留嗎？當初訂「3 種類別」規則的理由是什麼？</span><input type="text" id="q2b" data-save></label>
+      <label for="q2c"><span><span class="who">問 Anmol</span>測試程式能改成讀 <code>service/config/policy.yaml</code>，不用自己的門檻嗎？</span><input type="text" id="q2c" data-save></label>
+      <label for="q2d"><span><span class="who">問大家</span>週一前要不要把出生日期、交易對象、編號這三個提議加進表裡？</span><input type="text" id="q2d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">決定</legend>
+      <label class="choice"><input type="radio" name="d2" id="d2a" value="A" data-save data-label="Yudi 的 4 級表，照原樣"><span><b>A</b>Yudi 的 4 級表，照原樣。</span></label>
+      <label class="choice"><input type="radio" name="d2" id="d2b" value="B" data-save data-label="Yudi 的 4 級表，加上出生日期、交易對象、編號三個提議"><span><b>B</b>Yudi 的 4 級表，加上出生日期、交易對象、編號三個提議。</span></label>
+      <label class="choice"><input type="radio" name="d2" id="d2c" value="C" data-save data-label="用 Anmol 的 3 級規則，Yudi 的表重寫"><span><b>C</b>用 Anmol 的 3 級規則，Yudi 的表重寫。</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o2">負責人<input type="text" id="o2" data-save></label>
+      <label for="w2">期限<input type="text" id="w2" data-save></label>
+    </div>
+    <label for="n2" class="k">筆記</label>
+    <textarea id="n2" data-save></textarea>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="item urgent" id="t5" data-topic="5" data-title="Karina 的資料集 PR #9">
+  <h2><span class="n">5</span>Karina 的資料集 PR #9</h2>
+  <div class="tags"><span class="tag due">今晚決定</span><span class="tag">B46</span><span class="tag">A16</span><span class="tag">A19</span><span class="tag">Karina</span><span class="tag">Yudi</span></div>
+  <p class="lede">10/25 開的 PR：把 100 封信放進 <code>data/baseline/baseline_v1.1.jsonl</code>，附複核工作表、評分程式，以及一支用我們真正的服務程式來跑資料集的腳本。我實際跑過，她寫的數字全部重現得出來。</p>
+
+  <h3>這個 PR 做了什麼</h3>
+  <ul class="points">
+    <li>每封信同時是一個合法的服務請求（contract 0.4.2），每個片段都帶有服務自己的欄位位置、類別和分級，所以服務的輸出不用轉換就能直接評分。</li>
+    <li>新增 <code>ground_truth</code> 欄（遮或保留）：共 1,054 個片段，1,006 個要遮、48 個保留。984 個和 v1 一致，15 個改成保留（像 <code>no-reply@</code> 這類角色信箱），55 個是新增的（大多是藏在機密事實裡的人名和金額）。</li>
+    <li>基準：服務裡的規則單獨跑，抓到 66% 的實體，87% 的信會漏東西。舊的正規表示式基準是 40%、96%。</li>
+  </ul>
+
+  <h3>要講定的</h3>
+  <div class="issue">
+    <h4>a. 標註還是草稿</h4>
+    <p>每封信都標著 <code>gt_status: "draft: proposed by Claude, pending Karina's review"</code>。10/5 Aarvin 問的是「LLM 產生的標註怎麼能信」，而這版標準答案也是 LLM 提的，要等 Karina 每一筆都看過才算回答了他的問題。</p>
+    <p class="ev">她自己的 README 寫：「工作表每一列都經 Karina 檢查前，不要跟客戶說資料集是人工標註的。」</p>
+  </div>
+  <div class="issue">
+    <h4>b. 和 Yudi 分支的合併順序</h4>
+    <p>Yudi 還沒合併的分支（<code>feat/privacy-detection-fixes</code>）把分級政策升到 0.1.3：<code>BANK_ACCOUNT</code> 改名為 <code>ACCOUNT_NUMBER</code>，並新增 <code>ADDRESS_PUBLIC</code>。Karina 的檔案存的是 0.1.1 的類別名稱，而且因為當時沒有公開地址類別，公司地址被歸到 <code>ADDRESS_HOME</code>。不管哪一個後合併，另一邊都會過時。</p>
+  </div>
+  <div class="issue">
+    <h4>c. 會影響其他議題的發現</h4>
+    <ul class="points">
+      <li>86 個永遠被放行的 Low 級片段：見議題 2。</li>
+      <li>39 個 <code>ID_NUMBER</code> 和 1 個網址在政策裡沒有類別。預設會被遮，所以不會漏，但公開的編號會被誤遮。</li>
+      <li>v1 說有 10 封完全乾淨的對照信，實際只有 4 封（E007、E023、E052、E095）。</li>
+      <li>給 Yudi：規則偵測器 31 個誤判裡有 30 個，是把「Benefits Center」這類信箱名稱當成人名；在 <code>NON_PERSON_WORDS</code> 補幾個詞就能解決大部分。</li>
+      <li>小事：檢查腳本會把 <code>pred_rules.jsonl</code> 寫進 <code>data/baseline/</code>，而 <code>.gitignore</code> 沒有排除它。</li>
+    </ul>
+  </div>
+  <div class="rec"><span class="k">建議</span>明天說「資料集已建好，人工複核中」，不要說「人工標註」。先合併 Yudi 的分支，再由 Karina 依 0.1.3 重新產生類別和分級欄位，並在同一個分支上完成複核。在那之前，我把 PR #9 審查標成「要求修改」。</div>
+
+  <div class="fill">
+    <span class="k">記錄</span>
+    <div class="qa">
+      <label for="q5a"><span><span class="who">問 Karina</span>目前複核了幾筆？1,054 筆什麼時候全部看完？</span><input type="text" id="q5a" data-save></label>
+      <label for="q5b"><span><span class="who">問 Karina、Yudi</span>合併順序：Yudi 先、Karina 再重新產生？誰做、何時完成？</span><input type="text" id="q5b" data-save></label>
+      <label for="q5c"><span><span class="who">問 Yudi</span>妳會在分支上把信箱名稱的詞補進 <code>NON_PERSON_WORDS</code> 嗎？</span><input type="text" id="q5c" data-save></label>
+      <label for="q5d"><span><span class="who">問大家</span>明天對客戶怎麼說明資料集？</span><input type="text" id="q5d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">決定：合併順序</legend>
+      <label class="choice"><input type="radio" name="d5" id="d5a" value="A" data-save data-label="Yudi 的分支先合併，Karina 依 policy 0.1.3 重新產生"><span><b>A</b>Yudi 的分支先合併，Karina 依 policy 0.1.3 重新產生。</span></label>
+      <label class="choice"><input type="radio" name="d5" id="d5b" value="B" data-save data-label="Karina 的 PR 先合併，Yudi 在她的 PR 裡更新資料集類別"><span><b>B</b>Karina 的 PR 先合併，Yudi 在她的 PR 裡更新資料集類別。</span></label>
+      <label class="choice"><input type="radio" name="d5" id="d5c" value="C" data-save data-label="兩個都等分級規則（議題 2）定案再說"><span><b>C</b>兩個都等分級規則（議題 2）定案再說。</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o5">負責人<input type="text" id="o5" data-save></label>
+      <label for="w5">期限<input type="text" id="w5" data-save></label>
+    </div>
+    <label for="n5" class="k">筆記</label>
+    <textarea id="n5" data-save></textarea>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="item soon" id="t3" data-topic="3" data-title="Placeholder 格式">
+  <h2><span class="n">3</span>Placeholder 格式</h2>
+  <div class="tags"><span class="tag">A18</span><span class="tag">11/15 凍結前</span><span class="tag">Zhexuan</span><span class="tag">Anmol</span></div>
+  <p class="lede">Zhexuan 的 <code>briefing-encryption-api-{en,zh}.html</code> 提出 API v2。這是很扎實的工作，兩種模式都已經實作；但它也改變了遮蔽後的信長什麼樣子。</p>
+
+  <h3>v2 做了什麼</h3>
+  <ul class="points">
+    <li>新端點 <code>/v2/redactions</code>、<code>/v2/restorations</code>、<code>DELETE /v2/groups/{group_id}</code>。客戶把自己的對話 ID 當作 <code>group_id</code> 傳進來。</li>
+    <li>每段對話有自己的隨機金鑰，由主金鑰封裝。兩種模式：<code>mapping</code>（預設）把加密後的原文存在伺服器；<code>aes_siv</code> 把加密後的原文直接放進 token，伺服器不存對照表。</li>
+    <li>還原只需要文字本身，token 會指出它屬於哪段對話。狀態存在 Redis，多個實例共用，最長 24 小時。</li>
+  </ul>
+
+  <h3>衝突在哪</h3>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>Zhexuan 的 v2</th><th>期中簡報、Anmol 的測試程式、contract 0.4.2</th></tr>
+    <tr><td>長相</td><td><code>[VG:2:…]</code>，很長，隨原文長度增加</td><td><code>[PERSON_1]</code>，短，帶類別</td></tr>
+    <tr><td>雲端模型看得出</td><td>有東西被拿掉</td><td>被拿掉的是哪一類東西</td></tr>
+    <tr><td>還原需要</td><td>只要文字</td><td>request ID</td></tr>
+    <tr><td>保存的狀態</td><td>每段對話，Redis，最長 24 小時</td><td>每個請求各自保存（2026-10-03 決定）</td></tr>
+    <tr><td>用真的模型測過嗎？</td><td class="hl">沒有。他的簡介寫：長 token 能否被真實模型原樣保留，需要另外評估</td><td>有，Anmol 的測試</td></tr>
+  </table></div>
+  <p class="ev" style="color:var(--muted);font-size:14px;margin-top:8px">簡介依據的是 Zhexuan 本機的 commit <code>c706bb6</code>。GitHub 上的分支停在較舊的版本，還沒有關閉對話的端點。他打算客戶會議後再開 PR。</p>
+  <div class="rec"><span class="k">建議</span>明天不定案。把 v2 當作提案展示，並問客戶兩件事：他們是否希望完全不保存原文（這會傾向 <code>aes_siv</code>）？VG08 會不會原封不動地傳遞文字？同時請 Anmol 拿幾封信，用 v2 的 token 跑他的模型，看 token 會不會被保留。給客戶看的範例統一用同一種格式。</div>
+
+  <div class="fill">
+    <span class="k">記錄</span>
+    <div class="qa">
+      <label for="q3a"><span><span class="who">問 Zhexuan</span>v2 的 token 能帶類別嗎？例如 <code>[VG:PERSON:…]</code>，讓模型知道拿掉的是什麼。</span><input type="text" id="q3a" data-save></label>
+      <label for="q3b"><span><span class="who">問 Zhexuan</span>如果雲端模型改動或漏掉 token，還原會回傳什麼？</span><input type="text" id="q3b" data-save></label>
+      <label for="q3c"><span><span class="who">問 Zhexuan、Anmol</span>誰來測長 token 在真實模型裡能不能保留？測幾封？</span><input type="text" id="q3c" data-save></label>
+      <label for="q3d"><span><span class="who">問大家</span>給客戶看的範例用哪一種格式？</span><input type="text" id="q3d" data-save></label>
+    </div>
+    <fieldset class="choices">
+      <legend class="k">決定</legend>
+      <label class="choice"><input type="radio" name="d3" id="d3a" value="A" data-save data-label="v2 當提案展示，問客戶，先測 token 能否保留"><span><b>A</b>v2 當提案展示，問客戶，先測 token 能否保留。</span></label>
+      <label class="choice"><input type="radio" name="d3" id="d3b" value="B" data-save data-label="現在就採用 v2，contract 和測試程式都改用它的 token"><span><b>B</b>現在就採用 v2，contract 和測試程式都改用它的 token。</span></label>
+      <label class="choice"><input type="radio" name="d3" id="d3c" value="C" data-save data-label="維持 [PERSON_1]，明天不展示 v2"><span><b>C</b>維持 <code>[PERSON_1]</code>，明天不展示 v2。</span></label>
+    </fieldset>
+    <div class="row2">
+      <label for="o3">負責人<input type="text" id="o3" data-save></label>
+      <label for="w3">期限<input type="text" id="w3" data-save></label>
+    </div>
+    <label for="n3" class="k">筆記</label>
+    <textarea id="n3" data-save></textarea>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="item later" id="t4" data-topic="4" data-title="連結打不開">
+  <h2><span class="n">4</span>連結打不開</h2>
+  <div class="tags"><span class="tag">B72</span><span class="tag">Anmol</span><span class="tag">Zhexuan</span></div>
+  <p>Anmol 的報告有 24 個 <code>file:///Users/anmolsahu2k/…</code> 這種連結（他的測試程式、prompt、結果檔）。Zhexuan 的簡介有 2 個，指向他電腦上的 <code>docs/api/conversation-keys-en.md</code> 和 <code>tokenization-v2-en.md</code>。別人都打不開，而且會讓客戶看到本機的使用者名稱和資料夾名稱。</p>
+  <div class="rec"><span class="k">建議</span>先把每個連結改成純檔名。等 PR 上了 GitHub，再改成 GitHub 連結。</div>
+  <div class="fill">
+    <span class="k">記錄</span>
+    <div class="row2">
+      <label for="o4">負責人<input type="text" id="o4" data-save placeholder="Anmol、Zhexuan"></label>
+      <label for="w4">期限<input type="text" id="w4" data-save></label>
+    </div>
+    <label for="n4" class="k">筆記</label>
+    <textarea id="n4" data-save></textarea>
+  </div>
+</section>
+
+<!-- wrap -->
+<section class="item" id="wrap" data-topic="wrap" data-title="明天：要展示什麼、要問什麼">
+  <h2><span class="n">✓</span>明天：要展示什麼、要問什麼</h2>
+  <p class="lede">最後填這張表，它會變成週一給客戶的頁面。</p>
+  <div class="tablewrap"><table>
+    <tr><th>誰</th><th>展示</th><th>問客戶</th></tr>
+    <tr><td>Zhexuan</td><td><input type="text" id="s_z" data-save aria-label="Zhexuan 展示" placeholder="API v2 當提案？"></td><td><input type="text" id="a_z" data-save aria-label="Zhexuan 要問" placeholder="要不要保存原文；VG08 是否原樣傳遞"></td></tr>
+    <tr><td>Anmol</td><td><input type="text" id="s_a" data-save aria-label="Anmol 展示" placeholder="模型結果"></td><td><input type="text" id="a_a" data-save aria-label="Anmol 要問" placeholder="GPU / VPC；文件"></td></tr>
+    <tr><td>Yudi</td><td><input type="text" id="s_y" data-save aria-label="Yudi 展示" placeholder="規則 + Presidio 結果；分級表"></td><td><input type="text" id="a_y" data-save aria-label="Yudi 要問" placeholder="分級；類別；每級洩漏率"></td></tr>
+    <tr><td>Karina</td><td><input type="text" id="s_k" data-save aria-label="Karina 展示" placeholder="資料集複核中"></td><td><input type="text" id="a_k" data-save aria-label="Karina 要問" placeholder=""></td></tr>
+    <tr><td>Mark</td><td><input type="text" id="s_m" data-save aria-label="Mark 展示" placeholder="進度、時程"></td><td><input type="text" id="a_m" data-save aria-label="Mark 要問" placeholder="VG08 開放；SOW 簽署"></td></tr>
+  </table></div>
+  <label for="n_wrap" class="k" style="display:block;margin-top:14px">其他決定與待辦</label>
+  <textarea id="n_wrap" data-save style="min-height:110px"></textarea>
+</section>
+
+<section class="export" aria-labelledby="exh">
+  <h2 id="exh"><span class="n">→</span>保存筆記</h2>
+  <p class="lede">你輸入的內容只存在這個瀏覽器裡。會議結束後按「產生 Markdown」，貼給 Claude，就會變成會議紀錄、TODO 更新和給客戶的頁面。</p>
+  <div class="btns">
+    <button type="button" id="mk">產生 Markdown</button>
+    <button type="button" id="cp" class="ghost">複製</button>
+    <button type="button" id="clr" class="ghost">清空所有欄位</button>
+  </div>
+  <div class="confirm" id="clrask" hidden><span>確定要清空這頁所有欄位？</span><button type="button" id="clryes">清空</button><button type="button" id="clrno" class="ghost">保留</button></div>
+  <p id="status" role="status">尚未保存。</p>
+  <label for="mdout" class="k">Markdown</label>
+  <textarea id="mdout" readonly></textarea>
+</section>
+
+<footer>英文版：<a href="agenda-en.html">agenda-en.html</a>。來源：<code>meetings/client/2026-10-26/</code>、PR #9、<code>todo/TODO-zh.md</code>（A13、A15、A16、A18、A19、B46、B71、B72、D49、D51、D70）。</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='vg-team-2026-10-25-zh';
+  var status=document.getElementById('status');
+  function fields(){return Array.prototype.slice.call(document.querySelectorAll('[data-save]'));}
+  function read(){var o={};fields().forEach(function(el){if(el.type==='radio'){if(el.checked)o[el.name]=el.id;}else{o[el.id]=el.value;}});return o;}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(read()));status.textContent='已存在這個瀏覽器，時間 '+new Date().toLocaleTimeString()+'。';}catch(e){status.textContent='這個瀏覽器無法保存。關掉頁面前請先產生 Markdown。';}}
+  function load(){var o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}if(!o)return;fields().forEach(function(el){if(el.type==='radio'){el.checked=(o[el.name]===el.id);}else if(o[el.id]!=null){el.value=o[el.id];}});status.textContent='已從這個瀏覽器還原先前的筆記。';}
+  function v(id){var el=document.getElementById(id);return el?el.value.trim():'';}
+  function md(){
+    var out=['# 組內會議 2026-10-25：紀錄',''];
+    if(v('attendees'))out.push('出席：'+v('attendees'));
+    if(v('timekeeper'))out.push('記錄人：'+v('timekeeper'));
+    out.push('');
+    document.querySelectorAll('section[data-topic]').forEach(function(s){
+      var t=s.getAttribute('data-topic'),title=s.getAttribute('data-title');
+      out.push('## '+(t==='wrap'?'':t+'. ')+title);
+      var r=s.querySelector('input[type=radio]:checked');
+      if(r)out.push('- 決定：'+r.value+'. '+r.getAttribute('data-label'));
+      s.querySelectorAll('.qa label').forEach(function(l){var i=l.querySelector('input');var q=l.querySelector('span').textContent.replace(/\s+/g,' ').trim();if(i&&i.value.trim())out.push('- '+q+' → '+i.value.trim());});
+      if(t==='wrap'){
+        s.querySelectorAll('tr').forEach(function(tr){var c=tr.querySelectorAll('td');if(c.length===3){var a=c[1].querySelector('input').value.trim(),b=c[2].querySelector('input').value.trim();if(a||b)out.push('- '+c[0].textContent+'：展示 '+(a||'-')+'；問 '+(b||'-'));}});
+        if(v('n_wrap'))out.push('- 其他：'+v('n_wrap'));
+      }else{
+        if(v('o'+t)||v('w'+t))out.push('- 負責人：'+(v('o'+t)||'-')+' · 期限：'+(v('w'+t)||'-'));
+        if(v('n'+t))out.push('- 筆記：'+v('n'+t));
+      }
+      out.push('');
+    });
+    return out.join('\n');
+  }
+  document.addEventListener('input',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.addEventListener('change',function(e){if(e.target.hasAttribute('data-save'))save();});
+  document.getElementById('mk').addEventListener('click',function(){document.getElementById('mdout').value=md();status.textContent='Markdown 已產生在下方。';});
+  document.getElementById('cp').addEventListener('click',function(){var ta=document.getElementById('mdout');if(!ta.value)ta.value=md();var done=function(){status.textContent='已複製，貼給 Claude 即可。';};var fail=function(){ta.focus();ta.select();status.textContent='無法自動複製，文字已選取，請按 Cmd+C。';};try{navigator.clipboard.writeText(ta.value).then(done,fail);}catch(e){fail();}});
+  document.getElementById('clr').addEventListener('click',function(){document.getElementById('clrask').hidden=false;});
+  document.getElementById('clrno').addEventListener('click',function(){document.getElementById('clrask').hidden=true;});
+  document.getElementById('clryes').addEventListener('click',function(){fields().forEach(function(el){if(el.type==='radio')el.checked=false;else el.value='';});document.getElementById('mdout').value='';try{localStorage.removeItem(KEY);}catch(e){}document.getElementById('clrask').hidden=true;status.textContent='已清空所有欄位。';});
+  load();
+})();
+</script>
+</body>
+</html>

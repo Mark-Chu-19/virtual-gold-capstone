@@ -7,7 +7,7 @@ import logging
 
 ALLOWED = {"event", "request_id", "route", "method", "status", "duration_ms", "stage", "tier",
            "action", "counts", "error_type", "degraded", "degraded_reason", "degraded_stage",
-           "mode", "versions", "prompt", "outcome"}
+           "mode", "versions", "prompt", "outcome", "session_id"}
 
 
 class AllowlistJsonFormatter(logging.Formatter):

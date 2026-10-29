@@ -4,6 +4,7 @@ model_call_timeout_ms: 6000       # provisional, set from load tests
 degraded_reserve_ms: 1500         # time kept free so the degraded path can finish
 model_concurrency: 1
 max_request_bytes: 262144
+max_restored_bytes: 1048576       # UTF-8 text bytes, checked before expanding placeholders
 default_ttl_seconds: 3600
 max_ttl_seconds: 86400
 max_records: 1000
@@ -15,3 +16,9 @@ model:
   backend: stub                   # stub | ollama
   ollama_url: http://127.0.0.1:11434
   model_name: llama3:8b
+
+# Backend selection is internal. Both modes retain one payload per server-issued session_id.
+# aes_siv encrypts the whole mapping; inject a persistent keyring with VG_SESSION_KEYS.
+v3:
+  backend: mapping
+  active_key_id: k1  # VG_ACTIVE_SESSION_KEY_ID overrides

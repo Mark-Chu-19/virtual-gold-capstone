@@ -1,5 +1,7 @@
 # Service Engineering: Implementation Plan and Component Interfaces (contract 0.4.2, draft)
 
+> Historical design reference: V1/V2 implementations have been removed. For the active service contract, see [V3 API](sessions-v3-en.md).
+
 **Status:** Draft for team review · **Owner:** Zhexuan Ye (Service Engineering) · **Based on:** API contract
 0.4.1 and 0.4.2 (`redaction-api-report-en-v0.4.2.md`), the midterm slides, architecture diagrams v1, and the
 development schedule. The Chinese original is `service-interfaces-v0.4.2-zh.md`; this file is the English
