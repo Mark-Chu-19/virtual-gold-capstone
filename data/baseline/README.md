@@ -19,6 +19,10 @@ The original v1 labels are kept inside v1.1 (`type` and `must_mask` on every spa
 | `score.py` | Scorer for v1 or v1.1. Accepts text offsets or the service's field offsets |
 | `baseline_regex.py` | Rules-only floor, unchanged |
 | `check_with_service.py` | Runs the dataset through the team's own service code (contract models, segmentation, `rules.py`, `decide()`) |
+| `make_split.py` | Builds the 60 development / 40 reserved test split. `--check` confirms the committed files match |
+| `split_v1.1.json` | The split: email ids for `dev` and `test`, seed, rule and per-part label counts |
+| `baseline_v1.1_dev.jsonl` | The 60 development emails (same records as the full file). Tune on this |
+| `baseline_v1.1_test.jsonl` | The 40 reserved test emails. Run once, after the pipeline is frozen |
 
 ## Record format
 
@@ -103,12 +107,39 @@ Three role mailboxes stay `redact` because they do reveal something private: out
 3. The real `rules.py` runs on every request, and its output scores directly with `score.py`, with no conversion. Rules alone: recall 0.66, leak rate 87%, fact recall 0.00, extra masks 30. By tier, 46% of emails leak a High-tier span and 66% a Medium-tier span. Rules catch every email address and 79% of names, but no bank accounts, codenames, health details or ID numbers. The model has to close that gap.
 4. The real `decide()` confirms the Low-tier gap in note 3.
 
+## Development and test split
+
+Agreed Oct 19: tune on 60 development emails, report on 40 reserved test emails (TODO A16, B47). `make_split.py` builds the split with these rules, so the test set stays unbiased:
+
+1. **Nothing already seen goes into test.** E001 to E024 are always development, because Anmol's 15-email benchmark (`DEFAULT_15_IDS`) was drawn from that range and those emails have been looked at while tuning.
+2. **Stratified by domain.** The 40 test emails come from E025 to E100, allocated across the 12 remaining domains in proportion to their size.
+3. **Balanced on labels only.** Out of 20,000 seeded draws, the script keeps the one whose test set best matches the full dataset on redact spans by tier, retain spans, FACT and HEALTH spans, negative controls, adversarial emails, exec role and industry. No model output is used, so the split cannot drift toward any pipeline.
+4. **Fixed.** Seed `20261019`. Do not change it and do not re-split after seeing test results.
+
+| | Emails | Redact spans | High / Medium / Low | Retain spans | FACT | Negative controls |
+|---|---|---|---|---|---|---|
+| Development | 60 | 616 (61%) | 101 / 462 / 53 | 31 | 38 | 6 |
+| Test | 40 | 393 (39%) | 64 / 295 / 34 | 18 | 27 | 4 |
+
+Test ids: E025 E026 E030 E031 E032 E033 E034 E036 E039 E041 E042 E044 E047 E050 E051 E052 E055 E056 E057 E059 E061 E062 E063 E066 E067 E068 E073 E074 E076 E079 E082 E083 E085 E086 E089 E090 E091 E092 E097 E098.
+
+Known trade-off: Finance & Accounting, Legal & Compliance and HR & People appear only in development (rule 1 wins over coverage). The other 12 domains are in both parts. If Anmol confirms the exact 15 ids, the unused emails in E001 to E024 could move to test, but only before anyone looks at test results.
+
+How to use it:
+
+1. Tune thresholds, prompts and detection fixes only on `baseline_v1.1_dev.jsonl`.
+2. Agree the acceptance targets (D70) and freeze the pipeline.
+3. Run `baseline_v1.1_test.jsonl` once and report it separately from development numbers.
+
+Sanity check, rules-only floor (`baseline_regex.py`, nothing tuned): recall 0.401 on dev and 0.404 on test.
+
 ## Scoring
 
 ```bash
 python baseline_regex.py baseline_v1.1.jsonl > pred.jsonl
 python score.py baseline_v1.1.jsonl pred.jsonl                    # grades against ground_truth
 python score.py baseline_v1.1.jsonl pred.jsonl --truth must_mask  # v1 labels, for old numbers
+python score.py baseline_v1.1_dev.jsonl pred.jsonl                # development emails only
 ```
 
 Predictions can use v1 text offsets (`start`, `end`) or the service's internal component spans (`field`, `start`, `end`; V3 omits spans from HTTP responses). Service spans with `"action": "retain"` are ignored. v1.1 adds `leak_rate_by_tier`, the primary metric on deck slide 19.
