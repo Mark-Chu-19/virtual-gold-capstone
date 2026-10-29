@@ -14,8 +14,25 @@ COMMON_WORD_NAMES = {"Will", "May", "Mark", "June", "April", "August", "Grace", 
 NON_PERSON_WORDS = {"team", "support", "office", "desk", "group", "department", "dept", "admin",
                     "info", "sales", "service", "services", "help", "helpdesk", "hr", "it",
                     "finance", "legal", "noreply", "no-reply", "inc", "llc", "ltd", "corp",
-                    "company", "board", "committee", "operations", "notifications"}
+                    "company", "board", "committee", "operations", "notifications", "alerts",
+                    "updates", "billing", "hotline", "center", "centre", "airlines", "airways"}
+# Role mailboxes (RFC 2142 style): a header name sent from one of these is a system or team
+# sender ("Concur Expense" <no-reply@...>, "BGE Billing" <ebill@...>), not a person.
+_ROLE_LOCAL = re.compile(
+    r"^(?:no-?reply|do-?not-?reply|alerts?|notifications?|notify|updates?|news(?:letter)?|"
+    r"e?bill(?:ing)?|invoices?|reports?|status|info|insights|benefits|support|help(?:desk)?|"
+    r"admin|hr|payroll|careers|jobs|marketing|sales|service|team|mailer-daemon|postmaster|"
+    r"webmaster|digest|intake)$")
 _TOKEN = re.compile(r"[A-Z][a-zA-Z'’-]+")
+
+
+def is_role_mailbox(address: str | None) -> bool:
+    """True when the local part, or one of its parts ("fdic-updates", "ethics-intake"), is a
+    role word."""
+    if not address or "@" not in address:
+        return False
+    local = address.split("@", 1)[0].lower()
+    return any(_ROLE_LOCAL.match(p) for p in [local, *re.split(r"[._+-]", local)])
 
 
 def clean_person_name(raw: str | None) -> str | None:

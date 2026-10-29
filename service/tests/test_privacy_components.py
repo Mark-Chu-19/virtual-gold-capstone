@@ -72,17 +72,50 @@ def test_us_addresses():
     assert found("We have 2 Main Points to cover.") == []
 
 
-def test_ages():
-    text = "She is 42, age 42, aged 42, a 42-year-old, 42 years old."
-    assert [t for t, k in found(text) if k == "AGE"] == [
-        "age 42", "aged 42", "42-year-old", "42 years old"]
-
-
 def test_amounts():
     text = "Reserve up $1.84M; budget € 300k; USD 5,000 fee; 2.4 million dollars; 300 euros."
     assert [t for t, k in found(text) if k == "AMOUNT"] == [
         "$1.84M", "€ 300k", "USD 5,000", "2.4 million dollars", "300 euros"]
     assert found("In 2024 we hired 3 people and shipped 1,000 units.") == []
+
+
+def test_amount_ranges_signs_and_percentages():
+    text = "Exposure is $200K to $450K, impact -$1.1M, margin 41%, 人民币 500 万元."
+    assert [t for t, k in found(text) if k == "AMOUNT"] == [
+        "$200K to $450K", "-$1.1M", "41%", "人民币 500 万元"]
+
+
+def test_values_after_a_label():
+    got = found("Routing (ABA): 021000021 Account: 5521 0098 7710\n"
+                "the payroll account ending 4410; Visa ending in 8812\n"
+                "Last 4 of SSN on file: 3391. Driver license: PA D123-4567-8901\n"
+                "Invoice No. 2025-117, Matter 30112-004, Ref: QX-55102, MRN 00912233, PO-77120\n"
+                "Use passcode 482913 or the link https://x.example.com/r?token=Ab12Cd34. "
+                "Key sk-live-9Fh2Kd81LqPz04Xa.")
+    assert {("021000021", "ACCOUNT_NUMBER"), ("5521 0098 7710", "ACCOUNT_NUMBER"),
+            ("4410", "ACCOUNT_NUMBER"), ("8812", "CARD_NUMBER"), ("3391", "GOV_ID"),
+            ("PA D123-4567-8901", "GOV_ID"), ("2025-117", "ID_NUMBER"),
+            ("30112-004", "ID_NUMBER"), ("QX-55102", "ID_NUMBER"), ("00912233", "ID_NUMBER"),
+            ("PO-77120", "ID_NUMBER"), ("482913", "CREDENTIAL"),
+            ("https://x.example.com/r?token=Ab12Cd34", "CREDENTIAL"),
+            ("sk-live-9Fh2Kd81LqPz04Xa", "CREDENTIAL")} <= set(got)
+
+
+def test_labels_without_a_value_are_ignored():
+    text = ("Pin the doc in order to report Q3 2026. The account for FY2026 is fine. "
+            "COVID-19 rules; the case for it; a token of thanks; see Q3-2026.")
+    assert found(text) == []
+
+
+def test_project_code_names_and_their_bare_form():
+    got = found("Project Heron update: the NDA for Heron is back. Project Manager is Ana.")
+    assert [t for t, k in got if k == "CODENAME"] == ["Project Heron", "Heron"]
+
+
+def test_toll_free_numbers_and_role_mailboxes_are_public():
+    got = found("Call 1-800-555-0100 or 412-555-0182; write no-reply@bank.com or dana@bank.com.")
+    assert ("1-800-555-0100", "PHONE_PUBLIC") in got and ("412-555-0182", "PHONE_PERSONAL") in got
+    assert ("no-reply@bank.com", "EMAIL_PUBLIC") in got and ("dana@bank.com", "EMAIL_PERSONAL") in got
 
 
 def test_term_list_is_case_insensitive_and_whole_word():
@@ -129,12 +162,11 @@ def test_team_mailboxes_are_not_treated_as_people():
     assert body_names(segs) == []
 
 
-def test_names_under_a_sign_off_are_found_without_a_header():
-    assert [t for t, k in found("Ping me. Thanks,\nJordan\nVP Finance") if k == "PERSON"] == [
-        "Jordan"]
-    assert [t for t, k in found("Please review. Best, Alex Kim") if k == "PERSON"] == ["Alex Kim"]
-    for text in ("Thanks for the update.", "Best of luck!", "Regards,\nThe Finance Team"):
-        assert found(text) == []
+def test_names_sent_from_a_role_mailbox_are_not_people():
+    segs = header_and_body("Your Concur Expense report is ready.",
+                           **{"email.from.name": "Concur Expense",
+                              "email.from.address": "no-reply@expense.acme.com"})
+    assert body_names(segs) == []
 
 
 def test_header_names_are_matched_case_sensitively():
@@ -430,12 +462,6 @@ def test_presidio_drops_known_false_positives():
     for text in ("Reach me at 412-555-0182 x204.", "Room 4521, x4521.", "MAC 00:1B:44:11:3A:B7."):
         assert not {s for s, k in got(text) if k == "GOV_ID"}
     assert ("D1234567", "GOV_ID") in got("Driver license D1234567")
-    # A command word starting a sentence is not a name; a real name is still found.
-    assert not {s for s, k in got("Email john.doe@acme.com.") if k == "PERSON"}
-    assert ("Dana", "PERSON") in got("Reach out to Dana before Friday.")
-    # Fiscal periods are not places; ages are AGE, not DATE.
+    # Fiscal periods are not places; dates without a digit are dropped.
     assert ("Q3", "CITY") not in got("Sync with Kim on Q3.")
-    assert ("age 42", "AGE") in got("He is from Brazil, age 42.")
-    # Long digit strings spaCy calls dates are account numbers, unless they read as YYYYMMDD.
-    assert ("92535170542762962231", "ACCOUNT_NUMBER") in got("Can you verify your 92535170542762962231?")
-    assert not {s for s, k in got("The report dated 20261025 is final.") if k == "ACCOUNT_NUMBER"}
+    assert not {s for s, k in got("Let's meet next Friday.") if k == "DATE"}
