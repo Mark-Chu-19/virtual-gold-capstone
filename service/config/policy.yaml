@@ -1,6 +1,6 @@
 # Tier table, taxonomy and thresholds. PROVISIONAL: thresholds and taxonomy are for client review
 # (Open Questions 4 and 5). High tier cannot be overridden per request.
-policy_version: "policy-0.1.3-provisional"
+policy_version: "policy-0.1.4-provisional"
 low_tier_combine_count: 3
 # Initial thresholds, to be revised from golden-dataset evaluation. Public is above Medium: a
 # public number or mailbox is redacted only when the model is fairly sure it is private.
@@ -18,6 +18,7 @@ taxonomy:
   BUSINESS_CONFIDENTIAL: high
   CODENAME: high
   DEMOGRAPHIC: high      # nationality, religion, political group (GDPR special categories)
+  ID_NUMBER: high        # case, medical record, member, invoice numbers; provisional until client Q1
   PERSON: medium
   PHONE_PERSONAL: medium
   EMAIL_PERSONAL: medium

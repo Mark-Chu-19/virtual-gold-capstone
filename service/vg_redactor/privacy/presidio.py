@@ -10,6 +10,7 @@ import re
 from typing import Any, Callable
 
 from ..contracts.types import Candidate, Segment
+from .quotes import requote, unquote
 from .rules import contact_type
 
 # Presidio entity -> our taxonomy (config/policy.yaml). None = ignored.
@@ -62,6 +63,7 @@ def make_detect_presidio(analyzer: Any | None = None, language: str = "en"
 
     def detect_presidio(segments: list[Segment]) -> list[Candidate]:
         out: list[Candidate] = []
+        segments, maps = unquote(segments)
         for seg in segments:
             for r in analyzer.analyze(text=seg.text, language=language, entities=entities,
                                       score_threshold=MIN_SCORE):
@@ -70,6 +72,6 @@ def make_detect_presidio(analyzer: Any | None = None, language: str = "en"
                     out.append(Candidate(field=seg.field, start=r.start, end=r.end,
                                          type=contact_type(ENTITY_MAP[r.entity_type], span),
                                          detectors={"presidio"}))
-        return out
+        return requote(out, maps)
 
     return detect_presidio

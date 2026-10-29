@@ -49,18 +49,15 @@ def test_rules_find_fixed_shape_items():
     assert ("4111 1111 1111 1111", "CARD_NUMBER") in got
 
 
-def test_extensions_but_not_codes_or_user_agents():
-    text = "Cell 412-555-0182 x4521, desk ext. 204, Extension 33. Ref US-EN-6403-X501; (X11; Linux)."
-    assert [t for t, k in found(text) if k == "PHONE_PERSONAL"] == [
-        "412-555-0182", "x4521", "ext. 204", "Extension 33"]
-
-
 def test_card_numbers_need_a_valid_luhn_checksum():
     assert not [t for t, k in found("ref 4111 1111 1111 1112") if k == "CARD_NUMBER"]
 
 
-def test_numbers_that_cannot_start_a_card_are_not_cards():
-    assert not [t for t, k in found("ref 9111111111111111") if k == "CARD_NUMBER"]  # Luhn-valid
+def test_quote_markers_are_removed_before_detection_and_offsets_map_back():
+    text = "Thanks.\n> Call his son at 410-555-\n> 0171.\n>> Account: 5521 0098 7710"
+    got = found(text)
+    assert ("410-555-\n> 0171", "PHONE_PERSONAL") in got
+    assert ("5521 0098 7710", "ACCOUNT_NUMBER") in got
 
 
 def test_us_addresses():

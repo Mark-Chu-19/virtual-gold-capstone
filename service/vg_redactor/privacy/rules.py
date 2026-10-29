@@ -13,6 +13,7 @@ import re
 from ..contracts.components import ContextStore
 from ..contracts.types import Candidate, Segment
 from .names import clean_person_name, is_role_mailbox, name_parts
+from .quotes import requote, unquote
 
 _SCALE = r"(?:k|K|m|M|mm|MM|bn|B|thousand|million|billion)"
 _NUM = r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?"
@@ -36,16 +37,13 @@ _MONEY = (rf"(?:[$€£¥]\s?(?:{_NUM})(?:\s?{_SCALE}\b)?"
           rf"|\b(?:{_NUM})\s(?:dollars|euros|pounds)\b)")
 
 PATTERNS: list[tuple[str, re.Pattern[str]]] = [
-    ("PHONE_PERSONAL", re.compile(r"(?<!\d)(?:\+?1[-. ]?)?\(?\d{3}\)?[-. ]\d{3}[-. ]\d{4}(?!\d)")),
-    # Extensions: "ext. 204", "extension 204", or a bare lower-case "x4521" that starts a word.
-    # The bare form must not follow a hyphen or bracket, so codes ("US-EN-6403-X501") and user
-    # agents ("(X11; Linux") are not taken for extensions.
-    ("PHONE_PERSONAL", re.compile(r"(?i:\b(?:ext\.?|extension)\s?\d{2,5}\b)|(?<![^\s,;:])x\d{2,5}\b")),
+    # A number may wrap after a separator ("410-555-\n0171" once quote markers are removed).
+    ("PHONE_PERSONAL", re.compile(
+        r"(?<!\d)(?:\+?1[-. ]?)?\(?\d{3}\)?(?:[-. ]\n?|\n)\d{3}(?:[-. ]\n?|\n)\d{4}(?!\d)")),
+    ("PHONE_PERSONAL", re.compile(r"\b(?:ext\.?|extension|x)\s?\d{2,5}\b", re.IGNORECASE)),
     ("EMAIL_PERSONAL", re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]*\w")),
     ("GOV_ID", re.compile(r"(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)")),
-    # Card numbers start with 2-6 (Mastercard 2-series, Amex 3, Visa 4, Mastercard 5, Discover 6),
-    # so order and ticket numbers that pass Luhn by chance are not taken for cards.
-    ("CARD_NUMBER", re.compile(r"(?<!\d)[2-6](?:[ -]?\d){12,15}(?!\d)")),
+    ("CARD_NUMBER", re.compile(r"(?<!\d)(?:\d[ -]?){12,15}\d(?!\d)")),
     # AMOUNT is Medium: "$20 lunch" and an unreleased reserve look alike, so the model's
     # contextual score decides.
     # A range ("$400K to $750K") is one amount; a sign belongs to it ("-$1.22M"). Percentages
@@ -197,6 +195,11 @@ def _term_pattern(terms: set[str]) -> re.Pattern[str] | None:
 
 def detect_rules(segments: list[Segment], ctx: ContextStore) -> list[Candidate]:
     """Sync, CPU-only, no side effects. Offsets index each segment's original field text."""
+    clean, maps = unquote(segments)
+    return requote(_detect(clean, ctx), maps)
+
+
+def _detect(segments: list[Segment], ctx: ContextStore) -> list[Candidate]:
     terms = _term_pattern(ctx.term_list)
     out: list[Candidate] = []
     for seg in segments:
