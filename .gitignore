@@ -9,3 +9,4 @@ __pycache__/
 service/logs/
 .pytest_cache/
 *.egg-info/
+service/scripts/eval/out/

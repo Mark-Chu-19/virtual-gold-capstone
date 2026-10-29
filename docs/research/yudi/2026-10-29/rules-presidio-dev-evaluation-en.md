@@ -79,10 +79,10 @@ Signature and quote tags are deferred until model assessment is wired in, and wi
 
 ## Reproduce
 
-Three scripts are kept locally, outside the repo. Run each with the service virtualenv against the repo root.
+The scripts are in `service/scripts/eval/`; see the README there. Run them from the repo root with the service virtualenv.
 
 | Script | Output |
 |---|---|
-| `eval_baseline.py` | Per-detector scores and a per-type check |
-| `ablation.py` | Scores with one strategy switched off at a time |
-| `incremental.py` | The table above |
+| `eval_detectors.py` | Per-detector scores and a per-type check |
+| `strategy_table.py` | The table above |
+| `show_misses.py` | Missed spans with the text around them |
