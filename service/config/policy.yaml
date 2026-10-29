@@ -1,6 +1,7 @@
 # Tier table, taxonomy and thresholds. PROVISIONAL: thresholds and taxonomy are for client review
 # (Open Questions 4 and 5). High tier cannot be overridden per request.
-policy_version: "policy-0.1.4-provisional"
+# tier-v3 = the 0.1.3 table the client reviewed on 2026-10-26, plus ID_NUMBER (provisional).
+policy_version: "tier-v3"
 low_tier_combine_count: 3
 # Initial thresholds, to be revised from golden-dataset evaluation. Public is above Medium: a
 # public number or mailbox is redacted only when the model is fairly sure it is private.

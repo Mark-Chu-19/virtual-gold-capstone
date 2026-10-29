@@ -1,6 +1,6 @@
 # Rules and Presidio: tuning on baseline v1.1 (development split)
 
-Yudi · 29 Oct 2026 · branch `feat/privacy-detection-fixes` · policy 0.1.4 (0.1.3 + `ID_NUMBER: high`)
+Yudi · 29 Oct 2026 · branch `feat/privacy-detection-fixes` · tier table tier-v3 (0.1.3 + `ID_NUMBER: high`)
 
 ## Summary
 
@@ -8,7 +8,7 @@ Starting from main's rules + Presidio, 13 strategies were added one at a time an
 
 main keeps the simplest version as the baseline. The tuned version lives on `feat/privacy-detection-fixes`.
 
-Policy 0.1.4 adds `ID_NUMBER: high` (case, medical record, member and invoice numbers), provisional until the client answers Q1. It changes no score here: unknown types were already treated as High, and the labels already mark these spans High.
+Tier table tier-v3 (formerly 0.1.3) adds `ID_NUMBER: high` (case, medical record, member and invoice numbers), provisional until the client answers Q1. It changes no score here: unknown types were already treated as High, and the labels already mark these spans High.
 
 ## Setup
 
