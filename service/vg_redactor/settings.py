@@ -37,6 +37,11 @@ class IdentitySettings(BaseModel):
     groups: list[str] = Field(default_factory=lambda: ["*"], min_length=1)
 
 
+class V3Settings(BaseModel):
+    # Internal deployment choice, never a request option. Existing records retain their backend.
+    backend: Literal["mapping", "aes_siv"] = "mapping"
+
+
 class Settings(BaseModel):
     host: str = "127.0.0.1"
     port: int = Field(default=8080, ge=1, le=65535)
@@ -55,6 +60,7 @@ class Settings(BaseModel):
     metrics_host: str = "127.0.0.1"
     model: ModelSettings = Field(default_factory=ModelSettings)
     tokenization: TokenSettings = Field(default_factory=TokenSettings)
+    v3: V3Settings = Field(default_factory=V3Settings)
     # SHA256 API-key digest -> tenant and group permissions. Unconfigured keys are isolated.
     api_identities: dict[str, IdentitySettings] = Field(default_factory=dict)
     # sha256 hex digests of accepted API keys

@@ -1,4 +1,4 @@
-"""FastAPI gateway: legacy 0.4.2 routes and v2 reversible token API."""
+"""FastAPI gateway: V1 records, V2 self-routing tokens and V3 per-redaction sessions."""
 from __future__ import annotations
 
 import asyncio
@@ -16,7 +16,8 @@ from ulid import ULID
 
 from ..contracts.components import Components, ModelClient
 from ..contracts.errors import (DeadlineExceeded, ProblemError, validation_failed)
-from ..contracts.types import (RedactionRequest, RedactionRequestV2, RestoreRequest, RestoreRequestV2)
+from ..contracts.types import (RedactionRequest, RedactionRequestV2, RestoreRequest, RestoreRequestV2,
+    RedactionRequestV3, RedactionResponseV3, RestoreRequestV3, RestoreResponseV3, SessionRequestV3)
 from ..model.client import ModelGateway, StubModelClient
 from ..obs.audit import AuditLog
 from ..obs.logging import log_event
@@ -24,6 +25,9 @@ from ..obs.metrics import Metrics
 from ..pipeline.orchestrator import Orchestrator
 from ..records.store import RecordStore
 from ..settings import Settings, hash_key
+from ..sessions.backends import AesMappingBackend, MappingBackend
+from ..sessions.identifiers import SessionIdGenerator, UlidSessionIdGenerator
+from ..sessions.service import SessionService
 from ..tokens.idempotency import Idempotency
 from ..tokens.service import TokenService
 from ..tokens.wire import Principal
@@ -38,7 +42,8 @@ def new_request_id() -> str:
 
 
 def create_app(settings: Settings, components: Components, model_client: ModelClient | None = None,
-               metrics: Metrics | None = None, *, token_store: MappingStore | None = None) -> FastAPI:
+               metrics: Metrics | None = None, *, token_store: MappingStore | None = None,
+               session_ids: SessionIdGenerator | None = None) -> FastAPI:
     metrics = metrics or Metrics()
     model_client = model_client or StubModelClient()
     records = RecordStore(settings.max_records, settings.max_ttl_seconds,
@@ -55,6 +60,15 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
     tokens = TokenService(token_settings.keys, token_settings.active_key_id, token_store,
         conversation_max_lifetime_seconds=token_settings.conversation_max_lifetime_seconds,
         conversation_tombstone_seconds=token_settings.conversation_tombstone_seconds)
+    # Separate records prevent legacy V1 routes from bypassing V3 ownership checks.
+    session_records = RecordStore(settings.max_records, settings.max_ttl_seconds,
+        on_remove=lambda reason: metrics.records_removed.labels(reason).inc())
+    sessions = SessionService(session_records, components, session_ids or UlidSessionIdGenerator(),
+        {"mapping": MappingBackend(),
+         "aes_siv": AesMappingBackend(tokens.keys, token_settings.active_key_id)},
+        settings.v3.backend, settings.default_ttl_seconds)
+    if settings.v3.backend == "aes_siv" and not tokens.enabled:
+        raise ValueError("V3 AES-SIV requires a persistent VG_TOKEN_KEYS keyring")
     idempotency = Idempotency(tokens)
     readiness = {"model_up": None}
 
@@ -67,9 +81,10 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
     async def housekeeping():
         while True:
             records.sweep()
-            st = records.stats()
-            metrics.records_active.set(st["active"])
-            metrics.records_capacity.set(st["capacity"])
+            session_records.sweep()
+            stats = [records.stats(), session_records.stats()]
+            metrics.records_active.set(sum(st["active"] for st in stats))
+            metrics.records_capacity.set(sum(st["capacity"] for st in stats))
             await refresh_readiness()
             await asyncio.sleep(10)
 
@@ -96,6 +111,12 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
     app.state.records, app.state.metrics, app.state.orchestrator = records, metrics, orch
     app.state.refresh_readiness = refresh_readiness
     app.state.tokens = tokens
+    app.state.sessions = sessions
+
+    def error_response(request: Request, err: ProblemError):
+        # V3 clients only manage session_id; per-call diagnostics live in the header.
+        return problem_response(err, request.state.request_id,
+                                include_request_id=not request.url.path.startswith("/v3/"))
 
     # ---- middleware: request id, auth, metrics, last-resort 500 ------------------------------
     @app.middleware("http")
@@ -105,7 +126,7 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
         t0 = time.perf_counter()
         try:
             if request.url.path not in PUBLIC and not _authorized(request, settings):
-                resp = problem_response(ProblemError(401, "unauthorized", "Missing or invalid API key"), rid)
+                resp = error_response(request, ProblemError(401, "unauthorized", "Missing or invalid API key"))
             else:
                 if request.url.path not in PUBLIC:
                     digest = hash_key(request.headers.get("authorization", "")[7:].strip())
@@ -114,15 +135,15 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
                                                if identity else Principal(digest))
                 resp = await call_next(request)
         except ProblemError as e:
-            resp = problem_response(e, rid)
+            resp = error_response(request, e)
         except Exception as e:  # noqa: BLE001
             log_event("unhandled_error", request_id=rid, error_type=type(e).__name__)
-            resp = problem_response(ProblemError(500, "internal", "Internal error; content was not processed"), rid)
+            resp = error_response(request, ProblemError(500, "internal", "Internal error; content was not processed"))
         route = request.scope.get("route")
         route_path = route.path if route else "unmatched"
         metrics.http_requests.labels(route_path, request.method, str(resp.status_code)).inc()
         dt = time.perf_counter() - t0
-        if route_path in {"/v1/redactions", "/v2/redactions"} and resp.status_code >= 400:
+        if route_path in {"/v1/redactions", "/v2/redactions", "/v3/redaction"} and resp.status_code >= 400:
             metrics.request_duration.labels("redactions", "error").observe(dt)
         resp.headers.setdefault("X-Request-ID", rid)
         log_event("request", request_id=rid, route=route_path, method=request.method,
@@ -131,9 +152,41 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
 
     @app.exception_handler(ProblemError)
     async def _problem(request: Request, err: ProblemError):
-        return problem_response(err, request.state.request_id)
+        return error_response(request, err)
 
     # ---- routes ------------------------------------------------------------------------------
+    @app.post("/v3/redaction", response_model=RedactionResponseV3)
+    async def create_redaction_v3(request: Request):
+        req = await _parse(request, RedactionRequestV3, settings)
+        _check_business_rules(req, settings, components)
+        context = sessions.begin(req, request.state.principal)
+        metrics.inflight.inc()
+        try:
+            # Reuse the full pipeline; the render hook retains an independent mapping.
+            resp = await orch.redact(req, request.state.request_id, token_context=context)
+            result = RedactionResponseV3(session_id=context.session_id,
+                redacted_email=resp.redacted_email, redacted_purpose=resp.redacted_purpose,
+                expires_at=context.record.expires_at_iso, degraded=resp.degraded)
+        except BaseException:
+            context.abort()
+            raise
+        finally:
+            metrics.inflight.dec()
+        log_event("session_created", request_id=request.state.request_id, session_id=context.session_id)
+        return result
+
+    @app.post("/v3/restore", response_model=RestoreResponseV3)
+    async def restore_v3(request: Request):
+        req = await _parse(request, RestoreRequestV3, settings)
+        return RestoreResponseV3(restored_text=sessions.restore(
+            req.session_id, req.text, request.state.principal))
+
+    @app.delete("/v3/redaction", status_code=204)
+    async def delete_v3(request: Request):
+        req = await _parse(request, SessionRequestV3, settings)
+        sessions.delete(req.session_id, request.state.principal)
+        return Response(status_code=204)
+
     @app.post("/v1/redactions")
     async def create_redaction(request: Request):
         rid = request.state.request_id
@@ -265,7 +318,7 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
                              "single_token_revocation": {"mapping": False, "aes_siv": False},
                              "group_mapping_deletion": True,
                              "restoration_requires_record_id": False},
-            "supported_contracts": ["0.4.2", "v2"]}
+            "supported_contracts": ["0.4.2", "v2", "v3"]}
 
     @app.get("/healthz")
     async def healthz():
@@ -328,7 +381,8 @@ async def _parse(request: Request, model, settings: Settings):
                                                                    include_input=False))) from None
 
 
-def _check_business_rules(req: RedactionRequest, settings: Settings, components: Components) -> None:
+def _check_business_rules(req: RedactionRequest | RedactionRequestV2 | RedactionRequestV3,
+                          settings: Settings, components: Components) -> None:
     v: list[dict] = []
     if getattr(req, "session_id", None) and not req.mapping.retain:
         v.append({"field": "session_id", "code": "session_requires_retain"})

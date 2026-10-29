@@ -1,0 +1,60 @@
+"""V3 mapping payload adapters. Both preserve the existing short placeholder format.
+
+AES-SIV encrypts the entire mapping at rest; it is distinct from V2's self-routing
+encrypted tokens. Reuse the validated token keyring and canonical wire helpers.
+"""
+from __future__ import annotations
+
+import hmac
+import json
+from typing import Protocol
+
+from cryptography.hazmat.primitives.ciphers.aead import AESSIV
+
+from ..contracts.errors import ProblemError
+from ..tokens.wire import b64, packed, unb64
+
+
+class RestorationBackend(Protocol):
+    def encode(self, mapping: dict[str, str], tenant: str, session_id: str) -> dict[str, str]: ...
+    def decode(self, payload: dict[str, str], tenant: str, session_id: str) -> dict[str, str]: ...
+
+
+class MappingBackend:
+    def encode(self, mapping, tenant, session_id):
+        return dict(mapping)
+
+    def decode(self, payload, tenant, session_id):
+        return dict(payload)
+
+
+class AesMappingBackend:
+    def __init__(self, keys: dict[str, bytes], active_key_id: str):
+        self.keys, self.active_key_id = keys, active_key_id
+
+    def _cipher(self, kid):
+        if kid not in self.keys:
+            raise ProblemError(503, "session-key-unavailable", "Session encryption key unavailable")
+        # Separate V3 payload keys from V2 token and conversation encryption keys.
+        key = hmac.digest(self.keys[kid], b"vg-v3-mapping-aes-siv-v1", "sha512")
+        return AESSIV(key)
+
+    @staticmethod
+    def _aad(tenant, session_id, kid):
+        return [packed("vg-v3-mapping", 1, tenant, session_id, kid)]
+
+    def encode(self, mapping, tenant, session_id):
+        kid = self.active_key_id
+        raw = json.dumps(mapping, ensure_ascii=False, separators=(",", ":")).encode()
+        ciphertext = self._cipher(kid).encrypt(raw, self._aad(tenant, session_id, kid))
+        return {"key_id": kid, "ciphertext": b64(ciphertext)}
+
+    def decode(self, payload, tenant, session_id):
+        kid = payload["key_id"]
+        raw = self._cipher(kid).decrypt(unb64(payload["ciphertext"]),
+                                        self._aad(tenant, session_id, kid))
+        mapping = json.loads(raw)
+        if not isinstance(mapping, dict) or any(
+                not isinstance(k, str) or not isinstance(v, str) for k, v in mapping.items()):
+            raise ValueError("Invalid session payload")
+        return mapping

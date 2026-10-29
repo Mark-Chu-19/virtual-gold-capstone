@@ -51,3 +51,21 @@ within a conversation and remain self-routing; format-1 tokens still restore dur
 `DELETE /v2/groups/{group_id}` closes a conversation, unlike `/mappings` which only clears mappings.
 See [conversation key lifecycle](../docs/api/conversation-keys-en.md) /
 [会话密钥说明](../docs/api/conversation-keys-zh.md).
+
+## V3: server-issued session ID
+
+`POST /v3/redaction` returns only `session_id`, redacted email/purpose, `expires_at`, and
+`degraded`. `POST /v3/restore` accepts `{session_id, text}` and returns `{restored_text}`.
+`DELETE /v3/redaction` accepts a JSON body `{session_id}` and returns 204 with no body.
+Clients only retain the business `session_id`; `X-Request-ID` is an optional diagnostic header.
+Each ID represents one independent redaction, with no client-provided session or context.
+
+V3 reuses the existing pipeline and exact-match restore. It always retains a tenant-bound
+record, using plaintext mappings by default. Backend selection is internal (`v3.backend`),
+with an optional AES-SIV adapter encrypting the entire mapping using the existing token keyring.
+This preserves short placeholders and differs from V2's self-routing encrypted tokens.
+Each record selects its own backend on restore. V1/V2 contracts remain compatible.
+
+V3 records are currently in a separate in-memory store: one process only, no recovery after
+restart, even when V2 uses Redis. See the [V3 API contract](../docs/api/sessions-v3-zh.md)
+for payloads, errors, retention, permissions and backend configuration.

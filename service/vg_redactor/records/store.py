@@ -1,7 +1,7 @@
 """In-memory request records: TTL, capacity cap, tombstones, per-session label state.
 
-A record holds the placeholder mapping only when the caller asked for retention. Process restart
-loses everything (restore then returns 404, by contract).
+V1 retention is opt-in; V3 always retains a backend payload and binds it to a tenant.
+Separate store instances isolate the contracts. Process restart loses all records.
 """
 from __future__ import annotations
 
@@ -23,6 +23,9 @@ class Record:
     expires_at_iso: str
     mapping: dict[str, str] | None
     session_id: str | None
+    tenant_id: str | None = None
+    backend: str = "mapping"
+    backend_version: int = 1
 
     @property
     def mapping_retained(self) -> bool:
@@ -39,29 +42,34 @@ class RecordStore:
         self._lock = threading.Lock()
         self._records: dict[str, Record] = {}
         self._reserved: set[str] = set()
-        self._tombstones: dict[str, float] = {}      # id -> time removed
+        self._tombstones: dict[str, tuple[float, str | None]] = {}  # removed time, tenant
         self._sessions: dict[str, tuple[LabelState, float]] = {}
 
     # -- capacity ------------------------------------------------------------------------------
-    def reserve(self, rid: str) -> None:
-        """Take a slot before any processing; full -> CapacityExhausted (never evicts live records)."""
+    def reserve(self, rid: str) -> bool:
+        """Atomically claim a new ID; False on collision, 503 when capacity is full."""
         with self._lock:
             self._sweep_locked()
+            if rid in self._records or rid in self._reserved or rid in self._tombstones:
+                return False
             if len(self._records) + len(self._reserved) >= self.max_records:
                 raise CapacityExhausted()
             self._reserved.add(rid)
+            return True
 
     def release(self, rid: str) -> None:
         with self._lock:
             self._reserved.discard(rid)
 
     def commit(self, rid: str, mapping: dict[str, str] | None, ttl_seconds: int,
-               session_id: str | None) -> Record:
+               session_id: str | None, *, tenant_id: str | None = None,
+               backend: str = "mapping", backend_version: int = 1) -> Record:
         ttl = min(ttl_seconds, self.max_ttl)
         now = self._clock()
         rec = Record(id=rid, created_at=now, expires_at=now + ttl,
                      expires_at_iso=(datetime.now(timezone.utc) + timedelta(seconds=ttl)).isoformat(),
-                     mapping=mapping, session_id=session_id)
+                     mapping=mapping, session_id=session_id, tenant_id=tenant_id,
+                     backend=backend, backend_version=backend_version)
         with self._lock:
             self._reserved.discard(rid)
             self._records[rid] = rec
@@ -71,19 +79,28 @@ class RecordStore:
         return rec
 
     # -- lookup / delete -----------------------------------------------------------------------
-    def get(self, rid: str) -> Record:
+    def get(self, rid: str, *, tenant_id: str | None = None) -> Record:
         with self._lock:
             self._sweep_locked()
             rec = self._records.get(rid)
             if rec:
+                if tenant_id is not None and rec.tenant_id != tenant_id:
+                    raise RecordNotFound()
                 return rec
             if rid in self._tombstones:
+                if tenant_id is not None and self._tombstones[rid][1] != tenant_id:
+                    raise RecordNotFound()
                 raise RecordGone()
             raise RecordNotFound()
 
-    def delete(self, rid: str) -> bool:
+    def delete(self, rid: str, *, tenant_id: str | None = None) -> bool:
         """Idempotent. Returns True if a live record was removed."""
         with self._lock:
+            self._sweep_locked()
+            rec = self._records.get(rid)
+            owner = rec.tenant_id if rec else self._tombstones.get(rid, (0, None))[1]
+            if tenant_id is not None and owner is not None and owner != tenant_id:
+                raise RecordNotFound()
             return self._remove_locked(rid, "deleted")
 
     # -- sessions ------------------------------------------------------------------------------
@@ -107,7 +124,7 @@ class RecordStore:
     def _remove_locked(self, rid: str, reason: str) -> bool:
         rec = self._records.pop(rid, None)
         if rec is not None:
-            self._tombstones[rid] = self._clock()
+            self._tombstones[rid] = (self._clock(), rec.tenant_id)
             rec.mapping = None  # drop the reference to original values
             self._on_remove(reason)
         return rec is not None
@@ -117,7 +134,7 @@ class RecordStore:
         expired = [r for r, rec in self._records.items() if rec.expires_at <= now]
         for rid in expired:
             self._remove_locked(rid, "expired")
-        for rid in [r for r, t in self._tombstones.items() if now - t > self.max_ttl]:
+        for rid in [r for r, (t, _) in self._tombstones.items() if now - t > self.max_ttl]:
             del self._tombstones[rid]
         for sid in [s for s, (_, exp) in self._sessions.items() if exp <= now]:
             del self._sessions[sid]

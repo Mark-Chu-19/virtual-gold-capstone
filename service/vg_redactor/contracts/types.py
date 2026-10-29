@@ -62,6 +62,8 @@ class PolicyOptions(Strict):
 
 
 class RedactionRequest(Strict):
+    # Legacy V1 only: this client-provided session_id shares label numbering across calls.
+    # V3 instead issues its own per-redaction session_id and accepts no client session state.
     purpose: str = Field(min_length=1, max_length=2000)
     purpose_source: str | None = None
     email: EmailIn
@@ -118,6 +120,37 @@ class RedactionRequestV2(Strict):
 
 class RestoreRequestV2(Strict):
     text: str
+
+
+SESSION_ID_PATTERN = r"^sid_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+
+
+class RedactionRequestV3(Strict):
+    """One independent redaction; retention and backend choice belong to the server."""
+    purpose: str = Field(min_length=1, max_length=2000)
+    email: EmailIn
+    policy: PolicyOptions = Field(default_factory=PolicyOptions)
+
+
+class SessionRequestV3(Strict):
+    """JSON session reference shared by V3 delete and restore requests."""
+    session_id: str = Field(pattern=SESSION_ID_PATTERN)
+
+
+class RestoreRequestV3(SessionRequestV3):
+    text: str
+
+
+class RedactionResponseV3(Strict):
+    session_id: str
+    redacted_email: dict
+    redacted_purpose: str
+    expires_at: str
+    degraded: bool
+
+
+class RestoreResponseV3(Strict):
+    restored_text: str
 
 
 # ---- component data --------------------------------------------------------------------------

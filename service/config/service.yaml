@@ -16,6 +16,11 @@ model:
   ollama_url: http://127.0.0.1:11434
   model_name: llama3:8b
 
+# V3 always retains one mapping per server-issued session_id. Clients cannot select a backend.
+# aes_siv encrypts the whole mapping (same short placeholders); requires VG_TOKEN_KEYS.
+v3:
+  backend: mapping
+
 # V2 is enabled only when VG_TOKEN_KEYS supplies a persistent keyring.
 # memory is development-only; choose redis for independent processes/hosts.
 tokenization:

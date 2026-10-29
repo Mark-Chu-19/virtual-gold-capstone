@@ -15,7 +15,7 @@ from ..contracts.errors import (DeadlineExceeded, ModelCallError, ModelOutputUnp
                                 RecognizerError, RuleEngineError, high_tier_fixed)
 from ..contracts.fields import iter_fields
 from ..contracts.types import (Candidate, Decision, LabelState, RedactionRequest, RedactionResponse,
-                               RecordInfo, RedactionRequestV2, ScoredCandidate)
+                               RecordInfo, RedactionRequestV2, RedactionRequestV3, ScoredCandidate)
 from ..model.client import ModelGateway
 from ..obs.audit import AuditLog
 from ..obs.metrics import Metrics
@@ -36,8 +36,12 @@ class Orchestrator:
     mode_probe: dict = field(default_factory=dict)
 
     # ------------------------------------------------------------------------------------------
-    async def redact(self, req: RedactionRequest | RedactionRequestV2, rid: str, *, token_context=None) -> RedactionResponse:
-        """V1 callers reserve a record slot; v2 uses its token backend without legacy records."""
+    async def redact(self, req: RedactionRequest | RedactionRequestV2 | RedactionRequestV3,
+                     rid: str, *, token_context=None) -> RedactionResponse:
+        """V1 reserves legacy records; V2/V3 use the shared rendering hook for their own storage.
+
+        rid always identifies the HTTP call for audit; V3 business session IDs are separate.
+        """
         s, c, m = self.settings, self.components, self.metrics
         deadline = Deadline(s.timeout_ms)
         timings: dict[str, float] = {}
