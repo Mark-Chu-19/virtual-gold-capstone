@@ -1,6 +1,6 @@
 # Detector evaluation (rules + Presidio)
 
-These scripts score the service's own detectors on Karina's baseline v1.1 (`data/baseline/`) with her `score.py`, so every change can be compared with the same numbers. The results behind `docs/research/yudi/2026-10-29/rules-presidio-dev-evaluation-en.md` come from them.
+These scripts score the service's own detectors on Karina's baseline v1.1 (`data/baseline/`) with her `score.py`, so every change can be compared with the same numbers. The results behind `docs/eval/2026-10-29/rules-presidio-dev-en.md` come from them.
 
 Run them from the repo root with the service virtualenv. Presidio and `en_core_web_lg` must be installed. Output goes to `service/scripts/eval/out/`, which git ignores.
 
