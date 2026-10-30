@@ -1,0 +1,56 @@
+{
+  "version": "1.2.0",
+  "fitted_date": "2026-10-19",
+  "dataset_source": "virtual-gold-capstone/data/baseline_dev.jsonl (15 emails)",
+  "audit_records_file": "calibration_fit_records.jsonl",
+  "total_candidate_observations": 296,
+  "bin_edges": [
+    0.0,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1.01
+  ],
+  "bin_counts": [
+    40,
+    0,
+    0,
+    0,
+    256
+  ],
+  "bin_empirical_p_private": [
+    0.1,
+    0.3,
+    0.5,
+    0.7,
+    0.9492
+  ],
+  "evaluation_metrics": {
+    "ece_raw": 0.0959,
+    "ece_cal": 0.0,
+    "brier_raw": 0.1096,
+    "brier_cal": 0.0741
+  },
+  "is_fitted": false,
+  "validation_status": "Fitted on expanded 15-email development benchmark (296 observations)",
+  "tier_thresholds": {
+    "HIGH": 0.2,
+    "MEDIUM": 0.5,
+    "LOW": 0.5
+  },
+  "deterministic_lock_policy": {
+    "rule": "High-tier match from regex or presidio sets score_method='deterministic_policy_override', calibrated_score=null",
+    "bypasses_contextual_unmasking": true
+  },
+  "fallback_policy": {
+    "method": "multi_detector_agreement_v1",
+    "weights": {
+      "rules": 0.4,
+      "model_detection": 0.3,
+      "contextual": 0.3
+    },
+    "activation": "Activated on rule/context conflict or score ambiguity (0.35 <= raw_score <= 0.65)",
+    "fail_closed_default": "STAGE_B_CANDIDATE_UNION"
+  }
+}
