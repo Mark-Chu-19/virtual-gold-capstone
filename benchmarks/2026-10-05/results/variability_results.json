@@ -1,0 +1,2084 @@
+[
+  {
+    "model": "meta-llama/llama-3.1-8b-instruct",
+    "doc_ids": [
+      "DOC-TEST-001",
+      "DOC-TEST-002",
+      "DOC-TEST-003",
+      "DOC-TEST-004",
+      "DOC-TEST-005"
+    ],
+    "repetitions": 3,
+    "identical_outputs_across_runs": false,
+    "rep_runs": [
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Laura Bennett",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 50,
+              "text": "laura.bennett@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 369,
+              "end": 382,
+              "text": "Laura Bennett",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "individual name"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Laura Bennett",
+            "[EMAIL_1]": "laura.bennett@apex-health.com",
+            "[PHONE_1]": "617-555-0193",
+            "[PERSON_1]": "Laura Bennett"
+          },
+          "total_latency_s": 3.317669833981199
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 21,
+              "text": "Megan Ostrowski",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 23,
+              "end": 47,
+              "text": "megan.o@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 53,
+              "end": 68,
+              "text": "Victor Sterling",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 70,
+              "end": 96,
+              "text": "vsterling@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 329,
+              "end": 344,
+              "text": "Megan Ostrowski",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Megan Ostrowski",
+            "[EMAIL_1]": "megan.o@medpump-corp.com",
+            "[DATA_2]": "Victor Sterling",
+            "[EMAIL_2]": "vsterling@medpump-corp.com",
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189",
+            "[PERSON_1]": "Megan Ostrowski"
+          },
+          "total_latency_s": 18.849247332982486
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Eleanor Vance",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 59,
+              "end": 81,
+              "text": "Compensation Committee",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 83,
+              "end": 112,
+              "text": "comp-comm@novagold-mining.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 238,
+              "end": 267,
+              "text": "250,000 RSUs valued at $3.75M",
+              "category": "AMOUNT",
+              "detector": "model_detection",
+              "reason": "Confidential executive compensation terms"
+            },
+            {
+              "start": 272,
+              "end": 290,
+              "text": "CEO Brian Sterling",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Confidential executive information"
+            },
+            {
+              "start": 296,
+              "end": 333,
+              "text": "base salary will increase to $850,000",
+              "category": "AMOUNT",
+              "detector": "model_detection",
+              "reason": "Confidential executive compensation terms"
+            },
+            {
+              "start": 402,
+              "end": 449,
+              "text": "strictly confidential prior to the proxy filing",
+              "category": "FACT",
+              "detector": "model_detection",
+              "reason": "Confidentiality instruction"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Eleanor Vance",
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[DATA_2]": "Compensation Committee",
+            "[EMAIL_2]": "comp-comm@novagold-mining.com",
+            "[AMOUNT_1]": "250,000 RSUs valued at $3.75M",
+            "[PERSON_1]": "CEO Brian Sterling",
+            "[AMOUNT_2]": "base salary will increase to $850,000",
+            "[FACT_1]": "strictly confidential prior to the proxy filing"
+          },
+          "total_latency_s": 7.2643874989880715
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [
+            {
+              "start": 483,
+              "end": 495,
+              "text": "800-555-0188",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[PHONE_1]": "800-555-0188"
+          },
+          "total_latency_s": 14.976664165995317
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 17,
+              "text": "Alex Mercer",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "Secret key to vault"
+            },
+            {
+              "start": 450,
+              "end": 461,
+              "text": "Alex Mercer",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Customer name"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Alex Mercer",
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[DATA_2]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901",
+            "[PERSON_1]": "Alex Mercer"
+          },
+          "total_latency_s": 9.132225957961055
+        }
+      ],
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Laura Bennett",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 50,
+              "text": "laura.bennett@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 56,
+              "end": 70,
+              "text": "Mark Henderson",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 72,
+              "end": 102,
+              "text": "mark.henderson@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 369,
+              "end": 382,
+              "text": "Laura Bennett",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "personal name"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Laura Bennett",
+            "[EMAIL_1]": "laura.bennett@apex-health.com",
+            "[DATA_2]": "Mark Henderson",
+            "[EMAIL_2]": "mark.henderson@apex-health.com",
+            "[PHONE_1]": "617-555-0193",
+            "[PERSON_1]": "Laura Bennett"
+          },
+          "total_latency_s": 14.457526292011607
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 21,
+              "text": "Megan Ostrowski",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 23,
+              "end": 47,
+              "text": "megan.o@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 53,
+              "end": 68,
+              "text": "Victor Sterling",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 70,
+              "end": 96,
+              "text": "vsterling@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 329,
+              "end": 344,
+              "text": "Megan Ostrowski",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Megan Ostrowski",
+            "[EMAIL_1]": "megan.o@medpump-corp.com",
+            "[DATA_2]": "Victor Sterling",
+            "[EMAIL_2]": "vsterling@medpump-corp.com",
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189",
+            "[PERSON_1]": "Megan Ostrowski"
+          },
+          "total_latency_s": 6.1088802499871235
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Eleanor Vance",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 83,
+              "end": 112,
+              "text": "comp-comm@novagold-mining.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 238,
+              "end": 245,
+              "text": "250,000",
+              "category": "AMOUNT",
+              "detector": "model_detection",
+              "reason": "Number of RSUs"
+            },
+            {
+              "start": 261,
+              "end": 267,
+              "text": "$3.75M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 276,
+              "end": 290,
+              "text": "Brian Sterling",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name"
+            },
+            {
+              "start": 325,
+              "end": 333,
+              "text": "$850,000",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Eleanor Vance",
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[EMAIL_2]": "comp-comm@novagold-mining.com",
+            "[AMOUNT_1]": "250,000",
+            "[AMOUNT_2]": "$3.75M",
+            "[PERSON_1]": "Brian Sterling",
+            "[AMOUNT_3]": "$850,000"
+          },
+          "total_latency_s": 6.085049999994226
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 44,
+              "text": "announcements@datastream-analytics.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 49,
+              "end": 85,
+              "text": "subscribers@datastream-analytics.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 429,
+              "end": 461,
+              "text": "support@datastream-analytics.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 483,
+              "end": 495,
+              "text": "800-555-0188",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[EMAIL_1]": "announcements@datastream-analytics.com",
+            "[EMAIL_2]": "subscribers@datastream-analytics.com",
+            "[EMAIL_3]": "support@datastream-analytics.com",
+            "[PHONE_1]": "800-555-0188"
+          },
+          "total_latency_s": 7.9502627920301165
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 17,
+              "text": "Alex Mercer",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 49,
+              "end": 87,
+              "text": "security-gate@cryptotrade-exchange.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "secret key"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Alex Mercer",
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[EMAIL_2]": "security-gate@cryptotrade-exchange.net",
+            "[DATA_2]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901"
+          },
+          "total_latency_s": 15.936153791000834
+        }
+      ],
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Laura Bennett",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 50,
+              "text": "laura.bennett@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 72,
+              "end": 102,
+              "text": "mark.henderson@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 369,
+              "end": 382,
+              "text": "Laura Bennett",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Name of the sender"
+            },
+            {
+              "start": 383,
+              "end": 417,
+              "text": "Chief Medical Officer, Apex Health",
+              "category": "FACT",
+              "detector": "model_detection",
+              "reason": "Title and organization of the sender"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Laura Bennett",
+            "[EMAIL_1]": "laura.bennett@apex-health.com",
+            "[EMAIL_2]": "mark.henderson@apex-health.com",
+            "[PHONE_1]": "617-555-0193",
+            "[PERSON_1]": "Laura Bennett",
+            "[FACT_1]": "Chief Medical Officer, Apex Health"
+          },
+          "total_latency_s": 24.270178748993203
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 21,
+              "text": "Megan Ostrowski",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 23,
+              "end": 47,
+              "text": "megan.o@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 53,
+              "end": 68,
+              "text": "Victor Sterling",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 70,
+              "end": 96,
+              "text": "vsterling@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Megan Ostrowski",
+            "[EMAIL_1]": "megan.o@medpump-corp.com",
+            "[DATA_2]": "Victor Sterling",
+            "[EMAIL_2]": "vsterling@medpump-corp.com",
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189"
+          },
+          "total_latency_s": 20.96900599997025
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Eleanor Vance",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 59,
+              "end": 81,
+              "text": "Compensation Committee",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 83,
+              "end": 112,
+              "text": "comp-comm@novagold-mining.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 238,
+              "end": 245,
+              "text": "250,000",
+              "category": "AMOUNT",
+              "detector": "model_detection",
+              "reason": "Number of RSUs"
+            },
+            {
+              "start": 261,
+              "end": 267,
+              "text": "$3.75M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 276,
+              "end": 290,
+              "text": "Brian Sterling",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name"
+            },
+            {
+              "start": 325,
+              "end": 333,
+              "text": "$850,000",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Eleanor Vance",
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[DATA_2]": "Compensation Committee",
+            "[EMAIL_2]": "comp-comm@novagold-mining.com",
+            "[AMOUNT_1]": "250,000",
+            "[AMOUNT_2]": "$3.75M",
+            "[PERSON_1]": "Brian Sterling",
+            "[AMOUNT_3]": "$850,000"
+          },
+          "total_latency_s": 16.235015959013253
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 44,
+              "text": "announcements@datastream-analytics.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 49,
+              "end": 85,
+              "text": "subscribers@datastream-analytics.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 429,
+              "end": 461,
+              "text": "support@datastream-analytics.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 483,
+              "end": 495,
+              "text": "800-555-0188",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[EMAIL_1]": "announcements@datastream-analytics.com",
+            "[EMAIL_2]": "subscribers@datastream-analytics.com",
+            "[EMAIL_3]": "support@datastream-analytics.com",
+            "[PHONE_1]": "800-555-0188"
+          },
+          "total_latency_s": 10.473665875033475
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 17,
+              "text": "Alex Mercer",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "secret key"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Alex Mercer",
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[DATA_2]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901"
+          },
+          "total_latency_s": 10.696463790984126
+        }
+      ]
+    ]
+  },
+  {
+    "model": "qwen/qwen-2.5-7b-instruct",
+    "doc_ids": [
+      "DOC-TEST-001",
+      "DOC-TEST-002",
+      "DOC-TEST-003",
+      "DOC-TEST-004",
+      "DOC-TEST-005"
+    ],
+    "repetitions": 3,
+    "identical_outputs_across_runs": false,
+    "rep_runs": [
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[PHONE_1]": "617-555-0193"
+          },
+          "total_latency_s": 4.716410124994582
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 21,
+              "text": "Megan Ostrowski",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 23,
+              "end": 47,
+              "text": "megan.o@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Megan Ostrowski",
+            "[EMAIL_1]": "megan.o@medpump-corp.com",
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189"
+          },
+          "total_latency_s": 5.598121832998004
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Eleanor Vance",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 238,
+              "end": 250,
+              "text": "250,000 RSUs",
+              "category": "IDENTIFIER",
+              "detector": "model_detection",
+              "reason": "Specific number of restricted stock units"
+            },
+            {
+              "start": 261,
+              "end": 267,
+              "text": "$3.75M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 272,
+              "end": 290,
+              "text": "CEO Brian Sterling",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Name of the CEO"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Eleanor Vance",
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[IDENTIFIER_1]": "250,000 RSUs",
+            "[AMOUNT_1]": "$3.75M",
+            "[PERSON_1]": "CEO Brian Sterling"
+          },
+          "total_latency_s": 4.777838834037539
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [],
+          "placeholder_map": {},
+          "total_latency_s": 3.8499623329844326
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "secret key to the vault"
+            }
+          ],
+          "placeholder_map": {
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[DATA_1]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901"
+          },
+          "total_latency_s": 4.263571126037277
+        }
+      ],
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[PHONE_1]": "617-555-0193"
+          },
+          "total_latency_s": 4.094618917006301
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 21,
+              "text": "Megan Ostrowski",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 23,
+              "end": 47,
+              "text": "megan.o@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Megan Ostrowski",
+            "[EMAIL_1]": "megan.o@medpump-corp.com",
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189"
+          },
+          "total_latency_s": 5.037515584001085
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Eleanor Vance",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 272,
+              "end": 290,
+              "text": "CEO Brian Sterling",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Name of the CEO mentioned"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Eleanor Vance",
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[PERSON_1]": "CEO Brian Sterling"
+          },
+          "total_latency_s": 4.898196416004794
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [],
+          "placeholder_map": {},
+          "total_latency_s": 3.533257415983826
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "secret key to the vault"
+            }
+          ],
+          "placeholder_map": {
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[DATA_1]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901"
+          },
+          "total_latency_s": 4.1549116669921204
+        }
+      ],
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[PHONE_1]": "617-555-0193"
+          },
+          "total_latency_s": 4.040907999995397
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 21,
+              "text": "Megan Ostrowski",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 23,
+              "end": 47,
+              "text": "megan.o@medpump-corp.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Megan Ostrowski",
+            "[EMAIL_1]": "megan.o@medpump-corp.com",
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189"
+          },
+          "total_latency_s": 5.4555933339870535
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Eleanor Vance",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 238,
+              "end": 250,
+              "text": "250,000 RSUs",
+              "category": "IDENTIFIER",
+              "detector": "model_detection",
+              "reason": "Specific number of restricted stock units"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Eleanor Vance",
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[IDENTIFIER_1]": "250,000 RSUs"
+          },
+          "total_latency_s": 4.703761500015389
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [],
+          "placeholder_map": {},
+          "total_latency_s": 3.0428033330244943
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "secret key to a vault"
+            }
+          ],
+          "placeholder_map": {
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[DATA_1]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901"
+          },
+          "total_latency_s": 4.075247957982356
+        }
+      ]
+    ]
+  },
+  {
+    "model": "x-ai/grok-4.20",
+    "doc_ids": [
+      "DOC-TEST-001",
+      "DOC-TEST-002",
+      "DOC-TEST-003",
+      "DOC-TEST-004",
+      "DOC-TEST-005"
+    ],
+    "repetitions": 3,
+    "identical_outputs_across_runs": false,
+    "rep_runs": [
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Laura Bennett",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 50,
+              "text": "laura.bennett@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 56,
+              "end": 70,
+              "text": "Mark Henderson",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 72,
+              "end": 102,
+              "text": "mark.henderson@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 369,
+              "end": 382,
+              "text": "Laura Bennett",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name appearing as sender and signature"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Laura Bennett",
+            "[EMAIL_1]": "laura.bennett@apex-health.com",
+            "[DATA_2]": "Mark Henderson",
+            "[EMAIL_2]": "mark.henderson@apex-health.com",
+            "[PHONE_1]": "617-555-0193",
+            "[PERSON_1]": "Laura Bennett"
+          },
+          "total_latency_s": 4.8312633330060635
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189"
+          },
+          "total_latency_s": 6.1625651250069495
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 83,
+              "end": 112,
+              "text": "comp-comm@novagold-mining.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 214,
+              "end": 353,
+              "text": "special equity grant of 250,000 RSUs valued at $3.75M for CEO Brian Sterling. His base salary will increase to $850,000 effective January 1",
+              "category": "FACT",
+              "detector": "model_detection",
+              "reason": "Confidential executive compensation terms and retention grant details prior to proxy filing"
+            }
+          ],
+          "placeholder_map": {
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[EMAIL_2]": "comp-comm@novagold-mining.com",
+            "[FACT_1]": "special equity grant of 250,000 RSUs valued at $3.75M for CEO Brian Sterling. His base salary will increase to $850,000 effective January 1"
+          },
+          "total_latency_s": 4.400278999033617
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [],
+          "placeholder_map": {},
+          "total_latency_s": 3.0670081250427756
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 17,
+              "text": "Alex Mercer",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "Secret key to vault"
+            },
+            {
+              "start": 450,
+              "end": 461,
+              "text": "Alex Mercer",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name (sender)"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Alex Mercer",
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[DATA_2]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901",
+            "[PERSON_1]": "Alex Mercer"
+          },
+          "total_latency_s": 4.141513709007995
+        }
+      ],
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Laura Bennett",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 50,
+              "text": "laura.bennett@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 56,
+              "end": 70,
+              "text": "Mark Henderson",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 72,
+              "end": 102,
+              "text": "mark.henderson@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 369,
+              "end": 382,
+              "text": "Laura Bennett",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name appearing as sender and signature"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Laura Bennett",
+            "[EMAIL_1]": "laura.bennett@apex-health.com",
+            "[DATA_2]": "Mark Henderson",
+            "[EMAIL_2]": "mark.henderson@apex-health.com",
+            "[PHONE_1]": "617-555-0193",
+            "[PERSON_1]": "Laura Bennett"
+          },
+          "total_latency_s": 5.135727958986536
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189"
+          },
+          "total_latency_s": 5.238236375007546
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 83,
+              "end": 112,
+              "text": "comp-comm@novagold-mining.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 238,
+              "end": 267,
+              "text": "250,000 RSUs valued at $3.75M",
+              "category": "AMOUNT",
+              "detector": "model_detection",
+              "reason": "Specific unannounced equity grant value for the CEO"
+            },
+            {
+              "start": 276,
+              "end": 290,
+              "text": "Brian Sterling",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Name of the CEO receiving the retention grant"
+            },
+            {
+              "start": 325,
+              "end": 333,
+              "text": "$850,000",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 373,
+              "end": 401,
+              "text": "executive compensation terms",
+              "category": "FACT",
+              "detector": "model_detection",
+              "reason": "Reference to confidential executive pay details prior to proxy filing"
+            }
+          ],
+          "placeholder_map": {
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[EMAIL_2]": "comp-comm@novagold-mining.com",
+            "[AMOUNT_1]": "250,000 RSUs valued at $3.75M",
+            "[PERSON_1]": "Brian Sterling",
+            "[AMOUNT_2]": "$850,000",
+            "[FACT_1]": "executive compensation terms"
+          },
+          "total_latency_s": 14.541258749988629
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [],
+          "placeholder_map": {},
+          "total_latency_s": 3.4011664589634165
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 17,
+              "text": "Alex Mercer",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "Secret key to vault"
+            },
+            {
+              "start": 450,
+              "end": 461,
+              "text": "Alex Mercer",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name appearing as sender and signature"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Alex Mercer",
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[DATA_2]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901",
+            "[PERSON_1]": "Alex Mercer"
+          },
+          "total_latency_s": 4.395646918012062
+        }
+      ],
+      [
+        {
+          "doc_id": "DOC-TEST-001",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 19,
+              "text": "Laura Bennett",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 21,
+              "end": 50,
+              "text": "laura.bennett@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 56,
+              "end": 70,
+              "text": "Mark Henderson",
+              "category": "HEADER_RECIPIENT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 72,
+              "end": 102,
+              "text": "mark.henderson@apex-health.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 254,
+              "end": 266,
+              "text": "617-555-0193",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 369,
+              "end": 382,
+              "text": "Laura Bennett",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name appearing as sender and signature"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Laura Bennett",
+            "[EMAIL_1]": "laura.bennett@apex-health.com",
+            "[DATA_2]": "Mark Henderson",
+            "[EMAIL_2]": "mark.henderson@apex-health.com",
+            "[PHONE_1]": "617-555-0193",
+            "[PERSON_1]": "Laura Bennett"
+          },
+          "total_latency_s": 5.283473165996838
+        },
+        {
+          "doc_id": "DOC-TEST-002",
+          "redacted_spans": [
+            {
+              "start": 187,
+              "end": 193,
+              "text": "$1.84M",
+              "category": "AMOUNT",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 291,
+              "end": 305,
+              "text": "(617) 555-0142",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 314,
+              "end": 326,
+              "text": "617-555-0189",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            }
+          ],
+          "placeholder_map": {
+            "[AMOUNT_1]": "$1.84M",
+            "[PHONE_1]": "(617) 555-0142",
+            "[PHONE_2]": "617-555-0189"
+          },
+          "total_latency_s": 5.356081415986409
+        },
+        {
+          "doc_id": "DOC-TEST-003",
+          "redacted_spans": [
+            {
+              "start": 21,
+              "end": 53,
+              "text": "eleanor.vance@board-advisors.net",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 83,
+              "end": 112,
+              "text": "comp-comm@novagold-mining.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 214,
+              "end": 353,
+              "text": "special equity grant of 250,000 RSUs valued at $3.75M for CEO Brian Sterling. His base salary will increase to $850,000 effective January 1",
+              "category": "FACT",
+              "detector": "model_detection",
+              "reason": "Confidential executive compensation terms and retention grant details prior to proxy filing"
+            }
+          ],
+          "placeholder_map": {
+            "[EMAIL_1]": "eleanor.vance@board-advisors.net",
+            "[EMAIL_2]": "comp-comm@novagold-mining.com",
+            "[FACT_1]": "special equity grant of 250,000 RSUs valued at $3.75M for CEO Brian Sterling. His base salary will increase to $850,000 effective January 1"
+          },
+          "total_latency_s": 3.7768137090315577
+        },
+        {
+          "doc_id": "DOC-TEST-004",
+          "redacted_spans": [],
+          "placeholder_map": {},
+          "total_latency_s": 3.549171041988302
+        },
+        {
+          "doc_id": "DOC-TEST-005",
+          "redacted_spans": [
+            {
+              "start": 6,
+              "end": 17,
+              "text": "Alex Mercer",
+              "category": "HEADER_SENDER",
+              "detector": "regex_rule",
+              "raw_score": 0.8
+            },
+            {
+              "start": 19,
+              "end": 43,
+              "text": "mercer.alex99@yandex.com",
+              "category": "EMAIL_ADDRESS",
+              "detector": "presidio_emailrecognizer",
+              "raw_score": 1.0
+            },
+            {
+              "start": 325,
+              "end": 334,
+              "text": "P44810291",
+              "category": "US_DRIVER_LICENSE",
+              "detector": "presidio_uslicenserecognizer",
+              "raw_score": 0.3
+            },
+            {
+              "start": 363,
+              "end": 375,
+              "text": "415-555-0167",
+              "category": "PHONE_NUMBER",
+              "detector": "presidio_phonerecognizer",
+              "raw_score": 0.4
+            },
+            {
+              "start": 408,
+              "end": 423,
+              "text": "iron-forge-9901",
+              "category": "CREDENTIAL",
+              "detector": "model_detection",
+              "reason": "Secret key to vault"
+            },
+            {
+              "start": 450,
+              "end": 461,
+              "text": "Alex Mercer",
+              "category": "PERSON",
+              "detector": "model_detection",
+              "reason": "Individual name (sender)"
+            }
+          ],
+          "placeholder_map": {
+            "[DATA_1]": "Alex Mercer",
+            "[EMAIL_1]": "mercer.alex99@yandex.com",
+            "[DATA_2]": "P44810291",
+            "[PHONE_1]": "415-555-0167",
+            "[CREDENTIAL_1]": "iron-forge-9901",
+            "[PERSON_1]": "Alex Mercer"
+          },
+          "total_latency_s": 4.285504458006471
+        }
+      ]
+    ]
+  }
+]

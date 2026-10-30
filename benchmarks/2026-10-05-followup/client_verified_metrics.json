@@ -1,0 +1,85 @@
+{
+  "method": "Original input length; per-document character-set comparison against gold private/public spans; saved raw responses; no reruns.",
+  "rows": [
+    {
+      "model": "google/gemma-3-12b-it",
+      "stage": "B",
+      "n": 20,
+      "private": 2270,
+      "public": 966,
+      "leaked": 657,
+      "masked": 841,
+      "request_leak": 11,
+      "degraded": 0,
+      "leak_pct": 28.94273127753304,
+      "over_pct": 87.0600414078675,
+      "median_s": 26.44661114551127
+    },
+    {
+      "model": "google/gemma-3-12b-it",
+      "stage": "C",
+      "n": 20,
+      "private": 2270,
+      "public": 966,
+      "leaked": 1129,
+      "masked": 60,
+      "request_leak": 15,
+      "degraded": 1,
+      "leak_pct": 49.73568281938326,
+      "over_pct": 6.211180124223603,
+      "median_s": 45.604765708500054
+    },
+    {
+      "model": "local_qwen3.5_9b",
+      "stage": "B",
+      "n": 20,
+      "private": 2270,
+      "public": 966,
+      "leaked": 803,
+      "masked": 662,
+      "request_leak": 14,
+      "degraded": 0,
+      "leak_pct": 35.37444933920705,
+      "over_pct": 68.53002070393374,
+      "median_s": 20.66501289549342
+    },
+    {
+      "model": "local_qwen3.5_9b",
+      "stage": "C",
+      "n": 20,
+      "private": 2270,
+      "public": 966,
+      "leaked": 1430,
+      "masked": 0,
+      "request_leak": 15,
+      "degraded": 0,
+      "leak_pct": 62.99559471365639,
+      "over_pct": 0.0,
+      "median_s": 66.77913014602382
+    },
+    {
+      "model": "qwen/qwen3.5-9b",
+      "stage": "B",
+      "n": 20,
+      "private": 2270,
+      "public": 966,
+      "leaked": 1109,
+      "masked": 652,
+      "request_leak": 15,
+      "degraded": 19,
+      "leak_pct": 48.85462555066079,
+      "over_pct": 67.49482401656314,
+      "median_s": 0.0
+    }
+  ],
+  "baseline": {
+    "n": 20,
+    "private": 2270,
+    "public": 966,
+    "leaked": 1156,
+    "masked": 652,
+    "request_leak": 15,
+    "leak_pct": 50.92511013215859,
+    "over_pct": 67.49482401656314
+  }
+}

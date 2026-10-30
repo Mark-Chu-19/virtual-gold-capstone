@@ -1,0 +1,39 @@
+{
+  "version": "1.3.0",
+  "fitted_date": "2026-10-19",
+  "dataset_source": "virtual-gold-capstone/data/baseline_dev.jsonl (15 emails)",
+  "audit_records_file": "calibration_fit_records_cloud_api_dev15_benchmark.jsonl",
+  "total_candidate_observations": 10,
+  "deterministic_policy_overrides_count": 1,
+  "model_evaluated_candidates_count": 9,
+  "bin_edges": [
+    0.0,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1.01
+  ],
+  "bin_counts": [
+    1,
+    0,
+    0,
+    0,
+    8
+  ],
+  "bin_empirical_p_private": [
+    1.0,
+    0.3,
+    0.5,
+    0.7,
+    1.0
+  ],
+  "evaluation_metrics": {
+    "ece_raw": 0.1311,
+    "ece_cal": 0.0,
+    "brier_raw": 0.0824,
+    "brier_cal": 0.0
+  },
+  "is_fitted": true,
+  "validation_status": "In-sample calibration fitted (deterministic locks excluded)"
+}

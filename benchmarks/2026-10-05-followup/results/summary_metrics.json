@@ -1,0 +1,467 @@
+[
+  {
+    "model": "google/gemma-3-12b-it",
+    "stage": "B",
+    "split": "test",
+    "document_count": 20,
+    "total_private_chars": 1977,
+    "leaked_private_chars": 625,
+    "char_leak_rate": 0.3161355589276682,
+    "requests_with_leak": 10,
+    "request_leak_rate": 0.5,
+    "total_public_chars": 766,
+    "over_redacted_public_chars": 641,
+    "char_over_redaction_rate": 0.8368146214099217,
+    "tier_summary": {
+      "HIGH": {
+        "total_chars": 899,
+        "leaked_chars": 594,
+        "leak_rate": 0.660734149054505
+      },
+      "MEDIUM": {
+        "total_chars": 1070,
+        "leaked_chars": 31,
+        "leak_rate": 0.02897196261682243
+      },
+      "LOW": {
+        "total_chars": 8,
+        "leaked_chars": 0,
+        "leak_rate": 0.0
+      }
+    },
+    "span_metrics": {
+      "gold_spans_count": 107,
+      "pred_spans_count": 167,
+      "exact_tp": 87,
+      "exact_precision": 0.5209580838323353,
+      "exact_recall": 0.8130841121495327,
+      "overlap_precision": 0.6167664670658682,
+      "overlap_recall": 0.9158878504672897
+    },
+    "brier_score": null,
+    "brier_details": null,
+    "latency": {
+      "median_s": 26.44661114551127,
+      "p95_s": 49.168671047905825,
+      "sample_count": 20
+    },
+    "tokens": {
+      "prompt_tokens": 8594,
+      "completion_tokens": 5603,
+      "total_tokens": 14197
+    },
+    "cost_usd": 0.00127015,
+    "degraded_requests": 0,
+    "invalid_spans_discarded": 0
+  },
+  {
+    "model": "google/gemma-3-12b-it",
+    "stage": "C",
+    "split": "dev",
+    "document_count": 10,
+    "total_private_chars": 943,
+    "leaked_private_chars": 484,
+    "char_leak_rate": 0.513255567338282,
+    "requests_with_leak": 6,
+    "request_leak_rate": 0.6,
+    "total_public_chars": 506,
+    "over_redacted_public_chars": 25,
+    "char_over_redaction_rate": 0.04940711462450593,
+    "tier_summary": {
+      "HIGH": {
+        "total_chars": 383,
+        "leaked_chars": 291,
+        "leak_rate": 0.7597911227154047
+      },
+      "MEDIUM": {
+        "total_chars": 560,
+        "leaked_chars": 193,
+        "leak_rate": 0.34464285714285714
+      },
+      "LOW": {
+        "total_chars": 0,
+        "leaked_chars": 0,
+        "leak_rate": 0.0
+      }
+    },
+    "span_metrics": {
+      "gold_spans_count": 50,
+      "pred_spans_count": 31,
+      "exact_tp": 24,
+      "exact_precision": 0.7741935483870968,
+      "exact_recall": 0.48,
+      "overlap_precision": 0.9354838709677419,
+      "overlap_recall": 0.58
+    },
+    "brier_score": 0.23075156249999998,
+    "brier_details": {
+      "brier_score": 0.23075156249999998,
+      "total_assessed_candidates": 73,
+      "evaluated_candidates": 64,
+      "excluded_candidates": 9
+    },
+    "latency": {
+      "median_s": 48.459937729508965,
+      "p95_s": 85.001509980949,
+      "sample_count": 10
+    },
+    "tokens": {
+      "prompt_tokens": 12000,
+      "completion_tokens": 7057,
+      "total_tokens": 19057
+    },
+    "cost_usd": 0.0016585500000000002,
+    "degraded_requests": 0,
+    "invalid_spans_discarded": 0
+  },
+  {
+    "model": "google/gemma-3-12b-it",
+    "stage": "C",
+    "split": "test",
+    "document_count": 20,
+    "total_private_chars": 2086,
+    "leaked_private_chars": 1013,
+    "char_leak_rate": 0.4856184084372004,
+    "requests_with_leak": 15,
+    "request_leak_rate": 0.75,
+    "total_public_chars": 954,
+    "over_redacted_public_chars": 60,
+    "char_over_redaction_rate": 0.06289308176100629,
+    "tier_summary": {
+      "HIGH": {
+        "total_chars": 918,
+        "leaked_chars": 654,
+        "leak_rate": 0.7124183006535948
+      },
+      "MEDIUM": {
+        "total_chars": 1160,
+        "leaked_chars": 359,
+        "leak_rate": 0.30948275862068964
+      },
+      "LOW": {
+        "total_chars": 8,
+        "leaked_chars": 0,
+        "leak_rate": 0.0
+      }
+    },
+    "span_metrics": {
+      "gold_spans_count": 107,
+      "pred_spans_count": 81,
+      "exact_tp": 58,
+      "exact_precision": 0.7160493827160493,
+      "exact_recall": 0.5420560747663551,
+      "overlap_precision": 0.8641975308641975,
+      "overlap_recall": 0.616822429906542
+    },
+    "brier_score": 0.23361968503937003,
+    "brier_details": {
+      "brier_score": 0.23361968503937003,
+      "total_assessed_candidates": 154,
+      "evaluated_candidates": 127,
+      "excluded_candidates": 27
+    },
+    "latency": {
+      "median_s": 45.604765708500054,
+      "p95_s": 97.91515769309626,
+      "sample_count": 20
+    },
+    "tokens": {
+      "prompt_tokens": 23905,
+      "completion_tokens": 15258,
+      "total_tokens": 39163
+    },
+    "cost_usd": 0.00348395,
+    "degraded_requests": 1,
+    "invalid_spans_discarded": 0
+  },
+  {
+    "model": "local_qwen3.5_9b",
+    "stage": "B",
+    "split": "test",
+    "document_count": 20,
+    "total_private_chars": 2003,
+    "leaked_private_chars": 638,
+    "char_leak_rate": 0.31852221667498753,
+    "requests_with_leak": 10,
+    "request_leak_rate": 0.5,
+    "total_public_chars": 830,
+    "over_redacted_public_chars": 537,
+    "char_over_redaction_rate": 0.6469879518072289,
+    "tier_summary": {
+      "HIGH": {
+        "total_chars": 900,
+        "leaked_chars": 577,
+        "leak_rate": 0.6411111111111111
+      },
+      "MEDIUM": {
+        "total_chars": 1095,
+        "leaked_chars": 61,
+        "leak_rate": 0.05570776255707763
+      },
+      "LOW": {
+        "total_chars": 8,
+        "leaked_chars": 0,
+        "leak_rate": 0.0
+      }
+    },
+    "span_metrics": {
+      "gold_spans_count": 107,
+      "pred_spans_count": 131,
+      "exact_tp": 75,
+      "exact_precision": 0.5725190839694656,
+      "exact_recall": 0.7009345794392523,
+      "overlap_precision": 0.6641221374045801,
+      "overlap_recall": 0.794392523364486
+    },
+    "brier_score": null,
+    "brier_details": null,
+    "latency": {
+      "median_s": 20.66501289549342,
+      "p95_s": 37.4533401857596,
+      "sample_count": 20
+    },
+    "tokens": {
+      "prompt_tokens": 8673,
+      "completion_tokens": 4651,
+      "total_tokens": 13324
+    },
+    "cost_usd": 0.0,
+    "degraded_requests": 0,
+    "invalid_spans_discarded": 0
+  },
+  {
+    "model": "local_qwen3.5_9b",
+    "stage": "C",
+    "split": "dev",
+    "document_count": 10,
+    "total_private_chars": 922,
+    "leaked_private_chars": 404,
+    "char_leak_rate": 0.43817787418655096,
+    "requests_with_leak": 6,
+    "request_leak_rate": 0.6,
+    "total_public_chars": 514,
+    "over_redacted_public_chars": 0,
+    "char_over_redaction_rate": 0.0,
+    "tier_summary": {
+      "HIGH": {
+        "total_chars": 375,
+        "leaked_chars": 192,
+        "leak_rate": 0.512
+      },
+      "MEDIUM": {
+        "total_chars": 547,
+        "leaked_chars": 212,
+        "leak_rate": 0.3875685557586837
+      },
+      "LOW": {
+        "total_chars": 0,
+        "leaked_chars": 0,
+        "leak_rate": 0.0
+      }
+    },
+    "span_metrics": {
+      "gold_spans_count": 50,
+      "pred_spans_count": 33,
+      "exact_tp": 27,
+      "exact_precision": 0.8181818181818182,
+      "exact_recall": 0.54,
+      "overlap_precision": 0.9696969696969697,
+      "overlap_recall": 0.64
+    },
+    "brier_score": 0.18792291666666663,
+    "brier_details": {
+      "brier_score": 0.18792291666666663,
+      "total_assessed_candidates": 54,
+      "evaluated_candidates": 48,
+      "excluded_candidates": 6
+    },
+    "latency": {
+      "median_s": 55.852559833510895,
+      "p95_s": 83.33926398970941,
+      "sample_count": 10
+    },
+    "tokens": {
+      "prompt_tokens": 10717,
+      "completion_tokens": 5482,
+      "total_tokens": 16199
+    },
+    "cost_usd": 0.0,
+    "degraded_requests": 1,
+    "invalid_spans_discarded": 0
+  },
+  {
+    "model": "local_qwen3.5_9b",
+    "stage": "C",
+    "split": "test",
+    "document_count": 20,
+    "total_private_chars": 2160,
+    "leaked_private_chars": 1343,
+    "char_leak_rate": 0.6217592592592592,
+    "requests_with_leak": 14,
+    "request_leak_rate": 0.7,
+    "total_public_chars": 963,
+    "over_redacted_public_chars": 0,
+    "char_over_redaction_rate": 0.0,
+    "tier_summary": {
+      "HIGH": {
+        "total_chars": 918,
+        "leaked_chars": 577,
+        "leak_rate": 0.6285403050108932
+      },
+      "MEDIUM": {
+        "total_chars": 1234,
+        "leaked_chars": 758,
+        "leak_rate": 0.6142625607779578
+      },
+      "LOW": {
+        "total_chars": 8,
+        "leaked_chars": 8,
+        "leak_rate": 1.0
+      }
+    },
+    "span_metrics": {
+      "gold_spans_count": 107,
+      "pred_spans_count": 59,
+      "exact_tp": 42,
+      "exact_precision": 0.711864406779661,
+      "exact_recall": 0.3925233644859813,
+      "overlap_precision": 0.9152542372881356,
+      "overlap_recall": 0.48598130841121495
+    },
+    "brier_score": 0.24988521739130437,
+    "brier_details": {
+      "brier_score": 0.24988521739130437,
+      "total_assessed_candidates": 131,
+      "evaluated_candidates": 115,
+      "excluded_candidates": 16
+    },
+    "latency": {
+      "median_s": 66.77913014602382,
+      "p95_s": 82.97905835145212,
+      "sample_count": 20
+    },
+    "tokens": {
+      "prompt_tokens": 23521,
+      "completion_tokens": 13104,
+      "total_tokens": 36625
+    },
+    "cost_usd": 0.0,
+    "degraded_requests": 0,
+    "invalid_spans_discarded": 0
+  },
+  {
+    "model": "qwen/qwen3.5-9b",
+    "stage": "B",
+    "split": "test",
+    "document_count": 20,
+    "total_private_chars": 2021,
+    "leaked_private_chars": 961,
+    "char_leak_rate": 0.47550717466600695,
+    "requests_with_leak": 13,
+    "request_leak_rate": 0.65,
+    "total_public_chars": 820,
+    "over_redacted_public_chars": 517,
+    "char_over_redaction_rate": 0.6304878048780488,
+    "tier_summary": {
+      "HIGH": {
+        "total_chars": 903,
+        "leaked_chars": 811,
+        "leak_rate": 0.8981173864894795
+      },
+      "MEDIUM": {
+        "total_chars": 1110,
+        "leaked_chars": 150,
+        "leak_rate": 0.13513513513513514
+      },
+      "LOW": {
+        "total_chars": 8,
+        "leaked_chars": 0,
+        "leak_rate": 0.0
+      }
+    },
+    "span_metrics": {
+      "gold_spans_count": 107,
+      "pred_spans_count": 111,
+      "exact_tp": 64,
+      "exact_precision": 0.5765765765765766,
+      "exact_recall": 0.5981308411214953,
+      "overlap_precision": 0.6396396396396397,
+      "overlap_recall": 0.6635514018691588
+    },
+    "brier_score": null,
+    "brier_details": null,
+    "latency": {
+      "median_s": 0.0,
+      "p95_s": 2.6551059729507336,
+      "sample_count": 20
+    },
+    "tokens": {
+      "prompt_tokens": 8633,
+      "completion_tokens": 31985,
+      "total_tokens": 40618
+    },
+    "cost_usd": 0.00566105,
+    "degraded_requests": 19,
+    "invalid_spans_discarded": 0
+  },
+  {
+    "model": "qwen/qwen3.5-9b",
+    "stage": "C",
+    "split": "dev",
+    "document_count": 8,
+    "total_private_chars": 735,
+    "leaked_private_chars": 238,
+    "char_leak_rate": 0.3238095238095238,
+    "requests_with_leak": 5,
+    "request_leak_rate": 0.625,
+    "total_public_chars": 374,
+    "over_redacted_public_chars": 206,
+    "char_over_redaction_rate": 0.5508021390374331,
+    "tier_summary": {
+      "HIGH": {
+        "total_chars": 244,
+        "leaked_chars": 170,
+        "leak_rate": 0.6967213114754098
+      },
+      "MEDIUM": {
+        "total_chars": 491,
+        "leaked_chars": 68,
+        "leak_rate": 0.1384928716904277
+      },
+      "LOW": {
+        "total_chars": 0,
+        "leaked_chars": 0,
+        "leak_rate": 0.0
+      }
+    },
+    "span_metrics": {
+      "gold_spans_count": 44,
+      "pred_spans_count": 46,
+      "exact_tp": 30,
+      "exact_precision": 0.6521739130434783,
+      "exact_recall": 0.6818181818181818,
+      "overlap_precision": 0.717391304347826,
+      "overlap_recall": 0.75
+    },
+    "brier_score": 0.0016666666666666696,
+    "brier_details": {
+      "brier_score": 0.0016666666666666696,
+      "total_assessed_candidates": 6,
+      "evaluated_candidates": 6,
+      "excluded_candidates": 0
+    },
+    "latency": {
+      "median_s": 0.0,
+      "p95_s": 114.5872145170927,
+      "sample_count": 8
+    },
+    "tokens": {
+      "prompt_tokens": 4129,
+      "completion_tokens": 19060,
+      "total_tokens": 23189
+    },
+    "cost_usd": 0.0035719,
+    "degraded_requests": 7,
+    "invalid_spans_discarded": 0
+  }
+]

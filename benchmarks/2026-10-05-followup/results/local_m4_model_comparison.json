@@ -1,0 +1,2998 @@
+{
+  "qwen3.5:9b": {
+    "model": "qwen3.5:9b",
+    "emails_evaluated": 3,
+    "median_latency_s": 139.22,
+    "mean_latency_s": 143.98,
+    "median_stage1_s": 49.65,
+    "median_stage2_s": 94.12,
+    "schema_failures": 0,
+    "recall": 0.6364,
+    "recall_partial": 0.6364,
+    "fact_recall": 0.5,
+    "leak_rate": 1.0,
+    "extra_masks": 0,
+    "recall_by_type": {
+      "AMOUNT": 0.9,
+      "EMAIL": 1.0,
+      "FIN_ACCOUNT": 1.0,
+      "ID_NUMBER": 0.0,
+      "ORG": 0.0,
+      "PERSON": 0.4706,
+      "PHONE": 1.0
+    },
+    "traces": [
+      {
+        "doc_id": "E002",
+        "model": "qwen3.5:9b",
+        "stage": "C",
+        "prompt_version": "v2",
+        "degraded": false,
+        "degraded_reason": null,
+        "stage1_latency_s": 38.693051791982725,
+        "stage2_latency_s": 94.12208500003908,
+        "total_latency_s": 132.8151367920218,
+        "load_duration_s": 5.297283832000001,
+        "eval_duration_s": 107.12261900000001,
+        "prompt_tokens": 1820,
+        "completion_tokens": 924,
+        "cost_usd": 0.0,
+        "baseline_spans": [
+          {
+            "start": 6,
+            "end": 19,
+            "text": "Allison Grant",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 49,
+            "end": 60,
+            "text": "Victor Ames",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 266,
+            "end": 275,
+            "text": "$250,000,",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 292,
+            "end": 304,
+            "text": "$486,300.00.",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "ACCOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 432,
+            "end": 445,
+            "text": "INV-2026-0917",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "model_detection_spans": [
+          {
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address of a specific employee."
+          },
+          {
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address of a specific employee."
+          },
+          {
+            "start": 292,
+            "end": 303,
+            "text": "$486,300.00",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Specific financial amount involved in the transaction."
+          },
+          {
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Bank routing number (ABA), a sensitive financial identifier."
+          },
+          {
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Bank account number, a sensitive financial identifier."
+          },
+          {
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "detector": "model_detection",
+            "reason": "Direct office/mobile phone number of an individual (Joel Reyes)."
+          }
+        ],
+        "union_spans": [
+          {
+            "start": 6,
+            "end": 19,
+            "text": "Allison Grant",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 49,
+            "end": 60,
+            "text": "Victor Ames",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 266,
+            "end": 275,
+            "text": "$250,000,",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 292,
+            "end": 304,
+            "text": "$486,300.00.",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "ACCOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 432,
+            "end": 445,
+            "text": "INV-2026-0917",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "assessed_candidates": [
+          {
+            "candidate_id": 0,
+            "start": 6,
+            "end": 19,
+            "text": "Allison Grant",
+            "category": "HEADER_SENDER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span contains a specific individual's full name (Allison Grant) which must be redacted."
+          },
+          {
+            "candidate_id": 1,
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct personal or work email address associated with an individual employee."
+          },
+          {
+            "candidate_id": 2,
+            "start": 49,
+            "end": 60,
+            "text": "Victor Ames",
+            "category": "HEADER_RECIPIENT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span contains a specific individual's full name (Victor Ames) which must be redacted."
+          },
+          {
+            "candidate_id": 3,
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct personal or work email address associated with an individual employee."
+          },
+          {
+            "candidate_id": 4,
+            "start": 266,
+            "end": 275,
+            "text": "$250,000,",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PUBLIC",
+            "raw_score": 0.050000000000000044,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": false,
+            "reasoning": "This is a generic corporate policy threshold amount rather than confidential deal terms or compensation specific to an individual."
+          },
+          {
+            "candidate_id": 5,
+            "start": 292,
+            "end": 304,
+            "text": "$486,300.00.",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.9,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span represents a specific transaction amount for a proprietary license payment, which constitutes confidential business facts."
+          },
+          {
+            "candidate_id": 6,
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "ID_NUMBER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a bank routing number (ABA), which is a sensitive financial identifier that must be redacted."
+          },
+          {
+            "candidate_id": 7,
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "ACCOUNT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a specific bank account number used for a transaction, which is sensitive financial information."
+          },
+          {
+            "candidate_id": 8,
+            "start": 432,
+            "end": 445,
+            "text": "INV-2026-0917",
+            "category": "ID_NUMBER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PUBLIC",
+            "raw_score": 0.050000000000000044,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": false,
+            "reasoning": "This is an invoice reference number generated by the organization and does not reveal private personal data or confidential terms."
+          },
+          {
+            "candidate_id": 9,
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct phone number assigned to a specific individual (Joel Reyes) and must be redacted."
+          }
+        ],
+        "redacted_spans": [
+          {
+            "start": 6,
+            "end": 19,
+            "text": "Allison Grant",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 49,
+            "end": 60,
+            "text": "Victor Ames",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 292,
+            "end": 304,
+            "text": "$486,300.00.",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "ACCOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "redacted_text": "From: [DATA_1] <[EMAIL_1]>\nTo: [DATA_2] <[EMAIL_2]>\nSubject: Wire approval needed today - Castell Data Systems\n\nHi Victor,\n\nCastell sent updated banking details for the core system license payment. Treasury needs dual approval above $250,000, and this one is [AMOUNT_1]\n\nBeneficiary: Castell Data Systems LLC\nBank: First Harborline Bank\nRouting (ABA): [DATA_3]\nAccount: [DATA_4]\nReference: INV-2026-0917\n\nThe account number is different from the one we paid in June, so I called their AR contact Joel Reyes at [PHONE_1] to confirm. He verified it verbally.\n\nAllison",
+        "placeholder_map": {
+          "[DATA_1]": "Allison Grant",
+          "[EMAIL_1]": "agrant@tidewaterrb.com",
+          "[DATA_2]": "Victor Ames",
+          "[EMAIL_2]": "vames@tidewaterrb.com",
+          "[AMOUNT_1]": "$486,300.00.",
+          "[DATA_3]": "011000138",
+          "[DATA_4]": "4402 1187 9930",
+          "[PHONE_1]": "(508) 555-0167"
+        },
+        "raw_stage1_response": "{\n  \"candidates\": [\n    {\n      \"text\": \"agrant@tidewaterrb.com\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address of a specific employee.\"\n    },\n    {\n      \"text\": \"vames@tidewaterrb.com\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address of a specific employee.\"\n    },\n    {\n      \"text\": \"$486,300.00\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Specific financial amount involved in the transaction.\"\n    },\n    {\n      \"text\": \"011000138\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"Bank routing number (ABA), a sensitive financial identifier.\"\n    },\n    {\n      \"text\": \"4402 1187 9930\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"Bank account number, a sensitive financial identifier.\"\n    },\n    {\n      \"text\": \"(508) 555-0167\",\n      \"category\": \"PHONE\",\n      \"reason\": \"Direct office/mobile phone number of an individual (Joel Reyes).\"\n    }\n  ]\n}",
+        "raw_stage2_response": "{\n  \"assessments\": [\n    {\n      \"candidate_id\": 0,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span contains a specific individual's full name (Allison Grant) which must be redacted.\"\n    },\n    {\n      \"candidate_id\": 1,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct personal or work email address associated with an individual employee.\"\n    },\n    {\n      \"candidate_id\": 2,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span contains a specific individual's full name (Victor Ames) which must be redacted.\"\n    },\n    {\n      \"candidate_id\": 3,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct personal or work email address associated with an individual employee.\"\n    },\n    {\n      \"candidate_id\": 4,\n      \"verdict\": \"PUBLIC\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"This is a generic corporate policy threshold amount rather than confidential deal terms or compensation specific to an individual.\"\n    },\n    {\n      \"candidate_id\": 5,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.90,\n      \"reasoning\": \"This span represents a specific transaction amount for a proprietary license payment, which constitutes confidential business facts.\"\n    },\n    {\n      \"candidate_id\": 6,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a bank routing number (ABA), which is a sensitive financial identifier that must be redacted.\"\n    },\n    {\n      \"candidate_id\": 7,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a specific bank account number used for a transaction, which is sensitive financial information.\"\n    },\n    {\n      \"candidate_id\": 8,\n      \"verdict\": \"PUBLIC\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"This is an invoice reference number generated by the organization and does not reveal private personal data or confidential terms.\"\n    },\n    {\n      \"candidate_id\": 9,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct phone number assigned to a specific individual (Joel Reyes) and must be redacted.\"\n    }\n  ]\n}",
+        "invalid_spans_discarded": 0,
+        "failures": []
+      },
+      {
+        "doc_id": "E003",
+        "model": "qwen3.5:9b",
+        "stage": "C",
+        "prompt_version": "v2",
+        "degraded": false,
+        "degraded_reason": null,
+        "stage1_latency_s": 49.64976158295758,
+        "stage2_latency_s": 110.25368808291387,
+        "total_latency_s": 159.90344966587145,
+        "load_duration_s": 0.11288537500000001,
+        "eval_duration_s": 124.62678500000001,
+        "prompt_tokens": 1785,
+        "completion_tokens": 960,
+        "cost_usd": 0.0,
+        "baseline_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 203,
+            "end": 215,
+            "text": "Sam Petrakis",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 242,
+            "end": 252,
+            "text": "Hannah Liu",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 305,
+            "end": 311,
+            "text": "$41.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 327,
+            "end": 333,
+            "text": "$44.0M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 472,
+            "end": 476,
+            "text": "104%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 482,
+            "end": 486,
+            "text": "112%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "model_detection_spans": [
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address for an employee."
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address for an employee."
+          },
+          {
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address for an employee."
+          },
+          {
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address for an employee."
+          },
+          {
+            "start": 305,
+            "end": 333,
+            "text": "$41.6M ARR vs plan of $44.0M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Specific financial performance figures (revenue) disclosed in a business context."
+          },
+          {
+            "start": 361,
+            "end": 437,
+            "text": "Brightline Health and Oakmont Freight, gave notice they will not renew in Q1",
+            "category": "FACT",
+            "detector": "model_detection",
+            "reason": "Confidential business fact regarding unannounced client churn/loss of top logos."
+          }
+        ],
+        "union_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 203,
+            "end": 215,
+            "text": "Sam Petrakis",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 242,
+            "end": 252,
+            "text": "Hannah Liu",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 305,
+            "end": 333,
+            "text": "$41.6M ARR vs plan of $44.0M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Specific financial performance figures (revenue) disclosed in a business context."
+          },
+          {
+            "start": 361,
+            "end": 437,
+            "text": "Brightline Health and Oakmont Freight, gave notice they will not renew in Q1",
+            "category": "FACT",
+            "detector": "model_detection",
+            "reason": "Confidential business fact regarding unannounced client churn/loss of top logos."
+          },
+          {
+            "start": 472,
+            "end": 476,
+            "text": "104%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 482,
+            "end": 486,
+            "text": "112%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "assessed_candidates": [
+          {
+            "candidate_id": 0,
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span contains a specific individual's full name which must be redacted."
+          },
+          {
+            "candidate_id": 1,
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct personal or office email address assigned to an individual."
+          },
+          {
+            "candidate_id": 2,
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span contains a specific individual's full name which must be redacted."
+          },
+          {
+            "candidate_id": 3,
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct personal or office email address assigned to an individual."
+          },
+          {
+            "candidate_id": 4,
+            "start": 203,
+            "end": 215,
+            "text": "Sam Petrakis",
+            "category": "HEADER_SENDER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span contains a specific individual's full name which must be redacted."
+          },
+          {
+            "candidate_id": 5,
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct personal or office email address assigned to an individual."
+          },
+          {
+            "candidate_id": 6,
+            "start": 242,
+            "end": 252,
+            "text": "Hannah Liu",
+            "category": "HEADER_RECIPIENT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span contains a specific individual's full name which must be redacted."
+          },
+          {
+            "candidate_id": 7,
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct personal or office email address assigned to an individual."
+          },
+          {
+            "candidate_id": 8,
+            "start": 305,
+            "end": 333,
+            "text": "$41.6M ARR vs plan of $44.0M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span reveals confidential business facts regarding financial performance and deal terms (ARR vs plan)."
+          },
+          {
+            "candidate_id": 9,
+            "start": 361,
+            "end": 437,
+            "text": "Brightline Health and Oakmont Freight, gave notice they will not renew in Q1",
+            "category": "FACT",
+            "tier": "HIGH",
+            "threshold": 0.2,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span contains confidential business facts including specific client names and renewal status."
+          },
+          {
+            "candidate_id": 10,
+            "start": 472,
+            "end": 476,
+            "text": "104%",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.9,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span reveals confidential business metrics (Net revenue retention) which are considered proprietary project/financial data."
+          },
+          {
+            "candidate_id": 11,
+            "start": 482,
+            "end": 486,
+            "text": "112%",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.9,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span reveals confidential business metrics (previous Net revenue retention) which are considered proprietary project/financial data."
+          }
+        ],
+        "redacted_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 203,
+            "end": 215,
+            "text": "Sam Petrakis",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 242,
+            "end": 252,
+            "text": "Hannah Liu",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 305,
+            "end": 333,
+            "text": "$41.6M ARR vs plan of $44.0M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Specific financial performance figures (revenue) disclosed in a business context."
+          },
+          {
+            "start": 361,
+            "end": 437,
+            "text": "Brightline Health and Oakmont Freight, gave notice they will not renew in Q1",
+            "category": "FACT",
+            "detector": "model_detection",
+            "reason": "Confidential business fact regarding unannounced client churn/loss of top logos."
+          },
+          {
+            "start": 472,
+            "end": 476,
+            "text": "104%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 482,
+            "end": 486,
+            "text": "112%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "redacted_text": "From: [DATA_1] <[EMAIL_1]>\nTo: [DATA_2] <[EMAIL_2]>\nSubject: Fwd: ARR flash - September\n\nTom, flagging before the board prep. See below.\n\n---------- Forwarded message ----------\nFrom: [DATA_3] <[EMAIL_3]>\nTo: [DATA_4] <[EMAIL_4]>\n\nHannah,\nSeptember closed at [AMOUNT_1]. Two of our top ten logos, [FACT_1]. Net revenue retention dropped to [AMOUNT_2] from [AMOUNT_3] last quarter.\n\nSam",
+        "placeholder_map": {
+          "[DATA_1]": "Hannah Liu",
+          "[EMAIL_1]": "hannah.liu@lumora.io",
+          "[DATA_2]": "Tom Keller",
+          "[EMAIL_2]": "tom@lumora.io",
+          "[DATA_3]": "Sam Petrakis",
+          "[EMAIL_3]": "spetrakis@lumora.io",
+          "[DATA_4]": "Hannah Liu",
+          "[EMAIL_4]": "hannah.liu@lumora.io",
+          "[AMOUNT_1]": "$41.6M ARR vs plan of $44.0M",
+          "[FACT_1]": "Brightline Health and Oakmont Freight, gave notice they will not renew in Q1",
+          "[AMOUNT_2]": "104%",
+          "[AMOUNT_3]": "112%"
+        },
+        "raw_stage1_response": "{\n  \"candidates\": [\n    {\n      \"text\": \"hannah.liu@lumora.io\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address for an employee.\"\n    },\n    {\n      \"text\": \"tom@lumora.io\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address for an employee.\"\n    },\n    {\n      \"text\": \"spetrakis@lumora.io\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address for an employee.\"\n    },\n    {\n      \"text\": \"$41.6M ARR vs plan of $44.0M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Specific financial performance figures (revenue) disclosed in a business context.\"\n    },\n    {\n      \"text\": \"Brightline Health and Oakmont Freight, gave notice they will not renew in Q1\",\n      \"category\": \"FACT\",\n      \"reason\": \"Confidential business fact regarding unannounced client churn/loss of top logos.\"\n    }\n  ]\n}",
+        "raw_stage2_response": "{\n  \"assessments\": [\n    {\n      \"candidate_id\": 0,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span contains a specific individual's full name which must be redacted.\"\n    },\n    {\n      \"candidate_id\": 1,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct personal or office email address assigned to an individual.\"\n    },\n    {\n      \"candidate_id\": 2,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span contains a specific individual's full name which must be redacted.\"\n    },\n    {\n      \"candidate_id\": 3,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct personal or office email address assigned to an individual.\"\n    },\n    {\n      \"candidate_id\": 4,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span contains a specific individual's full name which must be redacted.\"\n    },\n    {\n      \"candidate_id\": 5,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct personal or office email address assigned to an individual.\"\n    },\n    {\n      \"candidate_id\": 6,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span contains a specific individual's full name which must be redacted.\"\n    },\n    {\n      \"candidate_id\": 7,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct personal or office email address assigned to an individual.\"\n    },\n    {\n      \"candidate_id\": 8,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"This span reveals confidential business facts regarding financial performance and deal terms (ARR vs plan).\"\n    },\n    {\n      \"candidate_id\": 9,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"This span contains confidential business facts including specific client names and renewal status.\"\n    },\n    {\n      \"candidate_id\": 10,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.90,\n      \"reasoning\": \"This span reveals confidential business metrics (Net revenue retention) which are considered proprietary project/financial data.\"\n    },\n    {\n      \"candidate_id\": 11,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.90,\n      \"reasoning\": \"This span reveals confidential business metrics (previous Net revenue retention) which are considered proprietary project/financial data.\"\n    }\n  ]\n}",
+        "invalid_spans_discarded": 0,
+        "failures": []
+      },
+      {
+        "doc_id": "E008",
+        "model": "qwen3.5:9b",
+        "stage": "C",
+        "prompt_version": "v2",
+        "degraded": false,
+        "degraded_reason": null,
+        "stage1_latency_s": 51.445200750022195,
+        "stage2_latency_s": 87.77401816705242,
+        "total_latency_s": 139.2192189170746,
+        "load_duration_s": 0.104312375,
+        "eval_duration_s": 106.364124,
+        "prompt_tokens": 1625,
+        "completion_tokens": 784,
+        "cost_usd": 0.0,
+        "baseline_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "model_detection_spans": [
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address for an individual employee."
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address for an individual employee."
+          },
+          {
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Specific financial figure related to payroll funding, indicating a confidential business fact regarding cash flow."
+          },
+          {
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Specific financial figure related to operating cash, indicating a confidential business fact regarding liquidity."
+          },
+          {
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Specific financial figure related to receivables, indicating a confidential business fact regarding asset status."
+          },
+          {
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Specific financial figure related to revolver drawdown options, indicating a confidential business fact regarding financing strategy."
+          }
+        ],
+        "union_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "assessed_candidates": [
+          {
+            "candidate_id": 0,
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a specific individual's name (Hannah Liu) appearing in the email header as the sender."
+          },
+          {
+            "candidate_id": 1,
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct individual email address associated with a specific employee."
+          },
+          {
+            "candidate_id": 2,
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a specific individual's name (Tom Keller) appearing in the email header as the recipient."
+          },
+          {
+            "candidate_id": 3,
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span is a direct individual email address associated with a specific employee."
+          },
+          {
+            "candidate_id": 4,
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span represents confidential financial data (payroll funding amount) which constitutes sensitive business facts."
+          },
+          {
+            "candidate_id": 5,
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span represents confidential financial data (operating cash balance) which constitutes sensitive business facts."
+          },
+          {
+            "candidate_id": 6,
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span represents confidential financial data (receivable amount) which constitutes sensitive business facts."
+          },
+          {
+            "candidate_id": 7,
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "This span represents confidential financial data (proposed revolver draw amount) which constitutes sensitive business facts."
+          }
+        ],
+        "redacted_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "redacted_text": "From: [DATA_1] <[EMAIL_1]>\nTo: [DATA_2] <[EMAIL_2]>\nSubject: Payroll funding for Oct 15 - need a decision\n\nTom,\n\nHeads up that we will not have enough cash to fund the October 15 payroll without drawing on the revolver. Payroll is [AMOUNT_1], operating cash is [AMOUNT_2], and the Delmar Freight receivable of [AMOUNT_3] is now 45 days late.\n\nOptions:\n1. Draw [AMOUNT_4] on the Silvergate Commercial line (covenant headroom is thin)\n2. Delay vendor payments by two weeks\n3. Ask Marcus to push the Series C bridge forward\n\nLet's talk today.\nHannah",
+        "placeholder_map": {
+          "[DATA_1]": "Hannah Liu",
+          "[EMAIL_1]": "hannah.liu@lumora.io",
+          "[DATA_2]": "Tom Keller",
+          "[EMAIL_2]": "tom@lumora.io",
+          "[AMOUNT_1]": "$3.9M",
+          "[AMOUNT_2]": "$2.7M",
+          "[AMOUNT_3]": "$1.6M",
+          "[AMOUNT_4]": "$2M"
+        },
+        "raw_stage1_response": "{\n  \"candidates\": [\n    {\n      \"text\": \"hannah.liu@lumora.io\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address for an individual employee.\"\n    },\n    {\n      \"text\": \"tom@lumora.io\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address for an individual employee.\"\n    },\n    {\n      \"text\": \"$3.9M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Specific financial figure related to payroll funding, indicating a confidential business fact regarding cash flow.\"\n    },\n    {\n      \"text\": \"$2.7M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Specific financial figure related to operating cash, indicating a confidential business fact regarding liquidity.\"\n    },\n    {\n      \"text\": \"$1.6M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Specific financial figure related to receivables, indicating a confidential business fact regarding asset status.\"\n    },\n    {\n      \"text\": \"$2M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Specific financial figure related to revolver drawdown options, indicating a confidential business fact regarding financing strategy.\"\n    }\n  ]\n}",
+        "raw_stage2_response": "{\n  \"assessments\": [\n    {\n      \"candidate_id\": 0,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a specific individual's name (Hannah Liu) appearing in the email header as the sender.\"\n    },\n    {\n      \"candidate_id\": 1,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct individual email address associated with a specific employee.\"\n    },\n    {\n      \"candidate_id\": 2,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a specific individual's name (Tom Keller) appearing in the email header as the recipient.\"\n    },\n    {\n      \"candidate_id\": 3,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"This span is a direct individual email address associated with a specific employee.\"\n    },\n    {\n      \"candidate_id\": 4,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"This span represents confidential financial data (payroll funding amount) which constitutes sensitive business facts.\"\n    },\n    {\n      \"candidate_id\": 5,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"This span represents confidential financial data (operating cash balance) which constitutes sensitive business facts.\"\n    },\n    {\n      \"candidate_id\": 6,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"This span represents confidential financial data (receivable amount) which constitutes sensitive business facts.\"\n    },\n    {\n      \"candidate_id\": 7,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"This span represents confidential financial data (proposed revolver draw amount) which constitutes sensitive business facts.\"\n    }\n  ]\n}",
+        "invalid_spans_discarded": 0,
+        "failures": []
+      }
+    ]
+  },
+  "llama3.1:8b": {
+    "model": "llama3.1:8b",
+    "emails_evaluated": 3,
+    "median_latency_s": 112.14,
+    "mean_latency_s": 110.64,
+    "median_stage1_s": 37.7,
+    "median_stage2_s": 81.49,
+    "schema_failures": 0,
+    "recall": 0.7045,
+    "recall_partial": 0.7045,
+    "fact_recall": 0.0,
+    "leak_rate": 1.0,
+    "extra_masks": 1,
+    "recall_by_type": {
+      "AMOUNT": 1.0,
+      "EMAIL": 1.0,
+      "FIN_ACCOUNT": 1.0,
+      "ID_NUMBER": 1.0,
+      "ORG": 0.2,
+      "PERSON": 0.4706,
+      "PHONE": 1.0
+    },
+    "traces": [
+      {
+        "doc_id": "E002",
+        "model": "llama3.1:8b",
+        "stage": "C",
+        "prompt_version": "v2",
+        "degraded": false,
+        "degraded_reason": null,
+        "stage1_latency_s": 42.33519933291245,
+        "stage2_latency_s": 81.48687991697807,
+        "total_latency_s": 123.82207924989052,
+        "load_duration_s": 4.397325542,
+        "eval_duration_s": 97.802558,
+        "prompt_tokens": 1606,
+        "completion_tokens": 886,
+        "cost_usd": 0.0,
+        "baseline_spans": [
+          {
+            "start": 6,
+            "end": 19,
+            "text": "Allison Grant",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 49,
+            "end": 60,
+            "text": "Victor Ames",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 266,
+            "end": 275,
+            "text": "$250,000,",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 292,
+            "end": 304,
+            "text": "$486,300.00.",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "ACCOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 432,
+            "end": 445,
+            "text": "INV-2026-0917",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "model_detection_spans": [
+          {
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Personal email address"
+          },
+          {
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Personal email address"
+          },
+          {
+            "start": 292,
+            "end": 303,
+            "text": "$486,300.00",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Financial amount"
+          },
+          {
+            "start": 319,
+            "end": 343,
+            "text": "Castell Data Systems LLC",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Company name"
+          },
+          {
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Routing (ABA) number"
+          },
+          {
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Bank account number"
+          },
+          {
+            "start": 432,
+            "end": 445,
+            "text": "INV-2026-0917",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Reference number"
+          }
+        ],
+        "union_spans": [
+          {
+            "start": 6,
+            "end": 19,
+            "text": "Allison Grant",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 49,
+            "end": 60,
+            "text": "Victor Ames",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 266,
+            "end": 275,
+            "text": "$250,000,",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 292,
+            "end": 304,
+            "text": "$486,300.00.",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 319,
+            "end": 343,
+            "text": "Castell Data Systems LLC",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Company name"
+          },
+          {
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "ACCOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 432,
+            "end": 445,
+            "text": "INV-2026-0917",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "assessed_candidates": [
+          {
+            "candidate_id": 0,
+            "start": 6,
+            "end": 19,
+            "text": "Allison Grant",
+            "category": "HEADER_SENDER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The name 'Allison Grant' is a direct individual's name."
+          },
+          {
+            "candidate_id": 1,
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The email address 'agrant@tidewaterrb.com' is a direct individual email address."
+          },
+          {
+            "candidate_id": 2,
+            "start": 49,
+            "end": 60,
+            "text": "Victor Ames",
+            "category": "HEADER_RECIPIENT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The name 'Victor Ames' is a direct individual's name."
+          },
+          {
+            "candidate_id": 3,
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The email address 'vames@tidewaterrb.com' is a direct individual email address."
+          },
+          {
+            "candidate_id": 4,
+            "start": 266,
+            "end": 275,
+            "text": "$250,000,",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The amount '$250,000,' is a confidential business fact."
+          },
+          {
+            "candidate_id": 5,
+            "start": 292,
+            "end": 304,
+            "text": "$486,300.00.",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The amount '$486,300.00' is a confidential business fact."
+          },
+          {
+            "candidate_id": 6,
+            "start": 319,
+            "end": 343,
+            "text": "Castell Data Systems LLC",
+            "category": "IDENTIFIER",
+            "tier": "HIGH",
+            "threshold": 0.2,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The name 'Castell Data Systems LLC' is a corporate identifier, but the context suggests it's a specific company, making it private."
+          },
+          {
+            "candidate_id": 7,
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "ID_NUMBER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The ID number '011000138' is a routing number, which is a direct identifier for a financial institution."
+          },
+          {
+            "candidate_id": 8,
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "ACCOUNT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The account number '4402 1187 9930' is a direct identifier for a financial account."
+          },
+          {
+            "candidate_id": 9,
+            "start": 432,
+            "end": 445,
+            "text": "INV-2026-0917",
+            "category": "ID_NUMBER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The ID number 'INV-2026-0917' is a reference number, which is a direct identifier for a transaction."
+          },
+          {
+            "candidate_id": 10,
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "The phone number '(508) 555-0167' is a direct individual's phone number."
+          }
+        ],
+        "redacted_spans": [
+          {
+            "start": 6,
+            "end": 19,
+            "text": "Allison Grant",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 21,
+            "end": 43,
+            "text": "agrant@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 49,
+            "end": 60,
+            "text": "Victor Ames",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 62,
+            "end": 83,
+            "text": "vames@tidewaterrb.com",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 266,
+            "end": 275,
+            "text": "$250,000,",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 292,
+            "end": 304,
+            "text": "$486,300.00.",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 319,
+            "end": 343,
+            "text": "Castell Data Systems LLC",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Company name"
+          },
+          {
+            "start": 387,
+            "end": 396,
+            "text": "011000138",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 406,
+            "end": 420,
+            "text": "4402 1187 9930",
+            "category": "ACCOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 432,
+            "end": 445,
+            "text": "INV-2026-0917",
+            "category": "ID_NUMBER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 552,
+            "end": 566,
+            "text": "(508) 555-0167",
+            "category": "PHONE",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "redacted_text": "From: [DATA_1] <[EMAIL_1]>\nTo: [DATA_2] <[EMAIL_2]>\nSubject: Wire approval needed today - Castell Data Systems\n\nHi Victor,\n\nCastell sent updated banking details for the core system license payment. Treasury needs dual approval above [AMOUNT_1] and this one is [AMOUNT_2]\n\nBeneficiary: [IDENTIFIER_1]\nBank: First Harborline Bank\nRouting (ABA): [DATA_3]\nAccount: [DATA_4]\nReference: [DATA_5]\n\nThe account number is different from the one we paid in June, so I called their AR contact Joel Reyes at [PHONE_1] to confirm. He verified it verbally.\n\nAllison",
+        "placeholder_map": {
+          "[DATA_1]": "Allison Grant",
+          "[EMAIL_1]": "agrant@tidewaterrb.com",
+          "[DATA_2]": "Victor Ames",
+          "[EMAIL_2]": "vames@tidewaterrb.com",
+          "[AMOUNT_1]": "$250,000,",
+          "[AMOUNT_2]": "$486,300.00.",
+          "[IDENTIFIER_1]": "Castell Data Systems LLC",
+          "[DATA_3]": "011000138",
+          "[DATA_4]": "4402 1187 9930",
+          "[DATA_5]": "INV-2026-0917",
+          "[PHONE_1]": "(508) 555-0167"
+        },
+        "raw_stage1_response": "{\n  \"candidates\": [\n    {\n      \"text\": \"Castell Data Systems LLC\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"Company name\"\n    },\n    {\n      \"text\": \"agrant@tidewaterrb.com\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Personal email address\"\n    },\n    {\n      \"text\": \"vames@tidewaterrb.com\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Personal email address\"\n    },\n    {\n      \"text\": \"011000138\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"Routing (ABA) number\"\n    },\n    {\n      \"text\": \"4402 1187 9930\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"Bank account number\"\n    },\n    {\n      \"text\": \"$486,300.00\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Financial amount\"\n    },\n    {\n      \"text\": \"508-555-0167\",\n      \"category\": \"PHONE\",\n      \"reason\": \"Personal mobile number\"\n    },\n    {\n      \"text\": \"INV-2026-0917\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"Reference number\"\n    }\n  ]\n}",
+        "raw_stage2_response": "{\n  \"assessments\": [\n    {\n      \"candidate_id\": 0,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The name 'Allison Grant' is a direct individual's name.\"\n    },\n    {\n      \"candidate_id\": 1,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The email address 'agrant@tidewaterrb.com' is a direct individual email address.\"\n    },\n    {\n      \"candidate_id\": 2,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The name 'Victor Ames' is a direct individual's name.\"\n    },\n    {\n      \"candidate_id\": 3,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The email address 'vames@tidewaterrb.com' is a direct individual email address.\"\n    },\n    {\n      \"candidate_id\": 4,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The amount '$250,000,' is a confidential business fact.\"\n    },\n    {\n      \"candidate_id\": 5,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The amount '$486,300.00' is a confidential business fact.\"\n    },\n    {\n      \"candidate_id\": 6,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The name 'Castell Data Systems LLC' is a corporate identifier, but the context suggests it's a specific company, making it private.\"\n    },\n    {\n      \"candidate_id\": 7,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The ID number '011000138' is a routing number, which is a direct identifier for a financial institution.\"\n    },\n    {\n      \"candidate_id\": 8,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The account number '4402 1187 9930' is a direct identifier for a financial account.\"\n    },\n    {\n      \"candidate_id\": 9,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The ID number 'INV-2026-0917' is a reference number, which is a direct identifier for a transaction.\"\n    },\n    {\n      \"candidate_id\": 10,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"The phone number '(508) 555-0167' is a direct individual's phone number.\"\n    }\n  ]\n}",
+        "invalid_spans_discarded": 1,
+        "failures": []
+      },
+      {
+        "doc_id": "E003",
+        "model": "llama3.1:8b",
+        "stage": "C",
+        "prompt_version": "v2",
+        "degraded": false,
+        "degraded_reason": null,
+        "stage1_latency_s": 11.691610249923542,
+        "stage2_latency_s": 84.25475283304695,
+        "total_latency_s": 95.94636308297049,
+        "load_duration_s": 0.01035175,
+        "eval_duration_s": 86.950888,
+        "prompt_tokens": 1629,
+        "completion_tokens": 806,
+        "cost_usd": 0.0,
+        "baseline_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 203,
+            "end": 215,
+            "text": "Sam Petrakis",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 242,
+            "end": 252,
+            "text": "Hannah Liu",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 305,
+            "end": 311,
+            "text": "$41.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 327,
+            "end": 333,
+            "text": "$44.0M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 472,
+            "end": 476,
+            "text": "104%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 482,
+            "end": 486,
+            "text": "112%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "model_detection_spans": [
+          {
+            "start": 305,
+            "end": 311,
+            "text": "$41.6M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "revenue amount"
+          },
+          {
+            "start": 361,
+            "end": 378,
+            "text": "Brightline Health",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "customer name"
+          },
+          {
+            "start": 383,
+            "end": 398,
+            "text": "Oakmont Freight",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "customer name"
+          }
+        ],
+        "union_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 203,
+            "end": 215,
+            "text": "Sam Petrakis",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 242,
+            "end": 252,
+            "text": "Hannah Liu",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 305,
+            "end": 311,
+            "text": "$41.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 327,
+            "end": 333,
+            "text": "$44.0M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 361,
+            "end": 378,
+            "text": "Brightline Health",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "customer name"
+          },
+          {
+            "start": 383,
+            "end": 398,
+            "text": "Oakmont Freight",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "customer name"
+          },
+          {
+            "start": 472,
+            "end": 476,
+            "text": "104%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 482,
+            "end": 486,
+            "text": "112%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "assessed_candidates": [
+          {
+            "candidate_id": 0,
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Hannah Liu is a direct individual's name in the email header."
+          },
+          {
+            "candidate_id": 1,
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "hannah.liu@lumora.io is a direct individual email address in the email header."
+          },
+          {
+            "candidate_id": 2,
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Tom Keller is a direct individual's name in the email header."
+          },
+          {
+            "candidate_id": 3,
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "tom@lumora.io is a direct individual email address in the email header."
+          },
+          {
+            "candidate_id": 4,
+            "start": 203,
+            "end": 215,
+            "text": "Sam Petrakis",
+            "category": "HEADER_SENDER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Sam Petrakis is a direct individual's name in the email header."
+          },
+          {
+            "candidate_id": 5,
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "spetrakis@lumora.io is a direct individual email address in the forwarded email."
+          },
+          {
+            "candidate_id": 6,
+            "start": 242,
+            "end": 252,
+            "text": "Hannah Liu",
+            "category": "HEADER_RECIPIENT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Hannah Liu is a direct individual's name in the forwarded email."
+          },
+          {
+            "candidate_id": 7,
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "hannah.liu@lumora.io is a direct individual email address in the forwarded email."
+          },
+          {
+            "candidate_id": 8,
+            "start": 305,
+            "end": 311,
+            "text": "$41.6M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "$41.6M is a confidential business fact in the forwarded email."
+          },
+          {
+            "candidate_id": 9,
+            "start": 327,
+            "end": 333,
+            "text": "$44.0M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "$44.0M is a confidential business fact in the forwarded email."
+          },
+          {
+            "candidate_id": 10,
+            "start": 361,
+            "end": 378,
+            "text": "Brightline Health",
+            "category": "IDENTIFIER",
+            "tier": "HIGH",
+            "threshold": 0.2,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Brightline Health is a confidential business fact in the forwarded email."
+          },
+          {
+            "candidate_id": 11,
+            "start": 383,
+            "end": 398,
+            "text": "Oakmont Freight",
+            "category": "IDENTIFIER",
+            "tier": "HIGH",
+            "threshold": 0.2,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Oakmont Freight is a confidential business fact in the forwarded email."
+          },
+          {
+            "candidate_id": 12,
+            "start": 472,
+            "end": 476,
+            "text": "104%",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "104% is a confidential business fact in the forwarded email."
+          },
+          {
+            "candidate_id": 13,
+            "start": 482,
+            "end": 486,
+            "text": "112%",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "112% is a confidential business fact in the forwarded email."
+          }
+        ],
+        "redacted_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 203,
+            "end": 215,
+            "text": "Sam Petrakis",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 217,
+            "end": 236,
+            "text": "spetrakis@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 242,
+            "end": 252,
+            "text": "Hannah Liu",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 254,
+            "end": 274,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 305,
+            "end": 311,
+            "text": "$41.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 327,
+            "end": 333,
+            "text": "$44.0M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 361,
+            "end": 378,
+            "text": "Brightline Health",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "customer name"
+          },
+          {
+            "start": 383,
+            "end": 398,
+            "text": "Oakmont Freight",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "customer name"
+          },
+          {
+            "start": 472,
+            "end": 476,
+            "text": "104%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 482,
+            "end": 486,
+            "text": "112%",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "redacted_text": "From: [DATA_1] <[EMAIL_1]>\nTo: [DATA_2] <[EMAIL_2]>\nSubject: Fwd: ARR flash - September\n\nTom, flagging before the board prep. See below.\n\n---------- Forwarded message ----------\nFrom: [DATA_3] <[EMAIL_3]>\nTo: [DATA_4] <[EMAIL_4]>\n\nHannah,\nSeptember closed at [AMOUNT_1] ARR vs plan of [AMOUNT_2]. Two of our top ten logos, [IDENTIFIER_1] and [IDENTIFIER_2], gave notice they will not renew in Q1. Net revenue retention dropped to [AMOUNT_3] from [AMOUNT_4] last quarter.\n\nSam",
+        "placeholder_map": {
+          "[DATA_1]": "Hannah Liu",
+          "[EMAIL_1]": "hannah.liu@lumora.io",
+          "[DATA_2]": "Tom Keller",
+          "[EMAIL_2]": "tom@lumora.io",
+          "[DATA_3]": "Sam Petrakis",
+          "[EMAIL_3]": "spetrakis@lumora.io",
+          "[DATA_4]": "Hannah Liu",
+          "[EMAIL_4]": "hannah.liu@lumora.io",
+          "[AMOUNT_1]": "$41.6M",
+          "[AMOUNT_2]": "$44.0M",
+          "[IDENTIFIER_1]": "Brightline Health",
+          "[IDENTIFIER_2]": "Oakmont Freight",
+          "[AMOUNT_3]": "104%",
+          "[AMOUNT_4]": "112%"
+        },
+        "raw_stage1_response": "{\n  \"candidates\": [\n    {\n      \"text\": \"Brightline Health\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"customer name\"\n    },\n    {\n      \"text\": \"Oakmont Freight\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"customer name\"\n    },\n    {\n      \"text\": \"$41.6M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"revenue amount\"\n    }\n  ]\n}",
+        "raw_stage2_response": "{\n  \"assessments\": [\n    {\n      \"candidate_id\": 0,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"Hannah Liu is a direct individual's name in the email header.\"\n    },\n    {\n      \"candidate_id\": 1,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"hannah.liu@lumora.io is a direct individual email address in the email header.\"\n    },\n    {\n      \"candidate_id\": 2,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"Tom Keller is a direct individual's name in the email header.\"\n    },\n    {\n      \"candidate_id\": 3,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"tom@lumora.io is a direct individual email address in the email header.\"\n    },\n    {\n      \"candidate_id\": 4,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"Sam Petrakis is a direct individual's name in the email header.\"\n    },\n    {\n      \"candidate_id\": 5,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"spetrakis@lumora.io is a direct individual email address in the forwarded email.\"\n    },\n    {\n      \"candidate_id\": 6,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"Hannah Liu is a direct individual's name in the forwarded email.\"\n    },\n    {\n      \"candidate_id\": 7,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"hannah.liu@lumora.io is a direct individual email address in the forwarded email.\"\n    },\n    {\n      \"candidate_id\": 8,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"$41.6M is a confidential business fact in the forwarded email.\"\n    },\n    {\n      \"candidate_id\": 9,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"$44.0M is a confidential business fact in the forwarded email.\"\n    },\n    {\n      \"candidate_id\": 10,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"Brightline Health is a confidential business fact in the forwarded email.\"\n    },\n    {\n      \"candidate_id\": 11,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"Oakmont Freight is a confidential business fact in the forwarded email.\"\n    },\n    {\n      \"candidate_id\": 12,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"104% is a confidential business fact in the forwarded email.\"\n    },\n    {\n      \"candidate_id\": 13,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"112% is a confidential business fact in the forwarded email.\"\n    }\n  ]\n}",
+        "invalid_spans_discarded": 0,
+        "failures": []
+      },
+      {
+        "doc_id": "E008",
+        "model": "llama3.1:8b",
+        "stage": "C",
+        "prompt_version": "v2",
+        "degraded": false,
+        "degraded_reason": null,
+        "stage1_latency_s": 37.69719362503383,
+        "stage2_latency_s": 74.4426399160875,
+        "total_latency_s": 112.13983354112133,
+        "load_duration_s": 0.104855751,
+        "eval_duration_s": 98.41208300000001,
+        "prompt_tokens": 1526,
+        "completion_tokens": 752,
+        "cost_usd": 0.0,
+        "baseline_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          }
+        ],
+        "model_detection_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "PERSON",
+            "detector": "model_detection",
+            "reason": "Individual person name"
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "model_detection",
+            "reason": "Direct work email address"
+          },
+          {
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Financial amount"
+          },
+          {
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Financial amount"
+          },
+          {
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "detector": "model_detection",
+            "reason": "Financial amount"
+          },
+          {
+            "start": 375,
+            "end": 401,
+            "text": "Silvergate Commercial line",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Financial account identifier"
+          },
+          {
+            "start": 494,
+            "end": 509,
+            "text": "Series C bridge",
+            "category": "FACT",
+            "detector": "model_detection",
+            "reason": "Confidential business fact"
+          }
+        ],
+        "union_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 375,
+            "end": 401,
+            "text": "Silvergate Commercial line",
+            "category": "IDENTIFIER",
+            "detector": "model_detection",
+            "reason": "Financial account identifier"
+          },
+          {
+            "start": 494,
+            "end": 509,
+            "text": "Series C bridge",
+            "category": "FACT",
+            "detector": "model_detection",
+            "reason": "Confidential business fact"
+          }
+        ],
+        "assessed_candidates": [
+          {
+            "candidate_id": 0,
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Hannah Liu is a direct individual's name in the email header."
+          },
+          {
+            "candidate_id": 1,
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "hannah.liu@lumora.io is a direct individual email address."
+          },
+          {
+            "candidate_id": 2,
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Tom Keller is a direct individual's name in the email header."
+          },
+          {
+            "candidate_id": 3,
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "tier": "MEDIUM",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 1.0,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "tom@lumora.io is a direct individual email address."
+          },
+          {
+            "candidate_id": 4,
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "$3.9M is a confidential business fact, a specific amount."
+          },
+          {
+            "candidate_id": 5,
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "$2.7M is a confidential business fact, a specific amount."
+          },
+          {
+            "candidate_id": 6,
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "$1.6M is a confidential business fact, a specific amount."
+          },
+          {
+            "candidate_id": 7,
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "tier": "LOW",
+            "threshold": 0.5,
+            "verdict": "PRIVATE",
+            "raw_score": 0.95,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "$2M is a confidential business fact, a specific amount."
+          },
+          {
+            "candidate_id": 8,
+            "start": 375,
+            "end": 401,
+            "text": "Silvergate Commercial line",
+            "category": "IDENTIFIER",
+            "tier": "HIGH",
+            "threshold": 0.2,
+            "verdict": "PUBLIC",
+            "raw_score": 0.09999999999999998,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": false,
+            "reasoning": "Silvergate Commercial line is a generic organizational identifier."
+          },
+          {
+            "candidate_id": 9,
+            "start": 494,
+            "end": 509,
+            "text": "Series C bridge",
+            "category": "FACT",
+            "tier": "HIGH",
+            "threshold": 0.2,
+            "verdict": "PRIVATE",
+            "raw_score": 0.8,
+            "score_method": "raw_verdict_confidence_v1",
+            "should_redact": true,
+            "reasoning": "Series C bridge is a confidential business fact, a proprietary project."
+          }
+        ],
+        "redacted_spans": [
+          {
+            "start": 6,
+            "end": 16,
+            "text": "Hannah Liu",
+            "category": "HEADER_SENDER",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 18,
+            "end": 38,
+            "text": "hannah.liu@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 44,
+            "end": 54,
+            "text": "Tom Keller",
+            "category": "HEADER_RECIPIENT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 56,
+            "end": 69,
+            "text": "tom@lumora.io",
+            "category": "EMAIL",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 250,
+            "end": 255,
+            "text": "$3.9M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 275,
+            "end": 280,
+            "text": "$2.7M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 319,
+            "end": 324,
+            "text": "$1.6M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 364,
+            "end": 367,
+            "text": "$2M",
+            "category": "AMOUNT",
+            "detector": "regex_rule",
+            "raw_score": 0.8
+          },
+          {
+            "start": 494,
+            "end": 509,
+            "text": "Series C bridge",
+            "category": "FACT",
+            "detector": "model_detection",
+            "reason": "Confidential business fact"
+          }
+        ],
+        "redacted_text": "From: [DATA_1] <[EMAIL_1]>\nTo: [DATA_2] <[EMAIL_2]>\nSubject: Payroll funding for Oct 15 - need a decision\n\nTom,\n\nHeads up that we will not have enough cash to fund the October 15 payroll without drawing on the revolver. Payroll is [AMOUNT_1], operating cash is [AMOUNT_2], and the Delmar Freight receivable of [AMOUNT_3] is now 45 days late.\n\nOptions:\n1. Draw [AMOUNT_4] on the Silvergate Commercial line (covenant headroom is thin)\n2. Delay vendor payments by two weeks\n3. Ask Marcus to push the [FACT_1] forward\n\nLet's talk today.\nHannah",
+        "placeholder_map": {
+          "[DATA_1]": "Hannah Liu",
+          "[EMAIL_1]": "hannah.liu@lumora.io",
+          "[DATA_2]": "Tom Keller",
+          "[EMAIL_2]": "tom@lumora.io",
+          "[AMOUNT_1]": "$3.9M",
+          "[AMOUNT_2]": "$2.7M",
+          "[AMOUNT_3]": "$1.6M",
+          "[AMOUNT_4]": "$2M",
+          "[FACT_1]": "Series C bridge"
+        },
+        "raw_stage1_response": "{\n  \"candidates\": [\n    {\n      \"text\": \"Hannah Liu\",\n      \"category\": \"PERSON\",\n      \"reason\": \"Individual person name\"\n    },\n    {\n      \"text\": \"tom.keller@lumora.io\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address\"\n    },\n    {\n      \"text\": \"hannah.liu@lumora.io\",\n      \"category\": \"EMAIL\",\n      \"reason\": \"Direct work email address\"\n    },\n    {\n      \"text\": \"$3.9M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Financial amount\"\n    },\n    {\n      \"text\": \"$2.7M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Financial amount\"\n    },\n    {\n      \"text\": \"$1.6M\",\n      \"category\": \"AMOUNT\",\n      \"reason\": \"Financial amount\"\n    },\n    {\n      \"text\": \"Silvergate Commercial line\",\n      \"category\": \"IDENTIFIER\",\n      \"reason\": \"Financial account identifier\"\n    },\n    {\n      \"text\": \"Series C bridge\",\n      \"category\": \"FACT\",\n      \"reason\": \"Confidential business fact\"\n    }\n  ]\n}",
+        "raw_stage2_response": "{\n  \"assessments\": [\n    {\n      \"candidate_id\": 0,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"Hannah Liu is a direct individual's name in the email header.\"\n    },\n    {\n      \"candidate_id\": 1,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"hannah.liu@lumora.io is a direct individual email address.\"\n    },\n    {\n      \"candidate_id\": 2,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"Tom Keller is a direct individual's name in the email header.\"\n    },\n    {\n      \"candidate_id\": 3,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 1.0,\n      \"reasoning\": \"tom@lumora.io is a direct individual email address.\"\n    },\n    {\n      \"candidate_id\": 4,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"$3.9M is a confidential business fact, a specific amount.\"\n    },\n    {\n      \"candidate_id\": 5,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"$2.7M is a confidential business fact, a specific amount.\"\n    },\n    {\n      \"candidate_id\": 6,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"$1.6M is a confidential business fact, a specific amount.\"\n    },\n    {\n      \"candidate_id\": 7,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.95,\n      \"reasoning\": \"$2M is a confidential business fact, a specific amount.\"\n    },\n    {\n      \"candidate_id\": 8,\n      \"verdict\": \"PUBLIC\",\n      \"confidence\": 0.9,\n      \"reasoning\": \"Silvergate Commercial line is a generic organizational identifier.\"\n    },\n    {\n      \"candidate_id\": 9,\n      \"verdict\": \"PRIVATE\",\n      \"confidence\": 0.8,\n      \"reasoning\": \"Series C bridge is a confidential business fact, a proprietary project.\"\n    }\n  ]\n}",
+        "invalid_spans_discarded": 1,
+        "failures": []
+      }
+    ]
+  }
+}
