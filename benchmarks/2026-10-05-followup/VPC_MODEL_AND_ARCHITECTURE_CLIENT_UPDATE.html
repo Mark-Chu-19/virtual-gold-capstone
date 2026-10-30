@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Virtual Gold Capstone — Open-Weight Model & Architecture Update</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.5in 0.55in;
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: 8pt;
+      color: #64748b;
+    }
+    @bottom-left {
+      content: "Virtual Gold Capstone · CMU Heinz College · Model Evaluation Update (Oct 25, 2026)";
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: 8pt;
+      color: #64748b;
+    }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 9pt;
+    line-height: 1.36;
+    color: #1e293b;
+  }
+  h1 {
+    font-size: 14.5pt;
+    color: #A6192E;
+    border-bottom: 2px solid #A6192E;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: 11pt;
+    color: #A6192E;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 3px;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 9.6pt;
+    color: #0f172a;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    page-break-after: avoid;
+  }
+  p, ul, ol {
+    margin-top: 3px;
+    margin-bottom: 6px;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+  blockquote {
+    background-color: #f8fafc;
+    border-left: 3px solid #A6192E;
+    margin: 8px 0;
+    padding: 6px 10px;
+    font-size: 8.6pt;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.2pt;
+    margin: 8px 0 10px 0;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 3.5px 4.5px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+  code {
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    font-size: 8pt;
+    background-color: #f1f5f9;
+    padding: 1px 3px;
+    border-radius: 3px;
+  }
+  pre {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 7.6pt;
+    page-break-inside: avoid;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+  }
+  a {
+    color: #1d4ed8;
+    text-decoration: none;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 12px 0;
+  }
+</style>
+</head>
+<body>
+<h1
+id="virtual-gold-capstone-open-weight-model-evaluation-sized-for-client-gpu-tiers-pipeline-hardening--multi-architecture-benchmark-report">Virtual
+Gold Capstone: Open-Weight Model Evaluation (Sized for Client GPU
+Tiers), Pipeline Hardening &amp; Multi-Architecture Benchmark
+Report</h1>
+<p><strong>Author:</strong> Anmol Sahu (Model Workstream Lead) — CMU
+Heinz Capstone Team<br />
+<strong>Date:</strong> October 25, 2026<br />
+<strong>Prepared For:</strong> Virtual Gold Inc. (Dr. Inderpal Bhandari,
+Alex Bhandari, Aarvin, Urte Jesina) &amp; Capstone Engineering
+Team<br />
+<strong>Status:</strong> Progress &amp; Client Update — Self-Hostable
+GPU Tier Matrix Defined; 6 Harness/Calibration Defects Resolved;
+<code>GLiNER</code> (<code>300M</code>) Zero-Shot Span Encoder &amp; 4
+Pipeline Architectures (<code>Configs A, B, C, D</code>) Integrated; 9
+New Configurations Evaluated via Hosted Open-Weight APIs on 15
+Development Emails (<code>1,198</code> Audited Candidate
+Decisions)<br />
+<strong>Repository References:</strong></p>
+<ul>
+<li>Live Benchmark Traces (<code>9</code> Configs, <code>135</code>
+Email Runs):
+<code>benchmarks/2026-10-05-followup/results/free_tier_vpc_dev15_benchmark.json</code></li>
+<li>Updated Calibration Profile (<code>v1.4.0</code>, <code>1,198</code>
+Records):
+<code>benchmarks/2026-10-05-followup/results/calibration_profile_free_tier_vpc_dev15_benchmark.json</code></li>
+<li>Evaluation Harness &amp; Prompts:
+<code>benchmarks/2026-10-05-followup/harness/</code> and
+<code>benchmarks/2026-10-05-followup/prompts/</code></li>
+</ul>
+<hr />
+<h2 id="1-executive-summary-what-changed--why-it-matters">1. Executive
+Summary: What Changed &amp; Why It Matters</h2>
+<p>Following our October 19 review—and consistent with our September 28
+agreement to evaluate candidate open-weight models over hosted APIs
+before deploying to target project hardware—we expanded our model
+evaluation in two directions:</p>
+<ol type="1">
+<li><strong>Evaluating Open-Weight Models Sized for Target Self-Hosted
+GPU Tiers (Informs Client Question <code>Q3</code> /
+<code>D51</code>):</strong> Rather than restricting evaluation to 8B–9B
+models that fit on a 16 GB laptop, we organized open-weight candidates
+(all Apache 2.0, MIT, Llama, or Gemma licensed for self-hosting with
+zero external data egress) by the <strong>GPU memory required when
+self-hosted</strong>: <strong><code>Tier 0: &lt;1 GB</code> (no
+LLM)</strong>, <strong><code>Tier 1: 1x 24–48 GB GPU</code>
+(<code>L4</code> / <code>L40S</code>)</strong>,
+<strong><code>Tier 2: 1x 80 GB GPU</code> (<code>A100</code> /
+<code>H100</code>)</strong>, and
+<strong><code>Tier 3: Multi-GPU 160 GB+</code></strong>.</li>
+<li><strong>Combining Token-Level Zero-Shot Span Detection
+(<code>GLiNER</code>) with Multi-Architecture LLM Verification
+(<code>Configs A, B, C, D</code>):</strong> We integrated a lightweight
+<code>300M</code>-parameter bidirectional span encoder
+(<code>urchade/gliner_multi_pii-v1</code>) ahead of our LLM stages, and
+designed a proposed <strong>Multi-Document Evaluation Suite</strong>
+ready to test non-email document types if confirmed by Virtual Gold
+(<strong>Client Question <code>Q4</code> /
+<code>A15</code></strong>).</li>
+</ol>
+<blockquote>
+<p><strong>Scope &amp; Measurement Qualifications:</strong></p>
+<ul>
+<li><strong>Execution Environment:</strong> All 9 new configurations
+were evaluated over <strong>hosted open-weight model APIs</strong>; the
+service is not yet deployed in a client VPC or GPU sandbox (<strong>see
+Question <code>Q3</code></strong>). Reported GPU sizes describe what
+each model requires when self-hosted, and reported speeds
+(<code>1.6s–2.8s</code>) reflect hosted API execution rather than client
+hardware.</li>
+<li><strong>Dataset Scope:</strong> Evaluated on the same <strong>15
+development emails (<code>DEFAULT_15_IDS</code>)</strong> used on
+October 19, covering <strong>4 of the 15 business domains</strong>
+(<code>Finance &amp; Accounting</code>, <code>HR &amp; People</code>,
+<code>Legal &amp; Compliance</code>,
+<code>Sales &amp; Customers</code>). Earlier <code>Llama 3.1 8B</code>
+and <code>Qwen 3.5 9B</code> comparison rows are prior local Apple M4
+runs from the October 19 harness.</li>
+<li><strong>Tier Policy Alignment:</strong> Figures below were measured
+under the benchmark harness's 3-tier rules (<code>HIGH ≥ 0.20</code>,
+<code>MEDIUM ≥ 0.50</code>, <code>LOW ≥ 0.50</code>). Once Virtual Gold
+confirms the updated tier table and acceptable leak targets
+(<strong>Questions <code>Q1</code> and <code>Q2</code></strong>), we
+will re-score all configurations directly against
+<code>service/config/policy.yaml</code> and extend the run from 15 to 60
+development emails.</li>
+</ul>
+</blockquote>
+<h3 id="headline-achievements-in-this-update">Headline Achievements in
+This Update:</h3>
+<ol type="1">
+<li><p><strong>Audited &amp; Patched 6 Pre-Existing Harness &amp;
+Calibration Defects (Section 2):</strong></p>
+<ul>
+<li>Resolved the <strong>Stage 2 Unmasking Deadlock</strong>
+(<code>0/133</code> candidates unmasked in prior runs due to an unfitted
+bin 0 prior of <code>0.60 &gt; 0.55</code> Medium threshold), restoring
+active Stage 2 unmasking of benign corporate context
+(<code>Mode C-Raw</code>).</li>
+<li>Closed <strong>omitted-candidate and ambiguous-score fail-open
+leaks</strong> in <code>harness/pipeline.py</code> so any candidate
+dropped by Stage 2 or scored in the ambiguous zone
+(<code>0.35–0.65</code>) automatically <strong>fails closed
+(<code>PRIVATE_MASKED</code>)</strong>.</li>
+<li>Fixed <strong>High-Tier Deterministic Locking</strong>
+(<code>has_high_tier_rule_hit</code>) so <code>HIGH</code>-tier regex
+hits (<code>SSN</code>, <code>CREDIT_CARD</code>,
+<code>BANK_ROUTING</code>, <code>PASSWORD</code>, <code>API_KEY</code>,
+<code>CRYPTO_KEY</code>) never lose their lock during span merging,
+while LLM-proposed <code>FACT</code> clauses remain verifiable in Stage
+2.</li>
+<li>Aligned <code>prompts/assessment_prompt_v2.txt</code> with the
+benchmark gold policy so <strong>confidential M&amp;A targets,
+transaction counterparties, unnamed strategic partners, and outside
+legal counsel (<code>ORG</code> / <code>CODENAME</code>)</strong> are
+protected as <code>PRIVATE</code> rather than unmasked as "published
+corporate names."</li>
+<li>Eliminated <strong>Stage 2 output token bloat</strong> by removing
+the unused per-candidate <code>"reasoning"</code> field from the Stage 2
+JSON schema, reducing Stage 2 completion tokens by <strong>~75%</strong>
+and cutting Stage 2 API latency to
+<strong><code>0.65s–0.98s</code></strong>.</li>
+<li>Eliminated <strong>silent cross-model fallback</strong>
+(<code>allow_local_fallback=False</code>) and added strict
+provider/quantization pinning (<code>VPC_MODEL_REGISTRY</code>) in
+<code>harness/model_client.py</code>.</li>
+</ul></li>
+<li><p><strong>Integrated <code>GLiNER</code> (<code>300M</code>)
+Zero-Shot Span Encoder &amp; 4 Pipeline Architectures (Section
+3):</strong></p>
+<ul>
+<li><strong><code>Baseline-B0</code>
+(<code>Rules + Presidio + GLiNER</code>, No LLM Calls):</strong> Adding
+<code>urchade/gliner_multi_pii-v1</code> (<code>300M</code> DeBERTa-v3
+bidirectional span encoder, <code>&lt;1 GB</code> memory) with 220-word
+sliding-window chunking boosted discrete entity recall from
+<strong><code>77.25%</code> to <code>90.42%</code> (+13.17 percentage
+points)</strong>, raised <code>PERSON</code> recall from
+<code>82.09%</code> to <strong><code>97.01%</code></strong>, raised
+<code>ORG</code> recall from <code>9.09%</code> to
+<strong><code>63.64%</code></strong>, and cut private character leakage
+from <code>42.82%</code> to <strong><code>29.39%</code></strong> in
+<strong><code>0.11s</code> median latency</strong> without calling any
+LLM.</li>
+</ul></li>
+<li><p><strong>Evaluated 9 New Configurations on the 15-Email Benchmark
+(<code>135</code> Email Runs, Section 4):</strong></p>
+<ul>
+<li><strong>Best Privacy Protection (<code>Config B</code>:
+<code>Qwen 3.8 27B + GLiNER</code>, sized for one 24–48 GB
+GPU):</strong>
+<ul>
+<li>Achieved <strong><code>7.44%</code> Private Character Leakage
+(<code>226 / 3,038</code> chars)</strong> — <strong>halving the October
+19 <code>Llama 3.3 70B</code> leak rate (<code>16.19%</code>,
+<code>492 / 3,038</code> chars)</strong> and reducing leakage by
+<strong>77% compared to local <code>Llama 3.1 8B</code>
+(<code>32.36%</code>)</strong>, at the cost of higher public text
+over-masking (<code>21.72%</code>).</li>
+<li>Achieved <strong><code>11.44%</code> <code>FACT</code> Character
+Leakage (<code>96 / 839</code> chars)</strong> and
+<strong><code>90.00%</code> <code>FACT</code> Clause Recall
+(<code>9 / 10</code> facts)</strong> — compared to <code>60.00%</code>
+(<code>6 / 10</code> facts) and <code>36.95%</code> <code>FACT</code>
+leakage on <code>Llama 3.3 70B</code>.</li>
+<li>Achieved <strong><code>92.81%</code> Exact Entity Recall
+(<code>94.01%</code> partial recall)</strong> and
+<strong><code>98.51%</code> <code>PERSON</code> recall
+(<code>66 / 67</code>)</strong> at <strong><code>2.37s</code> median
+hosted API latency</strong> with <strong><code>0</code> operational
+failures</strong>.</li>
+</ul></li>
+<li><strong>Lowest Public Over-Masking (<code>Config A</code> &amp;
+<code>Config C</code>: <code>OpenAI GPT-OSS 120B MoE</code>, sized for
+one 80 GB GPU):</strong>
+<ul>
+<li>In Two-Stage mode (<code>Config A</code>), achieved
+<strong><code>11.54%</code> Public Character Over-Masking</strong> and
+only <strong><code>1</code> extra false-positive mask</strong> across
+all 15 emails (<code>2.30s</code> median hosted API latency), but leaked
+more private characters (<code>22.94%</code>).</li>
+<li>In Single-Pass mode (<code>Config C</code>:
+<code>gpt-oss-120b+1pass</code>), achieved <strong><code>5.44%</code>
+Public Character Over-Masking</strong>, <strong><code>89.82%</code>
+Entity Recall</strong>, and <strong><code>1.62s</code> median hosted API
+latency</strong> (<code>26.99%</code> private character leakage).</li>
+</ul></li>
+<li><strong>Asymmetric Two-Model Checker (<code>Config D</code>:
+<code>Qwen 3.8 27B</code> Stage 1 +
+<code>OpenAI GPT-OSS Safeguard 20B</code> Stage 2, sized for one 24–48
+GB GPU):</strong>
+<ul>
+<li>Routing Stage 2 verification to OpenAI's policy-specialized
+<code>gpt-oss-safeguard-20b</code> (<code>20B</code> MoE,
+<code>3.6B</code> active parameters) reduced public over-masking by
+<strong>3.60 percentage points</strong> (<code>18.27%</code> <span
+class="math inline">→</span> <code>14.67%</code>), reduced extra
+false-positive masks to <strong><code>3</code></strong>, caught
+<strong><code>8 of 10</code> confidential facts</strong>, and executed
+in <strong><code>1.75s</code> median hosted API latency</strong>.</li>
+</ul></li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="2-six-harness--calibration-defects-resolved">2. Six Harness
+&amp; Calibration Defects Resolved</h2>
+<p>Before running the new configurations, we audited the evaluation
+harness (<code>harness/model_client.py</code>,
+<code>harness/pipeline.py</code>, <code>harness/detectors.py</code>,
+<code>harness/calibration.py</code>,
+<code>harness/run_expanded_dev_benchmark.py</code>, and
+<code>prompts/assessment_prompt_v2.txt</code>) and resolved <strong>six
+pre-existing defects</strong> that had previously affected Stage 2
+behavior and cross-model comparisons:</p>
+<h3
+id="21-defect-1-silent-cross-model-fallback-to-local-llama318b-harnessmodel_clientpy">2.1
+Defect #1: Silent Cross-Model Fallback to Local <code>llama3.1:8b</code>
+(<code>harness/model_client.py</code>)</h3>
+<ul>
+<li><strong>Root Cause:</strong> In
+<code>harness/model_client.py</code>, <code>call_model()</code>
+defaulted to <code>allow_local_fallback=True</code>. Whenever a cloud
+endpoint experienced a transient rate limit (HTTP 429) or timeout, the
+client silently invoked local <code>llama3.1:8b</code> via Ollama and
+recorded the output under the cloud model's trace.</li>
+<li><strong>Engineering Fix:</strong>
+<ol type="1">
+<li>Set <code>allow_local_fallback: bool = False</code> by default
+across all benchmark runs.</li>
+<li>Added exponential backoff with jitter (<code>5</code> retries) for
+HTTP 429/502/503/504 and automatic Tokens-Per-Minute (TPM) pacing for
+Groq endpoints (<code>_call_groq()</code>).</li>
+<li>Added a strict provider-pinning registry
+(<code>VPC_MODEL_REGISTRY</code>) locking <code>provider_order</code>,
+<code>allow_fallbacks: False</code>, quantization
+(<code>fp8</code>/<code>bf16</code>/<code>mxfp4</code>), and reasoning
+suppression (<code>reasoning: {"effort": "none"}</code> or
+<code>"low"</code>) per model.</li>
+</ol></li>
+</ul>
+<h3
+id="22-defect-2-stage-2-unmasking-deadlock-0--133-unmasked-in-prior-runs-harnesspipelinepy--harnesscalibrationpy">2.2
+Defect #2: Stage 2 Unmasking Deadlock (<code>0 / 133</code> Unmasked in
+Prior Runs) (<code>harness/pipeline.py</code> &amp;
+<code>harness/calibration.py</code>)</h3>
+<ul>
+<li><strong>Root Cause:</strong> Previously,
+<code>harness/pipeline.py</code> loaded
+<code>config/calibration_profile_v1.json</code> at import time. In that
+profile, bin 0 (<code>raw_score</code> <span
+class="math inline"> ∈ [0.0, 0.2)</span>) had an empirical value of
+<code>0.6000</code> (fitted from an earlier uncalibrated run where
+deterministic overrides and prompt-mismatched <code>ORG</code>s were
+mixed into bin 0). Because <code>0.6000</code> exceeded the
+<code>MEDIUM</code> (<code>0.50</code>) and <code>LOW</code>
+(<code>0.50</code>) tier thresholds, <strong>even when a Stage 2 LLM
+classified a candidate as <code>PUBLIC</code> with <code>1.00</code>
+confidence (<code>raw_p_private = 0.00</code>), the calibrator mapped
+its score to <code>0.6000 &gt;= 0.50</code> and forced it to remain
+<code>REDACTED</code></strong>. In
+<code>local_m4_dev15_benchmark.json</code>, <code>0</code> out of
+<code>133</code> non-locked candidates were unmasked by Stage 2
+(<code>Mode B == Mode C</code>).</li>
+<li><strong>Engineering Fix:</strong>
+<ol type="1">
+<li>Changed <code>PipelineConfig</code> default to
+<code>use_calibrated_scores: bool = False</code>
+(<code>Mode C-Raw</code>), evaluating Stage 2 on direct raw privacy
+probability (<span class="math inline"><em>p</em><sub>priv</sub></span>)
+during model selection, while reporting calibrated scores
+(<code>Mode C-Calibrated</code>) as an explicit post-hoc analysis
+layer.</li>
+<li>Fixed the fallback prior in
+<code>config/calibration_profile_v1.json</code>
+(<code>bin 0 = 0.10</code>, <code>is_fitted = false</code>).</li>
+<li>Updated <code>harness/calibration.py</code> to exclude all policy
+overrides (<code>deterministic_policy_override</code>,
+<code>omitted_fail_closed_override</code>,
+<code>ambiguous_fail_closed_override</code>) before fitting empirical
+bins, and enforced monotonic non-decreasing bin probabilities.</li>
+</ol></li>
+</ul>
+<h3
+id="23-defect-3-omitted-candidate--ambiguous-score-fail-open-leaks-harnesspipelinepy">2.3
+Defect #3: Omitted-Candidate &amp; Ambiguous-Score Fail-Open Leaks
+(<code>harness/pipeline.py</code>)</h3>
+<ul>
+<li><strong>Root Cause:</strong> In <code>harness/pipeline.py</code>, if
+the Stage 2 LLM omitted a candidate ID from its returned JSON array,
+<code>decision_map.get(cid)</code> defaulted to
+<code>{"classification": "PUBLIC", "confidence": 0.5}</code>, mapping to
+<code>raw_p_private = 0.5</code>—and if
+<code>detector == "model_detection"</code>, the multi-detector ensemble
+produced <code>0.30 &lt; 0.50</code>, <strong>unmasking the omitted span
+(failing open)</strong>.</li>
+<li><strong>Engineering Fix:</strong> Patched
+<code>_evaluate_candidate_decisions()</code> so that any candidate
+omitted by Stage 2
+(<code>omitted_by_stage2 = cid not in decision_map</code>) or returned
+with <code>classification == "UNKNOWN"</code> or ambiguous confidence
+(<code>0.35 &lt;= raw_p_private &lt;= 0.65</code>)
+<strong>unconditionally fails closed (<code>should_redact = True</code>,
+<code>decision = "REDACT"</code>)</strong> when the candidate is
+High/Medium tier or identifying context is present.</li>
+</ul>
+<h3
+id="24-defect-4-deterministic-high-tier-lock-bypass--fact-over-locking-harnessdetectorspy--harnesspipelinepy">2.4
+Defect #4: Deterministic High-Tier Lock Bypass &amp; <code>FACT</code>
+Over-Locking (<code>harness/detectors.py</code> &amp;
+<code>harness/pipeline.py</code>)</h3>
+<ul>
+<li><strong>Root Cause:</strong> Two subtle bugs interacted in span
+merging and locking:
+<ol type="1">
+<li>When <code>merge_and_deduplicate_spans()</code> merged an
+overlapping <code>HIGH</code>-tier regex match (e.g., <code>SSN</code>)
+with a longer <code>MEDIUM</code>-tier span, it kept the longer span's
+category (<code>MEDIUM</code>), bypassing the <code>HIGH</code>-tier
+lock.</li>
+<li>Conversely, Stage 2 locked any span where
+<code>tier == "HIGH" and ("regex" in detector or "presidio" in detector)</code>—which
+unintentionally locked LLM-proposed <code>FACT</code> spans whenever a
+<code>FACT</code> clause happened to absorb a single regex token (like a
+date or dollar amount) during merging.</li>
+</ol></li>
+<li><strong>Engineering Fix:</strong>
+<ol type="1">
+<li>Added strict category precedence
+(<code>FACT &gt; HIGH &gt; MEDIUM &gt; LOW</code>) in
+<code>harness/detectors.py</code> along with an explicit
+<code>normalize_category()</code> mapping all 18 canonical gold dataset
+categories.</li>
+<li>Added a boolean flag <code>has_high_tier_rule_hit</code> computed on
+each individual regex/Presidio span <em>before</em> merging and
+preserved via logical OR (<code>|</code>) across merged spans. Stage 2
+now applies <code>deterministic_policy_override</code> strictly when
+<code>s.get("has_high_tier_rule_hit", False)</code> is
+<code>True</code>.</li>
+</ol></li>
+</ul>
+<h3
+id="25-defect-5-confidential-counterparty-org-prompt-policy-mismatch-promptsassessment_prompt_v2txt">2.5
+Defect #5: Confidential Counterparty <code>ORG</code> Prompt Policy
+Mismatch (<code>prompts/assessment_prompt_v2.txt</code>)</h3>
+<ul>
+<li><strong>Root Cause:</strong> In the gold benchmark dataset
+(<code>baseline_dev.jsonl</code>), acquisition targets, customer
+accounts under negotiation, and external law firms
+(<code>Castell Data Systems</code>, <code>Keane Porter LLP</code>,
+<code>Greenvale Grocers</code>, <code>Hartwell Department Stores</code>)
+are labeled <code>must_mask</code> (<code>ORG</code>). However,
+<code>prompts/assessment_prompt_v2.txt</code> previously instructed
+Stage 2 that <em>"Published corporate entities, vendor names, and
+official titles are PUBLIC,"</em> causing Stage 2 models to
+systematically unmask confidential counterparties.</li>
+<li><strong>Engineering Fix:</strong> Updated
+<code>prompts/assessment_prompt_v2.txt</code> so <code>"PRIVATE"</code>
+explicitly includes <em>"confidential transaction counterparties,
+acquisition targets, unnamed partners, or legal counsel
+(<code>ORG</code> / <code>CODENAME</code>),"</em> while
+<code>"PUBLIC"</code> is restricted to <em>"general non-sensitive
+corporate references (e.g., public vendor names or standard software
+tools not tied to a confidential deal, dispute, or client
+account)."</em></li>
+</ul>
+<h3
+id="26-defect-6-stage-2-per-candidate-reasoning-token-bloat-promptsassessment_prompt_v2txt--harnessmodel_clientpy">2.6
+Defect #6: Stage 2 Per-Candidate <code>"reasoning"</code> Token Bloat
+(<code>prompts/assessment_prompt_v2.txt</code> &amp;
+<code>harness/model_client.py</code>)</h3>
+<ul>
+<li><strong>Root Cause:</strong> Requiring Stage 2 to generate a
+free-text <code>"reasoning"</code> string for every candidate inflated
+Stage 2 output length by <code>300–1,200</code> tokens per email (and
+caused truncation on documents with <code>20+</code> candidates), even
+though <code>_evaluate_candidate_decisions()</code> never read the
+<code>"reasoning"</code> field.</li>
+<li><strong>Engineering Fix:</strong> Removed <code>"reasoning"</code>
+from <code>prompts/assessment_prompt_v2.txt</code> and
+<code>STAGE2_ASSESSMENT_JSON_SCHEMA</code> in
+<code>harness/model_client.py</code>, reducing Stage 2 completion length
+to <code>~120–160</code> tokens and cutting Stage 2 API latency to
+<strong><code>0.65s–0.98s</code></strong>.</li>
+</ul>
+<hr />
+<h2 id="3-target-self-hosted-gpu-tiers--four-pipeline-architectures">3.
+Target Self-Hosted GPU Tiers &amp; Four Pipeline Architectures</h2>
+<h3
+id="31-candidate-open-weight-models-sized-by-self-hosted-gpu-footprint">3.1
+Candidate Open-Weight Models Sized by Self-Hosted GPU Footprint</h3>
+<p>We organized the 13 open-weight models in our evaluation registry
+(<code>VPC_MODEL_REGISTRY</code> in
+<code>harness/model_client.py</code>) by the GPU memory footprint each
+model requires when self-hosted (via vLLM, SGLang, or Ollama):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Target GPU Tier (When Self-Hosted)</th>
+<th style="text-align: left;">Example Cloud / On-Prem GPU</th>
+<th style="text-align: center;">VRAM Budget</th>
+<th style="text-align: left;">Registered Open-Weight Models</th>
+<th style="text-align: center;">License (Self-Hostable)</th>
+<th style="text-align: left;">Target Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Tier 0: Encoder
+Companion</strong></td>
+<td style="text-align: left;">CPU or <code>&lt;1 GB</code> shared
+GPU</td>
+<td style="text-align: center;"><code>&lt;1 GB</code></td>
+<td
+style="text-align: left;"><strong><code>urchade/gliner_multi_pii-v1</code></strong>
+(<code>300M</code> DeBERTa-v3 bi-encoder)</td>
+<td style="text-align: center;">Apache 2.0</td>
+<td style="text-align: left;">Fast (<code>0.11s</code>) token-level
+zero-shot PII &amp; entity span pre-detector (<code>Config B</code>
+&amp; degraded fallback)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tier 1: Single 24–48 GB
+GPU</strong></td>
+<td style="text-align: left;"><code>1x NVIDIA L4</code> (24GB) or
+<code>1x L40S</code> (48GB)</td>
+<td style="text-align: center;"><code>24–48 GB</code></td>
+<td
+style="text-align: left;"><strong><code>qwen/qwen3.8-27b</code></strong>
+(27B
+Dense)<br><strong><code>openai/gpt-oss-safeguard-20b</code></strong>
+(20B MoE, 3.6B
+act.)<br><code>mistralai/mistral-small-3.2-24b-instruct</code><br><code>google/gemma-4-26b-a4b-it</code>
+(26B MoE, 4B act.)<br><code>qwen/qwen3.6-35b-a3b</code> (35B MoE, 3B
+act.)<br><code>qwen/qwen3-32b</code> (32B Dense)</td>
+<td style="text-align: center;">Apache 2.0 / Gemma</td>
+<td style="text-align: left;"><strong>Primary cost-effective single-GPU
+deployment tier</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tier 2: Single 80 GB
+GPU</strong></td>
+<td style="text-align: left;"><code>1x NVIDIA H100</code> or
+<code>A100</code> (80GB)</td>
+<td style="text-align: center;"><code>80 GB</code></td>
+<td
+style="text-align: left;"><strong><code>openai/gpt-oss-120b</code></strong>
+(117B MoE, 5.1B act., native
+MXFP4)<br><code>meta-llama/llama-3.3-70b-instruct</code> (70B
+Dense)<br><code>meta-llama/llama-4-scout-17b-16e-instruct</code> (109B
+MoE)<br><code>qwen/qwen3.5-122b-a10b</code> (122B MoE, 10B act.)</td>
+<td style="text-align: center;">Apache 2.0 / Llama</td>
+<td style="text-align: left;"><strong>High-precision single-80GB node
+tier</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tier 3: Multi-GPU
+Ceiling</strong></td>
+<td style="text-align: left;"><code>2x–8x H100 / H200</code>
+(160–640GB)</td>
+<td style="text-align: center;"><code>160 GB+</code></td>
+<td
+style="text-align: left;"><code>qwen/qwen3-235b-a22b-instruct-2507</code>
+(235B MoE, 22B act.)<br><code>deepseek/deepseek-chat-v3.2</code> (685B
+MoE, 37B act.)</td>
+<td style="text-align: center;">Apache 2.0 / MIT</td>
+<td style="text-align: left;"><strong>Upper-bound accuracy ceiling
+benchmark</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-four-pipeline-architecture-variants-configs-a-b-c-d">3.2 Four
+Pipeline Architecture Variants (<code>Configs A, B, C, D</code>)</h3>
+<p>All four architecture variants are implemented in
+<code>harness/pipeline.py</code> and
+<code>harness/detectors.py</code>:</p>
+<pre class="mermaid"><code>flowchart TB
+    Doc[&quot;Input Enterprise Text (Executive Email; Proposed Extension to Documents — see Q4)&quot;]
+    
+    subgraph Tier0[&quot;Stage 0: Deterministic &amp; Zero-Shot Pre-Detectors (&lt;120ms)&quot;]
+        Reg[&quot;Regex + Presidio + Header-to-Body Name Propagation + Clinical Cues&quot;]
+        Gli[&quot;GLiNER 300M Bi-Encoder (220-word sliding windows, Config B / Baseline-B0)&quot;]
+    end
+    
+    Doc --&gt; Reg
+    Doc --&gt; Gli
+    
+    subgraph Arch[&quot;LLM Pipeline Architecture Variants&quot;]
+        direction TB
+        CA[&quot;Config A (Symmetric 2-Stage): Stage 1 Extractor LLM → Stage 2 Verifier LLM (Same Model)&quot;]
+        CB[&quot;Config B (+GLiNER 2-Stage): Rules + Presidio + GLiNER → Stage 1 Extractor LLM → Stage 2 Verifier LLM&quot;]
+        CC[&quot;Config C (+1pass Single-Pass): Rules + Presidio → Single Merged Prompt (Baseline Adjudication + New Spans)&quot;]
+        CD[&quot;Config D (Asymmetric 2-Model): Stage 1 High-Recall Extractor (Qwen 27B) → Stage 2 Policy Checker (GPT-OSS Safeguard 20B)&quot;]
+    end
+    
+    Reg --&gt; Arch
+    Gli -.-&gt;|&quot;Enabled in Baseline-B0, Config B, Config B+D&quot;| Arch
+    
+    subgraph Gate[&quot;Deterministic Safety Policy Gate&quot;]
+        Lock[&quot;1. High-Tier Rule Lock (has_high_tier_rule_hit = True → Always REDACT)&quot;]
+        FailClosed[&quot;2. Omitted / Ambiguous Candidate Fail-Closed Override (Always REDACT)&quot;]
+        Thresh[&quot;3. Tier Threshold Gate (Current Harness: HIGH ≥ 0.20, MEDIUM ≥ 0.50, LOW ≥ 0.50; Re-scoring on Confirmed Policy — see Q1/Q2)&quot;]
+    end
+    
+    Arch --&gt; Gate
+    Gate --&gt; Out[&quot;Redacted Text ([PERSON_1], [FACT_1], ...) + Reversible Placeholder Map + Audit Telemetry&quot;]</code></pre>
+<hr />
+<h2 id="4-15-email-benchmark-results-12-configurations-compared">4.
+15-Email Benchmark Results (12 Configurations Compared)</h2>
+<p>We evaluated <strong>9 new configurations</strong> (2 zero-LLM local
+baselines + 7 open-weight LLM configurations run via hosted APIs) on the
+15-email development set (<code>DEFAULT_15_IDS</code>:
+<code>E001</code>–<code>E024</code>, covering <strong>4 of 15 business
+domains</strong>, containing <strong><code>3,038</code> private
+characters</strong>, <strong><code>839</code> confidential
+<code>FACT</code> characters</strong>, <strong><code>5,277</code> public
+characters</strong>, <strong><code>167</code> discrete entity
+spans</strong>, and <strong><code>10</code> confidential business
+<code>FACT</code> clauses</strong>) and compared them against our
+<strong>3 October 19 reference baselines</strong>
+(<code>Local Llama 3.1 8B</code>, <code>Local Qwen 3.5 9B</code>, and
+<code>Hosted Llama 3.3 70B</code>):</p>
+<h3
+id="41-master-end-to-end-performance-table-stage-c--policy-gated-output">4.1
+Master End-to-End Performance Table (Stage C / Policy-Gated Output)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">#</th>
+<th style="text-align: left;">Configuration / Model ID</th>
+<th style="text-align: left;">GPU Needed When Self-Hosted (How
+Tested)</th>
+<th style="text-align: center;">Private Char Leak ↓</th>
+<th style="text-align: center;"><code>FACT</code> Char Leak ↓</th>
+<th style="text-align: center;">Public Over-Mask ↓</th>
+<th style="text-align: center;">Exact Entity Recall ↑</th>
+<th style="text-align: center;">Partial Entity Recall ↑</th>
+<th style="text-align: center;"><code>FACT</code> Clause Recall ↑</th>
+<th style="text-align: center;"><code>PERSON</code> Recall ↑</th>
+<th style="text-align: center;">Clean Emails ↑</th>
+<th style="text-align: center;">Extra Masks ↓</th>
+<th style="text-align: center;">Op / Schema Fail</th>
+<th style="text-align: center;">Median Seconds / Email (S1 / S2)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>1</strong></td>
+<td style="text-align: left;"><strong><code>Baseline-A</code>
+(<code>Rules + Presidio</code>)</strong></td>
+<td style="text-align: left;">None (Local CPU, 0 LLM)</td>
+<td style="text-align: center;">42.82% (<code>1301</code>)</td>
+<td style="text-align: center;">98.93% (<code>830</code>)</td>
+<td style="text-align: center;"><strong>2.29%</strong>
+(<code>121</code>)</td>
+<td style="text-align: center;">77.25%</td>
+<td style="text-align: center;">79.64%</td>
+<td style="text-align: center;">0.00% (<code>0/10</code>)</td>
+<td style="text-align: center;">82.09%</td>
+<td style="text-align: center;"><code>3/15</code></td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;"><code>0 / 0</code></td>
+<td style="text-align: center;"><strong>0.00s</strong></td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>2</strong></td>
+<td style="text-align: left;"><strong><code>Baseline-B0</code>
+(<code>Rules + Presidio + GLiNER</code>)</strong></td>
+<td style="text-align: left;"><code>&lt;1 GB</code> (Local, <strong>0
+LLM</strong>)</td>
+<td style="text-align: center;"><strong>29.39%</strong>
+(<code>893</code>)</td>
+<td style="text-align: center;">84.03% (<code>705</code>)</td>
+<td style="text-align: center;">6.58% (<code>347</code>)</td>
+<td style="text-align: center;"><strong>90.42%</strong></td>
+<td style="text-align: center;"><strong>92.81%</strong></td>
+<td style="text-align: center;">0.00% (<code>0/10</code>)</td>
+<td style="text-align: center;"><strong>97.01%</strong></td>
+<td style="text-align: center;"><strong><code>7/15</code></strong></td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;"><code>0 / 0</code></td>
+<td style="text-align: center;"><strong>0.11s</strong></td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>3</strong></td>
+<td style="text-align: left;"><em>Oct 19 Local Ref:</em>
+<code>Llama 3.1 8B</code>*</td>
+<td style="text-align: left;">16 GB RAM (Local M4, 2-Stage)</td>
+<td style="text-align: center;">32.36% (<code>983</code>)</td>
+<td style="text-align: center;">70.92% (<code>595</code>)</td>
+<td style="text-align: center;">9.72% (<code>513</code>)</td>
+<td style="text-align: center;">77.25%</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">20.00% (<code>2/10</code>)</td>
+<td style="text-align: center;">64.18%</td>
+<td style="text-align: center;"><code>1/15</code></td>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;"><code>0 / 0</code></td>
+<td style="text-align: center;">77.60s (<code>24.3s / 52.9s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>4</strong></td>
+<td style="text-align: left;"><em>Oct 19 Local Ref:</em>
+<code>Qwen 3.5 9B</code>*</td>
+<td style="text-align: left;">16 GB RAM (Local M4, 2-Stage)</td>
+<td style="text-align: center;">38.22% (<code>1161</code>)</td>
+<td style="text-align: center;">68.06% (<code>571</code>)</td>
+<td style="text-align: center;">6.05% (<code>319</code>)</td>
+<td style="text-align: center;">70.66%</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">40.00% (<code>4/10</code>)</td>
+<td style="text-align: center;">55.22%</td>
+<td style="text-align: center;"><code>2/15</code></td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><code>0 / 0</code></td>
+<td style="text-align: center;">110.60s
+(<code>37.5s / 78.1s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>5</strong></td>
+<td style="text-align: left;"><em>Oct 19 Ref:</em>
+<code>Llama 3.3 70B</code>*</td>
+<td style="text-align: left;">80 GB GPU (Hosted API, 2-Stage)</td>
+<td style="text-align: center;">16.19% (<code>492</code>)</td>
+<td style="text-align: center;">36.95% (<code>310</code>)</td>
+<td style="text-align: center;">18.46% (<code>974</code>)</td>
+<td style="text-align: center;"><strong>92.81%</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">60.00% (<code>6/10</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong></td>
+<td style="text-align: center;"><strong><code>7/15</code></strong></td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;"><code>0 / 1</code></td>
+<td style="text-align: center;">40.84s (<code>15.6s / 20.4s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>6</strong></td>
+<td style="text-align: left;"><strong><code>Qwen 3.8 27B</code>
+(<code>Config A</code>)</strong></td>
+<td style="text-align: left;"><strong>24–48 GB GPU</strong> (Hosted API,
+2-Stage)</td>
+<td style="text-align: center;"><strong>11.72%</strong>
+(<code>356</code>)</td>
+<td style="text-align: center;"><strong>14.54%</strong>
+(<code>122</code>)</td>
+<td style="text-align: center;">18.27% (<code>964</code>)</td>
+<td style="text-align: center;">90.42%</td>
+<td style="text-align: center;">91.02%</td>
+<td style="text-align: center;"><strong>90.00%</strong>
+(<code>9/10</code>)</td>
+<td style="text-align: center;"><strong>98.51%</strong></td>
+<td style="text-align: center;"><code>6/15</code></td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><strong><code>0 / 0</code></strong></td>
+<td style="text-align: center;"><strong>1.79s</strong>
+(<code>0.90s / 0.84s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>7</strong></td>
+<td style="text-align: left;"><strong><code>Qwen 3.8 27B + GLiNER</code>
+(<code>Config B</code>)</strong> 🏆</td>
+<td style="text-align: left;"><strong>24–48 GB GPU</strong> (Hosted API,
+2-Stage)</td>
+<td style="text-align: center;"><strong>7.44%</strong>
+(<code>226</code>)</td>
+<td style="text-align: center;"><strong>11.44%</strong>
+(<code>96</code>)</td>
+<td style="text-align: center;">21.72% (<code>1146</code>)</td>
+<td style="text-align: center;"><strong>92.81%</strong></td>
+<td style="text-align: center;"><strong>94.01%</strong></td>
+<td style="text-align: center;"><strong>90.00%</strong>
+(<code>9/10</code>)</td>
+<td style="text-align: center;"><strong>98.51%</strong></td>
+<td style="text-align: center;"><strong><code>7/15</code></strong></td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;"><strong><code>0 / 0</code></strong></td>
+<td style="text-align: center;"><strong>2.37s</strong>
+(<code>0.92s / 0.98s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>8</strong></td>
+<td
+style="text-align: left;"><strong><code>Qwen 3.8 27B :: Safeguard 20B</code>
+(<code>Config D</code>)</strong></td>
+<td style="text-align: left;"><strong>24–48 GB GPU</strong> (Hosted API,
+S1 27B + S2 20B)</td>
+<td style="text-align: center;">13.96% (<code>424</code>)</td>
+<td style="text-align: center;">23.12% (<code>194</code>)</td>
+<td style="text-align: center;"><strong>14.67%</strong>
+(<code>774</code>)</td>
+<td style="text-align: center;">89.22%</td>
+<td style="text-align: center;">89.82%</td>
+<td style="text-align: center;">80.00% (<code>8/10</code>)</td>
+<td style="text-align: center;">97.01%</td>
+<td style="text-align: center;"><code>5/15</code></td>
+<td style="text-align: center;"><strong>3</strong></td>
+<td style="text-align: center;"><strong><code>0 / 0</code></strong></td>
+<td style="text-align: center;"><strong>1.75s</strong>
+(<code>0.94s / 0.65s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>9</strong></td>
+<td
+style="text-align: left;"><strong><code>Qwen 27B + GLiNER :: Safeguard 20B</code>
+(<code>B+D</code>)</strong></td>
+<td style="text-align: left;"><strong>24–48 GB GPU</strong> (Hosted API,
+S1 27B+<code>GLiNER</code> + S2 20B)</td>
+<td style="text-align: center;">12.67% (<code>385</code>)</td>
+<td style="text-align: center;">25.86% (<code>217</code>)</td>
+<td style="text-align: center;">17.49% (<code>923</code>)</td>
+<td style="text-align: center;">90.42%</td>
+<td style="text-align: center;">91.62%</td>
+<td style="text-align: center;">70.00% (<code>7/10</code>)</td>
+<td style="text-align: center;">97.01%</td>
+<td style="text-align: center;"><code>5/15</code></td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;"><strong><code>0 / 0</code></strong></td>
+<td style="text-align: center;"><strong>2.08s</strong>
+(<code>0.96s / 0.68s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>10</strong></td>
+<td style="text-align: left;"><strong><code>OpenAI GPT-OSS 120B</code>
+(<code>Config A</code>)</strong> 🎯</td>
+<td style="text-align: left;"><strong>80 GB GPU</strong> (Hosted API,
+2-Stage)</td>
+<td style="text-align: center;">22.94% (<code>697</code>)</td>
+<td style="text-align: center;">52.80% (<code>443</code>)</td>
+<td style="text-align: center;"><strong>11.54%</strong>
+(<code>609</code>)</td>
+<td style="text-align: center;">88.02%</td>
+<td style="text-align: center;">88.62%</td>
+<td style="text-align: center;">40.00% (<code>4/10</code>)</td>
+<td style="text-align: center;">97.01%</td>
+<td style="text-align: center;"><code>4/15</code></td>
+<td style="text-align: center;"><strong>1</strong></td>
+<td style="text-align: center;"><code>0 / 1</code>**</td>
+<td style="text-align: center;"><strong>2.30s</strong>
+(<code>1.16s / 1.14s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>11</strong></td>
+<td
+style="text-align: left;"><strong><code>OpenAI GPT-OSS 120B + GLiNER</code>
+(<code>Config B</code>)</strong></td>
+<td style="text-align: left;"><strong>80 GB GPU</strong> (Hosted API,
+2-Stage)</td>
+<td style="text-align: center;">17.25% (<code>524</code>)</td>
+<td style="text-align: center;">43.50% (<code>365</code>)</td>
+<td style="text-align: center;">12.81% (<code>676</code>)</td>
+<td style="text-align: center;"><strong>91.02%</strong></td>
+<td style="text-align: center;"><strong>92.22%</strong></td>
+<td style="text-align: center;">50.00% (<code>5/10</code>)</td>
+<td style="text-align: center;">97.01%</td>
+<td style="text-align: center;"><code>6/15</code></td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;"><code>0 / 2</code>**</td>
+<td style="text-align: center;"><strong>2.85s</strong>
+(<code>1.22s / 1.29s</code>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>12</strong></td>
+<td style="text-align: left;"><strong><code>OpenAI GPT-OSS 120B</code>
+(<code>Config C: 1-Pass</code>)</strong> ⚡</td>
+<td style="text-align: left;"><strong>80 GB GPU</strong> (Hosted API,
+Single-Pass)</td>
+<td style="text-align: center;">26.99% (<code>820</code>)</td>
+<td style="text-align: center;">73.54% (<code>617</code>)</td>
+<td style="text-align: center;"><strong>5.44%</strong>
+(<code>287</code>)</td>
+<td style="text-align: center;">89.82%</td>
+<td style="text-align: center;">91.62%</td>
+<td style="text-align: center;">30.00% (<code>3/10</code>)</td>
+<td style="text-align: center;">95.52%</td>
+<td style="text-align: center;"><code>4/15</code></td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;"><strong><code>0 / 0</code></strong></td>
+<td style="text-align: center;"><strong>1.62s</strong>
+(<code>1.62s / 0.00s</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><em>*Rows 3–5 are from the October 19 evaluation prior to the six
+harness fixes in Section 2; Rows 3–4 ran locally via Ollama on an Apple
+Silicon M4 laptop (16 GB RAM).</em><br />
+<em>**On the hosted endpoint (<code>1,000 RPM / 200K TPD</code>),
+<code>gpt-oss-120b</code> experienced <code>1</code> JSON truncation in
+<code>Config A</code> and <code>2</code> in <code>Config B</code> when
+internal reasoning tokens consumed part of the <code>2,048</code>
+completion token budget on dense candidate lists; the pipeline safely
+fell back to deterministic + Stage 1 spans. On successful calls only,
+<code>gpt-oss-120b + GLiNER</code> achieved <strong><code>14.83%</code>
+private character leakage</strong> and <strong><code>13.89%</code>
+public over-masking</strong>.</em></p>
+<hr />
+<h3
+id="42-entity-recall-breakdown-by-category-all-14-canonical-entity-types">4.2
+Entity Recall Breakdown by Category (All 14 Canonical Entity Types)</h3>
+<p>Below is the exact entity recall (<code>score.py</code> <span
+class="math inline"> ≥ 50%</span> token coverage criterion) across all
+<strong>14 discrete entity categories</strong> (<code>167</code> spans
+total) and <strong><code>FACT</code> clauses</strong> (<code>10</code>
+spans total) on the 15-email benchmark:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Entity Category (<code>Count</code>)</th>
+<th style="text-align: center;"><code>Baseline-A</code> (Rules
+Only)</th>
+<th style="text-align: center;"><code>Baseline-B0</code>
+(<code>+GLiNER</code>, 0 LLM)</th>
+<th style="text-align: center;">Oct 19 <code>Llama 3.3 70B</code>
+(<code>Config A</code>)</th>
+<th style="text-align: center;"><strong><code>Qwen 3.8 27B</code>
+(<code>Config A</code>)</strong></th>
+<th
+style="text-align: center;"><strong><code>Qwen 3.8 27B + GLiNER</code>
+(<code>Config B</code>)</strong> 🏆</th>
+<th
+style="text-align: center;"><strong><code>Qwen 27B :: Safeguard 20B</code>
+(<code>Config D</code>)</strong></th>
+<th style="text-align: center;"><strong><code>GPT-OSS 120B</code>
+(<code>Config A</code>)</strong></th>
+<th
+style="text-align: center;"><strong><code>GPT-OSS 120B + GLiNER</code>
+(<code>Config B</code>)</strong></th>
+<th style="text-align: center;"><strong><code>GPT-OSS 120B</code>
+(<code>Config C: 1-Pass</code>)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>ADDRESS</code>
+(<code>1</code>)</strong></td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>AMOUNT</code>
+(<code>31</code>)</strong></td>
+<td style="text-align: center;">93.55% (<code>29/31</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>31/31</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>31/31</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>31/31</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>31/31</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>31/31</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>31/31</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>31/31</code>)</td>
+<td style="text-align: center;">93.55% (<code>29/31</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>CODENAME</code>
+(<code>2</code>)</strong></td>
+<td style="text-align: center;">0.00% (<code>0/2</code>)</td>
+<td style="text-align: center;">50.00% (<code>1/2</code>)</td>
+<td style="text-align: center;">50.00% (<code>1/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/2</code>)</td>
+<td style="text-align: center;">50.00% (<code>1/2</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/2</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>CREDENTIAL</code>
+(<code>1</code>)</strong></td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>DOB</code>
+(<code>1</code>)</strong></td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>EMAIL</code>
+(<code>32</code>)</strong></td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>32/32</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>32/32</code>)</td>
+<td style="text-align: center;">93.75% (<code>30/32</code>)</td>
+<td style="text-align: center;">93.75% (<code>30/32</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>32/32</code>)</td>
+<td style="text-align: center;">96.88% (<code>31/32</code>)</td>
+<td style="text-align: center;">96.88% (<code>31/32</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>32/32</code>)</td>
+<td style="text-align: center;">96.88% (<code>31/32</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>FIN_ACCOUNT</code>
+(<code>4</code>)</strong></td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>4/4</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>GOV_ID</code>
+(<code>2</code>)</strong></td>
+<td style="text-align: center;">50.00% (<code>1/2</code>)</td>
+<td style="text-align: center;">50.00% (<code>1/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>2/2</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>HEALTH</code>
+(<code>2</code>)</strong></td>
+<td style="text-align: center;">0.00% (<code>0/2</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/2</code>)</td>
+<td style="text-align: center;"><strong>50.00%</strong>
+(<code>1/2</code>)</td>
+<td style="text-align: center;"><strong>50.00%</strong>
+(<code>1/2</code>)</td>
+<td style="text-align: center;"><strong>50.00%</strong>
+(<code>1/2</code>)</td>
+<td style="text-align: center;"><strong>50.00%</strong>
+(<code>1/2</code>)</td>
+<td style="text-align: center;"><strong>50.00%</strong>
+(<code>1/2</code>)</td>
+<td style="text-align: center;"><strong>50.00%</strong>
+(<code>1/2</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/2</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>ID_NUMBER</code>
+(<code>6</code>)</strong></td>
+<td style="text-align: center;">16.67% (<code>1/6</code>)</td>
+<td style="text-align: center;">16.67% (<code>1/6</code>)</td>
+<td style="text-align: center;"><strong>66.67%</strong>
+(<code>4/6</code>)</td>
+<td style="text-align: center;">33.33% (<code>2/6</code>)</td>
+<td style="text-align: center;">33.33% (<code>2/6</code>)</td>
+<td style="text-align: center;">16.67% (<code>1/6</code>)</td>
+<td style="text-align: center;">16.67% (<code>1/6</code>)</td>
+<td style="text-align: center;">16.67% (<code>1/6</code>)</td>
+<td style="text-align: center;">50.00% (<code>3/6</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>LOCATION</code>
+(<code>1</code>)</strong></td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>1/1</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>ORG</code>
+(<code>11</code>)</strong></td>
+<td style="text-align: center;">9.09% (<code>1/11</code>)</td>
+<td style="text-align: center;"><strong>63.64%</strong>
+(<code>7/11</code>)</td>
+<td style="text-align: center;">54.55% (<code>6/11</code>)</td>
+<td style="text-align: center;">36.36% (<code>4/11</code>)</td>
+<td style="text-align: center;">45.45% (<code>5/11</code>)</td>
+<td style="text-align: center;">27.27% (<code>3/11</code>)</td>
+<td style="text-align: center;">27.27% (<code>3/11</code>)</td>
+<td style="text-align: center;">45.45% (<code>5/11</code>)</td>
+<td style="text-align: center;"><strong>63.64%</strong>
+(<code>7/11</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>PERSON</code>
+(<code>67</code>)</strong></td>
+<td style="text-align: center;">82.09% (<code>55/67</code>)</td>
+<td style="text-align: center;">97.01% (<code>65/67</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>67/67</code>)</td>
+<td style="text-align: center;"><strong>98.51%</strong>
+(<code>66/67</code>)</td>
+<td style="text-align: center;"><strong>98.51%</strong>
+(<code>66/67</code>)</td>
+<td style="text-align: center;">97.01% (<code>65/67</code>)</td>
+<td style="text-align: center;">97.01% (<code>65/67</code>)</td>
+<td style="text-align: center;">97.01% (<code>65/67</code>)</td>
+<td style="text-align: center;">95.52% (<code>64/67</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>PHONE</code>
+(<code>6</code>)</strong></td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+<td style="text-align: center;"><strong>100.0%</strong>
+(<code>6/6</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Total Entities
+(<code>167</code>)</strong></td>
+<td style="text-align: center;"><strong>77.25%</strong></td>
+<td style="text-align: center;"><strong>90.42%</strong></td>
+<td style="text-align: center;"><strong>92.81%</strong></td>
+<td style="text-align: center;"><strong>90.42%</strong></td>
+<td style="text-align: center;"><strong>92.81%</strong>
+(<code>94.01%</code> part.)</td>
+<td style="text-align: center;"><strong>89.22%</strong></td>
+<td style="text-align: center;"><strong>88.02%</strong></td>
+<td style="text-align: center;"><strong>91.02%</strong>
+(<code>92.22%</code> part.)</td>
+<td style="text-align: center;"><strong>89.82%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>FACT</code> Clauses
+(<code>10</code>)</strong></td>
+<td style="text-align: center;">0.00% (<code>0/10</code>)</td>
+<td style="text-align: center;">0.00% (<code>0/10</code>)</td>
+<td style="text-align: center;">60.00% (<code>6/10</code>)</td>
+<td style="text-align: center;"><strong>90.00%</strong>
+(<code>9/10</code>)</td>
+<td style="text-align: center;"><strong>90.00%</strong>
+(<code>9/10</code>)</td>
+<td style="text-align: center;"><strong>80.00%</strong>
+(<code>8/10</code>)</td>
+<td style="text-align: center;">40.00% (<code>4/10</code>)</td>
+<td style="text-align: center;">50.00% (<code>5/10</code>)</td>
+<td style="text-align: center;">30.00% (<code>3/10</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3
+id="43-entity-recall-breakdown-by-enterprise-domain-4-of-15-domains-represented-in-dev-15">4.3
+Entity Recall Breakdown by Enterprise Domain (4 of 15 Domains
+Represented in Dev-15)</h3>
+<p>Across the four functional enterprise domains present in the 15-email
+subset (<code>Finance &amp; Accounting</code>,
+<code>HR &amp; People</code>, <code>Legal &amp; Compliance</code>,
+<code>Sales &amp; Customers</code>), <code>Qwen 3.8 27B + GLiNER</code>
+(<code>Config B</code>) achieved the highest or tied-highest recall in
+every category:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Enterprise Business Domain</th>
+<th style="text-align: center;"><code>Baseline-A</code> (Rules
+Only)</th>
+<th style="text-align: center;"><code>Baseline-B0</code>
+(<code>+GLiNER</code>, 0 LLM)</th>
+<th style="text-align: center;"><strong><code>Qwen 3.8 27B</code>
+(<code>Config A</code>)</strong></th>
+<th
+style="text-align: center;"><strong><code>Qwen 3.8 27B + GLiNER</code>
+(<code>Config B</code>)</strong> 🏆</th>
+<th
+style="text-align: center;"><strong><code>Qwen 27B :: Safeguard 20B</code>
+(<code>Config D</code>)</strong></th>
+<th style="text-align: center;"><strong><code>GPT-OSS 120B</code>
+(<code>Config A</code>)</strong></th>
+<th
+style="text-align: center;"><strong><code>GPT-OSS 120B + GLiNER</code>
+(<code>Config B</code>)</strong></th>
+<th style="text-align: center;"><strong><code>GPT-OSS 120B</code>
+(<code>Config C: 1-Pass</code>)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Finance &amp;
+Accounting</strong></td>
+<td style="text-align: center;">90.91%</td>
+<td style="text-align: center;"><strong>98.48%</strong></td>
+<td style="text-align: center;">95.45%</td>
+<td style="text-align: center;"><strong>98.48%</strong></td>
+<td style="text-align: center;">95.45%</td>
+<td style="text-align: center;">95.45%</td>
+<td style="text-align: center;"><strong>98.48%</strong></td>
+<td style="text-align: center;">95.45%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HR &amp; People</strong></td>
+<td style="text-align: center;">69.77%</td>
+<td style="text-align: center;">90.70%</td>
+<td style="text-align: center;">93.02%</td>
+<td style="text-align: center;"><strong>95.35%</strong></td>
+<td style="text-align: center;">93.02%</td>
+<td style="text-align: center;">86.05%</td>
+<td style="text-align: center;">93.02%</td>
+<td style="text-align: center;">88.37%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Legal &amp;
+Compliance</strong></td>
+<td style="text-align: center;">61.70%</td>
+<td style="text-align: center;">76.60%</td>
+<td style="text-align: center;">80.85%</td>
+<td style="text-align: center;"><strong>82.98%</strong></td>
+<td style="text-align: center;">76.60%</td>
+<td style="text-align: center;">78.72%</td>
+<td style="text-align: center;">78.72%</td>
+<td style="text-align: center;"><strong>82.98%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sales &amp;
+Customers</strong></td>
+<td style="text-align: center;">90.91%</td>
+<td style="text-align: center;"><strong>100.00%</strong></td>
+<td style="text-align: center;">90.91%</td>
+<td style="text-align: center;">90.91%</td>
+<td style="text-align: center;">90.91%</td>
+<td style="text-align: center;">90.91%</td>
+<td style="text-align: center;">90.91%</td>
+<td style="text-align: center;">90.91%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-deep-dive-analysis-of-key-findings">5. Deep-Dive Analysis of
+Key Findings</h2>
+<h3
+id="51-why-qwen-38-27b--gliner-config-b-2448-gb-gpu-tier-outperforms-llama-33-70b-config-a-80-gb-gpu-tier">5.1
+Why <code>Qwen 3.8 27B + GLiNER</code> (<code>Config B</code>, 24–48 GB
+GPU Tier) Outperforms <code>Llama 3.3 70B</code> (<code>Config A</code>,
+80 GB GPU Tier)</h3>
+<p>In our October 19 report, <code>Llama 3.3 70B</code> was our top
+enterprise candidate (<code>16.19%</code> private character leakage,
+<code>60.0%</code> <code>FACT</code> recall, <code>92.81%</code> entity
+recall, <code>40.84s</code> median latency). Our new Tier 1
+configuration—<strong><code>Qwen 3.8 27B + GLiNER</code>
+(<code>Config B</code>)</strong>—substantially improves privacy recall
+while requiring <strong>half the GPU VRAM (<code>24–48 GB</code> vs
+<code>80 GB</code>)</strong>:</p>
+<ol type="1">
+<li><strong>54% Lower Private Character Leakage:</strong>
+<code>7.44%</code> (<code>226 / 3,038</code> chars) vs.
+<code>16.19%</code> (<code>492 / 3,038</code> chars) on
+<code>Llama 3.3 70B</code>.</li>
+<li><strong>69% Lower Confidential <code>FACT</code> Character
+Leakage:</strong> <code>11.44%</code> (<code>96 / 839</code> chars) vs.
+<code>36.95%</code> (<code>310 / 839</code> chars) on
+<code>Llama 3.3 70B</code>.</li>
+<li><strong>90% vs. 60% Confidential <code>FACT</code> Clause
+Recall:</strong> <code>Qwen 3.8 27B</code> caught <strong>9 out of
+10</strong> complex multi-clause confidential business facts (and
+achieved <code>95%</code> token coverage on the remaining medical
+<code>HEALTH</code> clause in <code>E018</code>).</li>
+<li><strong>100% Project Codename Recall:</strong> Caught <strong>100%
+(<code>2/2</code>) of <code>CODENAME</code> entities</strong> (vs.
+<code>50%</code> on <code>Llama 3.3 70B</code>).</li>
+<li><strong>Tradeoff:</strong> Its aggressive recall masks slightly more
+public text (<code>21.72%</code> vs. <code>18.46%</code> on
+<code>Llama 3.3 70B</code> and <code>11.54%</code> on
+<code>GPT-OSS 120B</code>).</li>
+</ol>
+<h3
+id="52-why-gliner-300m-is-a-strong-addition-for-stage-1-span-recall--degraded-fallback">5.2
+Why <code>GLiNER</code> (<code>300M</code>) Is a Strong Addition for
+Stage 1 Span Recall &amp; Degraded Fallback</h3>
+<p>Autoregressive LLMs generate text token-by-token and occasionally
+miss secondary mentions of names, locations, or organizations in dense
+paragraphs. In contrast, <strong><code>GLiNER</code>
+(<code>urchade/gliner_multi_pii-v1</code>)</strong> is a bidirectional
+DeBERTa-v3 span encoder (<code>&lt;1 GB</code> memory, Apache 2.0
+license) that scores start/end token pairs directly:</p>
+<ul>
+<li><strong>Zero-LLM Degraded Fallback
+(<code>Baseline-B0</code>):</strong> Even with <strong>zero LLM
+calls</strong>, adding <code>GLiNER</code> to Regex + Presidio jumps
+overall entity recall from <strong><code>77.25%</code> to
+<code>90.42%</code> (+13.17 pp)</strong>, catches
+<strong><code>97.01%</code> (<code>65/67</code>) of <code>PERSON</code>
+names</strong>, <strong><code>100%</code> of <code>CREDENTIAL</code>,
+<code>DOB</code>, <code>LOCATION</code>, and <code>AMOUNT</code>
+spans</strong>, and <strong><code>63.64%</code> (<code>7/11</code>) of
+<code>ORG</code> spans</strong> in <strong><code>0.11s</code></strong>.
+This makes <code>Rules + Presidio + GLiNER</code> a strong candidate for
+the service's degraded-mode fallback when the LLM is unavailable.</li>
+<li><strong>Hybrid LLM Mode (<code>Config B</code>):</strong> When
+<code>GLiNER</code> pre-populates structured entity candidates, the
+Stage 1 LLM no longer misses <code>EMAIL</code> (<code>93.75%</code>
+<span class="math inline">→</span> <strong><code>100.0%</code></strong>)
+or <code>LOCATION</code> (<code>0.0%</code> <span
+class="math inline">→</span> <strong><code>100.0%</code></strong>) and
+can dedicate its attention to extracting full-clause <code>FACT</code>
+statements (<code>90.0%</code> recall).</li>
+</ul>
+<h3
+id="53-operating-frontier-choosing-between-qwen-38-27b-safeguard-20b-config-d-and-gpt-oss-120b">5.3
+Operating Frontier: Choosing Between <code>Qwen 3.8 27B</code>,
+<code>Safeguard 20B</code> (<code>Config D</code>), and
+<code>GPT-OSS 120B</code></h3>
+<p>Depending on the acceptable leak and over-masking targets Virtual
+Gold sets in <strong>Question <code>Q2</code></strong>:</p>
+<ul>
+<li><strong>Lowest Private Leakage (<code>Qwen 3.8 27B + GLiNER</code>,
+<code>Config B</code>, 24–48 GB GPU):</strong> Best when minimizing
+confidential fact and PII leakage is the primary priority
+(<code>7.44%</code> private char leak, <code>90%</code>
+<code>FACT</code> recall, <code>21.72%</code> public over-masking).</li>
+<li><strong>Balanced Two-Model Checker
+(<code>Qwen 3.8 27B :: GPT-OSS Safeguard 20B</code>,
+<code>Config D</code>, 24–48 GB GPU):</strong> Uses
+<code>Qwen 3.8 27B</code> for Stage 1 extraction and
+<code>GPT-OSS Safeguard 20B</code> as the Stage 2 policy checker,
+cutting public over-masking to <strong><code>14.67%</code></strong> and
+extra masks to <strong><code>3</code></strong> while catching
+<strong><code>8 of 10</code> facts</strong> (<code>13.96%</code> private
+char leak).</li>
+<li><strong>Lowest Public Over-Masking
+(<code>OpenAI GPT-OSS 120B</code>, <code>Config A</code> /
+<code>Config C</code>, 80 GB GPU):</strong> Masks only
+<strong><code>11.54%</code></strong> (<code>Config A</code>,
+<code>1</code> extra mask) to <strong><code>5.44%</code></strong>
+(<code>Config C</code>, single-pass) of public text, but leaks more
+confidential facts (<code>22.94%–26.99%</code> private char leak) and
+requires an 80 GB GPU.</li>
+</ul>
+<hr />
+<h2
+id="6-updated-empirical-score-calibration-v140-on-1198-candidate-audit-records">6.
+Updated Empirical Score Calibration (<code>v1.4.0</code> on
+<code>1,198</code> Candidate Audit Records)</h2>
+<p>Using our patched calibration engine
+(<code>harness/calibration.py</code>), we generated
+<code>results/calibration_profile_free_tier_vpc_dev15_benchmark.json</code>
+across all <strong><code>1,198</code> candidate decisions</strong>
+collected in the new benchmark runs:</p>
+<ul>
+<li><strong>Total Audited Candidate Decisions:</strong>
+<code>1,198</code></li>
+<li><strong>Deterministic / Fail-Closed Policy Overrides Cleanly
+Excluded:</strong> <code>55</code> candidates (<code>score_method</code>
+<span class="math inline">∈</span>
+<code>{"deterministic_policy_override", "omitted_fail_closed_override", "ambiguous_fail_closed_override"}</code>,
+recorded with <code>calibrated_score: null</code>).</li>
+<li><strong>Pure Model-Evaluated Candidates Fitted:</strong>
+<code>1,143</code> candidates:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Raw Score Bin</th>
+<th style="text-align: center;">Candidate Count</th>
+<th style="text-align: center;">Monotonic Empirical <span
+class="math inline"><em>P</em>(Private)</span></th>
+<th style="text-align: left;">Behavior After Prompt &amp; Lock
+Fixes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong><code>[0.0, 0.2)</code></strong>
+(<code>PUBLIC</code> Verdict)</td>
+<td style="text-align: center;"><code>100</code></td>
+<td style="text-align: center;"><strong><code>0.2765</code></strong>
+(down from <code>0.6000</code> previously!)</td>
+<td style="text-align: left;"><strong>Resolved Unmasking
+Deadlock:</strong> Because <code>0.2765 &lt; 0.50</code>
+(<code>MEDIUM</code> / <code>LOW</code> threshold), even under
+calibrated scoring (<code>Mode C-Calibrated</code>), confident
+<code>PUBLIC</code> verdicts now properly unmask benign corporate
+entities!</td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><code>[0.2, 0.4)</code></strong></td>
+<td style="text-align: center;"><code>1</code></td>
+<td
+style="text-align: center;"><strong><code>0.3000</code></strong></td>
+<td style="text-align: left;">Sparse low-confidence region (monotonic
+floor enforced)</td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><code>[0.4, 0.6)</code></strong></td>
+<td style="text-align: center;"><code>0</code></td>
+<td
+style="text-align: center;"><strong><code>0.5000</code></strong></td>
+<td style="text-align: left;">Ambiguous midpoint prior
+(<code>[0.35, 0.65]</code> triggers fail-closed policy)</td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><code>[0.6, 0.8)</code></strong></td>
+<td style="text-align: center;"><code>0</code></td>
+<td
+style="text-align: center;"><strong><code>0.7000</code></strong></td>
+<td style="text-align: left;">Moderate-confidence private prior</td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><code>[0.8, 1.01)</code></strong>
+(<code>PRIVATE</code> Verdict)</td>
+<td style="text-align: center;"><code>1,042</code></td>
+<td style="text-align: center;"><strong><code>0.9672</code></strong> (up
+from <code>0.9447</code> previously!)</td>
+<td style="text-align: left;"><strong>High Precision on
+<code>PRIVATE</code> Verdicts:</strong> <code>96.72%</code> of
+candidates classified as <code>PRIVATE</code> by the evaluated models
+overlap true gold private spans.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Calibration Quality Metrics (<code>1,143</code>
+Model-Evaluated Candidates):</strong>
+<ul>
+<li><strong>Raw Expected Calibration Error (ECE):</strong>
+<code>0.0324</code> <span class="math inline">→</span>
+<strong>Calibrated ECE:</strong> <strong><code>0.0011</code></strong>
+(<code>-96.6%</code> calibration error)</li>
+<li><strong>Raw Brier Score:</strong> <code>0.0487</code> <span
+class="math inline">→</span> <strong>Calibrated Brier Score:</strong>
+<strong><code>0.0468</code></strong> (down from <code>0.1180</code> raw
+/ <code>0.0796</code> calibrated in the October 19 run)</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="7-questions-for-virtual-gold--next-phase-evaluation-roadmap">7.
+Questions for Virtual Gold &amp; Next-Phase Evaluation Roadmap</h2>
+<h3
+id="71-alignment-with-client-decisions-today-q1q4-in-the-meeting-agenda">7.1
+Alignment with Client Decisions Today (<code>Q1</code>–<code>Q4</code>
+in the Meeting Agenda)</h3>
+<ol type="1">
+<li><strong>Tier Table &amp; Acceptable Leak Targets (<code>Q1</code>
+&amp; <code>Q2</code>):</strong> Once Virtual Gold confirms the updated
+tier table (<code>policy 0.1.3</code> vs. <code>0.1.1</code>) and
+acceptable leak/over-masking rates per tier, we will re-score our
+benchmark directly against <code>service/config/policy.yaml</code> and
+extend evaluation from <strong>15 to 60 development
+emails</strong>.</li>
+<li><strong>Target Deployment Environment (<code>Q3</code> /
+<code>D51</code>):</strong> Our best configuration
+(<code>Qwen 3.8 27B + GLiNER</code>) fits on a single <strong>24–48 GB
+GPU</strong>, while <code>GPT-OSS 120B</code> requires an <strong>80 GB
+GPU</strong>. Confirming where the service will run—and when a private
+cloud / GPU sandbox will be available—will allow us to benchmark true
+self-hosted latency and throughput.</li>
+<li><strong>Document Types in Scope for Phase 1 (<code>Q4</code> /
+<code>A15</code>):</strong> The SOW and midterm deck mention
+<em>"English text and documents,"</em> while the service currently
+accepts executive emails. If Virtual Gold wants non-email documents
+tested in Phase 1, we have designed a <strong>Multi-Document Evaluation
+Suite</strong> covering contracts, financial tables, strategy memos,
+HR/clinical notes, technical logs, and long transcripts
+(<code>L-Chunk</code> 2K sliding windows vs. <code>L-Native</code> 16K
+context).</li>
+</ol>
+<h3 id="72-next-two-weeks-for-the-model-workstream">7.2 Next Two Weeks
+for the Model Workstream</h3>
+<ol type="1">
+<li><strong>Wire Prompts into the Service (<code>M2</code>, due Nov
+1):</strong> Connect the Stage 1 detection and Stage 2 assessment
+prompts and parsers into the HTTP service for the end-to-end pipeline
+milestone.</li>
+<li><strong>Re-Score Under the Confirmed Tier Policy &amp; Expand to 60
+Dev Emails:</strong> Apply the confirmed tier table from
+<code>Q1</code>/<code>Q2</code> across all 60 development emails
+(<code>baseline_dev.jsonl</code>).</li>
+<li><strong>Complete Remaining Open-Weight Model Sweep:</strong>
+Evaluate the remaining registered Tier 1
+(<code>Mistral Small 3.2 24B</code>, <code>Gemma 4 26B-A4B</code>,
+<code>Qwen 3.6 35B-A3B</code>, <code>Qwen 3 32B</code>) and Tier 2
+(<code>Llama 3.3 70B</code> with <code>GLiNER</code>,
+<code>Llama 4 Scout</code>, <code>Qwen 3.5 122B</code>) candidates.</li>
+<li><strong>Test API v2 Long Token Preservation:</strong> Test whether
+real models preserve Zhexuan's API v2 tokens (<code>[VG:2:…]</code>)
+without corruption during downstream processing.</li>
+</ol>
+<hr />
+<h2 id="8-updated-proposed-service-configuration-api-contract-042">8.
+Updated Proposed Service Configuration
+(<code>API Contract 0.4.2</code>)</h2>
+<p>Below is the proposed model and policy gate configuration for the
+service engineering hand-off, supporting a <strong>24–48 GB GPU profile
+(<code>Qwen 3.8 27B + GLiNER</code>)</strong>, an <strong>80 GB GPU
+low-overmasking profile (<code>GPT-OSS 120B</code>)</strong>, and a
+<strong>no-LLM degraded fallback
+(<code>Rules + Presidio + GLiNER</code>)</strong>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;runtime_engine&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;single_gpu_24_48gb_recommended&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;provider&quot;</span><span class="fu">:</span> <span class="st">&quot;Self-hosted vLLM / SGLang / Ollama&quot;</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;architecture&quot;</span><span class="fu">:</span> <span class="st">&quot;Config B (Rules + Presidio + GLiNER 300M -&gt; Qwen 3.8 27B 2-Stage)&quot;</span><span class="fu">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;stage0_encoder&quot;</span><span class="fu">:</span> <span class="st">&quot;urchade/gliner_multi_pii-v1&quot;</span><span class="fu">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;stage1_model&quot;</span><span class="fu">:</span> <span class="st">&quot;qwen/qwen3.8-27b&quot;</span><span class="fu">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;stage2_model&quot;</span><span class="fu">:</span> <span class="st">&quot;qwen/qwen3.8-27b (or openai/gpt-oss-safeguard-20b for Config D)&quot;</span><span class="fu">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;runtime_options&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;temperature&quot;</span><span class="fu">:</span> <span class="fl">0.0</span><span class="fu">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;stage1_max_tokens&quot;</span><span class="fu">:</span> <span class="dv">2048</span><span class="fu">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;stage2_max_tokens&quot;</span><span class="fu">:</span> <span class="dv">2048</span><span class="fu">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;reasoning_effort&quot;</span><span class="fu">:</span> <span class="st">&quot;none&quot;</span><span class="fu">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;gpu_requirement&quot;</span><span class="fu">:</span> <span class="st">&quot;1x 24-48 GB GPU (e.g., NVIDIA L4 or L40S)&quot;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;single_gpu_80gb_low_overmasking&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;provider&quot;</span><span class="fu">:</span> <span class="st">&quot;Self-hosted vLLM / SGLang&quot;</span><span class="fu">,</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;architecture&quot;</span><span class="fu">:</span> <span class="st">&quot;Config B (Rules + Presidio + GLiNER 300M -&gt; OpenAI GPT-OSS 120B MoE)&quot;</span><span class="fu">,</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;stage0_encoder&quot;</span><span class="fu">:</span> <span class="st">&quot;urchade/gliner_multi_pii-v1&quot;</span><span class="fu">,</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;stage1_model&quot;</span><span class="fu">:</span> <span class="st">&quot;openai/gpt-oss-120b&quot;</span><span class="fu">,</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;stage2_model&quot;</span><span class="fu">:</span> <span class="st">&quot;openai/gpt-oss-120b&quot;</span><span class="fu">,</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;runtime_options&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;temperature&quot;</span><span class="fu">:</span> <span class="fl">0.0</span><span class="fu">,</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;quantization&quot;</span><span class="fu">:</span> <span class="st">&quot;MXFP4 (native)&quot;</span><span class="fu">,</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;gpu_requirement&quot;</span><span class="fu">:</span> <span class="st">&quot;1x 80 GB GPU (e.g., NVIDIA A100 or H100)&quot;</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;zero_llm_degraded_fallback&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;architecture&quot;</span><span class="fu">:</span> <span class="st">&quot;Baseline-B0 (Regex + Presidio + GLiNER 300M Only)&quot;</span><span class="fu">,</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;median_latency_s&quot;</span><span class="fu">:</span> <span class="fl">0.11</span><span class="fu">,</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;entity_recall_dev15&quot;</span><span class="fu">:</span> <span class="fl">0.9042</span><span class="fu">,</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;person_recall_dev15&quot;</span><span class="fu">:</span> <span class="fl">0.9701</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;prompts&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;detection&quot;</span><span class="fu">:</span> <span class="st">&quot;prompts/detection_prompt_v2.txt&quot;</span><span class="fu">,</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;assessment&quot;</span><span class="fu">:</span> <span class="st">&quot;prompts/assessment_prompt_v2.txt&quot;</span><span class="fu">,</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;single_pass&quot;</span><span class="fu">:</span> <span class="st">&quot;prompts/single_pass_prompt_v2.txt&quot;</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;policy_gate&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;default_gating_mode&quot;</span><span class="fu">:</span> <span class="st">&quot;Mode C-Raw (use_calibrated_scores: false)&quot;</span><span class="fu">,</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;high_tier_rule_lock_field&quot;</span><span class="fu">:</span> <span class="st">&quot;has_high_tier_rule_hit&quot;</span><span class="fu">,</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;omitted_candidate_policy&quot;</span><span class="fu">:</span> <span class="st">&quot;FAIL_CLOSED_REDACT&quot;</span><span class="fu">,</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;ambiguous_score_margin&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="fl">0.35</span><span class="ot">,</span> <span class="fl">0.65</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;ambiguous_score_policy&quot;</span><span class="fu">:</span> <span class="st">&quot;FAIL_CLOSED_REDACT&quot;</span><span class="fu">,</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;tier_thresholds_note&quot;</span><span class="fu">:</span> <span class="st">&quot;To be aligned with confirmed service/config/policy.yaml after Q1/Q2&quot;</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+
+</body>
+</html>
