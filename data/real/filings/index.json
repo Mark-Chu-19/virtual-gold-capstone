@@ -1,0 +1,98 @@
+[
+  {
+    "ticker": "AAPL",
+    "file": "AAPL_10-Q_2026-07-31.txt",
+    "form": "10-Q",
+    "date": "2026-07-31",
+    "accession": "000032019326000020",
+    "primary_doc": "aapl-20260627.htm"
+  },
+  {
+    "ticker": "AAPL",
+    "file": "AAPL_8-K_2026-07-30.txt",
+    "form": "8-K",
+    "date": "2026-07-30",
+    "accession": "000032019326000018",
+    "primary_doc": "aapl-20260730.htm"
+  },
+  {
+    "ticker": "MSFT",
+    "file": "MSFT_8-K_2026-09-02.txt",
+    "form": "8-K",
+    "date": "2026-09-02",
+    "accession": "000119312526380280",
+    "primary_doc": "d291965d8k.htm"
+  },
+  {
+    "ticker": "MSFT",
+    "file": "MSFT_10-K_2026-07-29.txt",
+    "form": "10-K",
+    "date": "2026-07-29",
+    "accession": "000119312526323660",
+    "primary_doc": "msft-20260630.htm"
+  },
+  {
+    "ticker": "NVDA",
+    "file": "NVDA_8-K_2026-09-03.txt",
+    "form": "8-K",
+    "date": "2026-09-03",
+    "accession": "000104581026000078",
+    "primary_doc": "nvda-20260902.htm"
+  },
+  {
+    "ticker": "NVDA",
+    "file": "NVDA_10-Q_2026-08-26.txt",
+    "form": "10-Q",
+    "date": "2026-08-26",
+    "accession": "000104581026000075",
+    "primary_doc": "nvda-20260726.htm"
+  },
+  {
+    "ticker": "TSLA",
+    "file": "TSLA_10-Q_2026-07-23.txt",
+    "form": "10-Q",
+    "date": "2026-07-23",
+    "accession": "000162828026049270",
+    "primary_doc": "tsla-20260630.htm"
+  },
+  {
+    "ticker": "TSLA",
+    "file": "TSLA_8-K_2026-07-22.txt",
+    "form": "8-K",
+    "date": "2026-07-22",
+    "accession": "000162828026049213",
+    "primary_doc": "tsla-20260722.htm"
+  },
+  {
+    "ticker": "JPM",
+    "file": "JPM_10-Q_2026-08-06.txt",
+    "form": "10-Q",
+    "date": "2026-08-06",
+    "accession": "000162828026054343",
+    "primary_doc": "jpm-20260630.htm"
+  },
+  {
+    "ticker": "JPM",
+    "file": "JPM_8-K_2026-07-23.txt",
+    "form": "8-K",
+    "date": "2026-07-23",
+    "accession": "000119312526314128",
+    "primary_doc": "d103985d8k.htm"
+  },
+  {
+    "ticker": "AMZN",
+    "file": "AMZN_8-K_2026-09-14.txt",
+    "form": "8-K",
+    "date": "2026-09-14",
+    "accession": "000110465926107526",
+    "primary_doc": "tm2624614d5_8k.htm"
+  },
+  {
+    "ticker": "AMZN",
+    "file": "AMZN_8-K_2026-09-09.txt",
+    "form": "8-K",
+    "date": "2026-09-09",
+    "accession": "000101872426000036",
+    "primary_doc": "amzn-20260908.htm"
+  }
+]
