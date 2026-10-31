@@ -8,3 +8,8 @@ scrape_configs:
   - job_name: vg-redactor
     static_configs:
       - targets: ["127.0.0.1:9100"]
+
+  # Optional P2 exporter; see README for the aggregate snapshot/report contracts.
+  - job_name: vg-external
+    static_configs:
+      - targets: ["127.0.0.1:9101"]

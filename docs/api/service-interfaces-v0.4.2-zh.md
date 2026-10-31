@@ -235,7 +235,8 @@ class RecordStore:
 | 指标 | 类型 | 标签 |
 |---|---|---|
 | `vg_http_requests_total` | counter | route, method, status |
-| `vg_request_duration_seconds` | histogram | route, mode=`normal|degraded|error` |
+| `vg_pipeline_duration_seconds` | histogram | route, mode=`normal|degraded|error`（仅 orchestrator，不含 HTTP 处理） |
+| `vg_http_duration_seconds` | histogram | route, method, status, mode（直到最终响应体发送完成） |
 | `vg_stage_duration_seconds` | histogram | stage∈{validate,segment,detect_rules,detect_presidio,detect_model,merge,assess_model,calibrate,decide,pseudonymize,audit} |
 | `vg_model_calls_total` | counter | prompt, outcome∈{ok,unavailable,timeout,unparseable} |
 | `vg_model_call_duration_seconds` / `vg_model_queue_wait_seconds` | histogram | prompt |

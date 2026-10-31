@@ -20,6 +20,7 @@ from ..model.client import ModelGateway, StubModelClient
 from ..obs.audit import AuditLog
 from ..obs.logging import log_event
 from ..obs.metrics import Metrics
+from ..obs.http import HttpMetricsMiddleware
 from ..pipeline.orchestrator import Orchestrator
 from ..pipeline.deadline import Deadline
 from ..records.store import RecordStore
@@ -59,6 +60,7 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
 
     async def refresh_readiness() -> dict:
         readiness["model_up"] = await model_client.ping()
+        metrics.component_up.labels("model_endpoint").set(int(readiness["model_up"]))
         mode = "ready" if readiness["model_up"] else "degraded"
         metrics.set_mode(mode)
         return readiness
@@ -68,6 +70,7 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
             records.sweep()
             stats = records.stats()
             metrics.records_active.set(stats["active"])
+            metrics.records_reserved.set(stats["reserved"])
             metrics.records_capacity.set(stats["capacity"])
             await refresh_readiness()
             await asyncio.sleep(10)
@@ -96,6 +99,8 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
 
     def error_response(request: Request, err: ProblemError):
         # V3 clients only manage session_id; per-call diagnostics live in the header.
+        if err.type == "capacity-exhausted":
+            metrics.capacity_rejected.inc()
         return problem_response(err, request.state.request_id)
 
     # ---- middleware: request id, auth, metrics, last-resort 500 ------------------------------
@@ -121,10 +126,7 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
             resp = error_response(request, ProblemError(500, "internal", "Internal error; content was not processed"))
         route = request.scope.get("route")
         route_path = route.path if route else "unmatched"
-        metrics.http_requests.labels(route_path, request.method, str(resp.status_code)).inc()
         dt = time.perf_counter() - t0
-        if route_path == "/v3/redaction" and resp.status_code >= 400:
-            metrics.request_duration.labels("redactions", "error").observe(dt)
         resp.headers.setdefault("X-Request-ID", rid)
         log_event("request", request_id=rid, route=route_path, method=request.method,
                   status=resp.status_code, duration_ms=round(dt * 1000, 1))
@@ -137,8 +139,9 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
     # ---- routes ------------------------------------------------------------------------------
     @app.post("/v3/redaction", response_model=RedactionResponseV3)
     async def create_redaction_v3(request: Request):
-        req = await _parse(request, RedactionRequestV3, settings)
-        _check_business_rules(req, components)
+        with metrics.stage("validate"):
+            req = await _parse(request, RedactionRequestV3, settings)
+            _check_business_rules(req, components)
         context = sessions.begin(req, request.state.principal)
         context.deadline = Deadline(settings.timeout_ms)
         metrics.inflight.inc()
@@ -156,6 +159,8 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
             raise
         finally:
             metrics.inflight.dec()
+        request.state.redaction_mode = "degraded" if result.degraded else "normal"
+        request.state.redaction_degraded = context.degraded
         log_event("session_created", request_id=request.state.request_id, session_id=context.session_id)
         return response
 
@@ -213,6 +218,14 @@ def create_app(settings: Settings, components: Components, model_client: ModelCl
                                "model_assessment": "up" if up else "down",
                                "session_store": "up", "restoration": "up"}}
 
+    metrics.records_capacity.set(settings.max_records)
+    metrics.runtime_info.labels(
+        "stub" if isinstance(model_client, StubModelClient) else settings.model.backend,
+        settings.v3.backend,
+        "stub" if components.detect_rules.__module__.endswith("stubs.components") else "mixed",
+    ).set(1)
+    # Outermost user middleware sees auth failures and the final response body.
+    app.add_middleware(HttpMetricsMiddleware, metrics=metrics, records=records)
     return app
 
 

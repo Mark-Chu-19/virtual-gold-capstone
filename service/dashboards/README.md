@@ -1,73 +1,297 @@
 # Monitoring: Prometheus and Grafana
 
-Local monitoring stack for the redaction service. One dashboard, **Virtual Gold: Redaction Service**, with the
-eight P0 panels from the schedule. Everything stays on the machine; both web UIs listen on 127.0.0.1 only.
+The provisioned **Virtual Gold: Redaction Service** dashboard follows the eight modules in the
+midterm presentation (slides 36–37). It shows live service behavior; it does not measure privacy
+accuracy. Default view: last 15 minutes, 5-second refresh, one selected service instance.
 
-| File | Purpose |
+## Run locally
+
+From `service/`, in separate terminals:
+
+```bash
+VG_API_KEYS=dev-key VG_METRICS_HOST=0.0.0.0 python -m vg_redactor.main
+docker compose -f dashboards/docker-compose.yml up -d
+python scripts/traffic.py --key dev-key --rate 5 --duration 300
+```
+
+Grafana: http://127.0.0.1:3000, user `admin`, password `$GRAFANA_ADMIN_PASSWORD` (default `admin`).
+Prometheus: http://127.0.0.1:9090. Both monitoring UIs bind to loopback.
+
+On macOS Docker needs the host metrics server to listen on a reachable address. Setting
+`VG_METRICS_HOST=0.0.0.0` makes metrics port 9100 reachable on your network during the demo.
+For a loopback-only install, run native Prometheus with `prometheus.native.yml`, install Grafana,
+and configure its provisioned datasource URL as `http://127.0.0.1:9090`.
+
+Default model backend is **stub**. The versions/runtime table reports the actual model backend,
+restoration backend, and `stub` or `mixed` components. Mixed means real privacy components with
+remaining stub prompts/parsers; switching to Ollama alone does not make those components real.
+
+## P0: eight core modules
+
+| Module | Display and measurement |
 |---|---|
-| `docker-compose.yml` | Prometheus and Grafana containers |
-| `prometheus.yml` | scrape config for Docker (target `host.docker.internal:9100`) |
-| `prometheus.native.yml` | same job for a Prometheus installed without Docker (target `127.0.0.1:9100`) |
-| `grafana/provisioning/` | data source and dashboard provider, loaded automatically |
-| `grafana/dashboards/vg-redactor.json` | the dashboard, committed as code |
-| `../scripts/traffic.py` | synthetic traffic for the dashboard and the demo |
+| Requests and errors | Selected-range count and status-code RPS for **POST** `/v3/redaction`; DELETE is excluded |
+| Availability | 2xx / (2xx + 5xx), excluding 4xx; degraded 200 counts as available |
+| Latency | Separate HTTP end-to-end and pipeline p50/p95/p99, grouped by processing mode |
+| Stages | p95 by stage, including validation; concurrent detector timings must not be summed |
+| Degraded responses | Successful degraded / all successful redactions; causes and stages in a separate rate graph |
+| Model calls | Mutually exclusive final outcomes by detection/assessment prompt |
+| Sessions | Active + reserved against capacity; deletions/expiry and explicit capacity rejections |
+| Readiness and versions | Scrape UP/DOWN, model endpoint probe, last rules/Presidio result and runtime versions |
 
-## Run it (Docker)
+### Metric boundaries
+
+* `vg_http_duration_seconds{route,method,status,mode}` starts before gateway/auth handling and
+  ends after sending the final ASGI response body. It includes validation, session work, pipeline
+  and serialization, but excludes client network transit. All HTTP routes are measured. Mode is
+  `normal`, `degraded`, or `error` for POST redaction, and `none` for other routes.
+* `vg_pipeline_duration_seconds{route="redactions",mode}` measures the orchestrator only,
+  including failed pipeline attempts. Replaces the ambiguously named `vg_request_duration_seconds`.
+  A later serialization failure does not change a pipeline that already completed successfully.
+  Never subtract p95 values to infer HTTP overhead.
+* `vg_redaction_responses_total{mode}` counts completed HTTP responses only. Final errors after
+  fallback count as `error`, never successful degradation. `vg_degraded_total{reason,stage}` is
+  incremented only when the final degraded response body has been sent successfully.
+* `vg_model_calls_total{prompt,outcome}` counts one terminal result per gateway invocation:
+  `ok` **after parsing**, `unavailable`, `timeout`, `unparseable`, `cancelled`, or `internal_error`. Queue timeout
+  counts as an invocation; calls cancelled by an enclosing request are explicit. A raw model
+  response rejected with `ModelOutputUnparseable` contributes only `unparseable`. Unexpected
+  parser exceptions contribute only `internal_error` and propagate as HTTP 500; they are never
+  disguised as model unavailability. The model slot is released on every exit path.
+* Model endpoint probe is reachability, not inference readiness. Rules/Presidio state is the
+  **last observed execution**, with -1 before first use, 0 on failure, 1 on success. It is not a
+  continuous component probe. `vg_service_mode` remains a compatibility metric based on model
+  reachability; the dashboard deliberately names the probe directly.
+* Capacity uses active **plus reserved** slots. `vg_capacity_rejected_total` counts only
+  `capacity-exhausted`, not unrelated 503s. Gauges refresh after HTTP responses and every 10s.
+
+### Empty and unavailable data
+
+No eligible requests gives an undefined ratio (No data), never 100% availability. Check the
+separate scrape card: DOWN means metrics cannot be collected; UP with no requests is idle.
+Component states are instant queries rather than historical last-known state cards. Counters
+use `rate`/`increase` and tolerate restarts; selected-range counts are Prometheus estimates and
+may be fractional. Quantiles on sparse traffic should be interpreted with request volume.
+
+### Demo and acceptance scenarios
+
+Set `VG_STUB_FAULT_FILE=/tmp/vg_fault` before launching the stub backend, then write `down`,
+`timeout`, `garbage`, or `slow:2500` to that file. Remove it to restore normal behavior.
+Use recognizer failure injection in tests to exercise Presidio degradation. Also verify normal
+redaction/restore/delete, session expiry, capacity exhaustion, no traffic and scrape outage.
+Tests cover one final outcome per model call, delayed serialization in HTTP but not pipeline
+latency, authentication failures, capacity reservation, and failures after fallback.
+
+## Dashboard source
+
+Edit `build_dashboard.py`, then run:
 
 ```bash
-cd service
-VG_API_KEYS=dev-key VG_METRICS_HOST=0.0.0.0 python -m vg_redactor.main     # terminal 1: the service
-docker compose -f dashboards/docker-compose.yml up -d                       # terminal 2: monitoring
-python scripts/traffic.py --key dev-key --rate 5 --duration 300             # terminal 3: traffic
+python dashboards/build_dashboard.py
 ```
 
-Open Grafana at http://127.0.0.1:3000 (user `admin`, password `$GRAFANA_ADMIN_PASSWORD`, default `admin`) and the
-dashboard under the folder **Virtual Gold**. Prometheus is at http://127.0.0.1:9090 (Status, Targets should show
-`vg-redactor` as UP).
+Commit both the builder and generated `grafana/dashboards/*.json`. File provisioning is read-only
+in the Grafana UI; changes reload automatically. Metrics labels never contain email text, entity
+values, API keys, request IDs, session IDs or tenant identifiers.
 
-**Docker on macOS:** a container cannot reach a service that listens on the host's loopback address only. Metrics
-are bound to `127.0.0.1` by default (contract: local only), so for Docker you must set `VG_METRICS_HOST=0.0.0.0`
-as above. That exposes port 9100 (counts and timings only, never text) to your network while it runs, so use it
-on a trusted network or switch to the native install below. On Linux you can instead run Prometheus with
-host networking and keep the default.
+## P1: expandable diagnostics
 
-## Run it without Docker
+Expand the Diagnostics row for model queue wait and execution/parse p50/p95/p99, in-flight
+redactions, session slot trends, endpoint/status breakdowns, HTTP p95 by status, and rendered
+span decisions by tier/action/mode. Stage p95 trends live in the main performance row; model
+parsed-success ratios live beside outcome counts in the main model table.
+
+The **Diagnostic route** and **Diagnostic method** selectors affect only the operation-specific
+panels. Select `/v3/restore` + POST for restoration or `/v3/redaction` + DELETE for deletion;
+top-level service KPIs always measure POST redaction. Model queue-only timeouts have a queue
+sample but no execution sample. Rendered span counts may include requests failing later in
+audit/serialization; they are processing activity, not completed responses or privacy accuracy.
+
+## P2: host integration and offline evaluation
+
+Open **Virtual Gold: Release and Offline Evaluation** using the service dashboard link. This
+second dashboard reads an **optional separate exporter** on port 9101. The service remains
+independent of both VG08 and labelled benchmark inputs. No benchmark run is started automatically,
+and no reserved test predictions or fabricated benchmark results are committed.
+
+### Start the optional exporter
+
+From `service/`:
 
 ```bash
-brew install prometheus grafana
-prometheus --config.file=dashboards/prometheus.native.yml                  # :9090
-# Grafana: copy grafana/provisioning/* and grafana/dashboards/* into your Grafana paths, and change the data
-# source URL in provisioning/datasources/prometheus.yml to http://127.0.0.1:9090
+python -m vg_redactor.obs.external \
+  --host-snapshot /tmp/vg08-monitoring.json \
+  --evaluation-report /tmp/vg-evaluation.json
 ```
 
-The service keeps the default `VG_METRICS_HOST=127.0.0.1` in this mode.
+Native Prometheus scrapes `127.0.0.1:9101`. For Docker on macOS, add `--host 0.0.0.0` so its
+`host.docker.internal:9101` target can reach it (same network exposure considerations as 9100).
+Both scrape jobs are provisioned; the optional one stays DOWN until you start the exporter.
+Each input can be absent independently. Missing/invalid inputs expose source availability 0
+and omit that source's metrics. They never expose successful release or accuracy as zero.
+Panels show source validity and producer timestamp age separately: a valid old snapshot can
+still be stale. Check these before interpreting event rates.
 
-## Demo: show the degraded path
+### VG08 producer contract (integration boundary)
 
-The stub model reads a fault file on every call (stub backend only, never the real Ollama client):
+The VG08 host must atomically replace its snapshot with its **own cumulative counters**. This
+repository has no VG08 host implementation, so this implements the receiving contract and
+monitoring path, not an actual provider dispatch hook. The host must wire the publisher at its
+routing/release boundaries. It must count each event once in its own process; scraping the same
+snapshot does not add counts again. Counter resets on host restart are handled by Prometheus.
+Keep the snapshot bounded to these exact fields:
+
+```json
+{
+  "schema_version": 1,
+  "updated_at": 1793404800,
+  "routing": {"cloud": 0, "local": 0, "blocked": 0},
+  "release": {"sent": 0, "blocked": 0, "failed": 0}
+}
+```
+
+This is a schema example, not demo telemetry. `updated_at` is the producer's Unix time in seconds
+when publishing. `cloud/local/blocked` are final routing decisions. `sent` means the provider
+request was dispatched successfully, `blocked` means the host prevented dispatch, and `failed`
+means attempted dispatch failed. Routing and release are separate event populations; local routes
+need not generate release events. Neither a redaction 200 nor `degraded=false` implies release
+eligibility or an actual cloud call. The existing V3 response contract is unchanged.
+
+Publish via a temporary file and rename, rather than overwriting the live file in place. Never
+include text, entity values, session/request IDs, credentials, URLs or additional arbitrary labels.
+
+### Generate a sanitized evaluation report
+
+The offline report command reuses `data/baseline/score.py` and accepts the repository's labelled
+v1.1 format plus predictions with global text offsets or service field offsets. Supply the
+**exact same set of email IDs** in gold and predictions; explicit `spans: []` means nothing was
+masked. Missing records, duplicate IDs and invalid prediction offsets are rejected. HTTP V3
+responses omit spans: obtain predictions from the offline harness, not by guessing offsets from
+redacted HTTP text. `action: retain` predictions are excluded from mask coverage.
+
+Create a metadata JSON file with these exact version identifiers (replace example values):
+
+```json
+{
+  "run": "dev-run-001",
+  "dataset": "baseline-v1.1",
+  "split": "dev",
+  "model": "model-version",
+  "policy": "policy-version",
+  "prompt_detection": "detection-version",
+  "prompt_assessment": "assessment-version",
+  "calibration": "calibration-version"
+}
+```
+
+Then, from `service/`:
 
 ```bash
-export VG_STUB_FAULT_FILE=/tmp/vg_fault          # before starting the service
-echo down    > /tmp/vg_fault                     # model_unavailable: degraded rate rises, service mode turns degraded
-echo timeout > /tmp/vg_fault                     # model_timeout
-echo garbage > /tmp/vg_fault                     # model_output_unparseable
-echo slow:2500 > /tmp/vg_fault                   # slow model, higher latency
-rm /tmp/vg_fault                                 # back to normal
+python -m vg_redactor.obs.evaluation \
+  --gold ../data/baseline/baseline_v1.1_dev.jsonl \
+  --pred /path/to/dev-predictions.jsonl \
+  --metadata /path/to/metadata.json \
+  --out /tmp/vg-evaluation.json
 ```
 
-## Panels
+This writes an atomic aggregate report with **no email IDs, raw text, misses or entity values**.
+The report command rejects any gold email ID listed under `test` in `data/baseline/split_v1.1.json`,
+whatever the dataset name. For `dataset: baseline-v1.1`, `split: dev` also requires exactly the dev
+set. Other dataset names are not otherwise verified; callers must supply truthful versions. Reserved
+test evaluation remains a deliberate action after pipeline freeze, outside this command. The dashboard displays the **latest imported
+run** as instant values, not historical time series mixing different datasets/configurations.
 
-| # | Panel | Metric |
-|---|---|---|
-| 1 | Request rate and status codes | `vg_http_requests_total` |
-| 2 | Availability, 2xx / (2xx + 5xx) | `vg_http_requests_total` |
-| 3 | End-to-end latency p50/p95/p99, normal vs degraded | `vg_request_duration_seconds` |
-| 4 | Per-stage time (p95) | `vg_stage_duration_seconds` |
-| 5 | Degraded rate and reasons | `vg_degraded_total` |
-| 6 | Model-call outcomes per prompt | `vg_model_calls_total` |
-| 7 | Records and capacity | `vg_records_active`, `vg_records_capacity`, `vg_records_removed_total` |
-| 8 | Service mode and versions in use | `vg_service_mode`, `vg_build_info` |
+### Evaluation definitions
 
-The dashboard is provisioned read-only: edit `grafana/dashboards/vg-redactor.json` (or export from the UI and
-paste the JSON) and commit it. Benchmark leak rate is measured offline with labels; these panels show service
-health, not accuracy.
+* **Required span leak ratio by tier**: missed required spans / required spans of the tier,
+  including FACT. An entity is caught at >=95% alphanumeric coverage; FACT at >=50%, matching
+  the repository's coverage thresholds. Tiers with no required spans have no ratio.
+* **Emails leaking entities by tier**: existing scorer's `leak_rate_by_tier`, with all evaluated
+  emails as denominator. FACT is excluded by that scorer and shown separately as FACT recall.
+  This differs from the span ratio above, and both panels state their denominator.
+* **Public labelled spans touched**: `optional_masked`, any overlap with retain-labelled spans.
+  **Extra masks**: predictions overlapping no label. These are limited usefulness measures,
+  not a task-answer utility score or whole-document character over-redaction percentage.
+* Both leak metrics measure residual exposure in benchmark outputs. They do not observe actual
+  cloud leakage and are never derived from live HTTP status or `vg_spans_total`.
+
+### Optional calibration evaluation
+
+Add `--calibration-samples /path/to/heldout-candidates.jsonl` to the report command. Every line
+must contain exactly `raw`, `calibrated` (finite probabilities) and `is_private` (boolean gold
+label). Use independently labelled held-out candidates, the same set for both scores, and exclude
+deterministic policy overrides. These samples cannot be recovered from aggregate HTTP status or
+unlabelled audit scores. Without them the calibration panels show No data.
+
+ECE uses ten equal-width bins: [0,0.1), … [0.9,1], weighted by candidate count. The dashboard shows
+raw/calibrated ECE, sample count, mean score and observed private fraction by occupied bin. It
+reports calibration on the supplied sample population; it does not establish detector recall.
+
+## Provisional color thresholds
+
+Edit **`thresholds.json`** and regenerate the dashboard JSON to tune the health color bands.
+All ratio thresholds use **absolute values in 0–1 units**, not Grafana's default absolute 80.
+These are initial operational targets for this project, not a client-approved SLA or universal
+industry standard. Panel tooltips identify them as provisional. They color the displayed rate
+window (`$__rate_interval`), not a 30-day compliance measurement, and do not create paging alerts.
+
+| Profile | Green | Orange | Red |
+|---|---|---|---|
+| HTTP availability | >=99.9% | >=99% and <99.9% | <99% |
+| Active + reserved session capacity | <80% | >=80% and <90% | >=90% |
+| Successful response degradation | <1% | >=1% and <5% | >=5% |
+| Model calls with valid parsed output | >=99% | >=95% and <99% | <95% |
+| Capacity rejections in selected range | <1 estimated event | — | >=1 estimated event |
+
+The design follows [Google SRE's monitoring guidance](https://sre.google/sre-book/monitoring-distributed-systems/)
+on traffic, errors, latency and saturation, plus [SLO/error-budget guidance](https://sre.google/workbook/alerting-on-slos/).
+The 99.9% availability target uses the workbook's illustrative SLO as a starting point; <99%
+indicates more than ten times its allowed error fraction. This is a color-band comparison, not
+a burn-rate alert implementation. Capacity bands leave 20%/10% of session slots as headroom
+before admission starts failing. Degradation at 1%/5% and parsed-output success at 99%/95%
+are project-selected initial quality bands, not numbers mandated by those references. Tune them
+using Ollama load tests, traffic volume and agreed fallback expectations. A successful degraded
+response still counts as available and has a separate degradation color.
+
+[Prometheus alerting guidance](https://prometheus.io/docs/practices/alerting/) recommends simple,
+actionable, symptom-oriented alerts. Actual paging would additionally need agreed SLO windows,
+sample volume and persistence/burn-rate rules. No such notification policy is added here.
+[Grafana's threshold documentation](https://grafana.com/docs/grafana/latest/visualizations/panels-visualizations/configure-thresholds/)
+defines how absolute thresholds and base colors work; the generator configures both explicitly.
+
+Counts, latency series and offline benchmark measurements have no agreed acceptance targets,
+so they use neutral blue or distinct series colors instead of implicit green/red. Offline
+leakage, recall, public over-masking and ECE therefore do not imply a pass/fail judgment. Missing
+or NaN health values map to gray, not green. Existing UP/DOWN/UNKNOWN mappings remain explicit.
+
+### Review regression checks
+
+Parser failures are tested separately from adapter failures, including recovery on the next
+request to verify model-slot cleanup. Dashboard artifact tests cover color direction and exact
+boundary values (including full capacity), unknown data, neutral benchmark metrics, and agreement
+between generated JSON and the builder. Span leakage is now produced in the repository scorer's
+same coverage pass as its existing metrics; the report adapter no longer recalculates coverage
+or duplicates the entity/FACT thresholds. `data/baseline/score.py` retains its standalone CLI.
+
+
+## Compact service layout
+
+The service dashboard has **22 panels**: 15 in the main view and 7 in collapsed diagnostics.
+The eight midterm topics are retained, with duplicate views consolidated:
+
+* The top degradation card includes a sparkline. It shows the latest sample, including undefined
+  ratios when idle, rather than carrying forward the last healthy value.
+* Stage p95 has one trend panel with a right-side legend, so full stage names remain visible.
+  The redundant stage bar gauge is removed.
+* The model table has detection/assessment rows, outcome columns, and a parsed-success column.
+  Counts and success ratio both use the selected time range; zero calls leave the ratio undefined.
+  Parsed-success thresholds color only that column, not the neutral activity counts.
+* The session lifecycle table combines deletion, expiry, and capacity rejection counts. Only
+  capacity rejection receives health colors. Session slot history moves into diagnostics.
+* Component status shows only Component/Status, with explicit UP/DOWN/UNKNOWN values. Versions
+  and backends form one Setting/Value table built from a single vector, avoiding sparse joined rows.
+
+HTTP and pipeline latency, model queue and execution latency, and scrape/model reachability
+remain separate because their measurement boundaries differ. With the stub backend, sub-5ms
+observations share the histogram's first bucket: p50/p95/p99 can interpolate to 2.50/4.75/4.95ms.
+Matching values therefore do not establish that the underlying metrics are redundant.

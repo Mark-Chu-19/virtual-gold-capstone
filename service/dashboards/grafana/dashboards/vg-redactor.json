@@ -1,501 +1,2156 @@
 {
- "uid": "vg-redactor",
- "title": "Virtual Gold: Redaction Service",
- "tags": [
-  "virtual-gold"
- ],
- "timezone": "browser",
- "schemaVersion": 39,
- "version": 1,
- "refresh": "5s",
- "time": {
-  "from": "now-15m",
-  "to": "now"
- },
- "editable": false,
- "graphTooltip": 1,
- "panels": [
-  {
-   "id": 1,
-   "title": "1. Request rate and status codes",
-   "type": "timeseries",
-   "description": "POST /v3/redaction requests per second, by HTTP status.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 0,
-    "y": 0,
-    "w": 12,
-    "h": 8
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "sum by (status) (rate(vg_http_requests_total{route=\"/v3/redaction\"}[1m]))",
-     "legendFormat": "{{status}}",
-     "refId": "A"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "reqps"
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "list",
-     "placement": "bottom"
-    },
-    "tooltip": {
-     "mode": "multi"
-    }
-   }
+  "uid": "vg-redactor",
+  "title": "Virtual Gold: Redaction Service",
+  "tags": [
+    "virtual-gold"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 2,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
   },
-  {
-   "id": 2,
-   "title": "2. Availability (2xx / (2xx + 5xx))",
-   "type": "stat",
-   "description": "4xx and 429 are excluded: they are caller errors. A degraded 200 counts as available.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 12,
-    "y": 0,
-    "w": 6,
-    "h": 8
-   },
-   "targets": [
+  "editable": false,
+  "graphTooltip": 1,
+  "panels": [
     {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "sum(rate(vg_http_requests_total{route=\"/v3/redaction\",status=~\"2..\"}[5m])) / (sum(rate(vg_http_requests_total{route=\"/v3/redaction\",status=~\"2..\"}[5m])) + (sum(rate(vg_http_requests_total{route=\"/v3/redaction\",status=~\"5..\"}[5m])) or vector(0)))",
-     "legendFormat": "",
-     "refId": "A"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "percentunit",
-     "min": 0,
-     "max": 1,
-     "thresholds": {
-      "mode": "absolute",
-      "steps": [
-       {
-        "color": "red",
-        "value": null
-       },
-       {
-        "color": "orange",
-        "value": 0.95
-       },
-       {
-        "color": "green",
-        "value": 0.99
-       }
-      ]
-     }
-    },
-    "overrides": []
-   },
-   "options": {
-    "colorMode": "value",
-    "graphMode": "area",
-    "reduceOptions": {
-     "calcs": [
-      "lastNotNull"
-     ]
-    }
-   }
-  },
-  {
-   "id": 5,
-   "title": "5. Degraded rate and reasons",
-   "type": "timeseries",
-   "description": "Degraded responses per second by reason, and the share of successful requests that were degraded.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 18,
-    "y": 0,
-    "w": 6,
-    "h": 8
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "sum by (reason) (rate(vg_degraded_total[1m]))",
-     "legendFormat": "{{reason}}",
-     "refId": "A"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "sum(rate(vg_degraded_total[1m])) / sum(rate(vg_request_duration_seconds_count{route=\"redactions\",mode!=\"error\"}[1m]))",
-     "legendFormat": "degraded share",
-     "refId": "B"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "short",
-     "custom": {
-      "fillOpacity": 15
-     }
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "list",
-     "placement": "bottom"
-    },
-    "tooltip": {
-     "mode": "multi"
-    }
-   }
-  },
-  {
-   "id": 3,
-   "title": "3. End-to-end latency p50 / p95 / p99 (normal vs degraded)",
-   "type": "timeseries",
-   "description": "Successful requests only. Normal and degraded are reported separately.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 0,
-    "y": 8,
-    "w": 12,
-    "h": 8
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "histogram_quantile(0.5, sum by (le, mode) (rate(vg_request_duration_seconds_bucket{route=\"redactions\",mode!=\"error\"}[1m])))",
-     "legendFormat": "p50 {{mode}}",
-     "refId": "A"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "histogram_quantile(0.95, sum by (le, mode) (rate(vg_request_duration_seconds_bucket{route=\"redactions\",mode!=\"error\"}[1m])))",
-     "legendFormat": "p95 {{mode}}",
-     "refId": "B"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "histogram_quantile(0.99, sum by (le, mode) (rate(vg_request_duration_seconds_bucket{route=\"redactions\",mode!=\"error\"}[1m])))",
-     "legendFormat": "p99 {{mode}}",
-     "refId": "C"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "s"
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "list",
-     "placement": "bottom"
-    },
-    "tooltip": {
-     "mode": "multi"
-    }
-   }
-  },
-  {
-   "id": 4,
-   "title": "4. Per-stage time (p95)",
-   "type": "timeseries",
-   "description": "95th percentile of time spent in each pipeline stage.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 12,
-    "y": 8,
-    "w": 12,
-    "h": 8
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "histogram_quantile(0.95, sum by (le, stage) (rate(vg_stage_duration_seconds_bucket[1m])))",
-     "legendFormat": "{{stage}}",
-     "refId": "A"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "s"
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "list",
-     "placement": "bottom"
-    },
-    "tooltip": {
-     "mode": "multi"
-    }
-   }
-  },
-  {
-   "id": 6,
-   "title": "6. Model-call outcomes by prompt",
-   "type": "timeseries",
-   "description": "Detection and assessment prompts are tracked separately: ok, unavailable, timeout, unparseable.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 0,
-    "y": 16,
-    "w": 12,
-    "h": 8
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "sum by (prompt, outcome) (rate(vg_model_calls_total[1m]))",
-     "legendFormat": "{{prompt}} / {{outcome}}",
-     "refId": "A"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "cps"
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "list",
-     "placement": "bottom"
-    },
-    "tooltip": {
-     "mode": "multi"
-    }
-   }
-  },
-  {
-   "id": 7,
-   "title": "7. Records and capacity",
-   "type": "timeseries",
-   "description": "Live request records against the capacity cap; removals by reason.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 12,
-    "y": 16,
-    "w": 6,
-    "h": 8
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "vg_records_active",
-     "legendFormat": "active",
-     "refId": "A"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "vg_records_capacity",
-     "legendFormat": "capacity",
-     "refId": "B"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "sum by (reason) (increase(vg_records_removed_total[5m]))",
-     "legendFormat": "removed (5m) {{reason}}",
-     "refId": "C"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "short"
-    },
-    "overrides": []
-   },
-   "options": {
-    "legend": {
-     "displayMode": "list",
-     "placement": "bottom"
-    },
-    "tooltip": {
-     "mode": "multi"
-    }
-   }
-  },
-  {
-   "id": 8,
-   "title": "8a. Service mode",
-   "type": "stat",
-   "description": "ready = model usable; degraded = model down, rules and Presidio only.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 18,
-    "y": 16,
-    "w": 6,
-    "h": 4
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "vg_service_mode == 1",
-     "legendFormat": "{{mode}}",
-     "refId": "A"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "none",
-     "mappings": [
-      {
-       "type": "value",
-       "options": {
-        "ready": {
-         "color": "green"
-        },
-        "degraded": {
-         "color": "orange"
-        },
-        "down": {
-         "color": "red"
-        }
-       }
-      }
-     ]
-    },
-    "overrides": []
-   },
-   "options": {
-    "colorMode": "background",
-    "textMode": "name",
-    "reduceOptions": {
-     "calcs": [
-      "lastNotNull"
-     ]
-    }
-   }
-  },
-  {
-   "id": 9,
-   "title": "8b. Versions in use",
-   "type": "table",
-   "description": "Policy, model, prompt and context-store versions reported by the running service.",
-   "datasource": {
-    "type": "prometheus",
-    "uid": "prometheus"
-   },
-   "gridPos": {
-    "x": 18,
-    "y": 20,
-    "w": 6,
-    "h": 4
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "prometheus"
-     },
-     "expr": "vg_build_info",
-     "instant": true,
-     "range": false,
-     "format": "table",
-     "refId": "A"
-    }
-   ],
-   "fieldConfig": {
-    "defaults": {
-     "unit": "none"
-    },
-    "overrides": []
-   },
-   "options": {
-    "showHeader": true
-   },
-   "transformations": [
-    {
-     "id": "organize",
-     "options": {
-      "excludeByName": {
-       "Time": true,
-       "Value": true,
-       "__name__": true,
-       "job": true,
-       "instance": true
+      "type": "row",
+      "title": "Service overview \u00b7 live health, not benchmark accuracy",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
       },
-      "renameByName": {}
-     }
+      "panels": [],
+      "id": 1
     },
     {
-     "id": "transpose",
-     "options": {}
+      "title": "Metrics scrape",
+      "type": "stat",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"vg-redactor\",instance=~\"$instance\"}",
+          "legendFormat": "Scrape",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "UP",
+                  "color": "green"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "id": 2
+    },
+    {
+      "title": "Model endpoint probe",
+      "type": "stat",
+      "description": "Endpoint reachability only. Does not prove model generation or parsing works.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "vg_component_up{job=\"vg-redactor\",instance=~\"$instance\",component=\"model_endpoint\"}",
+          "legendFormat": "Model endpoint",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "UNKNOWN",
+                  "color": "gray"
+                },
+                "0": {
+                  "text": "UNREACHABLE",
+                  "color": "orange"
+                },
+                "1": {
+                  "text": "REACHABLE",
+                  "color": "green"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "id": 3
+    },
+    {
+      "title": "Redaction requests \u00b7 selected range",
+      "type": "stat",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\"}[$__range]))",
+          "legendFormat": "Requests",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "id": 4
+    },
+    {
+      "title": "HTTP availability",
+      "type": "stat",
+      "description": "POST redaction: 2xx / (2xx + 5xx). Excludes 4xx. Degraded 200 is available. No traffic is undefined. Color bands are provisional operational targets, not paging alerts.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum(rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\",status=~\"2..\"}[$__rate_interval])) or (sum(rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\"}[$__rate_interval])) * 0)) / ((sum(rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\",status=~\"2..\"}[$__rate_interval])) or (sum(rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\"}[$__rate_interval])) * 0)) + (sum(rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\",status=~\"5..\"}[$__rate_interval])) or (sum(rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\"}[$__rate_interval])) * 0)))",
+          "legendFormat": "Availability",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "No data",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.99
+              },
+              {
+                "color": "green",
+                "value": 0.999
+              }
+            ]
+          },
+          "min": 0,
+          "max": 1,
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            },
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "id": 5
+    },
+    {
+      "title": "Degraded share of successful redactions",
+      "type": "stat",
+      "description": "Successful degraded / all successful redactions. Includes the selected-range trend; final failures after fallback count as errors instead. Color bands are provisional operational targets, not paging alerts.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(vg_redaction_responses_total{job=\"vg-redactor\",instance=~\"$instance\",mode=\"degraded\"}[$__rate_interval])) / sum(rate(vg_redaction_responses_total{job=\"vg-redactor\",instance=~\"$instance\",mode=~\"normal|degraded\"}[$__rate_interval]))",
+          "legendFormat": "Degraded",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": false,
+          "range": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "No data",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.01
+              },
+              {
+                "color": "red",
+                "value": 0.05
+              }
+            ]
+          },
+          "min": 0,
+          "max": 1,
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            },
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "orientation": "auto",
+        "wideLayout": false
+      },
+      "id": 6
+    },
+    {
+      "title": "Session capacity used",
+      "type": "gauge",
+      "description": " Color bands are provisional operational targets, not paging alerts.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vg_records_active{job=\"vg-redactor\",instance=~\"$instance\"} + vg_records_reserved{job=\"vg-redactor\",instance=~\"$instance\"}) / vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}",
+          "legendFormat": "Active + reserved",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "No data",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.8
+              },
+              {
+                "color": "red",
+                "value": 0.9
+              }
+            ]
+          },
+          "min": 0,
+          "max": 1,
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            },
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "id": 7
+    },
+    {
+      "type": "row",
+      "title": "Requests and performance",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "id": 8
+    },
+    {
+      "title": "Requests by HTTP status",
+      "type": "timeseries",
+      "description": "POST /v3/redaction only. Includes authentication failures.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (status) (rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\"}[$__rate_interval]))",
+          "legendFormat": "{{status}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "custom": {
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "fillOpacity": 45
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 9
+    },
+    {
+      "title": "HTTP end-to-end latency \u00b7 successful redactions",
+      "type": "timeseries",
+      "description": "Server entry through final ASGI body send: validation, sessions, pipeline and serialization. Excludes client network time.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le,mode) (rate(vg_http_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\",mode=~\"normal|degraded\"}[$__rate_interval])))",
+          "legendFormat": "p50 {{mode}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le,mode) (rate(vg_http_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\",mode=~\"normal|degraded\"}[$__rate_interval])))",
+          "legendFormat": "p95 {{mode}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum by (le,mode) (rate(vg_http_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\",route=\"/v3/redaction\",method=\"POST\",mode=~\"normal|degraded\"}[$__rate_interval])))",
+          "legendFormat": "p99 {{mode}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/degraded/"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 10
+    },
+    {
+      "title": "Pipeline latency \u00b7 normal / degraded / error",
+      "type": "timeseries",
+      "description": "Orchestrator only. Independent of HTTP latency; percentile differences are not overhead measurements.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 12,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le,mode) (rate(vg_pipeline_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\",route=\"redactions\"}[$__rate_interval])))",
+          "legendFormat": "p50 {{mode}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le,mode) (rate(vg_pipeline_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\",route=\"redactions\"}[$__rate_interval])))",
+          "legendFormat": "p95 {{mode}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum by (le,mode) (rate(vg_pipeline_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\",route=\"redactions\"}[$__rate_interval])))",
+          "legendFormat": "p99 {{mode}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/degraded/"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 11
+    },
+    {
+      "title": "Stage latency trend \u00b7 p95",
+      "type": "timeseries",
+      "description": "Detection stages run concurrently; do not sum their percentiles. The smallest histogram bucket is 5ms: fast stub stages can share interpolated p95 values of 4.75ms.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 14,
+        "w": 12,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le,stage) (rate(vg_stage_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+          "legendFormat": "p95 {{stage}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/degraded/"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull"
+          ],
+          "width": 230
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 12
+    },
+    {
+      "type": "row",
+      "title": "Fallback and model calls",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "id": 13
+    },
+    {
+      "title": "Degraded responses by cause and stage",
+      "type": "timeseries",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 10,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (reason,stage) (rate(vg_degraded_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval]))",
+          "legendFormat": "{{reason}} / {{stage}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "custom": {
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "fillOpacity": 45
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 14
+    },
+    {
+      "title": "Model outcomes and parsed success \u00b7 selected range",
+      "type": "table",
+      "description": "One final outcome per invocation. Counts and parsed success ratio use the same selected time range, including queue timeouts, cancellation and internal errors. No calls gives an undefined ratio. Parsed success is not privacy accuracy.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 10,
+        "y": 25,
+        "w": 14,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum by (prompt,outcome) (increase(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]))) or label_replace((sum by (prompt) (increase(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\",outcome=\"ok\"}[$__range])) / sum by (prompt) (increase(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]))), \"outcome\", \"parsed_success\", \"prompt\", \".*\")",
+          "legendFormat": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Parsed success"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 0.95
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.99
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "null",
+                      "result": {
+                        "text": "No data",
+                        "color": "gray"
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "No data",
+                        "color": "gray"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Prompt"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 95
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OK"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 55
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unavailable"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Timeout"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unparseable"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cancelled"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Internal error"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 95
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Parsed success"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "prompt",
+                "outcome",
+                "Value"
+              ]
+            }
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "rowField": "prompt",
+            "columnField": "outcome",
+            "valueField": "Value",
+            "emptyValue": "null"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "prompt\\outcome": 0,
+              "ok": 1,
+              "unavailable": 2,
+              "timeout": 3,
+              "unparseable": 4,
+              "cancelled": 5,
+              "internal_error": 6,
+              "parsed_success": 7
+            },
+            "renameByName": {
+              "prompt\\outcome": "Prompt",
+              "ok": "OK",
+              "unavailable": "Unavailable",
+              "timeout": "Timeout",
+              "unparseable": "Unparseable",
+              "cancelled": "Cancelled",
+              "internal_error": "Internal error",
+              "parsed_success": "Parsed success"
+            }
+          }
+        }
+      ],
+      "id": 15
+    },
+    {
+      "type": "row",
+      "title": "Sessions, observed components and versions",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "id": 16
+    },
+    {
+      "title": "Session lifecycle \u00b7 selected range",
+      "type": "table",
+      "description": "Estimated counts for expiry, active deletion and explicit capacity rejection. Other HTTP 503s are excluded; only rejection counts receive health colors.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 35,
+        "w": 8,
+        "h": 12
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "label_replace(((sum by (event) (label_replace(increase(vg_records_removed_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]), \"event\", \"$1\", \"reason\", \"(.*)\"))) or (label_replace(sum(increase(vg_capacity_rejected_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range])), \"event\", \"capacity_rejected\", \"__name__\", \".*\")) or label_replace(0 * sum(vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}), \"event\", \"deleted\", \"__name__\", \".*\") or label_replace(0 * sum(vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}), \"event\", \"expired\", \"__name__\", \".*\") or label_replace(0 * sum(vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}), \"event\", \"capacity_rejected\", \"__name__\", \".*\")), \"scope\", \"Selected range\", \"event\", \".*\")",
+          "legendFormat": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 1,
+          "custom": {
+            "width": 120
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Capacity rejected"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "null",
+                      "result": {
+                        "text": "No data",
+                        "color": "gray"
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "No data",
+                        "color": "gray"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "scope",
+                "event",
+                "Value"
+              ]
+            }
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "rowField": "scope",
+            "columnField": "event",
+            "valueField": "Value",
+            "emptyValue": "null"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "scope\\event": 0,
+              "deleted": 1,
+              "expired": 2,
+              "capacity_rejected": 3
+            },
+            "renameByName": {
+              "scope\\event": "Scope",
+              "deleted": "Deleted",
+              "expired": "Expired",
+              "capacity_rejected": "Capacity rejected"
+            },
+            "excludeByName": {
+              "scope\\event": true
+            }
+          }
+        }
+      ],
+      "id": 17
+    },
+    {
+      "title": "Components \u00b7 last observed result",
+      "type": "table",
+      "description": "Rules and Presidio report last actual execution, not continuous probes. Model endpoint reports reachability only.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 35,
+        "w": 8,
+        "h": 12
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "vg_component_up{job=\"vg-redactor\",instance=~\"$instance\"}",
+          "legendFormat": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "-1": {
+                        "text": "UNKNOWN",
+                        "color": "gray"
+                      },
+                      "0": {
+                        "text": "DOWN",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "UP",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "component",
+                "Value"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "component": 0,
+              "Value": 1
+            },
+            "renameByName": {
+              "component": "Component",
+              "Value": "Status"
+            }
+          }
+        }
+      ],
+      "id": 18
+    },
+    {
+      "title": "Versions and runtime backends",
+      "type": "table",
+      "description": "Version and backend values, one setting per row. Mixed components include stub prompts/parsers. Version metadata is not benchmark accuracy.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 35,
+        "w": 8,
+        "h": 12
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"service\", \"(.*)\"), \"setting\", \"service\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"contract\", \"(.*)\"), \"setting\", \"contract\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"policy\", \"(.*)\"), \"setting\", \"policy\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"model\", \"(.*)\"), \"setting\", \"model\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"prompt_detection\", \"(.*)\"), \"setting\", \"prompt_detection\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"prompt_assessment\", \"(.*)\"), \"setting\", \"prompt_assessment\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"context_store\", \"(.*)\"), \"setting\", \"context_store\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_runtime_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"model_backend\", \"(.*)\"), \"setting\", \"model_backend\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_runtime_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"restoration_backend\", \"(.*)\"), \"setting\", \"restoration_backend\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_runtime_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"components\", \"(.*)\"), \"setting\", \"components\", \"__name__\", \".*\"))",
+          "legendFormat": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Setting",
+            "desc": false
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "setting",
+                "setting_value"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "setting": 0,
+              "setting_value": 1
+            },
+            "renameByName": {
+              "setting": "Setting",
+              "setting_value": "Value"
+            }
+          }
+        }
+      ],
+      "id": 19
+    },
+    {
+      "type": "row",
+      "title": "Diagnostics \u00b7 model queues, session trends and API lifecycle",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
+        {
+          "title": "Model slot queue wait \u00b7 p50/p95/p99",
+          "type": "timeseries",
+          "description": "Includes successful and timed-out queue waits. Separate from execution latency. The smallest histogram bucket is 5ms.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 48,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.5, sum by (le,prompt) (rate(vg_model_queue_wait_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p50 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "histogram_quantile(0.95, sum by (le,prompt) (rate(vg_model_queue_wait_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p95 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "histogram_quantile(0.99, sum by (le,prompt) (rate(vg_model_queue_wait_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p99 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 100
+        },
+        {
+          "title": "Model execution and parsing \u00b7 p50/p95/p99",
+          "type": "timeseries",
+          "description": "After acquiring the slot through generation and parsing. Queue-only timeouts have no execution sample. The smallest histogram bucket is 5ms.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 48,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.5, sum by (le,prompt) (rate(vg_model_call_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p50 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "histogram_quantile(0.95, sum by (le,prompt) (rate(vg_model_call_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p95 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "histogram_quantile(0.99, sum by (le,prompt) (rate(vg_model_call_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p99 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 101
+        },
+        {
+          "title": "In-flight redaction requests",
+          "type": "timeseries",
+          "description": "Requests admitted to pipeline processing; excludes rejected validation and capacity requests.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 56,
+            "w": 8,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "vg_inflight_requests{job=\"vg-redactor\",instance=~\"$instance\"}",
+              "legendFormat": "In flight",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 102
+        },
+        {
+          "title": "Session slots",
+          "type": "timeseries",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 56,
+            "w": 16,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "vg_records_active{job=\"vg-redactor\",instance=~\"$instance\"}",
+              "legendFormat": "Active",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "vg_records_reserved{job=\"vg-redactor\",instance=~\"$instance\"}",
+              "legendFormat": "Reserved",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}",
+              "legendFormat": "Capacity",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 103
+        },
+        {
+          "title": "API lifecycle \u00b7 selected route and method",
+          "type": "timeseries",
+          "description": "Use diagnostic filters to inspect redaction, restore and delete independently. Overview metrics remain POST redaction only.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 64,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (route,method,status) (rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=~\"$diagnostic_route\",method=~\"$diagnostic_method\"}[$__rate_interval]))",
+              "legendFormat": "{{route}} {{method}} / {{status}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "custom": {
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                },
+                "fillOpacity": 45
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 104
+        },
+        {
+          "title": "HTTP latency \u00b7 selected operation and status",
+          "type": "timeseries",
+          "description": "Includes errors and restore/delete; separated by status so fast rejects do not hide slow successful operations.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 64,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.95, sum by (le,route,method,status) (rate(vg_http_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\",route=~\"$diagnostic_route\",method=~\"$diagnostic_method\"}[$__rate_interval])))",
+              "legendFormat": "p95 {{route}} {{method}} / {{status}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 105
+        },
+        {
+          "title": "Rendered span decisions \u00b7 selected range",
+          "type": "bargauge",
+          "description": "Rendered decisions, including attempts that later fail audit/serialization. Missed entities are absent; this cannot measure leak rate or accuracy.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 72,
+            "w": 24,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (tier,action,mode) (increase(vg_spans_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]))",
+              "legendFormat": "{{tier}} / {{action}} / {{mode}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "instant": true,
+              "range": false
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "noValue": "No data",
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "blue"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "none",
+            "textMode": "auto",
+            "orientation": "horizontal"
+          },
+          "id": 106
+        }
+      ],
+      "id": 20
     }
-   ]
-  }
- ],
- "templating": {
-  "list": []
- },
- "annotations": {
-  "list": []
- }
+  ],
+  "annotations": {
+    "list": []
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m"
+    ],
+    "time_options": [
+      "15m",
+      "1h",
+      "24h"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "instance",
+        "label": "Service instance",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": "label_values(up{job=\"vg-redactor\"}, instance)",
+        "refresh": 1,
+        "multi": false,
+        "includeAll": false
+      },
+      {
+        "name": "diagnostic_route",
+        "label": "Diagnostic route",
+        "type": "custom",
+        "query": "/v3/redaction,/v3/restore",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "/v3/redaction|/v3/restore",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      },
+      {
+        "name": "diagnostic_method",
+        "label": "Diagnostic method",
+        "type": "custom",
+        "query": "POST,DELETE",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "POST|DELETE",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  },
+  "links": [
+    {
+      "title": "Release and offline evaluation",
+      "type": "link",
+      "url": "/d/vg-release-evaluation",
+      "keepTime": true
+    }
+  ]
 }

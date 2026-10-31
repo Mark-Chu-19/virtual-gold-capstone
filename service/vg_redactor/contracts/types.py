@@ -5,12 +5,13 @@ the field named by `field`; offsets are used internally for detection, rendering
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, get_args
 
 from pydantic import BaseModel, ConfigDict, Field
 
 FieldPath = str
 Tier = Literal["high", "medium", "low", "public"]
+TIERS = get_args(Tier)
 Detector = Literal["rules", "presidio", "model"]
 Action = Literal["redact", "retain"]
 SegmentSource = Literal["purpose", "header", "subject", "body", "quoted_thread", "signature"]

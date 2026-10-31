@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass
 
 from ..contracts.components import Components
-from ..contracts.errors import (DeadlineExceeded, ModelCallError, ModelOutputUnparseable,
+from ..contracts.errors import (DeadlineExceeded, ModelCallError,
                                 RecognizerError, RuleEngineError, high_tier_fixed)
 from ..contracts.types import Candidate, Decision, RedactionRequestV3, RedactionResponseV3
 from ..model.client import ModelGateway
@@ -40,14 +40,17 @@ class Orchestrator:
         session_context.deadline = deadline
         timings: dict[str, float] = {}
         t0 = time.perf_counter()
+        mode = "error"
         try:
             deadline.check()
             async with asyncio.timeout(deadline.remaining_ms() / 1000):
-                resp, mode = await self._run(req, rid, deadline, timings, session_context)
+                resp, result_mode = await self._run(req, rid, deadline, timings, session_context)
                 deadline.check()
+                mode = result_mode
         except TimeoutError:
             raise DeadlineExceeded() from None
-        m.request_duration.labels("redactions", mode).observe(time.perf_counter() - t0)
+        finally:
+            m.pipeline_duration.labels("redactions", mode).observe(time.perf_counter() - t0)
         return resp
 
     # ------------------------------------------------------------------------------------------
@@ -61,25 +64,27 @@ class Orchestrator:
         async def run_rules():
             with m.stage("detect_rules", timings):
                 try:
-                    return await asyncio.to_thread(c.detect_rules, segs, c.context_store)
+                    result = await asyncio.to_thread(c.detect_rules, segs, c.context_store)
+                    m.component_up.labels("rules").set(1)
+                    return result
                 except Exception as e:  # noqa: BLE001
+                    m.component_up.labels("rules").set(0)
                     raise RuleEngineError() from e
 
         async def run_presidio():
             with m.stage("detect_presidio", timings):
                 try:
-                    return await asyncio.to_thread(c.detect_presidio, segs)
+                    result = await asyncio.to_thread(c.detect_presidio, segs)
+                    m.component_up.labels("presidio").set(1)
+                    return result
                 except Exception as e:  # noqa: BLE001
+                    m.component_up.labels("presidio").set(0)
                     raise RecognizerError() from e
 
         async def run_model_detection():
             with m.stage("detect_model", timings):
-                raw = await self.model.call("detection", c.build_detection_prompt(segs), deadline)
-                try:
-                    return c.parse_detection(raw, segs)
-                except ModelOutputUnparseable:
-                    self.model.note_unparseable("detection")
-                    raise
+                return await self.model.call("detection", c.build_detection_prompt(segs), deadline,
+                                             parse=lambda raw: c.parse_detection(raw, segs))
 
         r_rules, r_pres, r_model = await asyncio.gather(
             run_rules(), run_presidio(), run_model_detection(), return_exceptions=True)
@@ -114,13 +119,8 @@ class Orchestrator:
         if degraded is None:
             try:
                 with m.stage("assess_model", timings):
-                    raw = await self.model.call("assessment",
-                                                c.build_assessment_prompt(segs, cands), deadline)
-                    try:
-                        scored = c.parse_assessment(raw, cands)
-                    except ModelOutputUnparseable:
-                        self.model.note_unparseable("assessment")
-                        raise
+                    scored = await self.model.call("assessment", c.build_assessment_prompt(segs, cands),
+                                                   deadline, parse=lambda raw: c.parse_assessment(raw, cands))
                 raw_scores = [{"type": sc.candidate.type, "raw": sc.raw_score} for sc in scored]
                 with m.stage("calibrate", timings):
                     for sc in scored:
@@ -133,7 +133,7 @@ class Orchestrator:
             with m.stage("decide", timings):
                 base = cands if degraded.reason == "recognizer_failure" else self._rules_only(cands)
                 decisions = c.decide_degraded(base, c.policy)
-            m.degraded.labels(degraded.reason, degraded.stage).inc()
+            session_context.degraded = (degraded.reason, degraded.stage)
 
         with m.stage("pseudonymize", timings):
             out = await session_context.render(decisions)

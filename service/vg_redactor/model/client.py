@@ -1,7 +1,8 @@
 """Model adapter layer (Service Eng). Calls the local model and classifies failures.
 
-Prompts and output parsing belong to the model-work owner; this layer only moves a prompt string
-in and a raw string out, enforces the per-call budget, limits concurrency and counts outcomes.
+Prompts and parsing belong to the model-work owner. This layer invokes the supplied parser
+before recording a terminal outcome, enforces the per-call budget and limits concurrency.
+Unexpected parser errors propagate; only adapter failures become model unavailability.
 """
 from __future__ import annotations
 
@@ -12,7 +13,7 @@ from pathlib import Path
 
 import httpx
 
-from ..contracts.errors import ModelCallError, ModelTimeout, ModelUnavailable
+from ..contracts.errors import ModelCallError, ModelTimeout, ModelUnavailable, ModelOutputUnparseable
 from ..obs.metrics import Metrics
 from ..pipeline.deadline import Deadline
 
@@ -95,7 +96,7 @@ class ModelGateway:
     def version(self) -> str:
         return self.client.version
 
-    async def call(self, prompt_name: str, prompt: str, deadline: Deadline) -> str:
+    async def call(self, prompt_name: str, prompt: str, deadline: Deadline, *, parse=None):
         m = self.metrics
         t_wait = time.perf_counter()
         try:  # waiting for the slot counts against the same budget
@@ -105,8 +106,13 @@ class ModelGateway:
             m.model_queue_wait.labels(prompt_name).observe(time.perf_counter() - t_wait)
             m.model_calls.labels(prompt_name, "timeout").inc()
             raise ModelTimeout() from None
+        except asyncio.CancelledError:
+            m.model_queue_wait.labels(prompt_name).observe(time.perf_counter() - t_wait)
+            m.model_calls.labels(prompt_name, "cancelled").inc()
+            raise
         m.model_queue_wait.labels(prompt_name).observe(time.perf_counter() - t_wait)
         t_call = time.perf_counter()
+        outcome = "internal_error"
         try:
             budget = deadline.model_budget_ms(self.call_cap_ms, self.reserve_ms)
             if budget <= 0:
@@ -117,18 +123,23 @@ class ModelGateway:
                     timeout=budget / 1000)
             except asyncio.TimeoutError as e:
                 raise ModelTimeout() from e
-            m.model_calls.labels(prompt_name, "ok").inc()
-            return raw
-        except ModelCallError as e:
-            m.model_calls.labels(prompt_name, e.reason.removeprefix("model_")).inc()
+            except ModelCallError:
+                raise
+            except Exception as e:  # noqa: BLE001  adapter failures only
+                raise ModelUnavailable() from e
+            result = parse(raw) if parse else raw
+            outcome = "ok"
+            return result
+        except asyncio.CancelledError:
+            outcome = "cancelled"
             raise
-        except Exception as e:  # noqa: BLE001  any other adapter failure counts as unavailable
-            m.model_calls.labels(prompt_name, "unavailable").inc()
-            raise ModelUnavailable() from e
+        except ModelOutputUnparseable:
+            outcome = "unparseable"
+            raise
+        except ModelCallError as e:
+            outcome = e.reason.removeprefix("model_")
+            raise
         finally:
+            m.model_calls.labels(prompt_name, outcome).inc()
             m.model_call_duration.labels(prompt_name).observe(time.perf_counter() - t_call)
             self._sem.release()
-
-    def note_unparseable(self, prompt_name: str) -> None:
-        """Called by the orchestrator when a component's parser rejects the model output."""
-        self.metrics.model_calls.labels(prompt_name, "unparseable").inc()
