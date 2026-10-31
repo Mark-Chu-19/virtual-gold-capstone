@@ -1,0 +1,41 @@
+{
+  "availability": {
+    "mode": "absolute",
+    "steps": [
+      {"color": "red", "value": null},
+      {"color": "orange", "value": 0.99},
+      {"color": "green", "value": 0.999}
+    ]
+  },
+  "capacity": {
+    "mode": "absolute",
+    "steps": [
+      {"color": "green", "value": null},
+      {"color": "orange", "value": 0.8},
+      {"color": "red", "value": 0.9}
+    ]
+  },
+  "degraded": {
+    "mode": "absolute",
+    "steps": [
+      {"color": "green", "value": null},
+      {"color": "orange", "value": 0.01},
+      {"color": "red", "value": 0.05}
+    ]
+  },
+  "model_success": {
+    "mode": "absolute",
+    "steps": [
+      {"color": "red", "value": null},
+      {"color": "orange", "value": 0.95},
+      {"color": "green", "value": 0.99}
+    ]
+  },
+  "capacity_rejections": {
+    "mode": "absolute",
+    "steps": [
+      {"color": "green", "value": null},
+      {"color": "red", "value": 1}
+    ]
+  }
+}

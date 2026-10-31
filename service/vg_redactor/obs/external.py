@@ -15,7 +15,7 @@ from pathlib import Path
 from prometheus_client import CollectorRegistry, start_http_server
 from prometheus_client.core import CounterMetricFamily, GaugeMetricFamily
 
-TIERS = ('high', 'medium', 'low', 'public')
+from ..contracts.types import TIERS
 METADATA = ('run', 'dataset', 'split', 'model', 'policy', 'prompt_detection', 'prompt_assessment', 'calibration')
 
 

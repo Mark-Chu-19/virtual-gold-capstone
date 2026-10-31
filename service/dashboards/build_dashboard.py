@@ -10,13 +10,14 @@ DS = {'type': 'prometheus', 'uid': 'prometheus'}
 S = 'job="vg-redactor",instance=~"$instance"'
 R = S + ',route="/v3/redaction",method="POST"'
 W = '$__rate_interval'
+PROFILES = json.loads((Path(__file__).parent / 'thresholds.json').read_text())
 
 
 def metric(name, labels=''):
     return name + '{' + S + (',' + labels if labels else '') + '}'
 
 
-def panel(title, kind, x, y, w, h, queries=(), unit='short', description='', **defaults):
+def panel(title, kind, x, y, w, h, queries=(), unit='short', description='', profile=None, **defaults):
     targets = []
     for i, (expr, legend) in enumerate(queries):
         target = dict(refId=chr(65+i), expr=expr, legendFormat=legend, datasource=DS)
@@ -25,9 +26,19 @@ def panel(title, kind, x, y, w, h, queries=(), unit='short', description='', **d
         if kind == 'table':
             target['format'] = 'table'
         targets.append(target)
+    field_defaults = dict(unit=unit, noValue='No data',
+                          color=dict(mode='palette-classic') if kind == 'timeseries' else dict(mode='fixed',fixedColor='blue'),
+                          thresholds=dict(mode='absolute',steps=[dict(color='blue',value=None)]))
+    field_defaults.update(defaults)
+    if profile:
+        field_defaults.update(color=dict(mode='thresholds'),thresholds=PROFILES[profile])
+        field_defaults['mappings'] = list(field_defaults.get('mappings', [])) + [
+            dict(type='special',options=dict(match=missing,result=dict(text='No data',color='gray')))
+            for missing in ('null','nan')]
+        description += ' Color bands are provisional operational targets, not paging alerts.'
     p = dict(title=title, type=kind, description=description, datasource=DS,
              gridPos=dict(x=x, y=y, w=w, h=h), targets=targets,
-             fieldConfig=dict(defaults=dict(unit=unit, noValue='No data', **defaults), overrides=[]),
+             fieldConfig=dict(defaults=field_defaults, overrides=[]),
              options=dict(legend=dict(displayMode='table', placement='bottom', calcs=['lastNotNull']),
                           tooltip=dict(mode='multi')))
     if kind in ('stat', 'gauge', 'bargauge'):
@@ -80,13 +91,13 @@ def service_dashboard():
     success = f'({success} or ({base} * 0))'
     failures = f'({failures} or ({base} * 0))'
     availability = f'{success} / ({success} + {failures})'
-    add(panel('HTTP availability','stat',12,1,4,4,[(availability,'Availability')],unit='percentunit',min=0,max=1,
+    add(panel('HTTP availability','stat',12,1,4,4,[(availability,'Availability')],unit='percentunit',min=0,max=1,profile='availability',
               description='POST redaction: 2xx / (2xx + 5xx). Excludes 4xx. Degraded 200 is available. No traffic is undefined.'))
     degraded = f'sum(rate({metric("vg_redaction_responses_total", "mode=\"degraded\"")}[{W}]))'
     completed = f'sum(rate({metric("vg_redaction_responses_total", "mode=~\"normal|degraded\"")}[{W}]))'
-    add(panel('Degraded share of successful redactions','stat',16,1,4,4,[(f'{degraded} / {completed}','Degraded')],unit='percentunit',min=0,max=1))
+    add(panel('Degraded share of successful redactions','stat',16,1,4,4,[(f'{degraded} / {completed}','Degraded')],unit='percentunit',min=0,max=1,profile='degraded'))
     occupancy = f'({metric("vg_records_active")} + {metric("vg_records_reserved")}) / {metric("vg_records_capacity")}'
-    add(panel('Session capacity used','gauge',20,1,4,4,[(occupancy,'Active + reserved')],unit='percentunit',min=0,max=1))
+    add(panel('Session capacity used','gauge',20,1,4,4,[(occupancy,'Active + reserved')],unit='percentunit',min=0,max=1,profile='capacity'))
     add(row('Requests and performance',5))
     add(stacked(panel('Requests by HTTP status','timeseries',0,6,12,8,
         [(f'sum by (status) (rate(vg_http_requests_total{{{R}}}[{W}]))','{{status}}')],unit='reqps',description='POST /v3/redaction only. Includes authentication failures.')))
@@ -99,18 +110,18 @@ def service_dashboard():
         quantiles('vg_stage_duration_seconds','','stage',(0.95,)),unit='s',
         description='Last window p95 by stage. Detection stages run concurrently; do not sum stage percentiles.'))
     add(row('Fallback and model calls',22))
-    add(panel('Degraded share · successful responses','timeseries',0,23,8,8,[(f'{degraded} / {completed}','Degraded share')],unit='percentunit',min=0,max=1,
+    add(panel('Degraded share · successful responses','timeseries',0,23,8,8,[(f'{degraded} / {completed}','Degraded share')],unit='percentunit',min=0,max=1,profile='degraded',
         description='Only final successful degraded responses. Requests failing after fallback count as errors instead.'))
     add(stacked(panel('Degraded responses by cause and stage','timeseries',8,23,8,8,
         [(f'sum by (reason,stage) (rate({metric("vg_degraded_total")}[{W}]))','{{reason}} / {{stage}}')],unit='reqps')))
     add(panel('Model final outcomes · selected range','bargauge',16,23,8,8,
         [(f'sum by (prompt,outcome) (increase({metric("vg_model_calls_total")}[$__range]))','{{prompt}} / {{outcome}}')],
-        description='One terminal outcome per invocation, after parsing: ok, timeout, unavailable, unparseable, cancelled. Queue timeouts count as invocations.'))
+        description='One terminal outcome per invocation, after parsing: ok, timeout, unavailable, unparseable, cancelled, internal_error. Queue timeouts count as invocations.'))
     add(row('Sessions, observed components and versions',31))
     add(panel('Session slots','timeseries',0,32,8,8,
         [(metric('vg_records_active'),'Active'),(metric('vg_records_reserved'),'Reserved'),(metric('vg_records_capacity'),'Capacity')]))
     add(panel('Capacity rejections · selected range','stat',8,32,4,4,
-        [(f'increase({metric("vg_capacity_rejected_total")}[$__range])','Capacity rejected')],description='Only capacity-exhausted; not all HTTP 503 responses.'))
+        [(f'increase({metric("vg_capacity_rejected_total")}[$__range])','Capacity rejected')],profile='capacity_rejections',description='Only capacity-exhausted; not all HTTP 503 responses.'))
     add(panel('Removed sessions · selected range','bargauge',8,36,4,4,
         [(f'sum by (reason) (increase({metric("vg_records_removed_total")}[$__range]))','{{reason}}')]))
     add(panel('Components · last observed result','table',12,32,6,8,[(metric('vg_component_up'),'')],
@@ -150,7 +161,7 @@ def service_dashboard():
     good = metric('vg_model_calls_total','outcome="ok"')
     all_calls = metric('vg_model_calls_total')
     d.append(panel('Model calls with valid parsed output','timeseries',12,65,12,8,
-        [(f'sum by (prompt) (rate({good}[{W}])) / sum by (prompt) (rate({all_calls}[{W}]))','{{prompt}}')],unit='percentunit',min=0,max=1,
+        [(f'sum by (prompt) (rate({good}[{W}])) / sum by (prompt) (rate({all_calls}[{W}]))','{{prompt}}')],unit='percentunit',min=0,max=1,profile='model_success',
         description='Final ok / all terminal outcomes, including queue timeout and cancellation. Not model accuracy.'))
     for i,item in enumerate(d,100):
         item['id'] = i

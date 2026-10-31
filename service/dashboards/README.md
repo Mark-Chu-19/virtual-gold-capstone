@@ -53,9 +53,11 @@ remaining stub prompts/parsers; switching to Ollama alone does not make those co
   fallback count as `error`, never successful degradation. `vg_degraded_total{reason,stage}` is
   incremented only when the final degraded response body has been sent successfully.
 * `vg_model_calls_total{prompt,outcome}` counts one terminal result per gateway invocation:
-  `ok` **after parsing**, `unavailable`, `timeout`, `unparseable`, or `cancelled`. Queue timeout
+  `ok` **after parsing**, `unavailable`, `timeout`, `unparseable`, `cancelled`, or `internal_error`. Queue timeout
   counts as an invocation; calls cancelled by an enclosing request are explicit. A raw model
-  response rejected by the parser contributes only `unparseable`.
+  response rejected with `ModelOutputUnparseable` contributes only `unparseable`. Unexpected
+  parser exceptions contribute only `internal_error` and propagate as HTTP 500; they are never
+  disguised as model unavailability. The model slot is released on every exit path.
 * Model endpoint probe is reachability, not inference readiness. Rules/Presidio state is the
   **last observed execution**, with -1 before first use, 0 on failure, 1 on success. It is not a
   continuous component probe. `vg_service_mode` remains a compatibility metric based on model
@@ -222,3 +224,49 @@ unlabelled audit scores. Without them the calibration panels show No data.
 ECE uses ten equal-width bins: [0,0.1), … [0.9,1], weighted by candidate count. The dashboard shows
 raw/calibrated ECE, sample count, mean score and observed private fraction by occupied bin. It
 reports calibration on the supplied sample population; it does not establish detector recall.
+
+## Provisional color thresholds
+
+Edit **`thresholds.json`** and regenerate the dashboard JSON to tune the health color bands.
+All ratio thresholds use **absolute values in 0–1 units**, not Grafana's default absolute 80.
+These are initial operational targets for this project, not a client-approved SLA or universal
+industry standard. Panel tooltips identify them as provisional. They color the displayed rate
+window (`$__rate_interval`), not a 30-day compliance measurement, and do not create paging alerts.
+
+| Profile | Green | Orange | Red |
+|---|---|---|---|
+| HTTP availability | >=99.9% | >=99% and <99.9% | <99% |
+| Active + reserved session capacity | <80% | >=80% and <90% | >=90% |
+| Successful response degradation | <1% | >=1% and <5% | >=5% |
+| Model calls with valid parsed output | >=99% | >=95% and <99% | <95% |
+| Capacity rejections in selected range | <1 estimated event | — | >=1 estimated event |
+
+The design follows [Google SRE's monitoring guidance](https://sre.google/sre-book/monitoring-distributed-systems/)
+on traffic, errors, latency and saturation, plus [SLO/error-budget guidance](https://sre.google/workbook/alerting-on-slos/).
+The 99.9% availability target uses the workbook's illustrative SLO as a starting point; <99%
+indicates more than ten times its allowed error fraction. This is a color-band comparison, not
+a burn-rate alert implementation. Capacity bands leave 20%/10% of session slots as headroom
+before admission starts failing. Degradation at 1%/5% and parsed-output success at 99%/95%
+are project-selected initial quality bands, not numbers mandated by those references. Tune them
+using Ollama load tests, traffic volume and agreed fallback expectations. A successful degraded
+response still counts as available and has a separate degradation color.
+
+[Prometheus alerting guidance](https://prometheus.io/docs/practices/alerting/) recommends simple,
+actionable, symptom-oriented alerts. Actual paging would additionally need agreed SLO windows,
+sample volume and persistence/burn-rate rules. No such notification policy is added here.
+[Grafana's threshold documentation](https://grafana.com/docs/grafana/latest/visualizations/panels-visualizations/configure-thresholds/)
+defines how absolute thresholds and base colors work; the generator configures both explicitly.
+
+Counts, latency series and offline benchmark measurements have no agreed acceptance targets,
+so they use neutral blue or distinct series colors instead of implicit green/red. Offline
+leakage, recall, public over-masking and ECE therefore do not imply a pass/fail judgment. Missing
+or NaN health values map to gray, not green. Existing UP/DOWN/UNKNOWN mappings remain explicit.
+
+### Review regression checks
+
+Parser failures are tested separately from adapter failures, including recovery on the next
+request to verify model-slot cleanup. Dashboard artifact tests cover color direction and exact
+boundary values (including full capacity), unknown data, neutral benchmark metrics, and agreement
+between generated JSON and the builder. Span leakage is now produced in the repository scorer's
+same coverage pass as its existing metrics; the report adapter no longer recalculates coverage
+or duplicates the entity/FACT thresholds. `data/baseline/score.py` retains its standalone CLI.

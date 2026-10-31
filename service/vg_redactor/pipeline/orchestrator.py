@@ -50,7 +50,7 @@ class Orchestrator:
         except TimeoutError:
             raise DeadlineExceeded() from None
         finally:
-            m.request_duration.labels("redactions", mode).observe(time.perf_counter() - t0)
+            m.pipeline_duration.labels("redactions", mode).observe(time.perf_counter() - t0)
         return resp
 
     # ------------------------------------------------------------------------------------------

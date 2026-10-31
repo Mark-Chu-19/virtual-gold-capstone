@@ -7,8 +7,7 @@ import time
 from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
 
 _B = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 4, 6, 8, 12, 15, 20)
-STAGES = ("validate", "segment", "detect_rules", "detect_presidio", "detect_model", "merge",
-          "assess_model", "calibrate", "decide", "pseudonymize", "audit")
+MODEL_OUTCOMES = ("ok", "unavailable", "timeout", "unparseable", "cancelled", "internal_error")
 
 
 class Metrics:
@@ -16,7 +15,7 @@ class Metrics:
         r = self.registry = registry or CollectorRegistry()
         self.http_requests = Counter("vg_http_requests_total", "HTTP requests",
                                      ["route", "method", "status"], registry=r)
-        self.request_duration = Histogram("vg_pipeline_duration_seconds", "Orchestrator latency, excluding HTTP handling",
+        self.pipeline_duration = Histogram("vg_pipeline_duration_seconds", "Orchestrator latency, excluding HTTP handling",
                                           ["route", "mode"], buckets=_B, registry=r)
         self.http_duration = Histogram("vg_http_duration_seconds", "Server HTTP latency through final response body send",
                                        ["route", "method", "status", "mode"], buckets=_B, registry=r)
@@ -50,7 +49,7 @@ class Metrics:
         for mode in ("normal", "degraded", "error"):
             self.redaction_responses.labels(mode)
         for prompt in ("detection", "assessment"):
-            for outcome in ("ok", "unavailable", "timeout", "unparseable", "cancelled"):
+            for outcome in MODEL_OUTCOMES:
                 self.model_calls.labels(prompt, outcome)
         for reason in ("model_unavailable", "model_timeout", "model_output_unparseable", "recognizer_failure"):
             for stage in ("detection", "assessment"):

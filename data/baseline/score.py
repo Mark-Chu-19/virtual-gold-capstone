@@ -21,8 +21,18 @@ Metrics
     leak_rate_by_tier share of emails leaking at least one span of that tier (deck slide 19: primary metric)
     extra_masks       predicted spans that overlap no labeled span (over-masking)
     optional_masked   share of not-required spans that were masked (informational)
+    span_counts_by_tier required and leaked labelled spans, including FACT
 """
 import json, sys, argparse, collections
+
+TIERS = ("high", "medium", "low", "public")
+
+def span_coverage(text, span, covered):
+    """Shared character coverage and catch rule for entity and FACT metrics."""
+    positions = alnum_positions(text, span["start"], span["end"]) or list(range(span["start"], span["end"]))
+    fraction = sum(covered[i] for i in positions) / len(positions)
+    threshold = 0.5 if span["type"] == "FACT" else 0.95
+    return fraction, fraction >= threshold
 
 def alnum_positions(text, s, e):
     return [i for i in range(s, e) if text[i].isalnum()]
@@ -49,6 +59,7 @@ def score(gold, pred, truth):
     tot = collections.Counter(); hit = collections.Counter(); part = collections.Counter()
     by_type = collections.defaultdict(lambda: [0, 0]); by_dom = collections.defaultdict(lambda: [0, 0])
     tier_leaks = collections.Counter()
+    span_counts = {tier: {"required": 0, "leaked": 0} for tier in TIERS}
     leaked_emails, misses, extra, opt_tot, opt_hit = [], [], 0, 0, 0
     fact_tot = fact_hit = 0
     for eid, g in gold.items():
@@ -62,15 +73,18 @@ def score(gold, pred, truth):
         for s in g["spans"]:
             if truth == "must_mask" and s.get("must_mask") is None:
                 continue  # added in review, not part of v1
-            pos = alnum_positions(text, s["start"], s["end"]) or list(range(s["start"], s["end"]))
-            frac = sum(cov[i] for i in pos) / len(pos)
+            frac, caught = span_coverage(text, s, cov)
             if not required(s):
                 opt_tot += 1; opt_hit += frac > 0
                 continue
+            if s.get("tier") in span_counts:
+                counts = span_counts[s["tier"]]
+                counts["required"] += 1
+                counts["leaked"] += int(not caught)
             if s["type"] == "FACT":
-                fact_tot += 1; fact_hit += frac >= 0.5
+                fact_tot += 1; fact_hit += caught
                 continue
-            full = frac >= 0.95
+            full = caught
             key = s.get("service_type", s["type"]) if truth == "ground_truth" else s["type"]
             tot["all"] += 1; hit["all"] += full; part["all"] += frac > 0
             by_type[key][0] += 1; by_type[key][1] += full
@@ -94,7 +108,8 @@ def score(gold, pred, truth):
         "recall_partial": r(part["all"], tot["all"]),
         "fact_recall": r(fact_hit, fact_tot),
         "leak_rate": r(len(leaked_emails), len(gold)),
-        "leak_rate_by_tier": {t: r(tier_leaks[t], len(gold)) for t in ("high", "medium", "low", "public")},
+        "leak_rate_by_tier": {t: r(tier_leaks[t], len(gold)) for t in TIERS},
+        "span_counts_by_tier": span_counts,
         "extra_masks": extra,
         "optional_masked": r(opt_hit, opt_tot),
         "recall_by_type": {k: r(v[1], v[0]) for k, v in sorted(by_type.items())},

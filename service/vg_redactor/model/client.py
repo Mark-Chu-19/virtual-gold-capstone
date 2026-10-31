@@ -1,7 +1,8 @@
 """Model adapter layer (Service Eng). Calls the local model and classifies failures.
 
-Prompts and output parsing belong to the model-work owner; this layer only moves a prompt string
-in and a raw string out, enforces the per-call budget, limits concurrency and counts outcomes.
+Prompts and parsing belong to the model-work owner. This layer invokes the supplied parser
+before recording a terminal outcome, enforces the per-call budget and limits concurrency.
+Unexpected parser errors propagate; only adapter failures become model unavailability.
 """
 from __future__ import annotations
 
@@ -111,6 +112,7 @@ class ModelGateway:
             raise
         m.model_queue_wait.labels(prompt_name).observe(time.perf_counter() - t_wait)
         t_call = time.perf_counter()
+        outcome = "internal_error"
         try:
             budget = deadline.model_budget_ms(self.call_cap_ms, self.reserve_ms)
             if budget <= 0:
@@ -121,21 +123,23 @@ class ModelGateway:
                     timeout=budget / 1000)
             except asyncio.TimeoutError as e:
                 raise ModelTimeout() from e
+            except ModelCallError:
+                raise
+            except Exception as e:  # noqa: BLE001  adapter failures only
+                raise ModelUnavailable() from e
             result = parse(raw) if parse else raw
-            m.model_calls.labels(prompt_name, "ok").inc()
+            outcome = "ok"
             return result
         except asyncio.CancelledError:
-            m.model_calls.labels(prompt_name, "cancelled").inc()
+            outcome = "cancelled"
             raise
         except ModelOutputUnparseable:
-            m.model_calls.labels(prompt_name, "unparseable").inc()
+            outcome = "unparseable"
             raise
         except ModelCallError as e:
-            m.model_calls.labels(prompt_name, e.reason.removeprefix("model_")).inc()
+            outcome = e.reason.removeprefix("model_")
             raise
-        except Exception as e:  # noqa: BLE001  any other adapter failure counts as unavailable
-            m.model_calls.labels(prompt_name, "unavailable").inc()
-            raise ModelUnavailable() from e
         finally:
+            m.model_calls.labels(prompt_name, outcome).inc()
             m.model_call_duration.labels(prompt_name).observe(time.perf_counter() - t_call)
             self._sem.release()

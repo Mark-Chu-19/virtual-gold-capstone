@@ -9,9 +9,7 @@ import time
 from pathlib import Path
 
 from ..contracts.fields import iter_fields
-from ..contracts.types import EmailIn
-
-TIERS = ('high', 'medium', 'low', 'public')
+from ..contracts.types import EmailIn, TIERS
 
 
 def scorer():
@@ -55,7 +53,6 @@ def report(gold, predictions, metadata, samples=None):
     if not gold or set(gold) != set(predictions):
         raise ValueError('Gold and predictions must contain the same nonempty set of email IDs')
     engine = scorer()
-    counts = {tier: dict(required=0, leaked=0) for tier in TIERS}
     for eid, record in gold.items():
         spans = predictions[eid].get('spans')
         if not isinstance(spans, list):
@@ -71,26 +68,15 @@ def report(gold, predictions, metadata, samples=None):
                     raise ValueError('Prediction outside request field')
             elif span['end'] > len(record['text']):
                 raise ValueError('Prediction outside email text')
-        covered = set()
-        for span in engine.to_text_spans(record, spans):
-            covered.update(range(span['start'], span['end']))
         for span in record['spans']:
             if span.get('ground_truth') not in ('redact', 'retain'):
                 raise ValueError('Reviewed ground_truth labels are required')
-            if span['ground_truth'] != 'redact':
-                continue
-            tier = span['tier']
-            if tier not in counts:
+            if span['tier'] not in TIERS:
                 raise ValueError('Unknown tier')
-            positions = engine.alnum_positions(record['text'],span['start'],span['end']) or list(range(span['start'],span['end']))
-            fraction = len(covered.intersection(positions)) / len(positions)
-            threshold = 0.5 if span['type'] == 'FACT' else 0.95
-            counts[tier]['required'] += 1
-            counts[tier]['leaked'] += int(fraction < threshold)
     scored = engine.score(gold, predictions, 'ground_truth')
     # Deliberately omit misses, raw text, IDs and per-email details from exported artifacts.
     result = dict(schema_version=1, updated_at=time.time(), metadata=metadata,
-                  emails=scored['emails'], span_counts_by_tier=counts,
+                  emails=scored['emails'], span_counts_by_tier=scored['span_counts_by_tier'],
                   email_leak_rate_by_tier=scored['leak_rate_by_tier'],
                   recall=scored['recall'], fact_recall=scored['fact_recall'],
                   extra_masks=scored['extra_masks'], optional_masked=scored['optional_masked'],

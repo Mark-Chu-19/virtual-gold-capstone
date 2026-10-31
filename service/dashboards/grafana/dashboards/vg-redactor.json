@@ -59,6 +59,19 @@
         "defaults": {
           "unit": "none",
           "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
           "mappings": [
             {
               "type": "value",
@@ -123,6 +136,19 @@
         "defaults": {
           "unit": "none",
           "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
           "mappings": [
             {
               "type": "value",
@@ -190,7 +216,20 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -212,7 +251,7 @@
     {
       "title": "HTTP availability",
       "type": "stat",
-      "description": "POST redaction: 2xx / (2xx + 5xx). Excludes 4xx. Degraded 200 is available. No traffic is undefined.",
+      "description": "POST redaction: 2xx / (2xx + 5xx). Excludes 4xx. Degraded 200 is available. No traffic is undefined. Color bands are provisional operational targets, not paging alerts.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -240,8 +279,50 @@
         "defaults": {
           "unit": "percentunit",
           "noValue": "No data",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.99
+              },
+              {
+                "color": "green",
+                "value": 0.999
+              }
+            ]
+          },
           "min": 0,
-          "max": 1
+          "max": 1,
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            },
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            }
+          ]
         },
         "overrides": []
       },
@@ -263,7 +344,7 @@
     {
       "title": "Degraded share of successful redactions",
       "type": "stat",
-      "description": "",
+      "description": " Color bands are provisional operational targets, not paging alerts.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -291,8 +372,50 @@
         "defaults": {
           "unit": "percentunit",
           "noValue": "No data",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.01
+              },
+              {
+                "color": "red",
+                "value": 0.05
+              }
+            ]
+          },
           "min": 0,
-          "max": 1
+          "max": 1,
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            },
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            }
+          ]
         },
         "overrides": []
       },
@@ -314,7 +437,7 @@
     {
       "title": "Session capacity used",
       "type": "gauge",
-      "description": "",
+      "description": " Color bands are provisional operational targets, not paging alerts.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -342,8 +465,50 @@
         "defaults": {
           "unit": "percentunit",
           "noValue": "No data",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.8
+              },
+              {
+                "color": "red",
+                "value": 0.9
+              }
+            ]
+          },
           "min": 0,
-          "max": 1
+          "max": 1,
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            },
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            }
+          ]
         },
         "overrides": []
       },
@@ -404,6 +569,18 @@
         "defaults": {
           "unit": "reqps",
           "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
           "custom": {
             "stacking": {
               "mode": "normal",
@@ -474,7 +651,19 @@
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": [
           {
@@ -557,7 +746,19 @@
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": [
           {
@@ -624,7 +825,20 @@
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -659,7 +873,7 @@
     {
       "title": "Degraded share \u00b7 successful responses",
       "type": "timeseries",
-      "description": "Only final successful degraded responses. Requests failing after fallback count as errors instead.",
+      "description": "Only final successful degraded responses. Requests failing after fallback count as errors instead. Color bands are provisional operational targets, not paging alerts.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -685,8 +899,50 @@
         "defaults": {
           "unit": "percentunit",
           "noValue": "No data",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.01
+              },
+              {
+                "color": "red",
+                "value": 0.05
+              }
+            ]
+          },
           "min": 0,
-          "max": 1
+          "max": 1,
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            },
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            }
+          ]
         },
         "overrides": []
       },
@@ -733,6 +989,18 @@
         "defaults": {
           "unit": "reqps",
           "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
           "custom": {
             "stacking": {
               "mode": "normal",
@@ -760,7 +1028,7 @@
     {
       "title": "Model final outcomes \u00b7 selected range",
       "type": "bargauge",
-      "description": "One terminal outcome per invocation, after parsing: ok, timeout, unavailable, unparseable, cancelled. Queue timeouts count as invocations.",
+      "description": "One terminal outcome per invocation, after parsing: ok, timeout, unavailable, unparseable, cancelled, internal_error. Queue timeouts count as invocations.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -787,7 +1055,20 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -865,7 +1146,19 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -886,7 +1179,7 @@
     {
       "title": "Capacity rejections \u00b7 selected range",
       "type": "stat",
-      "description": "Only capacity-exhausted; not all HTTP 503 responses.",
+      "description": "Only capacity-exhausted; not all HTTP 503 responses. Color bands are provisional operational targets, not paging alerts.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -913,7 +1206,45 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            },
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "No data",
+                  "color": "gray"
+                }
+              }
+            }
+          ]
         },
         "overrides": []
       },
@@ -962,7 +1293,20 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -1012,7 +1356,20 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -1064,7 +1421,20 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "noValue": "No data"
+          "noValue": "No data",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -1155,7 +1525,19 @@
           "fieldConfig": {
             "defaults": {
               "unit": "s",
-              "noValue": "No data"
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
             },
             "overrides": []
           },
@@ -1219,7 +1601,19 @@
           "fieldConfig": {
             "defaults": {
               "unit": "s",
-              "noValue": "No data"
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
             },
             "overrides": []
           },
@@ -1265,7 +1659,19 @@
           "fieldConfig": {
             "defaults": {
               "unit": "short",
-              "noValue": "No data"
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
             },
             "overrides": []
           },
@@ -1311,7 +1717,19 @@
           "fieldConfig": {
             "defaults": {
               "unit": "s",
-              "noValue": "No data"
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
             },
             "overrides": []
           },
@@ -1358,6 +1776,18 @@
             "defaults": {
               "unit": "reqps",
               "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
               "custom": {
                 "stacking": {
                   "mode": "normal",
@@ -1410,7 +1840,19 @@
           "fieldConfig": {
             "defaults": {
               "unit": "s",
-              "noValue": "No data"
+              "noValue": "No data",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
             },
             "overrides": []
           },
@@ -1458,7 +1900,20 @@
           "fieldConfig": {
             "defaults": {
               "unit": "short",
-              "noValue": "No data"
+              "noValue": "No data",
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "blue"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
             },
             "overrides": []
           },
@@ -1480,7 +1935,7 @@
         {
           "title": "Model calls with valid parsed output",
           "type": "timeseries",
-          "description": "Final ok / all terminal outcomes, including queue timeout and cancellation. Not model accuracy.",
+          "description": "Final ok / all terminal outcomes, including queue timeout and cancellation. Not model accuracy. Color bands are provisional operational targets, not paging alerts.",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -1506,8 +1961,50 @@
             "defaults": {
               "unit": "percentunit",
               "noValue": "No data",
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.95
+                  },
+                  {
+                    "color": "green",
+                    "value": 0.99
+                  }
+                ]
+              },
               "min": 0,
-              "max": 1
+              "max": 1,
+              "mappings": [
+                {
+                  "type": "special",
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "No data",
+                      "color": "gray"
+                    }
+                  }
+                },
+                {
+                  "type": "special",
+                  "options": {
+                    "match": "nan",
+                    "result": {
+                      "text": "No data",
+                      "color": "gray"
+                    }
+                  }
+                }
+              ]
             },
             "overrides": []
           },

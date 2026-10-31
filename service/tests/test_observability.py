@@ -5,6 +5,7 @@ import time
 import pytest
 
 from conftest import EMAIL_REQ, post_json
+from vg_redactor.obs.metrics import MODEL_OUTCOMES
 
 
 def value(app, name, **labels):
@@ -18,8 +19,40 @@ async def test_one_model_final_outcome(client, app, model, prompt, fault, outcom
     model.mode[prompt] = fault
     assert (await post_json(client, '/v3/redaction', EMAIL_REQ)).status_code == 200
     counts = {o: value(app, 'vg_model_calls_total', prompt=prompt, outcome=o)
-              for o in ('ok', 'unparseable', 'unavailable', 'timeout', 'cancelled')}
+              for o in MODEL_OUTCOMES}
     assert counts[outcome] == 1 and sum(counts.values()) == 1
+
+
+@pytest.mark.parametrize('prompt', ['detection', 'assessment'])
+async def test_internal_parser_error_is_500_and_releases_model_slot(client, app, components, prompt):
+    name = 'parse_' + prompt
+    original = getattr(components, name)
+
+    def broken_parser(*args):
+        raise RuntimeError('internal parser bug')
+
+    setattr(components, name, broken_parser)
+    response = await post_json(client, '/v3/redaction', EMAIL_REQ)
+    assert response.status_code == 500
+    assert value(app, 'vg_model_calls_total', prompt=prompt, outcome='internal_error') == 1
+    assert sum(value(app, 'vg_model_calls_total', prompt=prompt, outcome=o) for o in MODEL_OUTCOMES) == 1
+    assert value(app, 'vg_model_calls_total', prompt=prompt, outcome='unavailable') == 0
+    assert value(app, 'vg_redaction_responses_total', mode='degraded') == 0
+    assert app.state.records.stats()['reserved'] == app.state.records.stats()['active'] == 0
+    # A second real request verifies the model semaphore wasn't leaked on the error path.
+    setattr(components, name, original)
+    assert (await post_json(client, '/v3/redaction', EMAIL_REQ)).status_code == 200
+
+
+async def test_unexpected_adapter_error_still_degrades_as_unavailable(client, app, model):
+    async def broken_adapter(*args, **kwargs):
+        raise RuntimeError('adapter failed')
+
+    model.generate = broken_adapter
+    response = await post_json(client, '/v3/redaction', EMAIL_REQ)
+    assert response.status_code == 200 and response.json()['degraded']
+    assert value(app, 'vg_model_calls_total', prompt='detection', outcome='unavailable') == 1
+    assert value(app, 'vg_model_calls_total', prompt='detection', outcome='internal_error') == 0
 
 
 async def test_failed_response_after_fallback_is_not_successfully_degraded(client, app, model, monkeypatch):
