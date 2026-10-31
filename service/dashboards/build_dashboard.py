@@ -123,7 +123,44 @@ def service_dashboard():
     for item in p:
         if item.get('type') == 'timeseries' and 'latency' in item['title'].lower():
             item['fieldConfig']['overrides'].append(dict(matcher=dict(id='byRegexp',options='/degraded/'),properties=[dict(id='custom.lineStyle',value=dict(fill='dash',dash=[8,4]))]))
-    return dashboard('Virtual Gold: Redaction Service','vg-redactor',p)
+    diagnostics = row('Diagnostics · expand for model queues, API lifecycle and decisions',40)
+    diagnostics['collapsed'] = True
+    d = diagnostics['panels']
+    d.append(panel('Model slot queue wait · p50/p95/p99','timeseries',0,41,12,8,
+        quantiles('vg_model_queue_wait_seconds','','prompt'),unit='s',
+        description='Includes successful and timed-out queue waits. Separate from execution latency.'))
+    d.append(panel('Model execution and parsing · p50/p95/p99','timeseries',12,41,12,8,
+        quantiles('vg_model_call_duration_seconds','','prompt'),unit='s',
+        description='After acquiring the slot through generation and parsing. Queue-only timeouts have no execution sample.'))
+    d.append(panel('In-flight redaction requests','timeseries',0,49,6,8,
+        [(metric('vg_inflight_requests'),'In flight')],
+        description='Requests admitted to pipeline processing; excludes rejected validation and capacity requests.'))
+    d.append(panel('Stage latency trend · p95','timeseries',6,49,18,8,
+        quantiles('vg_stage_duration_seconds','','stage',(0.95,)),unit='s'))
+    api_labels = 'route=~"$diagnostic_route",method=~"$diagnostic_method"'
+    d.append(stacked(panel('API lifecycle · selected route and method','timeseries',0,57,12,8,
+        [(f'sum by (route,method,status) (rate({metric("vg_http_requests_total",api_labels)}[{W}]))','{{route}} {{method}} / {{status}}')],unit='reqps',
+        description='Use diagnostic filters to inspect redaction, restore and delete independently. Overview metrics remain POST redaction only.')))
+    d.append(panel('HTTP latency · selected operation and status','timeseries',12,57,12,8,
+        [(f'histogram_quantile(0.95, sum by (le,route,method,status) (rate({metric("vg_http_duration_seconds_bucket",api_labels)}[{W}])))','p95 {{route}} {{method}} / {{status}}')],unit='s',
+        description='Includes errors and restore/delete; separated by status so fast rejects do not hide slow successful operations.'))
+    d.append(panel('Rendered span decisions · selected range','bargauge',0,65,12,8,
+        [(f'sum by (tier,action,mode) (increase({metric("vg_spans_total")}[$__range]))','{{tier}} / {{action}} / {{mode}}')],
+        description='Rendered decisions, including attempts that later fail audit/serialization. Missed entities are absent; this cannot measure leak rate or accuracy.'))
+    good = metric('vg_model_calls_total','outcome="ok"')
+    all_calls = metric('vg_model_calls_total')
+    d.append(panel('Model calls with valid parsed output','timeseries',12,65,12,8,
+        [(f'sum by (prompt) (rate({good}[{W}])) / sum by (prompt) (rate({all_calls}[{W}]))','{{prompt}}')],unit='percentunit',min=0,max=1,
+        description='Final ok / all terminal outcomes, including queue timeout and cancellation. Not model accuracy.'))
+    for i,item in enumerate(d,100):
+        item['id'] = i
+    add(diagnostics)
+    result = dashboard('Virtual Gold: Redaction Service','vg-redactor',p)
+    result['templating']['list'].extend([
+        dict(name='diagnostic_route',label='Diagnostic route',type='custom',query='/v3/redaction,/v3/restore',multi=True,includeAll=True,allValue='/v3/redaction|/v3/restore',current=dict(text='All',value='$__all')),
+        dict(name='diagnostic_method',label='Diagnostic method',type='custom',query='POST,DELETE',multi=True,includeAll=True,allValue='POST|DELETE',current=dict(text='All',value='$__all')),
+    ])
+    return result
 
 
 def main():

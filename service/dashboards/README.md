@@ -91,3 +91,15 @@ python dashboards/build_dashboard.py
 Commit both the builder and generated `grafana/dashboards/*.json`. File provisioning is read-only
 in the Grafana UI; changes reload automatically. Metrics labels never contain email text, entity
 values, API keys, request IDs, session IDs or tenant identifiers.
+
+## P1: expandable diagnostics
+
+Expand the Diagnostics row for model queue wait and execution/parse p50/p95/p99, in-flight
+redactions, per-stage p95 trends, endpoint/status breakdowns, HTTP p95 by status, rendered span
+decisions by tier/action/mode, and the proportion of model calls with valid parsed output.
+
+The **Diagnostic route** and **Diagnostic method** selectors affect only the operation-specific
+panels. Select `/v3/restore` + POST for restoration or `/v3/redaction` + DELETE for deletion;
+top-level service KPIs always measure POST redaction. Model queue-only timeouts have a queue
+sample but no execution sample. Rendered span counts may include requests failing later in
+audit/serialization; they are processing activity, not completed responses or privacy accuracy.

@@ -1097,6 +1097,436 @@
         }
       ],
       "id": 22
+    },
+    {
+      "type": "row",
+      "title": "Diagnostics \u00b7 expand for model queues, API lifecycle and decisions",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
+        {
+          "title": "Model slot queue wait \u00b7 p50/p95/p99",
+          "type": "timeseries",
+          "description": "Includes successful and timed-out queue waits. Separate from execution latency.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 41,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.5, sum by (le,prompt) (rate(vg_model_queue_wait_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p50 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "histogram_quantile(0.95, sum by (le,prompt) (rate(vg_model_queue_wait_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p95 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "histogram_quantile(0.99, sum by (le,prompt) (rate(vg_model_queue_wait_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p99 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "noValue": "No data"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 100
+        },
+        {
+          "title": "Model execution and parsing \u00b7 p50/p95/p99",
+          "type": "timeseries",
+          "description": "After acquiring the slot through generation and parsing. Queue-only timeouts have no execution sample.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 41,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.5, sum by (le,prompt) (rate(vg_model_call_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p50 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "histogram_quantile(0.95, sum by (le,prompt) (rate(vg_model_call_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p95 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "histogram_quantile(0.99, sum by (le,prompt) (rate(vg_model_call_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p99 {{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "noValue": "No data"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 101
+        },
+        {
+          "title": "In-flight redaction requests",
+          "type": "timeseries",
+          "description": "Requests admitted to pipeline processing; excludes rejected validation and capacity requests.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 49,
+            "w": 6,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "vg_inflight_requests{job=\"vg-redactor\",instance=~\"$instance\"}",
+              "legendFormat": "In flight",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "noValue": "No data"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 102
+        },
+        {
+          "title": "Stage latency trend \u00b7 p95",
+          "type": "timeseries",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 6,
+            "y": 49,
+            "w": 18,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.95, sum by (le,stage) (rate(vg_stage_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
+              "legendFormat": "p95 {{stage}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "noValue": "No data"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 103
+        },
+        {
+          "title": "API lifecycle \u00b7 selected route and method",
+          "type": "timeseries",
+          "description": "Use diagnostic filters to inspect redaction, restore and delete independently. Overview metrics remain POST redaction only.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 57,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (route,method,status) (rate(vg_http_requests_total{job=\"vg-redactor\",instance=~\"$instance\",route=~\"$diagnostic_route\",method=~\"$diagnostic_method\"}[$__rate_interval]))",
+              "legendFormat": "{{route}} {{method}} / {{status}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "noValue": "No data",
+              "custom": {
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                },
+                "fillOpacity": 45
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 104
+        },
+        {
+          "title": "HTTP latency \u00b7 selected operation and status",
+          "type": "timeseries",
+          "description": "Includes errors and restore/delete; separated by status so fast rejects do not hide slow successful operations.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 57,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.95, sum by (le,route,method,status) (rate(vg_http_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\",route=~\"$diagnostic_route\",method=~\"$diagnostic_method\"}[$__rate_interval])))",
+              "legendFormat": "p95 {{route}} {{method}} / {{status}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "noValue": "No data"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 105
+        },
+        {
+          "title": "Rendered span decisions \u00b7 selected range",
+          "type": "bargauge",
+          "description": "Rendered decisions, including attempts that later fail audit/serialization. Missed entities are absent; this cannot measure leak rate or accuracy.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 65,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (tier,action,mode) (increase(vg_spans_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]))",
+              "legendFormat": "{{tier}} / {{action}} / {{mode}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "instant": true,
+              "range": false
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "noValue": "No data"
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "colorMode": "value",
+            "graphMode": "none",
+            "textMode": "auto",
+            "orientation": "auto"
+          },
+          "id": 106
+        },
+        {
+          "title": "Model calls with valid parsed output",
+          "type": "timeseries",
+          "description": "Final ok / all terminal outcomes, including queue timeout and cancellation. Not model accuracy.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 65,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (prompt) (rate(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\",outcome=\"ok\"}[$__rate_interval])) / sum by (prompt) (rate(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval]))",
+              "legendFormat": "{{prompt}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "noValue": "No data",
+              "min": 0,
+              "max": 1
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "id": 107
+        }
+      ],
+      "id": 23
     }
   ],
   "annotations": {
@@ -1129,6 +1559,32 @@
         "refresh": 1,
         "multi": false,
         "includeAll": false
+      },
+      {
+        "name": "diagnostic_route",
+        "label": "Diagnostic route",
+        "type": "custom",
+        "query": "/v3/redaction,/v3/restore",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "/v3/redaction|/v3/restore",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      },
+      {
+        "name": "diagnostic_method",
+        "label": "Diagnostic method",
+        "type": "custom",
+        "query": "POST,DELETE",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "POST|DELETE",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
       }
     ]
   }
