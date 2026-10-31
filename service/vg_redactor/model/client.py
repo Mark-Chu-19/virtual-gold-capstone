@@ -12,7 +12,7 @@ from pathlib import Path
 
 import httpx
 
-from ..contracts.errors import ModelCallError, ModelTimeout, ModelUnavailable
+from ..contracts.errors import ModelCallError, ModelTimeout, ModelUnavailable, ModelOutputUnparseable
 from ..obs.metrics import Metrics
 from ..pipeline.deadline import Deadline
 
@@ -95,7 +95,7 @@ class ModelGateway:
     def version(self) -> str:
         return self.client.version
 
-    async def call(self, prompt_name: str, prompt: str, deadline: Deadline) -> str:
+    async def call(self, prompt_name: str, prompt: str, deadline: Deadline, *, parse=None):
         m = self.metrics
         t_wait = time.perf_counter()
         try:  # waiting for the slot counts against the same budget
@@ -105,6 +105,10 @@ class ModelGateway:
             m.model_queue_wait.labels(prompt_name).observe(time.perf_counter() - t_wait)
             m.model_calls.labels(prompt_name, "timeout").inc()
             raise ModelTimeout() from None
+        except asyncio.CancelledError:
+            m.model_queue_wait.labels(prompt_name).observe(time.perf_counter() - t_wait)
+            m.model_calls.labels(prompt_name, "cancelled").inc()
+            raise
         m.model_queue_wait.labels(prompt_name).observe(time.perf_counter() - t_wait)
         t_call = time.perf_counter()
         try:
@@ -117,8 +121,15 @@ class ModelGateway:
                     timeout=budget / 1000)
             except asyncio.TimeoutError as e:
                 raise ModelTimeout() from e
+            result = parse(raw) if parse else raw
             m.model_calls.labels(prompt_name, "ok").inc()
-            return raw
+            return result
+        except asyncio.CancelledError:
+            m.model_calls.labels(prompt_name, "cancelled").inc()
+            raise
+        except ModelOutputUnparseable:
+            m.model_calls.labels(prompt_name, "unparseable").inc()
+            raise
         except ModelCallError as e:
             m.model_calls.labels(prompt_name, e.reason.removeprefix("model_")).inc()
             raise
@@ -128,7 +139,3 @@ class ModelGateway:
         finally:
             m.model_call_duration.labels(prompt_name).observe(time.perf_counter() - t_call)
             self._sem.release()
-
-    def note_unparseable(self, prompt_name: str) -> None:
-        """Called by the orchestrator when a component's parser rejects the model output."""
-        self.metrics.model_calls.labels(prompt_name, "unparseable").inc()

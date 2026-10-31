@@ -92,6 +92,7 @@ class SessionContext:
     mode: str
     record: Record | None = None
     deadline: Deadline | None = None
+    degraded: tuple[str, str] | None = None
 
     async def render(self, decisions):
         """Prepare in a worker; only the request task may publish a result before its deadline."""
