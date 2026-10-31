@@ -16,6 +16,7 @@ from prometheus_client import CollectorRegistry, start_http_server
 from prometheus_client.core import CounterMetricFamily, GaugeMetricFamily
 
 from ..contracts.types import TIERS
+MAX_SOURCE_BYTES = 1_000_000
 METADATA = ('run', 'dataset', 'split', 'model', 'policy', 'prompt_detection', 'prompt_assessment', 'calibration')
 
 
@@ -119,9 +120,11 @@ class SnapshotCollector:
             data = None
             if path:
                 try:
+                    if Path(path).stat().st_size > MAX_SOURCE_BYTES:
+                        raise ValueError('Source file too large')
                     data = json.loads(Path(path).read_text())
                     (validate_host if source == 'host' else validate_evaluation)(data)
-                except (OSError, ValueError, TypeError, KeyError):
+                except Exception:  # noqa: BLE001  untrusted file: any failure marks only this source unavailable
                     data = None
             loaded[source] = data
         available = GaugeMetricFamily('vg_external_source_available','Source snapshot is present and valid',labels=['source'])

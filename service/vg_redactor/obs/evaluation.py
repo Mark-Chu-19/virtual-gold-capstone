@@ -20,6 +20,21 @@ def scorer():
     return module
 
 
+SPLIT_FILE = Path(__file__).resolve().parents[3] / 'data/baseline/split_v1.1.json'
+
+
+def check_split(gold, metadata):
+    """Refuse the reserved test set, and any ID set that does not match the declared split."""
+    if metadata.get('dataset') != 'baseline-v1.1':
+        return
+    split = json.loads(SPLIT_FILE.read_text())
+    ids = set(gold)
+    if ids & set(split['test']):
+        raise ValueError('Reserved test set cannot be evaluated here')
+    if metadata.get('split') != 'dev' or ids != set(split['dev']):
+        raise ValueError('baseline-v1.1 evaluation requires the full dev set with split=dev')
+
+
 def calibration(samples):
     """Ten equal-width bins, same candidates for raw and calibrated ECE."""
     bins = {kind: [[0, 0., 0] for _ in range(10)] for kind in ('raw', 'calibrated')}
@@ -52,6 +67,7 @@ def report(gold, predictions, metadata, samples=None):
     # Missing predictions are not silently treated as unmasked, successful cloud releases.
     if not gold or set(gold) != set(predictions):
         raise ValueError('Gold and predictions must contain the same nonempty set of email IDs')
+    check_split(gold, metadata)
     engine = scorer()
     for eid, record in gold.items():
         spans = predictions[eid].get('spans')

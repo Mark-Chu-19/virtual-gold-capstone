@@ -218,7 +218,8 @@ Metrics (`obs/metrics.py`) use only small fixed label sets; no label ever holds 
 | Metric | Type | Labels |
 |---|---|---|
 | `vg_http_requests_total` | counter | route, method, status |
-| `vg_request_duration_seconds` | histogram | route, mode = normal / degraded / error |
+| `vg_pipeline_duration_seconds` | histogram | route, mode = normal / degraded / error (orchestrator only, excludes HTTP handling) |
+| `vg_http_duration_seconds` | histogram | route, method, status, mode (through final response body send) |
 | `vg_stage_duration_seconds` | histogram | stage (validate, segment, detect_rules, detect_presidio, detect_model, merge, assess_model, calibrate, decide, pseudonymize, audit) |
 | `vg_model_calls_total` | counter | prompt, outcome = ok / unavailable / timeout / unparseable |
 | `vg_model_call_duration_seconds`, `vg_model_queue_wait_seconds` | histogram | prompt |

@@ -129,3 +129,22 @@ async def test_auth_failure_has_bounded_route_and_http_timing(client, app):
     assert response.status_code == 401
     assert value(app, 'vg_http_requests_total', route='/v3/redaction', method='POST', status='401') == 1
     assert value(app, 'vg_http_duration_seconds_count', route='/v3/redaction', method='POST', status='401', mode='error') == 1
+
+
+async def test_unknown_http_methods_share_one_bounded_label(client, app):
+    before = len(list(app.state.metrics.registry.collect()))
+    for i in range(20):
+        response = await client.request(f'M{i}', '/v3/redaction', headers={'Authorization': 'Bearer wrong'})
+        assert response.status_code == 401
+    assert value(app, 'vg_http_requests_total', route='/v3/redaction', method='other', status='401') == 20
+    assert value(app, 'vg_http_requests_total', route='/v3/redaction', method='M0', status='401') == 0
+    assert len(list(app.state.metrics.registry.collect())) == before
+
+
+def test_first_failure_and_removal_series_exist_at_zero(app):
+    for status in (200, 400, 401, 413, 415, 422, 500, 503, 504):
+        names = app.state.metrics.registry.get_sample_value(
+            'vg_http_requests_total', dict(route='/v3/redaction', method='POST', status=str(status)))
+        assert names == 0
+    for reason in ('deleted', 'expired'):
+        assert app.state.metrics.registry.get_sample_value('vg_records_removed_total', dict(reason=reason)) == 0

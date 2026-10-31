@@ -132,3 +132,35 @@ def test_offline_cli_writes_sanitized_report_atomically(tmp_path):
     gp.write_text(gp.read_text()*2)
     with pytest.raises(ValueError,match='Duplicate'):
         load_records(gp)
+
+
+def test_malformed_source_only_disables_that_source(tmp_path):
+    gold,pred = fixtures()
+    host = dict(schema_version=1,updated_at=1000,routing=dict(cloud=1,local=0,blocked=0),
+                release=dict(sent=1,blocked=0,failed=0))
+    hp,ep = tmp_path/'host.json',tmp_path/'evaluation.json'
+    hp.write_text(json.dumps(host))
+    for payload in ('{"schema_version":1,"updated_at":' + '9'*400 + '}', '['*50000 + ']'*50000, 'x'*1_000_001):
+        ep.write_text(payload)
+        out = render(SnapshotCollector(hp,ep))
+        assert 'vg_external_source_available{source="evaluation"} 0.0' in out
+        assert 'vg_external_source_available{source="host"} 1.0' in out
+        assert 'vg_host_release_total{outcome="sent"} 1.0' in out
+
+
+def test_reserved_test_set_and_mismatched_dev_split_are_rejected():
+    split = json.loads((Path(__file__).resolve().parents[2]/'data/baseline/split_v1.1.json').read_text())
+    meta = dict(META, dataset='baseline-v1.1')
+
+    def synthetic(ids):
+        return ({i: dict(id=i,text='Alice',spans=[]) for i in ids}, {i: dict(id=i,spans=[]) for i in ids})
+
+    gold,pred = synthetic(split['test'])
+    with pytest.raises(ValueError,match='Reserved test set'):
+        report(gold,pred,meta)
+    gold,pred = synthetic(split['dev'][:5])
+    with pytest.raises(ValueError,match='full dev set'):
+        report(gold,pred,meta)
+    gold,pred = synthetic(split['dev'])
+    with pytest.raises(ValueError,match='full dev set'):
+        report(gold,pred,dict(meta,split='validation'))

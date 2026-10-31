@@ -7,6 +7,8 @@ import time
 from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
 
 _B = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 4, 6, 8, 12, 15, 20)
+# Statuses POST /v3/redaction can return, so the first 4xx/5xx is visible to rate()/increase().
+REDACTION_STATUSES = (200, 400, 401, 413, 415, 422, 500, 503, 504)
 MODEL_OUTCOMES = ("ok", "unavailable", "timeout", "unparseable", "cancelled", "internal_error")
 
 
@@ -46,6 +48,10 @@ class Metrics:
         self.build_info = Gauge("vg_build_info", "Versions in use", [
             "service", "contract", "policy", "model", "prompt_detection", "prompt_assessment",
             "context_store"], registry=r)
+        for status in REDACTION_STATUSES:
+            self.http_requests.labels("/v3/redaction", "POST", str(status))
+        for reason in ("deleted", "expired"):
+            self.records_removed.labels(reason)
         for mode in ("normal", "degraded", "error"):
             self.redaction_responses.labels(mode)
         for prompt in ("detection", "assessment"):

@@ -10,6 +10,7 @@ DS = {'type': 'prometheus', 'uid': 'prometheus'}
 S = 'job="vg-redactor",instance=~"$instance"'
 R = S + ',route="/v3/redaction",method="POST"'
 W = '$__rate_interval'
+HOST_SOURCE, EVALUATION_SOURCE = 'source="host"', 'source="evaluation"'
 PROFILES = json.loads((Path(__file__).parent / 'thresholds.json').read_text())
 
 
@@ -133,8 +134,9 @@ def service_dashboard():
     availability = f'{success} / ({success} + {failures})'
     add(panel('HTTP availability','stat',12,1,4,4,[(availability,'Availability')],unit='percentunit',min=0,max=1,profile='availability',
               description='POST redaction: 2xx / (2xx + 5xx). Excludes 4xx. Degraded 200 is available. No traffic is undefined.'))
-    degraded = f'sum(rate({metric("vg_redaction_responses_total", "mode=\"degraded\"")}[{W}]))'
-    completed = f'sum(rate({metric("vg_redaction_responses_total", "mode=~\"normal|degraded\"")}[{W}]))'
+    degraded_mode, completed_modes = 'mode="degraded"', 'mode=~"normal|degraded"'  # no backslashes in f-strings before 3.12
+    degraded = f'sum(rate({metric("vg_redaction_responses_total", degraded_mode)}[{W}]))'
+    completed = f'sum(rate({metric("vg_redaction_responses_total", completed_modes)}[{W}]))'
     share = panel('Degraded share of successful redactions','stat',16,1,4,4,[(f'{degraded} / {completed}','Degraded')],unit='percentunit',min=0,max=1,profile='degraded',
                   description='Successful degraded / all successful redactions. Includes the selected-range trend; final failures after fallback count as errors instead.')
     share['targets'][0].update(instant=False,range=True)
@@ -249,7 +251,7 @@ def external_dashboard():
         mappings=[dict(type='value',options={'0':dict(text='DOWN',color='red'),'1':dict(text='UP',color='green')})]))
     add(panel('VG08 aggregate source','stat',4,1,4,4,[(m('vg_external_source_available','source="host"'),'Host source')],unit='none',mappings=states,
         description='No VG08 producer is bundled. Routing and release are reported by the actual host through the documented snapshot contract.'))
-    add(panel('Host snapshot age','stat',8,1,4,4,[(f'time() - {m("vg_external_source_updated_timestamp_seconds", "source=\"host\"")}', 'Age')],unit='s',
+    add(panel('Host snapshot age','stat',8,1,4,4,[(f'time() - {m("vg_external_source_updated_timestamp_seconds", HOST_SOURCE)}', 'Age')],unit='s',
         description='Age since the host published the aggregate. An old valid file can still be stale; verify this before interpreting zero rates.'))
     add(panel('Routing · selected range','bargauge',12,1,6,7,[(f'sum by (route) (increase({m("vg_host_routing_total")}[$__range]))','{{route}}')],
         description='Host decisions: cloud, local, blocked. A cloud route decision does not prove provider dispatch.'))
@@ -258,7 +260,7 @@ def external_dashboard():
     add(row('Offline labelled evaluation · latest imported run only',8))
     add(panel('Evaluation report source','stat',0,9,4,4,[(m('vg_external_source_available','source="evaluation"'),'Evaluation source')],unit='none',mappings=states))
     add(panel('Evaluated emails','stat',4,9,4,4,[(m('vg_evaluation_emails'),'Emails')]))
-    add(panel('Report age','stat',8,9,4,4,[(f'time() - {m("vg_external_source_updated_timestamp_seconds", "source=\"evaluation\"")}', 'Age')],unit='s'))
+    add(panel('Report age','stat',8,9,4,4,[(f'time() - {m("vg_external_source_updated_timestamp_seconds", EVALUATION_SOURCE)}', 'Age')],unit='s'))
     info = panel('Dataset, split and version provenance','table',12,9,12,7,[(m('vg_evaluation_info'),'')])
     info['transformations'] = [dict(id='filterFieldsByName',options=dict(include=dict(names=['run','dataset','split','model','policy','prompt_detection','prompt_assessment','calibration'])))]
     add(info)

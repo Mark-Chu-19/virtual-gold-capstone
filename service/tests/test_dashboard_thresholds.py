@@ -115,3 +115,8 @@ def test_tables_hide_technical_fields_and_use_consistent_count_windows():
     lifecycle = all_panels['Session lifecycle · selected range']
     assert color(lifecycle,100,'Deleted') == 'blue'
     assert color(lifecycle,1,'Capacity rejected') == 'red'
+
+
+def test_builder_parses_on_python_311():
+    import ast
+    ast.parse((ROOT/'build_dashboard.py').read_text(), feature_version=(3, 11))

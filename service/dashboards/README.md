@@ -195,9 +195,10 @@ python -m vg_redactor.obs.evaluation \
 ```
 
 This writes an atomic aggregate report with **no email IDs, raw text, misses or entity values**.
-The exporter accepts `dev`, `validation`, or `test` split identifiers, but does not verify dataset
-provenance; callers must supply truthful versions and the correct split. Reserved test evaluation
-remains a deliberate action after pipeline freeze. The dashboard displays the **latest imported
+For `dataset: baseline-v1.1` the report command checks the gold email IDs against
+`data/baseline/split_v1.1.json`: any reserved test ID is rejected, and `split: dev` requires exactly
+the dev set. Other dataset names are not verified; callers must supply truthful versions. Reserved
+test evaluation remains a deliberate action after pipeline freeze, outside this command. The dashboard displays the **latest imported
 run** as instant values, not historical time series mixing different datasets/configurations.
 
 ### Evaluation definitions
