@@ -164,3 +164,12 @@ def test_reserved_test_set_and_mismatched_dev_split_are_rejected():
     gold,pred = synthetic(split['dev'])
     with pytest.raises(ValueError,match='full dev set'):
         report(gold,pred,dict(meta,split='validation'))
+
+
+@pytest.mark.parametrize('dataset', ['baseline_v1.1', 'Baseline-v1.1', 'anything-else', ''])
+def test_reserved_test_ids_are_rejected_under_any_dataset_name(dataset):
+    split = json.loads((Path(__file__).resolve().parents[2]/'data/baseline/split_v1.1.json').read_text())
+    gold = {i: dict(id=i,text='Alice',spans=[]) for i in split['test'][:3]}
+    pred = {i: dict(id=i,spans=[]) for i in gold}
+    with pytest.raises(ValueError,match='Reserved test set'):
+        report(gold,pred,dict(META,dataset=dataset,split='dev'))

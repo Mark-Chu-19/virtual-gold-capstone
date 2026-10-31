@@ -24,14 +24,12 @@ SPLIT_FILE = Path(__file__).resolve().parents[3] / 'data/baseline/split_v1.1.jso
 
 
 def check_split(gold, metadata):
-    """Refuse the reserved test set, and any ID set that does not match the declared split."""
-    if metadata.get('dataset') != 'baseline-v1.1':
-        return
+    """Refuse the reserved test set under any dataset name; baseline-v1.1 must be the full dev set."""
     split = json.loads(SPLIT_FILE.read_text())
     ids = set(gold)
     if ids & set(split['test']):
         raise ValueError('Reserved test set cannot be evaluated here')
-    if metadata.get('split') != 'dev' or ids != set(split['dev']):
+    if metadata.get('dataset') == 'baseline-v1.1' and (metadata.get('split') != 'dev' or ids != set(split['dev'])):
         raise ValueError('baseline-v1.1 evaluation requires the full dev set with split=dev')
 
 
