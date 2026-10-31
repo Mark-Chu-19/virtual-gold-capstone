@@ -74,6 +74,46 @@ def dashboard(title, uid, panels):
                     query='label_values(up{job="vg-redactor"}, instance)',refresh=1,multi=False,includeAll=False)]))
 
 
+def table_fields(p, names, renames=None):
+    """Keep technical Prometheus fields out of user-facing tables."""
+    p['transformations'] = [
+        dict(id='filterFieldsByName',options=dict(include=dict(names=names))),
+        dict(id='organize',options=dict(indexByName={name:i for i,name in enumerate(names)},renameByName=renames or {})),
+    ]
+    return p
+
+
+def matrix_table(p, row_name, column_name, columns):
+    p['transformations'] = [
+        dict(id='filterFieldsByName',options=dict(include=dict(names=[row_name,column_name,'Value']))),
+        dict(id='groupingToMatrix',options=dict(rowField=row_name,columnField=column_name,valueField='Value',emptyValue='null')),
+        dict(id='organize',options=dict(indexByName={name:i for i,name in enumerate(columns)},renameByName=columns)),
+    ]
+    return p
+
+
+def health_column(p, name, profile, unit='short'):
+    """Only the health column gets thresholds; activity counts stay neutral."""
+    p['fieldConfig']['overrides'].append(dict(matcher=dict(id='byName',options=name),properties=[
+        dict(id='unit',value=unit),dict(id='color',value=dict(mode='thresholds')),
+        dict(id='thresholds',value=PROFILES[profile]),
+        dict(id='custom.cellOptions',value=dict(type='color-text')),
+        dict(id='mappings',value=[dict(type='special',options=dict(match=missing,result=dict(text='No data',color='gray'))) for missing in ('null','nan')]),
+    ]))
+
+
+def metadata_query():
+    """One vector of setting/value rows, avoiding sparse joins between unrelated info metrics."""
+    vectors = []
+    for name, labels in (
+        ('vg_build_info',('service','contract','policy','model','prompt_detection','prompt_assessment','context_store')),
+        ('vg_runtime_info',('model_backend','restoration_backend','components')),
+    ):
+        for label in labels:
+            vectors.append(f'sum by (setting,setting_value) (label_replace(label_replace({metric(name)}, "setting_value", "$1", "{label}", "(.*)"), "setting", "{label}", "__name__", ".*"))')
+    return ' or '.join(vectors)
+
+
 def service_dashboard():
     p = []
     add = p.append
@@ -95,7 +135,12 @@ def service_dashboard():
               description='POST redaction: 2xx / (2xx + 5xx). Excludes 4xx. Degraded 200 is available. No traffic is undefined.'))
     degraded = f'sum(rate({metric("vg_redaction_responses_total", "mode=\"degraded\"")}[{W}]))'
     completed = f'sum(rate({metric("vg_redaction_responses_total", "mode=~\"normal|degraded\"")}[{W}]))'
-    add(panel('Degraded share of successful redactions','stat',16,1,4,4,[(f'{degraded} / {completed}','Degraded')],unit='percentunit',min=0,max=1,profile='degraded'))
+    share = panel('Degraded share of successful redactions','stat',16,1,4,4,[(f'{degraded} / {completed}','Degraded')],unit='percentunit',min=0,max=1,profile='degraded',
+                  description='Successful degraded / all successful redactions. Includes the selected-range trend; final failures after fallback count as errors instead.')
+    share['targets'][0].update(instant=False,range=True)
+    share['options'].update(graphMode='area',wideLayout=False)
+    share['options']['reduceOptions']['calcs'] = ['last']
+    add(share)
     occupancy = f'({metric("vg_records_active")} + {metric("vg_records_reserved")}) / {metric("vg_records_capacity")}'
     add(panel('Session capacity used','gauge',20,1,4,4,[(occupancy,'Active + reserved')],unit='percentunit',min=0,max=1,profile='capacity'))
     add(row('Requests and performance',5))
@@ -104,65 +149,83 @@ def service_dashboard():
     add(panel('HTTP end-to-end latency · successful redactions','timeseries',12,6,12,8,
         quantiles('vg_http_duration_seconds','route="/v3/redaction",method="POST",mode=~"normal|degraded"'),unit='s',
         description='Server entry through final ASGI body send: validation, sessions, pipeline and serialization. Excludes client network time.'))
-    add(panel('Pipeline latency · normal / degraded / error','timeseries',0,14,12,8,
+    add(panel('Pipeline latency · normal / degraded / error','timeseries',0,14,12,10,
         quantiles('vg_pipeline_duration_seconds','route="redactions"'),unit='s',description='Orchestrator only. Independent of HTTP latency; percentile differences are not overhead measurements.'))
-    add(panel('Stage latency · p95','bargauge',12,14,12,8,
+    stage = panel('Stage latency trend · p95','timeseries',12,14,12,10,
         quantiles('vg_stage_duration_seconds','','stage',(0.95,)),unit='s',
-        description='Last window p95 by stage. Detection stages run concurrently; do not sum stage percentiles.'))
-    add(row('Fallback and model calls',22))
-    add(panel('Degraded share · successful responses','timeseries',0,23,8,8,[(f'{degraded} / {completed}','Degraded share')],unit='percentunit',min=0,max=1,profile='degraded',
-        description='Only final successful degraded responses. Requests failing after fallback count as errors instead.'))
-    add(stacked(panel('Degraded responses by cause and stage','timeseries',8,23,8,8,
+        description='Detection stages run concurrently; do not sum their percentiles. The smallest histogram bucket is 5ms: fast stub stages can share interpolated p95 values of 4.75ms.')
+    stage['options']['legend'].update(placement='right',width=230)
+    add(stage)
+    add(row('Fallback and model calls',24))
+    add(stacked(panel('Degraded responses by cause and stage','timeseries',0,25,10,9,
         [(f'sum by (reason,stage) (rate({metric("vg_degraded_total")}[{W}]))','{{reason}} / {{stage}}')],unit='reqps')))
-    add(panel('Model final outcomes · selected range','bargauge',16,23,8,8,
-        [(f'sum by (prompt,outcome) (increase({metric("vg_model_calls_total")}[$__range]))','{{prompt}} / {{outcome}}')],
-        description='One terminal outcome per invocation, after parsing: ok, timeout, unavailable, unparseable, cancelled, internal_error. Queue timeouts count as invocations.'))
-    add(row('Sessions, observed components and versions',31))
-    add(panel('Session slots','timeseries',0,32,8,8,
-        [(metric('vg_records_active'),'Active'),(metric('vg_records_reserved'),'Reserved'),(metric('vg_records_capacity'),'Capacity')]))
-    add(panel('Capacity rejections · selected range','stat',8,32,4,4,
-        [(f'increase({metric("vg_capacity_rejected_total")}[$__range])','Capacity rejected')],profile='capacity_rejections',description='Only capacity-exhausted; not all HTTP 503 responses.'))
-    add(panel('Removed sessions · selected range','bargauge',8,36,4,4,
-        [(f'sum by (reason) (increase({metric("vg_records_removed_total")}[$__range]))','{{reason}}')]))
-    add(panel('Components · last observed result','table',12,32,6,8,[(metric('vg_component_up'),'')],
-        description='Rules and Presidio report last actual execution, not continuous probes. -1 = not observed, 0 = failure, 1 = success.'))
-    info = panel('Versions and runtime backends','table',18,32,6,8,[(metric('vg_build_info'),''),(metric('vg_runtime_info'),'')],
-        description='Default model backend is stub. Mixed components still include stub prompts/parsers. Version metadata is not evidence of benchmark accuracy.')
-    info['transformations'] = [dict(id='merge',options={}), dict(id='filterFieldsByName',options=dict(include=dict(names=['service','contract','policy','model','prompt_detection','prompt_assessment','context_store','model_backend','restoration_backend','components'])))]
+    calls = metric('vg_model_calls_total')
+    good = metric('vg_model_calls_total','outcome="ok"')
+    counts = f'sum by (prompt,outcome) (increase({calls}[$__range]))'
+    ratio = f'sum by (prompt) (increase({good}[$__range])) / sum by (prompt) (increase({calls}[$__range]))'
+    query = f'({counts}) or label_replace(({ratio}), "outcome", "parsed_success", "prompt", ".*")'
+    models = panel('Model outcomes and parsed success · selected range','table',10,25,14,9,[(query,'')],decimals=1,
+        description='One final outcome per invocation. Counts and parsed success ratio use the same selected time range, including queue timeouts, cancellation and internal errors. No calls gives an undefined ratio. Parsed success is not privacy accuracy.')
+    matrix_table(models,'prompt','outcome',{'prompt\\outcome':'Prompt','ok':'OK','unavailable':'Unavailable','timeout':'Timeout','unparseable':'Unparseable','cancelled':'Cancelled','internal_error':'Internal error','parsed_success':'Parsed success'})
+    health_column(models,'Parsed success','model_success','percentunit')
+    for name,width in {'Prompt':95,'OK':55,'Unavailable':90,'Timeout':70,'Unparseable':90,'Cancelled':80,'Internal error':95,'Parsed success':100}.items():
+        models['fieldConfig']['overrides'].append(dict(matcher=dict(id='byName',options=name),properties=[dict(id='custom.width',value=width)]))
+    add(models)
+    add(row('Sessions, observed components and versions',34))
+    # A row per scope, with event columns so rejection coloring does not color normal deletions red.
+    removed = f'sum by (event) (label_replace(increase({metric("vg_records_removed_total")}[$__range]), "event", "$1", "reason", "(.*)"))'
+    rejected = f'label_replace(sum(increase({metric("vg_capacity_rejected_total")}[$__range])), "event", "capacity_rejected", "__name__", ".*")'
+    zeros = ' or '.join(f'label_replace(0 * sum({metric("vg_records_capacity")}), "event", "{event}", "__name__", ".*")' for event in ('deleted','expired','capacity_rejected'))
+    events = f'label_replace((({removed}) or ({rejected}) or {zeros}), "scope", "Selected range", "event", ".*")'
+    lifecycle = panel('Session lifecycle · selected range','table',0,35,8,12,[(events,'')],decimals=1,
+        description='Estimated counts for expiry, active deletion and explicit capacity rejection. Other HTTP 503s are excluded; only rejection counts receive health colors.')
+    matrix_table(lifecycle,'scope','event',{'scope\\event':'Scope','deleted':'Deleted','expired':'Expired','capacity_rejected':'Capacity rejected'})
+    lifecycle['transformations'][-1]['options']['excludeByName'] = {'scope\\event':True}
+    lifecycle['fieldConfig']['defaults']['custom'] = dict(width=120)
+    health_column(lifecycle,'Capacity rejected','capacity_rejections')
+    add(lifecycle)
+    components = panel('Components · last observed result','table',8,35,8,12,[(metric('vg_component_up'),'')],unit='none',
+        description='Rules and Presidio report last actual execution, not continuous probes. Model endpoint reports reachability only.')
+    table_fields(components,['component','Value'],{'component':'Component','Value':'Status'})
+    components['fieldConfig']['overrides'] = [dict(matcher=dict(id='byName',options='Status'),properties=[
+        dict(id='mappings',value=[dict(type='value',options={'-1':dict(text='UNKNOWN',color='gray'),'0':dict(text='DOWN',color='red'),'1':dict(text='UP',color='green')})]),
+        dict(id='custom.cellOptions',value=dict(type='color-text')),
+    ])]
+    add(components)
+    info = panel('Versions and runtime backends','table',16,35,8,12,[(metadata_query(),'')],unit='none',
+        description='Version and backend values, one setting per row. Mixed components include stub prompts/parsers. Version metadata is not benchmark accuracy.')
+    table_fields(info,['setting','setting_value'],{'setting':'Setting','setting_value':'Value'})
+    info['options'].update(sortBy=[dict(displayName='Setting',desc=False)])
     add(info)
-    # Distinguish degraded lines consistently without changing their units.
     for item in p:
         if item.get('type') == 'timeseries' and 'latency' in item['title'].lower():
             item['fieldConfig']['overrides'].append(dict(matcher=dict(id='byRegexp',options='/degraded/'),properties=[dict(id='custom.lineStyle',value=dict(fill='dash',dash=[8,4]))]))
-    diagnostics = row('Diagnostics · expand for model queues, API lifecycle and decisions',40)
+    diagnostics = row('Diagnostics · model queues, session trends and API lifecycle',47)
     diagnostics['collapsed'] = True
     d = diagnostics['panels']
-    d.append(panel('Model slot queue wait · p50/p95/p99','timeseries',0,41,12,8,
+    d.append(panel('Model slot queue wait · p50/p95/p99','timeseries',0,48,12,8,
         quantiles('vg_model_queue_wait_seconds','','prompt'),unit='s',
-        description='Includes successful and timed-out queue waits. Separate from execution latency.'))
-    d.append(panel('Model execution and parsing · p50/p95/p99','timeseries',12,41,12,8,
+        description='Includes successful and timed-out queue waits. Separate from execution latency. The smallest histogram bucket is 5ms.'))
+    d.append(panel('Model execution and parsing · p50/p95/p99','timeseries',12,48,12,8,
         quantiles('vg_model_call_duration_seconds','','prompt'),unit='s',
-        description='After acquiring the slot through generation and parsing. Queue-only timeouts have no execution sample.'))
-    d.append(panel('In-flight redaction requests','timeseries',0,49,6,8,
+        description='After acquiring the slot through generation and parsing. Queue-only timeouts have no execution sample. The smallest histogram bucket is 5ms.'))
+    d.append(panel('In-flight redaction requests','timeseries',0,56,8,8,
         [(metric('vg_inflight_requests'),'In flight')],
         description='Requests admitted to pipeline processing; excludes rejected validation and capacity requests.'))
-    d.append(panel('Stage latency trend · p95','timeseries',6,49,18,8,
-        quantiles('vg_stage_duration_seconds','','stage',(0.95,)),unit='s'))
+    d.append(panel('Session slots','timeseries',8,56,16,8,
+        [(metric('vg_records_active'),'Active'),(metric('vg_records_reserved'),'Reserved'),(metric('vg_records_capacity'),'Capacity')]))
     api_labels = 'route=~"$diagnostic_route",method=~"$diagnostic_method"'
-    d.append(stacked(panel('API lifecycle · selected route and method','timeseries',0,57,12,8,
+    d.append(stacked(panel('API lifecycle · selected route and method','timeseries',0,64,12,8,
         [(f'sum by (route,method,status) (rate({metric("vg_http_requests_total",api_labels)}[{W}]))','{{route}} {{method}} / {{status}}')],unit='reqps',
         description='Use diagnostic filters to inspect redaction, restore and delete independently. Overview metrics remain POST redaction only.')))
-    d.append(panel('HTTP latency · selected operation and status','timeseries',12,57,12,8,
+    d.append(panel('HTTP latency · selected operation and status','timeseries',12,64,12,8,
         [(f'histogram_quantile(0.95, sum by (le,route,method,status) (rate({metric("vg_http_duration_seconds_bucket",api_labels)}[{W}])))','p95 {{route}} {{method}} / {{status}}')],unit='s',
         description='Includes errors and restore/delete; separated by status so fast rejects do not hide slow successful operations.'))
-    d.append(panel('Rendered span decisions · selected range','bargauge',0,65,12,8,
+    spans = panel('Rendered span decisions · selected range','bargauge',0,72,24,8,
         [(f'sum by (tier,action,mode) (increase({metric("vg_spans_total")}[$__range]))','{{tier}} / {{action}} / {{mode}}')],
-        description='Rendered decisions, including attempts that later fail audit/serialization. Missed entities are absent; this cannot measure leak rate or accuracy.'))
-    good = metric('vg_model_calls_total','outcome="ok"')
-    all_calls = metric('vg_model_calls_total')
-    d.append(panel('Model calls with valid parsed output','timeseries',12,65,12,8,
-        [(f'sum by (prompt) (rate({good}[{W}])) / sum by (prompt) (rate({all_calls}[{W}]))','{{prompt}}')],unit='percentunit',min=0,max=1,profile='model_success',
-        description='Final ok / all terminal outcomes, including queue timeout and cancellation. Not model accuracy.'))
+        description='Rendered decisions, including attempts that later fail audit/serialization. Missed entities are absent; this cannot measure leak rate or accuracy.')
+    spans['options'].update(orientation='horizontal')
+    d.append(spans)
     for i,item in enumerate(d,100):
         item['id'] = i
     add(diagnostics)

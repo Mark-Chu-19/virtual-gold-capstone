@@ -97,8 +97,9 @@ values, API keys, request IDs, session IDs or tenant identifiers.
 ## P1: expandable diagnostics
 
 Expand the Diagnostics row for model queue wait and execution/parse p50/p95/p99, in-flight
-redactions, per-stage p95 trends, endpoint/status breakdowns, HTTP p95 by status, rendered span
-decisions by tier/action/mode, and the proportion of model calls with valid parsed output.
+redactions, session slot trends, endpoint/status breakdowns, HTTP p95 by status, and rendered
+span decisions by tier/action/mode. Stage p95 trends live in the main performance row; model
+parsed-success ratios live beside outcome counts in the main model table.
 
 The **Diagnostic route** and **Diagnostic method** selectors affect only the operation-specific
 panels. Select `/v3/restore` + POST for restoration or `/v3/redaction` + DELETE for deletion;
@@ -270,3 +271,26 @@ boundary values (including full capacity), unknown data, neutral benchmark metri
 between generated JSON and the builder. Span leakage is now produced in the repository scorer's
 same coverage pass as its existing metrics; the report adapter no longer recalculates coverage
 or duplicates the entity/FACT thresholds. `data/baseline/score.py` retains its standalone CLI.
+
+
+## Compact service layout
+
+The service dashboard has **22 panels**: 15 in the main view and 7 in collapsed diagnostics.
+The eight midterm topics are retained, with duplicate views consolidated:
+
+* The top degradation card includes a sparkline. It shows the latest sample, including undefined
+  ratios when idle, rather than carrying forward the last healthy value.
+* Stage p95 has one trend panel with a right-side legend, so full stage names remain visible.
+  The redundant stage bar gauge is removed.
+* The model table has detection/assessment rows, outcome columns, and a parsed-success column.
+  Counts and success ratio both use the selected time range; zero calls leave the ratio undefined.
+  Parsed-success thresholds color only that column, not the neutral activity counts.
+* The session lifecycle table combines deletion, expiry, and capacity rejection counts. Only
+  capacity rejection receives health colors. Session slot history moves into diagnostics.
+* Component status shows only Component/Status, with explicit UP/DOWN/UNKNOWN values. Versions
+  and backends form one Setting/Value table built from a single vector, avoiding sparse joined rows.
+
+HTTP and pipeline latency, model queue and execution latency, and scrape/model reachability
+remain separate because their measurement boundaries differ. With the stub backend, sub-5ms
+observations share the histogram's first bucket: p50/p95/p99 can interpolate to 2.50/4.75/4.95ms.
+Matching values therefore do not establish that the underlying metrics are redundant.

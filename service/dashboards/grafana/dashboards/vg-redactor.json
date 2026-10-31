@@ -344,7 +344,7 @@
     {
       "title": "Degraded share of successful redactions",
       "type": "stat",
-      "description": " Color bands are provisional operational targets, not paging alerts.",
+      "description": "Successful degraded / all successful redactions. Includes the selected-range trend; final failures after fallback count as errors instead. Color bands are provisional operational targets, not paging alerts.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -364,8 +364,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "instant": true,
-          "range": false
+          "instant": false,
+          "range": true
         }
       ],
       "fieldConfig": {
@@ -422,15 +422,16 @@
       "options": {
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "last"
           ],
           "fields": "",
           "values": false
         },
         "colorMode": "value",
-        "graphMode": "none",
+        "graphMode": "area",
         "textMode": "auto",
-        "orientation": "auto"
+        "orientation": "auto",
+        "wideLayout": false
       },
       "id": 6
     },
@@ -712,7 +713,7 @@
         "x": 0,
         "y": 14,
         "w": 12,
-        "h": 8
+        "h": 10
       },
       "targets": [
         {
@@ -796,9 +797,9 @@
       "id": 11
     },
     {
-      "title": "Stage latency \u00b7 p95",
-      "type": "bargauge",
-      "description": "Last window p95 by stage. Detection stages run concurrently; do not sum stage percentiles.",
+      "title": "Stage latency trend \u00b7 p95",
+      "type": "timeseries",
+      "description": "Detection stages run concurrently; do not sum their percentiles. The smallest histogram bucket is 5ms: fast stub stages can share interpolated p95 values of 4.75ms.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -807,7 +808,7 @@
         "x": 12,
         "y": 14,
         "w": 12,
-        "h": 8
+        "h": 10
       },
       "targets": [
         {
@@ -817,9 +818,7 @@
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
-          },
-          "instant": true,
-          "range": false
+          }
         }
       ],
       "fieldConfig": {
@@ -827,8 +826,7 @@
           "unit": "s",
           "noValue": "No data",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "blue"
+            "mode": "palette-classic"
           },
           "thresholds": {
             "mode": "absolute",
@@ -840,20 +838,39 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/degraded/"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "options": {
-        "reduceOptions": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "width": 230
         },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "auto",
-        "orientation": "auto"
+        "tooltip": {
+          "mode": "multi"
+        }
       },
       "id": 12
     },
@@ -863,102 +880,12 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 22,
+        "y": 24,
         "w": 24,
         "h": 1
       },
       "panels": [],
       "id": 13
-    },
-    {
-      "title": "Degraded share \u00b7 successful responses",
-      "type": "timeseries",
-      "description": "Only final successful degraded responses. Requests failing after fallback count as errors instead. Color bands are provisional operational targets, not paging alerts.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 23,
-        "w": 8,
-        "h": 8
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(rate(vg_redaction_responses_total{job=\"vg-redactor\",instance=~\"$instance\",mode=\"degraded\"}[$__rate_interval])) / sum(rate(vg_redaction_responses_total{job=\"vg-redactor\",instance=~\"$instance\",mode=~\"normal|degraded\"}[$__rate_interval]))",
-          "legendFormat": "Degraded share",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          }
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percentunit",
-          "noValue": "No data",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 0.01
-              },
-              {
-                "color": "red",
-                "value": 0.05
-              }
-            ]
-          },
-          "min": 0,
-          "max": 1,
-          "mappings": [
-            {
-              "type": "special",
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "No data",
-                  "color": "gray"
-                }
-              }
-            },
-            {
-              "type": "special",
-              "options": {
-                "match": "nan",
-                "result": {
-                  "text": "No data",
-                  "color": "gray"
-                }
-              }
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "id": 14
     },
     {
       "title": "Degraded responses by cause and stage",
@@ -969,10 +896,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 8,
-        "y": 23,
-        "w": 8,
-        "h": 8
+        "x": 0,
+        "y": 25,
+        "w": 10,
+        "h": 9
       },
       "targets": [
         {
@@ -1023,33 +950,34 @@
           "mode": "multi"
         }
       },
-      "id": 15
+      "id": 14
     },
     {
-      "title": "Model final outcomes \u00b7 selected range",
-      "type": "bargauge",
-      "description": "One terminal outcome per invocation, after parsing: ok, timeout, unavailable, unparseable, cancelled, internal_error. Queue timeouts count as invocations.",
+      "title": "Model outcomes and parsed success \u00b7 selected range",
+      "type": "table",
+      "description": "One final outcome per invocation. Counts and parsed success ratio use the same selected time range, including queue timeouts, cancellation and internal errors. No calls gives an undefined ratio. Parsed success is not privacy accuracy.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 16,
-        "y": 23,
-        "w": 8,
-        "h": 8
+        "x": 10,
+        "y": 25,
+        "w": 14,
+        "h": 9
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (prompt,outcome) (increase(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]))",
-          "legendFormat": "{{prompt}} / {{outcome}}",
+          "expr": "(sum by (prompt,outcome) (increase(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]))) or label_replace((sum by (prompt) (increase(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\",outcome=\"ok\"}[$__range])) / sum by (prompt) (increase(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]))), \"outcome\", \"parsed_success\", \"prompt\", \".*\")",
+          "legendFormat": "",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "instant": true,
-          "range": false
+          "range": false,
+          "format": "table"
         }
       ],
       "fieldConfig": {
@@ -1068,24 +996,229 @@
                 "value": null
               }
             ]
-          }
+          },
+          "decimals": 1
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Parsed success"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 0.95
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.99
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "null",
+                      "result": {
+                        "text": "No data",
+                        "color": "gray"
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "No data",
+                        "color": "gray"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Prompt"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 95
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OK"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 55
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unavailable"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Timeout"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unparseable"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cancelled"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Internal error"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 95
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Parsed success"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          }
+        ]
       },
       "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "auto",
-        "orientation": "auto"
+        "showHeader": true
       },
-      "id": 16
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "prompt",
+                "outcome",
+                "Value"
+              ]
+            }
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "rowField": "prompt",
+            "columnField": "outcome",
+            "valueField": "Value",
+            "emptyValue": "null"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "prompt\\outcome": 0,
+              "ok": 1,
+              "unavailable": 2,
+              "timeout": 3,
+              "unparseable": 4,
+              "cancelled": 5,
+              "internal_error": 6,
+              "parsed_success": 7
+            },
+            "renameByName": {
+              "prompt\\outcome": "Prompt",
+              "ok": "OK",
+              "unavailable": "Unavailable",
+              "timeout": "Timeout",
+              "unparseable": "Unparseable",
+              "cancelled": "Cancelled",
+              "internal_error": "Internal error",
+              "parsed_success": "Parsed success"
+            }
+          }
+        }
+      ],
+      "id": 15
     },
     {
       "type": "row",
@@ -1093,201 +1226,39 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 31,
+        "y": 34,
         "w": 24,
         "h": 1
       },
       "panels": [],
-      "id": 17
+      "id": 16
     },
     {
-      "title": "Session slots",
-      "type": "timeseries",
-      "description": "",
+      "title": "Session lifecycle \u00b7 selected range",
+      "type": "table",
+      "description": "Estimated counts for expiry, active deletion and explicit capacity rejection. Other HTTP 503s are excluded; only rejection counts receive health colors.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "x": 0,
-        "y": 32,
+        "y": 35,
         "w": 8,
-        "h": 8
+        "h": 12
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "vg_records_active{job=\"vg-redactor\",instance=~\"$instance\"}",
-          "legendFormat": "Active",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          }
-        },
-        {
-          "refId": "B",
-          "expr": "vg_records_reserved{job=\"vg-redactor\",instance=~\"$instance\"}",
-          "legendFormat": "Reserved",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          }
-        },
-        {
-          "refId": "C",
-          "expr": "vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}",
-          "legendFormat": "Capacity",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          }
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "noValue": "No data",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "id": 18
-    },
-    {
-      "title": "Capacity rejections \u00b7 selected range",
-      "type": "stat",
-      "description": "Only capacity-exhausted; not all HTTP 503 responses. Color bands are provisional operational targets, not paging alerts.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 32,
-        "w": 4,
-        "h": 4
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "increase(vg_capacity_rejected_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range])",
-          "legendFormat": "Capacity rejected",
+          "expr": "label_replace(((sum by (event) (label_replace(increase(vg_records_removed_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]), \"event\", \"$1\", \"reason\", \"(.*)\"))) or (label_replace(sum(increase(vg_capacity_rejected_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range])), \"event\", \"capacity_rejected\", \"__name__\", \".*\")) or label_replace(0 * sum(vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}), \"event\", \"deleted\", \"__name__\", \".*\") or label_replace(0 * sum(vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}), \"event\", \"expired\", \"__name__\", \".*\") or label_replace(0 * sum(vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}), \"event\", \"capacity_rejected\", \"__name__\", \".*\")), \"scope\", \"Selected range\", \"event\", \".*\")",
+          "legendFormat": "",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "instant": true,
-          "range": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "noValue": "No data",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 1
-              }
-            ]
-          },
-          "mappings": [
-            {
-              "type": "special",
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "No data",
-                  "color": "gray"
-                }
-              }
-            },
-            {
-              "type": "special",
-              "options": {
-                "match": "nan",
-                "result": {
-                  "text": "No data",
-                  "color": "gray"
-                }
-              }
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "auto",
-        "orientation": "auto"
-      },
-      "id": 19
-    },
-    {
-      "title": "Removed sessions \u00b7 selected range",
-      "type": "bargauge",
-      "description": "",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 36,
-        "w": 4,
-        "h": 4
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum by (reason) (increase(vg_records_removed_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__range]))",
-          "legendFormat": "{{reason}}",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "instant": true,
-          "range": false
+          "range": false,
+          "format": "table"
         }
       ],
       "fieldConfig": {
@@ -1306,38 +1277,141 @@
                 "value": null
               }
             ]
+          },
+          "decimals": 1,
+          "custom": {
+            "width": 120
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Capacity rejected"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "null",
+                      "result": {
+                        "text": "No data",
+                        "color": "gray"
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "No data",
+                        "color": "gray"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "auto",
-        "orientation": "auto"
+        "showHeader": true
       },
-      "id": 20
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "scope",
+                "event",
+                "Value"
+              ]
+            }
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "rowField": "scope",
+            "columnField": "event",
+            "valueField": "Value",
+            "emptyValue": "null"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "scope\\event": 0,
+              "deleted": 1,
+              "expired": 2,
+              "capacity_rejected": 3
+            },
+            "renameByName": {
+              "scope\\event": "Scope",
+              "deleted": "Deleted",
+              "expired": "Expired",
+              "capacity_rejected": "Capacity rejected"
+            },
+            "excludeByName": {
+              "scope\\event": true
+            }
+          }
+        }
+      ],
+      "id": 17
     },
     {
       "title": "Components \u00b7 last observed result",
       "type": "table",
-      "description": "Rules and Presidio report last actual execution, not continuous probes. -1 = not observed, 0 = failure, 1 = success.",
+      "description": "Rules and Presidio report last actual execution, not continuous probes. Model endpoint reports reachability only.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 12,
-        "y": 32,
-        "w": 6,
-        "h": 8
+        "x": 8,
+        "y": 35,
+        "w": 8,
+        "h": 12
       },
       "targets": [
         {
@@ -1355,7 +1429,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "none",
           "noValue": "No data",
           "color": {
             "mode": "fixed",
@@ -1371,43 +1445,94 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "-1": {
+                        "text": "UNKNOWN",
+                        "color": "gray"
+                      },
+                      "0": {
+                        "text": "DOWN",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "UP",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "showHeader": true
       },
-      "id": 21
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "component",
+                "Value"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "component": 0,
+              "Value": 1
+            },
+            "renameByName": {
+              "component": "Component",
+              "Value": "Status"
+            }
+          }
+        }
+      ],
+      "id": 18
     },
     {
       "title": "Versions and runtime backends",
       "type": "table",
-      "description": "Default model backend is stub. Mixed components still include stub prompts/parsers. Version metadata is not evidence of benchmark accuracy.",
+      "description": "Version and backend values, one setting per row. Mixed components include stub prompts/parsers. Version metadata is not benchmark accuracy.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 18,
-        "y": 32,
-        "w": 6,
-        "h": 8
+        "x": 16,
+        "y": 35,
+        "w": 8,
+        "h": 12
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}",
-          "legendFormat": "",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "instant": true,
-          "range": false,
-          "format": "table"
-        },
-        {
-          "refId": "B",
-          "expr": "vg_runtime_info{job=\"vg-redactor\",instance=~\"$instance\"}",
+          "expr": "sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"service\", \"(.*)\"), \"setting\", \"service\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"contract\", \"(.*)\"), \"setting\", \"contract\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"policy\", \"(.*)\"), \"setting\", \"policy\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"model\", \"(.*)\"), \"setting\", \"model\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"prompt_detection\", \"(.*)\"), \"setting\", \"prompt_detection\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"prompt_assessment\", \"(.*)\"), \"setting\", \"prompt_assessment\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_build_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"context_store\", \"(.*)\"), \"setting\", \"context_store\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_runtime_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"model_backend\", \"(.*)\"), \"setting\", \"model_backend\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_runtime_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"restoration_backend\", \"(.*)\"), \"setting\", \"restoration_backend\", \"__name__\", \".*\")) or sum by (setting,setting_value) (label_replace(label_replace(vg_runtime_info{job=\"vg-redactor\",instance=~\"$instance\"}, \"setting_value\", \"$1\", \"components\", \"(.*)\"), \"setting\", \"components\", \"__name__\", \".*\"))",
           "legendFormat": "",
           "datasource": {
             "type": "prometheus",
@@ -1420,7 +1545,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "none",
           "noValue": "No data",
           "color": {
             "mode": "fixed",
@@ -1439,42 +1564,49 @@
         "overrides": []
       },
       "options": {
-        "showHeader": true
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Setting",
+            "desc": false
+          }
+        ]
       },
       "transformations": [
-        {
-          "id": "merge",
-          "options": {}
-        },
         {
           "id": "filterFieldsByName",
           "options": {
             "include": {
               "names": [
-                "service",
-                "contract",
-                "policy",
-                "model",
-                "prompt_detection",
-                "prompt_assessment",
-                "context_store",
-                "model_backend",
-                "restoration_backend",
-                "components"
+                "setting",
+                "setting_value"
               ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "setting": 0,
+              "setting_value": 1
+            },
+            "renameByName": {
+              "setting": "Setting",
+              "setting_value": "Value"
             }
           }
         }
       ],
-      "id": 22
+      "id": 19
     },
     {
       "type": "row",
-      "title": "Diagnostics \u00b7 expand for model queues, API lifecycle and decisions",
+      "title": "Diagnostics \u00b7 model queues, session trends and API lifecycle",
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 40,
+        "y": 47,
         "w": 24,
         "h": 1
       },
@@ -1482,14 +1614,14 @@
         {
           "title": "Model slot queue wait \u00b7 p50/p95/p99",
           "type": "timeseries",
-          "description": "Includes successful and timed-out queue waits. Separate from execution latency.",
+          "description": "Includes successful and timed-out queue waits. Separate from execution latency. The smallest histogram bucket is 5ms.",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "gridPos": {
             "x": 0,
-            "y": 41,
+            "y": 48,
             "w": 12,
             "h": 8
           },
@@ -1558,14 +1690,14 @@
         {
           "title": "Model execution and parsing \u00b7 p50/p95/p99",
           "type": "timeseries",
-          "description": "After acquiring the slot through generation and parsing. Queue-only timeouts have no execution sample.",
+          "description": "After acquiring the slot through generation and parsing. Queue-only timeouts have no execution sample. The smallest histogram bucket is 5ms.",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "gridPos": {
             "x": 12,
-            "y": 41,
+            "y": 48,
             "w": 12,
             "h": 8
           },
@@ -1641,8 +1773,8 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 49,
-            "w": 6,
+            "y": 56,
+            "w": 8,
             "h": 8
           },
           "targets": [
@@ -1690,7 +1822,7 @@
           "id": 102
         },
         {
-          "title": "Stage latency trend \u00b7 p95",
+          "title": "Session slots",
           "type": "timeseries",
           "description": "",
           "datasource": {
@@ -1698,16 +1830,34 @@
             "uid": "prometheus"
           },
           "gridPos": {
-            "x": 6,
-            "y": 49,
-            "w": 18,
+            "x": 8,
+            "y": 56,
+            "w": 16,
             "h": 8
           },
           "targets": [
             {
               "refId": "A",
-              "expr": "histogram_quantile(0.95, sum by (le,stage) (rate(vg_stage_duration_seconds_bucket{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval])))",
-              "legendFormat": "p95 {{stage}}",
+              "expr": "vg_records_active{job=\"vg-redactor\",instance=~\"$instance\"}",
+              "legendFormat": "Active",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "vg_records_reserved{job=\"vg-redactor\",instance=~\"$instance\"}",
+              "legendFormat": "Reserved",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "vg_records_capacity{job=\"vg-redactor\",instance=~\"$instance\"}",
+              "legendFormat": "Capacity",
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
@@ -1716,7 +1866,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "s",
+              "unit": "short",
               "noValue": "No data",
               "color": {
                 "mode": "palette-classic"
@@ -1757,7 +1907,7 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 57,
+            "y": 64,
             "w": 12,
             "h": 8
           },
@@ -1822,7 +1972,7 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 57,
+            "y": 64,
             "w": 12,
             "h": 8
           },
@@ -1880,8 +2030,8 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 65,
-            "w": 12,
+            "y": 72,
+            "w": 24,
             "h": 8
           },
           "targets": [
@@ -1928,102 +2078,12 @@
             "colorMode": "value",
             "graphMode": "none",
             "textMode": "auto",
-            "orientation": "auto"
+            "orientation": "horizontal"
           },
           "id": 106
-        },
-        {
-          "title": "Model calls with valid parsed output",
-          "type": "timeseries",
-          "description": "Final ok / all terminal outcomes, including queue timeout and cancellation. Not model accuracy. Color bands are provisional operational targets, not paging alerts.",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "x": 12,
-            "y": 65,
-            "w": 12,
-            "h": 8
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum by (prompt) (rate(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\",outcome=\"ok\"}[$__rate_interval])) / sum by (prompt) (rate(vg_model_calls_total{job=\"vg-redactor\",instance=~\"$instance\"}[$__rate_interval]))",
-              "legendFormat": "{{prompt}}",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percentunit",
-              "noValue": "No data",
-              "color": {
-                "mode": "thresholds"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 0.95
-                  },
-                  {
-                    "color": "green",
-                    "value": 0.99
-                  }
-                ]
-              },
-              "min": 0,
-              "max": 1,
-              "mappings": [
-                {
-                  "type": "special",
-                  "options": {
-                    "match": "null",
-                    "result": {
-                      "text": "No data",
-                      "color": "gray"
-                    }
-                  }
-                },
-                {
-                  "type": "special",
-                  "options": {
-                    "match": "nan",
-                    "result": {
-                      "text": "No data",
-                      "color": "gray"
-                    }
-                  }
-                }
-              ]
-            },
-            "overrides": []
-          },
-          "options": {
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull"
-              ]
-            },
-            "tooltip": {
-              "mode": "multi"
-            }
-          },
-          "id": 107
         }
       ],
-      "id": 23
+      "id": 20
     }
   ],
   "annotations": {
