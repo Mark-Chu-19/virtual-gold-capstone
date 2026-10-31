@@ -103,3 +103,122 @@ panels. Select `/v3/restore` + POST for restoration or `/v3/redaction` + DELETE 
 top-level service KPIs always measure POST redaction. Model queue-only timeouts have a queue
 sample but no execution sample. Rendered span counts may include requests failing later in
 audit/serialization; they are processing activity, not completed responses or privacy accuracy.
+
+## P2: host integration and offline evaluation
+
+Open **Virtual Gold: Release and Offline Evaluation** using the service dashboard link. This
+second dashboard reads an **optional separate exporter** on port 9101. The service remains
+independent of both VG08 and labelled benchmark inputs. No benchmark run is started automatically,
+and no reserved test predictions or fabricated benchmark results are committed.
+
+### Start the optional exporter
+
+From `service/`:
+
+```bash
+python -m vg_redactor.obs.external \
+  --host-snapshot /tmp/vg08-monitoring.json \
+  --evaluation-report /tmp/vg-evaluation.json
+```
+
+Native Prometheus scrapes `127.0.0.1:9101`. For Docker on macOS, add `--host 0.0.0.0` so its
+`host.docker.internal:9101` target can reach it (same network exposure considerations as 9100).
+Both scrape jobs are provisioned; the optional one stays DOWN until you start the exporter.
+Each input can be absent independently. Missing/invalid inputs expose source availability 0
+and omit that source's metrics. They never expose successful release or accuracy as zero.
+Panels show source validity and producer timestamp age separately: a valid old snapshot can
+still be stale. Check these before interpreting event rates.
+
+### VG08 producer contract (integration boundary)
+
+The VG08 host must atomically replace its snapshot with its **own cumulative counters**. This
+repository has no VG08 host implementation, so this implements the receiving contract and
+monitoring path, not an actual provider dispatch hook. The host must wire the publisher at its
+routing/release boundaries. It must count each event once in its own process; scraping the same
+snapshot does not add counts again. Counter resets on host restart are handled by Prometheus.
+Keep the snapshot bounded to these exact fields:
+
+```json
+{
+  "schema_version": 1,
+  "updated_at": 1793404800,
+  "routing": {"cloud": 0, "local": 0, "blocked": 0},
+  "release": {"sent": 0, "blocked": 0, "failed": 0}
+}
+```
+
+This is a schema example, not demo telemetry. `updated_at` is the producer's Unix time in seconds
+when publishing. `cloud/local/blocked` are final routing decisions. `sent` means the provider
+request was dispatched successfully, `blocked` means the host prevented dispatch, and `failed`
+means attempted dispatch failed. Routing and release are separate event populations; local routes
+need not generate release events. Neither a redaction 200 nor `degraded=false` implies release
+eligibility or an actual cloud call. The existing V3 response contract is unchanged.
+
+Publish via a temporary file and rename, rather than overwriting the live file in place. Never
+include text, entity values, session/request IDs, credentials, URLs or additional arbitrary labels.
+
+### Generate a sanitized evaluation report
+
+The offline report command reuses `data/baseline/score.py` and accepts the repository's labelled
+v1.1 format plus predictions with global text offsets or service field offsets. Supply the
+**exact same set of email IDs** in gold and predictions; explicit `spans: []` means nothing was
+masked. Missing records, duplicate IDs and invalid prediction offsets are rejected. HTTP V3
+responses omit spans: obtain predictions from the offline harness, not by guessing offsets from
+redacted HTTP text. `action: retain` predictions are excluded from mask coverage.
+
+Create a metadata JSON file with these exact version identifiers (replace example values):
+
+```json
+{
+  "run": "dev-run-001",
+  "dataset": "baseline-v1.1",
+  "split": "dev",
+  "model": "model-version",
+  "policy": "policy-version",
+  "prompt_detection": "detection-version",
+  "prompt_assessment": "assessment-version",
+  "calibration": "calibration-version"
+}
+```
+
+Then, from `service/`:
+
+```bash
+python -m vg_redactor.obs.evaluation \
+  --gold ../data/baseline/baseline_v1.1_dev.jsonl \
+  --pred /path/to/dev-predictions.jsonl \
+  --metadata /path/to/metadata.json \
+  --out /tmp/vg-evaluation.json
+```
+
+This writes an atomic aggregate report with **no email IDs, raw text, misses or entity values**.
+The exporter accepts `dev`, `validation`, or `test` split identifiers, but does not verify dataset
+provenance; callers must supply truthful versions and the correct split. Reserved test evaluation
+remains a deliberate action after pipeline freeze. The dashboard displays the **latest imported
+run** as instant values, not historical time series mixing different datasets/configurations.
+
+### Evaluation definitions
+
+* **Required span leak ratio by tier**: missed required spans / required spans of the tier,
+  including FACT. An entity is caught at >=95% alphanumeric coverage; FACT at >=50%, matching
+  the repository's coverage thresholds. Tiers with no required spans have no ratio.
+* **Emails leaking entities by tier**: existing scorer's `leak_rate_by_tier`, with all evaluated
+  emails as denominator. FACT is excluded by that scorer and shown separately as FACT recall.
+  This differs from the span ratio above, and both panels state their denominator.
+* **Public labelled spans touched**: `optional_masked`, any overlap with retain-labelled spans.
+  **Extra masks**: predictions overlapping no label. These are limited usefulness measures,
+  not a task-answer utility score or whole-document character over-redaction percentage.
+* Both leak metrics measure residual exposure in benchmark outputs. They do not observe actual
+  cloud leakage and are never derived from live HTTP status or `vg_spans_total`.
+
+### Optional calibration evaluation
+
+Add `--calibration-samples /path/to/heldout-candidates.jsonl` to the report command. Every line
+must contain exactly `raw`, `calibrated` (finite probabilities) and `is_private` (boolean gold
+label). Use independently labelled held-out candidates, the same set for both scores, and exclude
+deterministic policy overrides. These samples cannot be recovered from aggregate HTTP status or
+unlabelled audit scores. Without them the calibration panels show No data.
+
+ECE uses ten equal-width bins: [0,0.1), … [0.9,1], weighted by candidate count. The dashboard shows
+raw/calibrated ECE, sample count, mean score and observed private fraction by occupied bin. It
+reports calibration on the supplied sample population; it does not establish detector recall.

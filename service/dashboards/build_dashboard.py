@@ -163,9 +163,62 @@ def service_dashboard():
     return result
 
 
+def external_dashboard():
+    selector = 'job="vg-external",instance=~"$external_instance"'
+    def m(name, labels=''):
+        return name + '{' + selector + (','+labels if labels else '') + '}'
+    p = []
+    add = p.append
+    add(row('VG08 host · externally reported routing and provider release',0))
+    states = [dict(type='value',options={'0':dict(text='MISSING / INVALID',color='gray'),'1':dict(text='VALID SNAPSHOT',color='green')})]
+    add(panel('Exporter scrape','stat',0,1,4,4,[(f'up{{{selector}}}','Exporter')],unit='none',
+        mappings=[dict(type='value',options={'0':dict(text='DOWN',color='red'),'1':dict(text='UP',color='green')})]))
+    add(panel('VG08 aggregate source','stat',4,1,4,4,[(m('vg_external_source_available','source="host"'),'Host source')],unit='none',mappings=states,
+        description='No VG08 producer is bundled. Routing and release are reported by the actual host through the documented snapshot contract.'))
+    add(panel('Host snapshot age','stat',8,1,4,4,[(f'time() - {m("vg_external_source_updated_timestamp_seconds", "source=\"host\"")}', 'Age')],unit='s',
+        description='Age since the host published the aggregate. An old valid file can still be stale; verify this before interpreting zero rates.'))
+    add(panel('Routing · selected range','bargauge',12,1,6,7,[(f'sum by (route) (increase({m("vg_host_routing_total")}[$__range]))','{{route}}')],
+        description='Host decisions: cloud, local, blocked. A cloud route decision does not prove provider dispatch.'))
+    add(panel('Provider release · selected range','bargauge',18,1,6,7,[(f'sum by (outcome) (increase({m("vg_host_release_total")}[$__range]))','{{outcome}}')],
+        description='Actual host dispatch outcomes: sent, blocked, failed. Never inferred from service HTTP 200 or degraded flags.'))
+    add(row('Offline labelled evaluation · latest imported run only',8))
+    add(panel('Evaluation report source','stat',0,9,4,4,[(m('vg_external_source_available','source="evaluation"'),'Evaluation source')],unit='none',mappings=states))
+    add(panel('Evaluated emails','stat',4,9,4,4,[(m('vg_evaluation_emails'),'Emails')]))
+    add(panel('Report age','stat',8,9,4,4,[(f'time() - {m("vg_external_source_updated_timestamp_seconds", "source=\"evaluation\"")}', 'Age')],unit='s'))
+    info = panel('Dataset, split and version provenance','table',12,9,12,7,[(m('vg_evaluation_info'),'')])
+    info['transformations'] = [dict(id='filterFieldsByName',options=dict(include=dict(names=['run','dataset','split','model','policy','prompt_detection','prompt_assessment','calibration'])))]
+    add(info)
+    add(panel('Required span leakage by tier · includes FACT','bargauge',0,16,12,8,[(m('vg_evaluation_span_leak_ratio'),'{{tier}}')],unit='percentunit',min=0,max=1,
+        description='Missed required labelled spans / required spans of that tier. Entity coverage threshold 95%; FACT threshold 50%. No required spans means no value. This is a benchmark proxy, not observed cloud leakage.'))
+    add(panel('Emails leaking entities by tier · repository scorer','bargauge',12,16,12,8,[(m('vg_evaluation_email_leak_ratio'),'{{tier}}')],unit='percentunit',min=0,max=1,
+        description='Emails missing at least one required entity span of a tier / all emails. Existing scorer excludes FACT, which has a separate recall metric. Distinct denominator from span leakage.'))
+    add(panel('Entity recall','stat',0,24,6,5,[(m('vg_evaluation_recall'),'Recall')],unit='percentunit',min=0,max=1))
+    add(panel('FACT recall','stat',6,24,6,5,[(m('vg_evaluation_fact_recall'),'FACT recall')],unit='percentunit',min=0,max=1))
+    add(panel('Public labelled spans touched','stat',12,24,6,5,[(m('vg_evaluation_optional_masked'),'Optional masked')],unit='percentunit',min=0,max=1,
+        description='Fraction of retain-labelled spans with any predicted redaction overlap. Not a whole-document character over-redaction rate.'))
+    add(panel('Extra predicted masks','stat',18,24,6,5,[(m('vg_evaluation_extra_masks'),'Extra masks')],
+        description='Predicted redaction spans overlapping no labelled span, as defined by the repository scorer.'))
+    add(row('Calibration · independent candidate labels required',29))
+    add(panel('Calibration sample count','stat',0,30,6,5,[(m('vg_evaluation_calibration_samples'),'Candidates')],
+        description='Optional independently labelled held-out candidates. Empty until calibration samples are explicitly supplied.'))
+    add(panel('Expected calibration error · raw vs calibrated','bargauge',6,30,6,8,[(m('vg_evaluation_ece'),'{{kind}}')],unit='percentunit',min=0,max=1,
+        description='Ten equal-width bins; compare both scores on the same held-out candidates. Exclude deterministic policy overrides.'))
+    add(panel('Reliability bins · mean predicted private probability','bargauge',12,30,6,8,[(m('vg_evaluation_calibration_bin_mean_score'),'{{kind}} bin {{bin}}')],unit='percentunit',min=0,max=1))
+    add(panel('Reliability bins · observed private fraction','bargauge',18,30,6,8,[(m('vg_evaluation_calibration_bin_private_fraction'),'{{kind}} bin {{bin}}')],unit='percentunit',min=0,max=1,
+        description='Bin 0: [0,0.1), … bin 9: [0.9,1]. Empty bins are omitted, not filled with zero.'))
+    result = dashboard('Virtual Gold: Release and Offline Evaluation','vg-release-evaluation',p)
+    result['templating']['list'] = [dict(name='external_instance',label='Exporter instance',type='query',datasource=DS,
+        query='label_values(up{job="vg-external"}, instance)',refresh=1,multi=False,includeAll=False)]
+    result['links'] = [dict(title='Service overview',type='link',url='/d/vg-redactor',keepTime=True)]
+    return result
+
+
 def main():
     ROOT.mkdir(parents=True, exist_ok=True)
-    (ROOT/'vg-redactor.json').write_text(json.dumps(service_dashboard(),indent=2)+'\n')
+    service = service_dashboard()
+    service['links'] = [dict(title='Release and offline evaluation',type='link',url='/d/vg-release-evaluation',keepTime=True)]
+    (ROOT/'vg-redactor.json').write_text(json.dumps(service,indent=2)+'\n')
+    (ROOT/'vg-release-evaluation.json').write_text(json.dumps(external_dashboard(),indent=2)+'\n')
 
 
 if __name__ == '__main__':
