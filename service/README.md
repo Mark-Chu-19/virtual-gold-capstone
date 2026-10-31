@@ -34,6 +34,9 @@ place of the stub; the contract tests in `tests/` should keep passing.
 
 ## V3 API
 
+Customer integration: [English contract and curl examples](../docs/api/customer-contract-v3-en.md),
+[Chinese reference](../docs/api/customer-contract-v3-zh.md), and [OpenAPI 3.1](../docs/api/openapi-v3.yaml).
+
 Only V3 is served. V1/V2 routes and their token/conversation/Redis machinery have been removed;
 they were development iterations and were never offered as supported customer APIs.
 

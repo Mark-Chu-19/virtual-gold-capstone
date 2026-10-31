@@ -1,5 +1,9 @@
 # V3 redaction and restoration API
 
+For customer integration, use the [customer contract and curl examples](customer-contract-v3-en.md)
+and [OpenAPI specification](openapi-v3.yaml).
+This page provides implementation and deployment details.
+
 V3 is the first customer-facing contract. V1/V2 routes and their dedicated implementations
 have been removed. A server-issued `session_id` identifies one redaction and its restoration
 payload; it does not represent a multi-turn conversation. Each redaction starts fresh label state.
@@ -29,7 +33,7 @@ from, to, cc and quoted thread items. Optional `policy.overrides` keeps the exis
 constraints: high-tier protection cannot be relaxed. Unknown fields are rejected with 422.
 Client session/request IDs, context, mapping retention and backend-selection fields are not accepted.
 
-Success, HTTP 200, has exactly these six top-level fields:
+Success, HTTP 200, has exactly these five top-level fields:
 
 ```json
 {

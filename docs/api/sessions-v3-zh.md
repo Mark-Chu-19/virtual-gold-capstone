@@ -1,5 +1,8 @@
 # V3 脱敏与还原 API
 
+客户接入请使用[客户契约与 curl 示例](customer-contract-v3-zh.md)和[OpenAPI 规范](openapi-v3.yaml)。
+本页补充实现和部署细节。
+
 V3 以服务端生成的 `session_id` 唯一标识一次脱敏及其还原记录。这里的 session
 不代表多轮会话；每次 redact 独立编号占位符，不读取历史请求或会话上下文。
 V3 是首个对客户提供的接口版本。旧 V1/V2 路由及专属逻辑已删除，不再启动或提供兼容接口。
@@ -48,7 +51,7 @@ mapping 始终保留，TTL 由服务端的 `default_ttl_seconds` 决定，上限
 V3 不提供幂等缓存。即使没有产生占位符，也会保存有效的空 mapping 并返回标识。
 
 `degraded=true` 表示使用原有保守降级脱敏路径，结果同样支持还原。
-成功响应固定为以上六个顶层字段；不返回 spans、模型/策略/prompt 版本、mapping、
+成功响应固定为以上五个顶层字段；不返回 spans、模型/策略/prompt 版本、mapping、
 内部后端类型、降级细节、record 容器或 request_id，也不重复发送 `X-Degraded`。
 具体版本、检测结果及降级诊断仍保留在原有服务端审计/监控中。
 

@@ -1,0 +1,789 @@
+openapi: 3.1.0
+info:
+  title: Virtual Gold Redaction API
+  version: 3.0.0
+  description: Customer V3 contract, checked against main commit 1e805ab on 2026-10-29. One session identifies
+    one redaction, not a conversation. Current sessions are process-local and lost on restart. This maintained
+    contract adds request bodies, Bearer authentication and problem responses that are absent from the raw
+    runtime OpenAPI document. It documents current behavior; it does not introduce server features.
+servers:
+- url: http://127.0.0.1:8080
+  description: Local development only. Obtain the HTTPS integration base URL from the service operator.
+security:
+- BearerAuth: []
+tags:
+- name: Redaction
+- name: Restoration
+- name: Service
+paths:
+  /v3/redaction:
+    post:
+      operationId: createRedaction
+      summary: Redact one independent email request
+      description: Creates a new tenant-bound session even for identical input or no detected entities. No
+        idempotency guarantee; Idempotency-Key is not implemented. Retention/backend are server-selected. Persist
+        the returned session_id alongside this redacted result. Only purpose, subject, address names/addresses,
+        body and thread.text are processed; thread.message_id is metadata.
+      tags:
+      - Redaction
+      responses:
+        '200':
+          description: Success.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedactionResponseV3'
+              example:
+                session_id: sid_01M60000000000000000000000
+                redacted_email:
+                  body: Call [PHONE_1].
+                  to: []
+                  cc: []
+                  thread: []
+                redacted_purpose: Draft a reply
+                expires_at: '2026-10-29T17:00:00+00:00'
+                degraded: false
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '415':
+          $ref: '#/components/responses/Error415'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '504':
+          $ref: '#/components/responses/Error504'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedactionRequestV3'
+            example:
+              purpose: Draft a reply
+              email:
+                body: Call 202-555-0102.
+    delete:
+      operationId: deleteRedaction
+      summary: Delete restoration data for a session
+      description: The session_id is in a required JSON body. Returns 204 for deleted, already deleted, expired
+        and unknown IDs. A live record/tombstone owned by another tenant returns 404. An already authorized
+        in-flight restore can finish. Confirm that client libraries, gateways and proxies preserve DELETE request
+        bodies.
+      tags:
+      - Redaction
+      responses:
+        '204':
+          description: Success. No response body.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/RequestId'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '415':
+          $ref: '#/components/responses/Error415'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionRequestV3'
+            example:
+              session_id: sid_01M60000000000000000000000
+  /v3/restore:
+    post:
+      operationId: restoreText
+      summary: Restore placeholders from one session
+      description: 'Exact, case-sensitive matching of recognized bracketed labels. Unknown labels cause an
+        all-or-nothing 422 with no partial text. No recursive replacement. Calls do not consume sessions or
+        extend expiry. Never mix labels from different sessions: equal labels carry no provenance. Person aliases
+        and normalized variants can share a mapping; output is the stored mapped value, not a byte-for-byte
+        reconstruction guarantee. Omitted placeholders cannot be detected or reconstructed.'
+      tags:
+      - Restoration
+      responses:
+        '200':
+          description: Success.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestoreResponseV3'
+              example:
+                restored_text: Please call 202-555-0102.
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '415':
+          $ref: '#/components/responses/Error415'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '504':
+          $ref: '#/components/responses/Error504'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestoreRequestV3'
+            example:
+              session_id: sid_01M60000000000000000000000
+              text: Please call [PHONE_1].
+  /v3/info:
+    get:
+      operationId: getServiceInfo
+      summary: Read deployment capabilities and limits
+      description: Authenticated metadata. Read current limits and policy taxonomy from this deployment; defaults
+        in the guide are not an SLA.
+      tags:
+      - Service
+      responses:
+        '200':
+          description: Success.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /healthz:
+    get:
+      operationId: getHealth
+      summary: Check service liveness
+      description: Public liveness check; does not assert model readiness or detection quality.
+      tags:
+      - Service
+      responses:
+        '200':
+          description: Success.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+              example:
+                status: ok
+        '500':
+          $ref: '#/components/responses/Error500'
+      security: []
+  /readyz:
+    get:
+      operationId: getReadiness
+      summary: Read readiness and model availability
+      description: Returns HTTP 200 for both ready and degraded states; inspect the mode and components body.
+        A model ping failure can produce an application 500.
+      tags:
+      - Service
+      responses:
+        '200':
+          description: Success.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Readiness'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security: []
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Opaque operator-issued API key, not a session ID or JWT. Keys mapped to the same tenant
+        can share sessions.
+  headers:
+    RequestId:
+      description: Per-call diagnostic ID. Not a session identifier and never required for restoration.
+      schema:
+        type: string
+    RetryAfter:
+      description: 'Present for capacity-exhausted: delay in seconds, currently 5. Not guaranteed for other
+        503 errors.'
+      schema:
+        type: string
+        pattern: ^[0-9]+$
+      example: '5'
+  responses:
+    Error400:
+      description: Malformed or missing JSON body (malformed-json).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error401:
+      description: Missing or invalid Bearer API key (unauthorized).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error404:
+      description: Session unknown or owned by another tenant (session-not-found).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error410:
+      description: Authorized session expired or deleted, while its tombstone is retained (session-gone).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error413:
+      description: JSON body exceeds max_request_bytes (payload-too-large); restore can also exceed max_restored_bytes
+        (restored-text-too-large).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error415:
+      description: Content-Type must be application/json (unsupported-media-type).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error422:
+      description: Invalid input, Unicode or policy (validation-failed); restore can also reject unknown placeholders
+        (unknown-placeholder).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error500:
+      description: Unexpected internal failure (internal).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error503:
+      description: Capacity, session allocation, storage, key or payload unavailable. Only capacity-exhausted
+        guarantees Retry-After.
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Error504:
+      description: Redaction or restoration deadline exceeded (deadline-exceeded).
+      headers:
+        X-Request-ID:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  schemas:
+    EmailAddress:
+      additionalProperties: false
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Name
+        address:
+          maxLength: 320
+          minLength: 1
+          title: Address
+          type: string
+      required:
+      - address
+      title: EmailAddress
+      type: object
+    EmailIn:
+      additionalProperties: false
+      properties:
+        subject:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Subject
+        from:
+          anyOf:
+          - $ref: '#/components/schemas/EmailAddress'
+          - type: 'null'
+          default: null
+        to:
+          items:
+            $ref: '#/components/schemas/EmailAddress'
+          title: To
+          type: array
+        cc:
+          items:
+            $ref: '#/components/schemas/EmailAddress'
+          title: Cc
+          type: array
+        body:
+          title: Body
+          type: string
+        thread:
+          items:
+            $ref: '#/components/schemas/ThreadItem'
+          maxItems: 50
+          title: Thread
+          type: array
+      required:
+      - body
+      title: EmailIn
+      type: object
+    Overrides:
+      additionalProperties: false
+      properties:
+        thresholds:
+          type: object
+          properties:
+            medium:
+              type: number
+              minimum: 0
+              maximum: 1
+          required: []
+          additionalProperties: false
+          description: Only medium can be overridden. All other tier keys return 422.
+        entity_types:
+          type: object
+          properties:
+            exclude:
+              type: array
+              items:
+                type: string
+          required: []
+          additionalProperties: false
+          description: Only exclude is accepted. High-tier types cannot be excluded; use GET /v3/info for the
+            current taxonomy.
+        allow_list:
+          items:
+            type: string
+          title: Allow List
+          type: array
+          description: Exact text terms. Matching a high-tier candidate returns 422. Not generally applied
+            in degraded mode.
+        deny_list:
+          items:
+            type: string
+          title: Deny List
+          type: array
+          description: Use non-empty exact text terms to force redaction. Clients should not send empty terms.
+      title: Overrides
+      type: object
+    PolicyOptions:
+      additionalProperties: false
+      properties:
+        overrides:
+          $ref: '#/components/schemas/Overrides'
+      title: PolicyOptions
+      type: object
+    ThreadItem:
+      additionalProperties: false
+      properties:
+        message_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Message Id
+        source:
+          const: quoted_thread
+          default: quoted_thread
+          title: Source
+          type: string
+        text:
+          title: Text
+          type: string
+      required:
+      - text
+      title: ThreadItem
+      type: object
+    RedactionRequestV3:
+      additionalProperties: false
+      description: One independent redaction; retention and backend choice belong to the server.
+      properties:
+        purpose:
+          maxLength: 2000
+          minLength: 1
+          title: Purpose
+          type: string
+        email:
+          $ref: '#/components/schemas/EmailIn'
+        policy:
+          $ref: '#/components/schemas/PolicyOptions'
+      required:
+      - purpose
+      - email
+      title: RedactionRequestV3
+      type: object
+    RedactionResponseV3:
+      additionalProperties: false
+      properties:
+        session_id:
+          pattern: ^sid_[0-7][0-9A-HJKMNP-TV-Z]{25}$
+          title: Session Id
+          type: string
+        redacted_email:
+          $ref: '#/components/schemas/EmailOutput'
+        redacted_purpose:
+          title: Redacted Purpose
+          type: string
+        expires_at:
+          type: string
+          description: Fixed UTC expiry snapshot; do not send it back on restore.
+          format: date-time
+        degraded:
+          title: Degraded
+          type: boolean
+          description: True means conservative fallback was used; it is not a release authorization or proof
+            of complete detection.
+      required:
+      - session_id
+      - redacted_email
+      - redacted_purpose
+      - expires_at
+      - degraded
+      title: RedactionResponseV3
+      type: object
+    RestoreRequestV3:
+      additionalProperties: false
+      properties:
+        session_id:
+          pattern: ^sid_[0-7][0-9A-HJKMNP-TV-Z]{25}$
+          title: Session Id
+          type: string
+        text:
+          title: Text
+          type: string
+      required:
+      - session_id
+      - text
+      title: RestoreRequestV3
+      type: object
+    RestoreResponseV3:
+      additionalProperties: false
+      properties:
+        restored_text:
+          title: Restored Text
+          type: string
+      required:
+      - restored_text
+      title: RestoreResponseV3
+      type: object
+    SessionRequestV3:
+      additionalProperties: false
+      description: JSON session reference shared by V3 delete and restore requests.
+      properties:
+        session_id:
+          pattern: ^sid_[0-7][0-9A-HJKMNP-TV-Z]{25}$
+          title: Session Id
+          type: string
+      required:
+      - session_id
+      title: SessionRequestV3
+      type: object
+    EmailOutput:
+      type: object
+      properties:
+        subject:
+          type: string
+        from:
+          $ref: '#/components/schemas/EmailAddressOutput'
+        to:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailAddressOutput'
+        cc:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailAddressOutput'
+        body:
+          type: string
+        thread:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThreadItemOutput'
+      required:
+      - to
+      - cc
+      - body
+      - thread
+      additionalProperties: false
+      description: Email fields with redactable text replaced. Null input fields are omitted; arrays are returned
+        even when empty. Output text has no per-field input length limit.
+    EmailAddressOutput:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+      required:
+      - address
+      additionalProperties: false
+    ThreadItemOutput:
+      type: object
+      properties:
+        message_id:
+          type: string
+        source:
+          type: string
+          const: quoted_thread
+        text:
+          type: string
+      required:
+      - source
+      - text
+      additionalProperties: false
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        detail:
+          type: string
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Violation'
+      required:
+      - type
+      - title
+      - status
+      additionalProperties: true
+      description: RFC 9457 problem details for application errors. Match HTTP status and type, not the English
+        title. Tracing is in X-Request-ID.
+    Violation:
+      type: object
+      properties:
+        field:
+          type: string
+        code:
+          type: string
+      required:
+      - field
+      - code
+      additionalProperties: true
+    Limits:
+      type: object
+      properties:
+        max_request_bytes:
+          type: integer
+        timeout_ms:
+          type: integer
+        max_restored_bytes:
+          type: integer
+        max_ttl_seconds:
+          type: integer
+        max_records:
+          type: integer
+      required:
+      - max_request_bytes
+      - timeout_ms
+      - max_restored_bytes
+      - max_ttl_seconds
+      - max_records
+      additionalProperties: true
+    TierPolicy:
+      type: object
+      properties:
+        rule:
+          type: string
+        threshold:
+          type:
+          - number
+          - 'null'
+      required:
+      - rule
+      - threshold
+      additionalProperties: true
+    Info:
+      type: object
+      properties:
+        service_version:
+          type: string
+        contract_version:
+          type: string
+        policy_version:
+          type: string
+        model_version:
+          type: string
+        context_store_version:
+          type: string
+        prompt_versions:
+          type: object
+          properties:
+            detection:
+              type: string
+            assessment:
+              type: string
+          required:
+          - detection
+          - assessment
+          additionalProperties: true
+        tiers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/TierPolicy'
+        entity_types:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              tier:
+                type: string
+            required:
+            - type
+            - tier
+            additionalProperties: true
+        limits:
+          $ref: '#/components/schemas/Limits'
+        failure_behavior:
+          type: string
+          const: redact_all_candidates
+        restoration:
+          type: object
+          properties:
+            backend:
+              type: string
+              enum:
+              - mapping
+              - aes_siv
+            store:
+              type: string
+              const: memory
+            default_ttl_seconds:
+              type: integer
+          required:
+          - backend
+          - store
+          - default_ttl_seconds
+          additionalProperties: true
+        supported_contracts:
+          type: array
+          items:
+            type: string
+      required:
+      - service_version
+      - contract_version
+      - policy_version
+      - model_version
+      - context_store_version
+      - prompt_versions
+      - tiers
+      - entity_types
+      - limits
+      - failure_behavior
+      - restoration
+      - supported_contracts
+      additionalProperties: true
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          const: ok
+      required:
+      - status
+      additionalProperties: false
+    Readiness:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum:
+          - ready
+          - degraded
+        components:
+          type: object
+          additionalProperties:
+            type: string
+            enum:
+            - up
+            - down
+      required:
+      - mode
+      - components
+      additionalProperties: true
+externalDocs:
+  description: OpenAPI 3.1 specification
+  url: https://spec.openapis.org/oas/v3.1.0
+x-contract-version: v3
+x-reviewed-date: '2026-10-29'
+x-source-commit: 1e805ab3714643a03029216469683f5751ceb3d8
+x-problem-details-standard: https://www.rfc-editor.org/rfc/rfc9457.html
